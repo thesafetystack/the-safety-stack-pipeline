@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "techniques-1.schema.json",
+  "title": "Techniques taxonomy, major version 1",
+  "type": "object",
+  "required": ["version", "status", "notes", "techniques", "group_nodes"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "string", "pattern": "^1(\\.[0-9]+){1,2}$"},
+    "status": {"enum": ["draft", "released"]},
+    "notes": {"type": "string", "minLength": 1},
+    "techniques": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/technique"}},
+    "group_nodes": {"type": "array", "items": {"$ref": "#/$defs/group_node"}}
+  },
+  "$defs": {
+    "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:[-.][a-z0-9]+)*$"},
+    "text": {"type": "string", "minLength": 1},
+    "strings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+    "aliases": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "synonym": {"$ref": "#/$defs/strings"},
+        "instance": {"$ref": "#/$defs/strings"},
+        "legacy": {"$ref": "#/$defs/strings"}
+      }
+    },
+    "technique": {
+      "type": "object",
+      "required": ["slug", "name", "kind", "status", "origin", "definition"],
+      "additionalProperties": true,
+      "properties": {
+        "slug": {"$ref": "#/$defs/slug"},
+        "name": {"$ref": "#/$defs/text"},
+        "kind": {"enum": ["intervention", "monitoring", "assessment"]},
+        "status": {"enum": ["final", "provisional"]},
+        "origin": {"$ref": "#/$defs/text"},
+        "definition": {"$ref": "#/$defs/text"},
+        "parent": {"$ref": "#/$defs/slug"},
+        "aliases": {"$ref": "#/$defs/aliases"},
+        "ml_methods": {"$ref": "#/$defs/strings"},
+        "risk_note": {"$ref": "#/$defs/text"},
+        "source_papers": {"$ref": "#/$defs/text"},
+        "note": {"$ref": "#/$defs/text"},
+        "v08_name": {"$ref": "#/$defs/text"},
+        "absorbed": {"$ref": "#/$defs/text"}
+      }
+    },
+    "group_node": {
+      "type": "object",
+      "required": ["slug", "name", "definition", "children"],
+      "additionalProperties": true,
+      "properties": {
+        "slug": {"$ref": "#/$defs/slug"},
+        "name": {"$ref": "#/$defs/text"},
+        "definition": {"$ref": "#/$defs/text"},
+        "children": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/slug"}},
+        "aliases": {"$ref": "#/$defs/aliases"}
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+name: Correction
+description: An annotation or a metadata field in the dataset is wrong.
+title: "Correction: "
+labels: [correction]
+body:
+  - type: input
+    id: document
+    attributes:
+      label: Document
+      description: The `doc_id` from the dataset, or the document's URL, DOI or arXiv id.
+    validations:
+      required: true
+  - type: dropdown
+    id: what
+    attributes:
+      label: What is wrong
+      options:
+        - A technique label (wrong, missing, or wrong role)
+        - A model label (wrong, missing, or wrong role)
+        - Inclusion (the document should not be in the dataset)
+        - Metadata (title, authors, date, type, links)
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: The field or label as it is now, and what it should be.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: A short passage from the document (with page or section) or another source that shows it.
+    validations:
+      required: true
+  - type: input
+    id: release
+    attributes:
+      label: Release
+      description: The dataset release you looked at (its date), if you know it.

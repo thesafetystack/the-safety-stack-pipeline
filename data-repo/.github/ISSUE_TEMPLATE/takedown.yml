@@ -1,0 +1,35 @@
+name: Takedown request
+description: Ask for a document, or your name, to be removed from the dataset.
+title: "Takedown: "
+labels: [takedown]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is public. Do not post personal details here. If you would rather not ask publicly, email
+        info@thesafetystack.ai instead.
+  - type: input
+    id: document
+    attributes:
+      label: Document
+      description: The `doc_id` from the dataset, or the document's URL.
+    validations:
+      required: true
+  - type: dropdown
+    id: what
+    attributes:
+      label: What should be removed
+      options:
+        - The whole document
+        - My name or other personal data on the document
+        - Quoted text
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason
+      description: For example, you are the author or rights holder, or the document is no longer public.
+    validations:
+      required: true

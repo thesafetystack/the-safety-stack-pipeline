@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "techniques-2.schema.json",
+  "title": "Techniques taxonomy, schema 2 (catalogue envelope; techniques 1.1.0 on)",
+  "description": "One entries list: techniques (node technique) and group nodes (node group). The validator checks what a schema cannot say: unique ids, parents resolve, group children are techniques.",
+  "allOf": [{"$ref": "catalogue-0.schema.json"}],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$"},
+    "meta": {
+      "type": "object",
+      "required": ["schema", "updated", "status", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": {"const": "techniques-2"},
+        "updated": {"type": "string"},
+        "status": {"enum": ["draft", "released"]},
+        "description": {"type": "string", "minLength": 1},
+        "sources": {"type": "object"}
+      }
+    },
+    "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entry"}}
+  },
+  "$defs": {
+    "id": {"$ref": "catalogue-0.schema.json#/$defs/id"},
+    "text": {"type": "string", "minLength": 1},
+    "strings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+    "aliases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object", "required": ["text", "kind"], "additionalProperties": false,
+        "properties": {"text": {"$ref": "#/$defs/text"}, "kind": {"enum": ["synonym", "instance", "legacy"]}}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "required": ["id", "node"],
+      "properties": {"node": {"enum": ["technique", "group"]}},
+      "if": {"properties": {"node": {"const": "group"}}},
+      "then": {"$ref": "#/$defs/group"},
+      "else": {"$ref": "#/$defs/technique"}
+    },
+    "technique": {
+      "type": "object",
+      "required": ["id", "node", "name", "kind", "status", "origin", "definition"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "node": {"const": "technique"},
+        "name": {"$ref": "#/$defs/text"},
+        "kind": {"enum": ["intervention", "monitoring", "assessment"]},
+        "status": {"enum": ["final", "provisional"]},
+        "origin": {"$ref": "#/$defs/text"},
+        "definition": {"$ref": "#/$defs/text"},
+        "parent": {"$ref": "#/$defs/id"},
+        "aliases": {"$ref": "#/$defs/aliases"},
+        "ml_methods": {"$ref": "#/$defs/strings"},
+        "risk_note": {"$ref": "#/$defs/text"},
+        "source_papers": {"$ref": "#/$defs/text"},
+        "note": {"$ref": "#/$defs/text"},
+        "v08_name": {"$ref": "#/$defs/text"},
+        "absorbed": {"$ref": "#/$defs/text"}
+      }
+    },
+    "group": {
+      "type": "object",
+      "required": ["id", "node", "name", "definition", "children"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "node": {"const": "group"},
+        "name": {"$ref": "#/$defs/text"},
+        "definition": {"$ref": "#/$defs/text"},
+        "children": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/id"}},
+        "aliases": {
+          "allOf": [{"$ref": "#/$defs/aliases"}],
+          "items": {"properties": {"kind": {"enum": ["synonym", "legacy"]}}}
+        }
+      }
+    }
+  }
+}
