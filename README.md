@@ -1,4 +1,4 @@
-# stack-data-pipeline
+# the-safety-stack-pipeline
 
 The pipeline that builds **The Safety Stack** (https://thesafetystack.ai/), a dataset of AI-safety techniques and
 the public evidence of their deployment at frontier labs: which techniques (evaluations, red-teaming,

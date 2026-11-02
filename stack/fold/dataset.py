@@ -2742,7 +2742,7 @@ def format_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Pat
 def render_vocab(v: Mapping[str, Any]) -> str:
     out = ["# The Safety Stack: vocabulary\n\nEvery value word of the release with a sentence. Values defined but not "
            "used in this release are listed as reserved. References such as \"rubric-v0.9-c §3\" point to the grading "
-           "rubrics in the pipeline repository (public at https://github.com/thesafetystack/stack-data-pipeline).\n"]
+           "rubrics in the pipeline repository (public at https://github.com/thesafetystack/the-safety-stack-pipeline).\n"]
     for sect in ("fields", "patterns"):
         for path, e in (v.get(sect) or {}).items():
             out.append(f"\n**`{path}`**: {_md(e.get('doc'))}\n\n")

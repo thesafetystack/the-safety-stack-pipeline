@@ -1,4 +1,4 @@
-# stack-data-pipeline — AGENTS.md
+# the-safety-stack-pipeline — AGENTS.md
 
 Reconstructing the AI safety "stack" deployed at frontier labs from public evidence.
 

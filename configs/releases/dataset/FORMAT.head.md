@@ -283,7 +283,7 @@ corpus = load_dataset("parquet", data_files="data/corpus.parquet", split="train"
   documents' owners' text, not covered by CC0.
 - **Prompts** are not shipped: `config/configs.json` names each call's prompt and the sha256 of the template files
   it was pinned to (`components`, `template_digests`); the files are in the pipeline repository
-  (public at https://github.com/thesafetystack/stack-data-pipeline).
+  (public at https://github.com/thesafetystack/the-safety-stack-pipeline).
 - **Dates.** `published_date` is the date the providers give for the work's first publication; for an arXiv paper
   that is its first version, while the text is the version `content.source.revision` names, which can be years and a
   new title later (a paper first posted in December 2019 and rewritten in 2026 is dated 2019-12-18). Each source's
