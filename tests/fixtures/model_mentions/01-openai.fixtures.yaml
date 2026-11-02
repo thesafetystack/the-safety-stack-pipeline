@@ -1,0 +1,642 @@
+# Fixtures for _build/01-openai.yaml — every name-variant string from the MD entries
+# (verbatim, annotations stripped) plus canonical display names.
+# Skipped strings (with reasons):
+# - bare "gpt chat" — ChatGPT is not a node (schema v0.3 dropped alias nodes).
+#   As of 2026-08-01 "chatgpt"/"chat-gpt"/"chat gpt" DO resolve, weakly and
+#   version-lessly, to the `gpt` family (51 corpus docs name it only in prose).
+# - "azure openai" (platform, not a model), "o1/o3/o4" (annotation, not a name).
+# - display names of pattern-less structural groups ("GPT-4 (2023 generation)",
+#   "GPT-4o (series)", "GPT-4.1 (series)", per-generation GPT-5 groups, "o1 (series)",
+#   "o3 (series)", "gpt-realtime (line)") — texts never name them.
+# - "Codex (2021)" display name — bare "Codex" resolves to the line node by design.
+# ChatGPT-note strings (chatgpt-3.5, chatgpt-4, chatgpt4, chatgpt-4o-latest) map to
+# the models per the section instructions.
+
+# ---- GPT family
+- { text: "GPT", node: gpt }
+- { text: "gpt", node: gpt }
+- { text: "generative pre-trained transformer", node: gpt }
+- { text: "openai gpt", node: gpt }
+# "chatgpt" weak on the family since 2026-08-01 — version-less by design
+- { text: "ChatGPT", node: gpt }
+- { text: "chatgpt", node: gpt }
+- { text: "chat-gpt", node: gpt }
+- { text: "chat gpt", node: gpt }
+- { text: "gpt chat", node: gpt }  # reversed form: matches only the bare `gpt` weak
+- { text: "ChatGPT is a product", node: gpt }
+
+# ---- GPT-1
+- { text: "GPT-1", node: gpt-1 }
+- { text: "gpt-1", node: gpt-1 }
+- { text: "gpt1", node: gpt-1 }
+- { text: "original gpt", node: gpt-1 }
+- { text: "\"improving language understanding by generative pre-training\"", node: gpt-1 }
+
+# ---- GPT-2 series + sizes
+- { text: "GPT-2", node: gpt-2 }
+- { text: "gpt-2", node: gpt-2 }
+- { text: "gpt2", node: gpt-2 }
+- { text: "gpt 2", node: gpt-2 }
+- { text: "GPT-2 Small", node: gpt-2-small }
+- { text: "gpt-2 small", node: gpt-2-small }
+- { text: "gpt2-small", node: gpt-2-small }
+- { text: "gpt-2 124m", node: gpt-2-small }
+- { text: "gpt-2 117m", node: gpt-2-small }
+- { text: "GPT-2 Medium", node: gpt-2-medium }
+- { text: "gpt-2 medium", node: gpt-2-medium }
+- { text: "gpt2-medium", node: gpt-2-medium }
+- { text: "gpt-2 355m", node: gpt-2-medium }
+- { text: "gpt-2 345m", node: gpt-2-medium }
+- { text: "GPT-2 Large", node: gpt-2-large }
+- { text: "gpt-2 large", node: gpt-2-large }
+- { text: "gpt2-large", node: gpt-2-large }
+- { text: "gpt-2 774m", node: gpt-2-large }
+- { text: "gpt-2 762m", node: gpt-2-large }
+- { text: "GPT-2 XL", node: gpt-2-xl }
+- { text: "gpt-2 xl", node: gpt-2-xl }
+- { text: "gpt2-xl", node: gpt-2-xl }
+- { text: "gpt-2 1.5b", node: gpt-2-xl }
+- { text: "gpt-2-1558m", node: gpt-2-xl }
+- { text: "full gpt-2", node: gpt-2-xl }
+
+# ---- GPT-3 series + sizes + InstructGPT
+- { text: "GPT-3", node: gpt-3 }
+- { text: "gpt-3", node: gpt-3 }
+- { text: "gpt3", node: gpt-3 }
+- { text: "gpt 3", node: gpt-3 }
+- { text: "GPT-3 Ada", node: gpt-3-ada }
+- { text: "ada", node: none }  # v0.9: was gpt-3-ada (weak bare 'ada' removed, near-zero corpus precision)
+- { text: "gpt-3 ada", node: gpt-3-ada }
+- { text: "text-ada-001", node: gpt-3-ada }
+- { text: "ada-001", node: gpt-3-ada }
+- { text: "GPT-3 Babbage", node: gpt-3-babbage }
+- { text: "babbage", node: gpt-3-babbage }
+- { text: "gpt-3 babbage", node: gpt-3-babbage }
+- { text: "text-babbage-001", node: gpt-3-babbage }
+- { text: "babbage-001", node: gpt-3-babbage }
+- { text: "babbage-002", node: babbage-002 }  # v0.9: was gpt-3-babbage (babbage-002 has its own node, a retrained model (L4))
+- { text: "GPT-3 Curie", node: gpt-3-curie }
+- { text: "curie", node: gpt-3-curie }
+- { text: "gpt-3 curie", node: gpt-3-curie }
+- { text: "text-curie-001", node: gpt-3-curie }
+- { text: "curie-001", node: gpt-3-curie }
+- { text: "GPT-3 Davinci", node: gpt-3-davinci }
+- { text: "davinci", node: gpt-3-davinci }
+- { text: "gpt-3 davinci", node: gpt-3-davinci }
+- { text: "davinci-001", node: gpt-3-davinci }
+- { text: "gpt-3 175b", node: gpt-3-davinci }
+- { text: "davinci-002", not_node: gpt-3-davinci }  # own node since 2026-08-01
+- { text: "InstructGPT", node: instructgpt }
+- { text: "instructgpt", node: instructgpt }
+- { text: "instruct-gpt", node: instructgpt }
+- { text: "instruct gpt", node: instructgpt }
+- { text: "text-davinci-001", node: instructgpt }
+
+# ---- GPT-3.5 series + models
+- { text: "GPT-3.5", node: gpt-3.5 }
+- { text: "gpt-3.5", node: gpt-3.5 }
+- { text: "gpt3.5", node: gpt-3.5 }
+- { text: "gpt 3.5", node: gpt-3.5 }
+- { text: "gpt-35", node: gpt-3.5 }
+- { text: "text-davinci-002", node: text-davinci-002 }
+- { text: "text-davinci-002", not_node: davinci-002 }  # longer pattern out-spans
+- { text: "gpt-3.5 davinci", node: text-davinci-002 }
+# ---- davinci-002 (2023 replacement base model; own node since 2026-08-01)
+- { text: "davinci-002", node: davinci-002 }
+- { text: "davinci 002", node: davinci-002 }
+- { text: "davinci002", node: davinci-002 }
+- { text: "davinci-002", not_node: text-davinci-002 }
+- { text: "text-davinci-003", node: text-davinci-003 }
+- { text: "davinci-003", node: text-davinci-003 }
+- { text: "gpt-3.5 text-davinci-003", node: text-davinci-003 }
+- { text: "GPT-3.5 Turbo", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo", node: gpt-3.5-turbo }
+- { text: "gpt-3.5 turbo", node: gpt-3.5-turbo }
+- { text: "gpt3.5-turbo", node: gpt-3.5-turbo }
+- { text: "chatgpt api model", node: gpt-3.5-turbo }
+- { text: "gpt-35-turbo", node: gpt-3.5-turbo }
+- { text: "gpt-35-turbo-16k", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo-16k", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo-instruct", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo-0301", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo-0613", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo-1106", node: gpt-3.5-turbo }
+- { text: "gpt-3.5-turbo-0125", node: gpt-3.5-turbo }
+- { text: "openai/gpt-3.5-turbo", node: gpt-3.5-turbo }
+- { text: "chatgpt-3.5", node: gpt-3.5-turbo }
+
+# ---- Codex line
+- { text: "Codex", node: codex }
+- { text: "codex", node: codex }
+- { text: "openai codex", node: codex }
+- { text: "code-davinci-001", node: codex-2021 }
+- { text: "code-davinci-002", node: codex-2021 }
+- { text: "code-davinci002", node: codex-2021 }  # separator-less digits; pattern added 2026-08-01
+- { text: "code-davinci-002", not_node: davinci-002 }
+- { text: "code-davinci002", not_node: davinci-002 }
+- { text: "code-cushman-001", node: codex-2021 }
+- { text: "cushman", node: codex-2021 }
+- { text: "davinci-codex", node: codex-2021 }
+- { text: "codex-mini (2025)", node: codex-mini }
+- { text: "codex-mini", node: codex-mini }
+- { text: "codex-mini-latest", node: codex-mini }
+- { text: "codex-1", node: codex-mini }
+- { text: "codex 1", node: codex-mini }
+
+# ---- GPT-4 generation
+- { text: "GPT-4", node: gpt-4 }
+- { text: "gpt-4", node: gpt-4 }
+- { text: "gpt4", node: gpt-4 }
+- { text: "gpt 4", node: gpt-4 }
+- { text: "gpt-4-0314", node: gpt-4 }
+- { text: "gpt-4-0613", node: gpt-4 }
+- { text: "gpt-4-32k", node: gpt-4 }
+- { text: "gpt-4v", node: gpt-4v }  # v0.9: was gpt-4 (GPT-4V has its own node, D598 added nodes)
+- { text: "gpt-4 vision", node: gpt-4v }  # v0.9: was gpt-4 (GPT-4V has its own node, D598 added nodes)
+- { text: "gpt-4-vision-preview", node: gpt-4-turbo }  # v0.9: was gpt-4 (the Turbo-era vision API id maps to GPT-4 Turbo, D598 added nodes)
+- { text: "openai/gpt-4", node: gpt-4 }
+- { text: "chatgpt-4", node: gpt-4 }
+- { text: "chatgpt4", node: gpt-4 }
+- { text: "GPT-4 Turbo", node: gpt-4-turbo }
+- { text: "gpt-4 turbo", node: gpt-4-turbo }
+- { text: "gpt-4-turbo", node: gpt-4-turbo }
+- { text: "gpt4-turbo", node: gpt-4-turbo }
+- { text: "gpt-4-1106-preview", node: gpt-4-turbo }
+- { text: "gpt-4-0125-preview", node: gpt-4-turbo }
+- { text: "gpt-4-turbo-preview", node: gpt-4-turbo }
+- { text: "gpt-4-turbo-2024-04-09", node: gpt-4-turbo }
+
+# ---- GPT-4o series
+- { text: "GPT-4o", node: gpt-4o }
+- { text: "gpt-4o", node: gpt-4o }
+- { text: "gpt4o", node: gpt-4o }
+- { text: "4o", node: gpt-4o }
+- { text: "gpt 4o", node: gpt-4o }
+# "omni" dropped: never a name for the model in text ("the o stands for omni" always
+# co-occurs with "GPT-4o"), while omni-channel/omnibus/Omni-* prose is common.
+- { text: "omni-channel support", not_node: gpt-4o }
+- { text: "gpt-4o-2024-05-13", node: gpt-4o }
+- { text: "gpt-4o-2024-08-06", node: gpt-4o }
+- { text: "gpt-4o-2024-11-20", node: gpt-4o }
+- { text: "chatgpt-4o-latest", node: gpt-4o }
+- { text: "gpt-4o-64k-output-alpha", node: gpt-4o }
+- { text: "openai/gpt-4o", node: gpt-4o }
+- { text: "GPT-4o mini", node: gpt-4o-mini }
+- { text: "gpt-4o mini", node: gpt-4o-mini }
+- { text: "gpt-4o-mini", node: gpt-4o-mini }
+- { text: "4o mini", node: gpt-4o-mini }
+- { text: "4o-mini", node: gpt-4o-mini }
+- { text: "gpt4o-mini", node: gpt-4o-mini }
+- { text: "gpt-4o-mini-2024-07-18", node: gpt-4o-mini }
+- { text: "openai/gpt-4o-mini", node: gpt-4o-mini }
+
+# ---- GPT-4.1 series
+- { text: "GPT-4.1", node: gpt-4.1 }
+- { text: "gpt-4.1", node: gpt-4.1 }
+- { text: "gpt4.1", node: gpt-4.1 }
+- { text: "gpt 4.1", node: gpt-4.1 }
+- { text: "gpt-4.1-2025-04-14", node: gpt-4.1 }
+- { text: "openai/gpt-4.1", node: gpt-4.1 }
+- { text: "GPT-4.1 mini", node: gpt-4.1-mini }
+- { text: "gpt-4.1 mini", node: gpt-4.1-mini }
+- { text: "gpt-4.1-mini", node: gpt-4.1-mini }
+- { text: "gpt4.1-mini", node: gpt-4.1-mini }
+- { text: "gpt-4.1-mini-2025-04-14", node: gpt-4.1-mini }
+- { text: "GPT-4.1 nano", node: gpt-4.1-nano }
+- { text: "gpt-4.1 nano", node: gpt-4.1-nano }
+- { text: "gpt-4.1-nano", node: gpt-4.1-nano }
+- { text: "gpt4.1-nano", node: gpt-4.1-nano }
+- { text: "gpt-4.1-nano-2025-04-14", node: gpt-4.1-nano }
+
+# ---- GPT-4.5
+- { text: "GPT-4.5", node: gpt-4.5 }
+- { text: "gpt-4.5", node: gpt-4.5 }
+- { text: "gpt4.5", node: gpt-4.5 }
+- { text: "gpt 4.5", node: gpt-4.5 }
+- { text: "gpt-4.5-preview", node: gpt-4.5 }
+- { text: "orion", node: gpt-4.5 }
+
+# ---- o-series
+- { text: "o-series", node: o-series }
+- { text: "openai o", node: o-series }
+- { text: "o1-preview", node: o1-preview }
+- { text: "o1 preview", node: o1-preview }
+- { text: "openai o1-preview", node: o1-preview }
+- { text: "strawberry", node: o1-preview }
+# "q*" dropped as a pattern: in the same corpora it is the RL optimal-action-value
+# symbol ("Q*-learning", "Q*(s,a)"), and vendor-context filtering cannot separate
+# the two (RL papers cite OpenAI). Expectation corrected to a negative.
+- { text: "Q*-learning converges to Q*", not_node: o1-preview }
+- { text: "the Q* algorithm in RL", not_node: o1-preview }
+- { text: "o1-mini", node: o1-mini }
+- { text: "o1 mini", node: o1-mini }
+- { text: "openai o1-mini", node: o1-mini }
+- { text: "o1-mini-2024-09-12", node: o1-mini }
+- { text: "o1", node: o1 }
+- { text: "openai o1", node: o1 }
+- { text: "o1-2024-12-17", node: o1 }
+- { text: "full o1", node: o1 }
+- { text: "o1 full", node: o1 }
+- { text: "o1-pro", node: o1 }  # v0.7: was node o1-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "o1 pro", node: o1 }  # v0.7: was node o1-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "o1 pro mode", node: o1 }  # v0.7: was node o1-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "openai o1-pro", node: o1 }  # v0.7: was node o1-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "o3-mini", node: o3-mini }
+- { text: "o3 mini", node: o3-mini }
+- { text: "o3-mini-high", node: o3-mini }
+- { text: "o3-mini-2025-01-31", node: o3-mini }
+- { text: "openai o3-mini", node: o3-mini }
+- { text: "o3", node: o3 }
+- { text: "openai o3", node: o3 }
+- { text: "o3-2025-04-16", node: o3 }
+- { text: "o3-high", node: o3 }
+- { text: "o3-pro", node: o3 }  # v0.7: was node o3-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "o3 pro", node: o3 }  # v0.7: was node o3-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "openai o3-pro", node: o3 }  # v0.7: was node o3-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "o4-mini", node: o4-mini }
+- { text: "o4 mini", node: o4-mini }
+- { text: "o4-mini-high", node: o4-mini }
+- { text: "o4-mini-2025-04-16", node: o4-mini }
+- { text: "openai o4-mini", node: o4-mini }
+- { text: "deep research", node: none }  # v0.9: was o3-deep-research (weak bare 'deep research' removed, near-zero corpus precision)
+- { text: "o3-deep-research", node: o3-deep-research }
+- { text: "openai deep research", node: o3-deep-research }
+- { text: "o4-mini-deep-research", node: o4-mini-deep-research }
+
+# ---- GPT-5 line
+- { text: "GPT-5.x", node: gpt-5.x }
+- { text: "gpt-5 series", node: gpt-5.x }
+- { text: "GPT-5", node: gpt-5 }
+- { text: "gpt-5", node: gpt-5 }
+- { text: "gpt5", node: gpt-5 }
+- { text: "gpt 5", node: gpt-5 }
+- { text: "gpt-5-2025-08-07", node: gpt-5 }
+- { text: "gpt-5-thinking", node: gpt-5 }
+- { text: "gpt-5 thinking", node: gpt-5 }
+- { text: "gpt-5-main", node: gpt-5 }
+- { text: "gpt-5-chat-latest", node: gpt-5 }
+- { text: "openai/gpt-5", node: gpt-5 }
+- { text: "GPT-5 mini", node: gpt-5-mini }
+- { text: "gpt-5 mini", node: gpt-5-mini }
+- { text: "gpt-5-mini", node: gpt-5-mini }
+- { text: "gpt5-mini", node: gpt-5-mini }
+- { text: "gpt-5-main-mini", node: gpt-5-mini }
+- { text: "gpt-5-thinking-mini", node: gpt-5-mini }
+- { text: "GPT-5 nano", node: gpt-5-nano }
+- { text: "gpt-5 nano", node: gpt-5-nano }
+- { text: "gpt-5-nano", node: gpt-5-nano }
+- { text: "gpt5-nano", node: gpt-5-nano }
+- { text: "gpt-5-thinking-nano", node: gpt-5-nano }
+- { text: "GPT-5 Pro", node: gpt-5 }  # v0.7: was node gpt-5-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "gpt-5 pro", node: gpt-5 }  # v0.7: was node gpt-5-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "gpt-5-pro", node: gpt-5 }  # v0.7: was node gpt-5-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "gpt5-pro", node: gpt-5 }  # v0.7: was node gpt-5-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "gpt-5-thinking-pro", node: gpt-5 }  # v0.7: was node gpt-5-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "GPT-5-Codex", node: gpt-5-codex }
+- { text: "gpt-5-codex", node: gpt-5-codex }
+- { text: "gpt-5 codex", node: gpt-5-codex }
+- { text: "gpt5-codex", node: gpt-5-codex }
+- { text: "GPT-5.1", node: gpt-5.1 }
+- { text: "gpt-5.1", node: gpt-5.1 }
+- { text: "gpt5.1", node: gpt-5.1 }
+- { text: "gpt 5.1", node: gpt-5.1 }
+- { text: "gpt-5.1 instant", node: gpt-5.1 }
+- { text: "gpt-5.1 thinking", node: gpt-5.1 }
+- { text: "gpt-5.1 pro", node: gpt-5.1 }
+- { text: "gpt-5.1-chat-latest", node: gpt-5.1 }
+- { text: "gpt-5.1-pro", node: gpt-5.1 }
+- { text: "GPT-5.1-Codex", node: gpt-5.1-codex }
+- { text: "gpt-5.1-codex", node: gpt-5.1-codex }
+- { text: "gpt-5.1 codex", node: gpt-5.1-codex }
+- { text: "GPT-5.1-Codex-Mini", node: gpt-5.1-codex-mini }
+- { text: "gpt-5.1-codex-mini", node: gpt-5.1-codex-mini }
+- { text: "gpt-5.1 codex mini", node: gpt-5.1-codex-mini }
+- { text: "gpt-5-codex-mini", node: gpt-5.1-codex-mini }
+- { text: "GPT-5.1-Codex-Max", node: gpt-5.1-codex-max }
+- { text: "gpt-5.1-codex-max", node: gpt-5.1-codex-max }
+- { text: "gpt-5.1 codex max", node: gpt-5.1-codex-max }
+- { text: "codex max", node: gpt-5.1-codex-max }
+- { text: "codex-max", node: gpt-5.1-codex-max }
+- { text: "GPT-5.2", node: gpt-5.2 }
+- { text: "gpt-5.2", node: gpt-5.2 }
+- { text: "gpt5.2", node: gpt-5.2 }
+- { text: "gpt 5.2", node: gpt-5.2 }
+- { text: "gpt-5.2 instant", node: gpt-5.2 }
+- { text: "gpt-5.2 thinking", node: gpt-5.2 }
+- { text: "gpt-5.2 thinking pro", node: gpt-5.2 }
+- { text: "gpt-5.2 pro", node: gpt-5.2 }
+- { text: "gpt-5.2-chat-latest", node: gpt-5.2 }
+- { text: "GPT-5.2-Codex", node: gpt-5.2-codex }
+- { text: "gpt-5.2-codex", node: gpt-5.2-codex }
+- { text: "gpt-5.2 codex", node: gpt-5.2-codex }
+- { text: "GPT-5.3", node: gpt-5.3 }
+- { text: "gpt-5.3", node: gpt-5.3 }
+- { text: "gpt5.3", node: gpt-5.3 }
+- { text: "gpt 5.3", node: gpt-5.3 }
+- { text: "gpt-5.3 instant", node: gpt-5.3 }
+- { text: "gpt-5.3-chat-latest", node: gpt-5.3 }
+- { text: "GPT-5.3-Codex", node: gpt-5.3-codex }
+- { text: "gpt-5.3-codex", node: gpt-5.3-codex }
+- { text: "gpt-5.3 codex", node: gpt-5.3-codex }
+- { text: "gpt5.3-codex", node: gpt-5.3-codex }
+- { text: "GPT-5.3-Codex-Spark", node: gpt-5.3-codex-spark }
+- { text: "gpt-5.3-codex-spark", node: gpt-5.3-codex-spark }
+- { text: "codex spark", node: gpt-5.3-codex-spark }
+- { text: "codex-spark", node: gpt-5.3-codex-spark }
+- { text: "gpt-5.3 codex spark", node: gpt-5.3-codex-spark }
+- { text: "GPT-5.4", node: gpt-5.4 }
+- { text: "gpt-5.4", node: gpt-5.4 }
+- { text: "gpt5.4", node: gpt-5.4 }
+- { text: "gpt 5.4", node: gpt-5.4 }
+- { text: "gpt-5.4 thinking", node: gpt-5.4 }
+- { text: "gpt-5.4 pro", node: gpt-5.4 }
+- { text: "gpt-5.4-pro", node: gpt-5.4 }
+- { text: "GPT-5.4 mini", node: gpt-5.4-mini }
+- { text: "gpt-5.4 mini", node: gpt-5.4-mini }
+- { text: "gpt-5.4-mini", node: gpt-5.4-mini }
+- { text: "gpt5.4-mini", node: gpt-5.4-mini }
+- { text: "GPT-5.4 nano", node: gpt-5.4-nano }
+- { text: "gpt-5.4 nano", node: gpt-5.4-nano }
+- { text: "gpt-5.4-nano", node: gpt-5.4-nano }
+- { text: "gpt5.4-nano", node: gpt-5.4-nano }
+- { text: "GPT-5.5", node: gpt-5.5 }
+- { text: "gpt-5.5", node: gpt-5.5 }
+- { text: "gpt5.5", node: gpt-5.5 }
+- { text: "gpt 5.5", node: gpt-5.5 }
+- { text: "gpt-5.5 thinking", node: gpt-5.5 }
+- { text: "gpt-5.5 pro", node: gpt-5.5 }
+- { text: "gpt-5.5 instant", node: gpt-5.5 }
+- { text: "gpt-5.5-pro", node: gpt-5.5 }
+- { text: "spud", node: gpt-5.5 }
+- { text: "GPT-5.5-Cyber", node: gpt-5.5-cyber }
+- { text: "gpt-5.5-cyber", node: gpt-5.5-cyber }
+- { text: "gpt-5.5 cyber", node: gpt-5.5-cyber }
+- { text: "gpt5.5-cyber", node: gpt-5.5-cyber }
+- { text: "GPT-5.6", node: gpt-5.6 }
+- { text: "gpt-5.6", node: gpt-5.6 }
+- { text: "gpt5.6", node: gpt-5.6 }
+- { text: "gpt 5.6", node: gpt-5.6 }
+- { text: "sol terra luna", node: gpt-5.6 }
+- { text: "GPT-5.6 Sol", node: gpt-5.6-sol }
+- { text: "gpt-5.6 sol", node: gpt-5.6-sol }
+- { text: "gpt-5.6-sol", node: gpt-5.6-sol }
+- { text: "sol", node: gpt-5.6-sol }
+- { text: "gpt5.6 sol", node: gpt-5.6-sol }
+- { text: "GPT-5.6 Terra", node: gpt-5.6-terra }
+- { text: "gpt-5.6 terra", node: gpt-5.6-terra }
+- { text: "gpt-5.6-terra", node: gpt-5.6-terra }
+- { text: "terra", node: gpt-5.6-terra }
+- { text: "gpt5.6 terra", node: gpt-5.6-terra }
+- { text: "GPT-5.6 Luna", node: gpt-5.6-luna }
+- { text: "gpt-5.6 luna", node: gpt-5.6-luna }
+- { text: "gpt-5.6-luna", node: gpt-5.6-luna }
+- { text: "luna", node: gpt-5.6-luna }
+- { text: "gpt5.6 luna", node: gpt-5.6-luna }
+
+# ---- gpt-oss family
+- { text: "gpt-oss", node: gpt-oss }
+- { text: "gpt oss", node: gpt-oss }
+- { text: "gptoss", node: gpt-oss }
+- { text: "gpt-oss-120b", node: gpt-oss-120b }
+- { text: "gpt-oss 120b", node: gpt-oss-120b }
+- { text: "oss-120b", node: gpt-oss-120b }
+- { text: "openai/gpt-oss-120b", node: gpt-oss-120b }
+- { text: "gpt-oss-20b", node: gpt-oss-20b }
+- { text: "gpt-oss 20b", node: gpt-oss-20b }
+- { text: "oss-20b", node: gpt-oss-20b }
+- { text: "openai/gpt-oss-20b", node: gpt-oss-20b }
+- { text: "gpt-oss-safeguard", node: gpt-oss-safeguard }  # un-sized -> group node (2026-08-01)
+- { text: "gpt-oss-safeguard", not_node: gpt-oss-safeguard-120b }
+- { text: "gpt-oss-safeguard", not_node: gpt-oss-safeguard-20b }
+- { text: "gpt oss safeguard", node: gpt-oss-safeguard }
+- { text: "gpt-oss-safeguard-120b", node: gpt-oss-safeguard-120b }
+- { text: "gpt-oss-safeguard-20b", node: gpt-oss-safeguard-20b }
+- { text: "gpt-oss-safeguard-120b", not_node: gpt-oss-safeguard }
+- { text: "gpt-oss safeguard 20b", node: gpt-oss-safeguard-20b }
+
+# ---- Embeddings family
+- { text: "OpenAI Embeddings", node: openai-embeddings }
+- { text: "openai embeddings", node: openai-embeddings }
+# bare "text embedding" dropped: a generic technical phrase, not a name (weak flags
+# are for collision-prone *names*); every real API id carries a suffix that matches a
+# deeper node, and vendor-context filtering cannot help (RAG posts name OpenAI).
+- { text: "text embedding models are useful", not_node: openai-embeddings }
+- { text: "text-embedding-ada-002", node: text-embedding-ada-002 }
+- { text: "ada-002", node: text-embedding-ada-002 }
+- { text: "ada 002", node: text-embedding-ada-002 }
+- { text: "ada embeddings", node: text-embedding-ada-002 }
+- { text: "openai ada", node: text-embedding-ada-002 }
+- { text: "text-embedding-3", node: text-embedding-3 }
+- { text: "text-embedding-3-small", node: text-embedding-3-small }
+- { text: "embedding-3-small", node: text-embedding-3-small }
+- { text: "te3-small", node: text-embedding-3-small }
+- { text: "text-embedding-3-large", node: text-embedding-3-large }
+- { text: "embedding-3-large", node: text-embedding-3-large }
+- { text: "te3-large", node: text-embedding-3-large }
+
+# ---- Whisper family
+- { text: "Whisper", node: whisper }
+- { text: "whisper", node: whisper }
+- { text: "openai whisper", node: whisper }
+- { text: "Whisper v1", node: whisper-v1 }
+- { text: "whisper v1", node: whisper-v1 }
+- { text: "whisper-tiny", node: whisper-v1 }
+- { text: "whisper-base", node: whisper-v1 }
+- { text: "whisper-small", node: whisper-v1 }
+- { text: "whisper-medium", node: whisper-v1 }
+- { text: "whisper-large", node: whisper-v1 }
+- { text: "whisper large-v1", node: whisper-v1 }
+- { text: "openai/whisper-large", node: whisper-v1 }
+- { text: "Whisper large-v2", node: whisper-large-v2 }
+- { text: "whisper large-v2", node: whisper-large-v2 }
+- { text: "whisper-large-v2", node: whisper-large-v2 }
+- { text: "large-v2", node: whisper-large-v2 }
+- { text: "whisper-1", node: whisper-large-v2 }
+- { text: "Whisper large-v3", node: whisper-large-v3 }
+- { text: "whisper large-v3", node: whisper-large-v3 }
+- { text: "whisper-large-v3", node: whisper-large-v3 }
+- { text: "large-v3", node: whisper-large-v3 }
+- { text: "whisper v3", node: whisper-large-v3 }
+- { text: "Whisper large-v3-turbo", node: whisper-large-v3-turbo }
+- { text: "whisper large-v3-turbo", node: whisper-large-v3-turbo }
+- { text: "whisper-large-v3-turbo", node: whisper-large-v3-turbo }
+- { text: "whisper turbo", node: whisper-large-v3-turbo }
+- { text: "large-v3-turbo", node: whisper-large-v3-turbo }
+- { text: "whisper-turbo", node: whisper-large-v3-turbo }
+
+# ---- CLIP
+- { text: "CLIP", node: clip-2021 }
+- { text: "clip", node: clip-2021 }
+- { text: "openai clip", node: clip-2021 }
+- { text: "clip-vit-base-patch32", node: clip-2021 }
+- { text: "clip-vit-base-patch16", node: clip-2021 }
+- { text: "clip-vit-large-patch14", node: clip-2021 }
+- { text: "vit-l/14", node: vit-1 }  # v0.9: was clip-2021 (weak vit l 14 removed from CLIP, a backbone designation)
+- { text: "contrastive language-image pretraining", node: clip-2021 }
+
+# ---- DALL-E family
+- { text: "DALL-E", node: dall-e }
+- { text: "dall-e", node: dall-e }
+- { text: "dalle", node: dall-e }
+- { text: "dall·e", node: dall-e }
+- { text: "dall e", node: dall-e }
+- { text: "DALL-E 1", node: dall-e-1 }
+- { text: "dall-e 1", node: dall-e-1 }
+- { text: "dalle-1", node: dall-e-1 }
+- { text: "DALL-E 2", node: dall-e-2 }
+- { text: "dall-e 2", node: dall-e-2 }
+- { text: "dalle 2", node: dall-e-2 }
+- { text: "dalle-2", node: dall-e-2 }
+- { text: "dall·e 2", node: dall-e-2 }
+- { text: "unclip", node: dall-e-2 }
+- { text: "DALL-E 3", node: dall-e-3 }
+- { text: "dall-e 3", node: dall-e-3 }
+- { text: "dalle 3", node: dall-e-3 }
+- { text: "dalle-3", node: dall-e-3 }
+- { text: "dall·e 3", node: dall-e-3 }
+- { text: "dall-e-3", node: dall-e-3 }
+
+# ---- GPT Image family
+- { text: "GPT Image", node: gpt-image }
+- { text: "gpt image", node: gpt-image }
+- { text: "gpt-image", node: gpt-image }
+- { text: "4o image generation", node: gpt-image-1 }
+- { text: "images in chatgpt", node: gpt }  # v0.9: was gpt-image-1 (product phrase removed from gpt-image-1)
+- { text: "gpt-image-1", node: gpt-image-1 }
+- { text: "gpt image 1", node: gpt-image-1 }
+- { text: "gptimage1", node: gpt-image-1 }
+- { text: "gpt-image-1-mini", node: gpt-image-1-mini }
+- { text: "gpt image 1 mini", node: gpt-image-1-mini }
+- { text: "gpt-image-1.5", node: gpt-image-1.5 }
+- { text: "gpt image 1.5", node: gpt-image-1.5 }
+- { text: "chatgpt-image-latest", node: gpt-image-1.5 }
+- { text: "gpt-image-2", node: gpt-image-2 }
+- { text: "gpt image 2", node: gpt-image-2 }
+- { text: "gptimage2", node: gpt-image-2 }
+
+# ---- Sora family
+- { text: "Sora", node: sora }
+- { text: "sora", node: sora }
+- { text: "openai sora", node: sora }
+- { text: "Sora 1", node: sora-1 }
+- { text: "sora 1", node: sora-1 }
+- { text: "sora turbo", node: sora-1 }
+- { text: "sora-turbo", node: sora-1 }
+- { text: "Sora 2", node: sora-2 }
+- { text: "sora 2", node: sora-2 }
+- { text: "sora-2", node: sora-2 }
+- { text: "sora2", node: sora-2 }
+- { text: "sora-2-2025-10-06", node: sora-2 }
+- { text: "sora-2-2025-12-08", node: sora-2 }
+- { text: "Sora 2 Pro", node: sora-2-pro }
+- { text: "sora 2 pro", node: sora-2-pro }
+- { text: "sora-2-pro", node: sora-2-pro }
+- { text: "sora2 pro", node: sora-2-pro }
+- { text: "sora-2-pro-2025-10-06", node: sora-2-pro }
+
+# ---- Realtime & audio family
+- { text: "realtime api models", node: openai-realtime-audio }
+- { text: "openai voice models", node: openai-realtime-audio }
+- { text: "advanced voice mode", node: openai-realtime-audio }
+- { text: "tts-1", node: tts-1 }
+- { text: "tts-1-hd", node: tts-1 }
+- { text: "openai tts", node: tts-1 }
+- { text: "gpt-4o-realtime-preview", node: gpt-4o-realtime-preview }
+- { text: "gpt-4o realtime", node: gpt-4o-realtime-preview }
+- { text: "gpt-4o-realtime-preview-2024-12-17", node: gpt-4o-realtime-preview }
+- { text: "gpt-4o-mini-realtime-preview", node: gpt-4o-realtime-preview }
+- { text: "gpt-4o-audio-preview", node: gpt-4o-realtime-preview }
+- { text: "gpt-4o-transcribe", node: gpt-4o-transcribe }
+- { text: "gpt-4o-mini-transcribe", node: gpt-4o-mini-transcribe }
+- { text: "gpt-4o-mini-tts", node: gpt-4o-mini-tts }
+- { text: "gpt-realtime", node: gpt-realtime }
+- { text: "gpt realtime", node: gpt-realtime }
+- { text: "gpt-realtime-mini", node: gpt-realtime }
+- { text: "gpt-realtime-2025-12-15", node: gpt-realtime }
+- { text: "GPT-Realtime-2", node: gpt-realtime-2 }
+- { text: "gpt-realtime-2", node: gpt-realtime-2 }
+- { text: "gpt realtime 2", node: gpt-realtime-2 }
+- { text: "gpt-realtime-translate", node: openai-realtime-audio }  # v0.9: was gpt-realtime-2 (transcribe/translate pointer moved to the family)
+- { text: "gpt-realtime-whisper", node: openai-transcribe }  # v0.9: was gpt-realtime-2 (transcribe/translate pointer moved to the family); then openai-realtime-audio (transcription pointer moved to the OpenAI Transcribe family)
+- { text: "gpt-realtime-2.1", node: gpt-realtime-2.1 }
+- { text: "gpt-realtime-2.1-mini", node: gpt-realtime-2.1 }
+- { text: "gpt-audio", node: gpt-audio }
+- { text: "gpt-audio-mini", node: gpt-audio }
+- { text: "gpt-audio-mini-2025-12-15", node: gpt-audio }
+- { text: "gpt-transcribe", node: gpt-transcribe }
+- { text: "gpt-live-transcribe", node: gpt-transcribe }
+
+# ============================================================================
+# Real-world shape probes (refinement pass): sentences as 2023-2026 news, papers,
+# benchmark tables, HN/Reddit actually write them, plus adversarial negatives.
+# ============================================================================
+
+# ---- ChatGPT-prefixed compounds must not out-span the sub-tier they name.
+# ("chat gpt X" out-lengths a sibling's short form, so every tier that really
+# appears with the ChatGPT prefix needs its own compound; the bare-vendor form
+# "openai X" is deliberately NOT added — it has the same out-spanning failure
+# and bare "o1"/"o3"/"4o" already cover those strings.)
+- { text: "ChatGPT 4o mini is cheap", node: gpt-4o-mini }
+- { text: "chatgpt-4o-mini", node: gpt-4o-mini }
+- { text: "ChatGPT-4 Turbo was announced at DevDay", node: gpt-4-turbo }
+- { text: "ChatGPT 4.1", node: gpt-4.1 }
+- { text: "ChatGPT 4.1 mini", node: gpt-4.1-mini }
+- { text: "chatgpt-4.1-nano", node: gpt-4.1-nano }
+- { text: "ChatGPT 4.5 was pulled quickly", node: gpt-4.5 }
+- { text: "ChatGPT 5 Pro subscribers", node: gpt-5 }  # v0.7: was node gpt-5-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "ChatGPT 5.6 is out", node: gpt-5.6 }
+- { text: "ChatGPT deep research report", node: o3-deep-research }
+
+# ---- bare colloquial version+tier forms (weak: collide with section numbering)
+- { text: "we switched from 4o-mini to 4.1-mini for cost", node: gpt-4o-mini }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "4.1-nano is the cheapest", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+# accepted FP shape of the two patterns above (weak, so context-policy filtered):
+- { text: "4.1 Mini-batch gradient descent", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+
+# ---- bare o-series names are STRONG (promoted this pass): "o1"/"o3" are the
+# models' only real names in text, so a weak flag would send every genuine
+# mention to the context-needed bucket.
+- { text: "o1 and o3 were the reasoning models", node: o1 }
+- { text: "o3 scored 87.5% on ARC-AGI", node: o3 }
+- { text: "chatgpt o3 handled it", node: o3 }
+- { text: "openai o3-mini vs o3", node: o3-mini }
+- { text: "o3 pro mode", node: o3 }  # v0.7: was node o3-pro; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "o3-mini-high and o4-mini-high", node: o4-mini }
+# the O-1 visa (its official hyphenated form) is dodged by the separator rule:
+- { text: "an O-1 visa petition", node: none }
+# residual accepted FPs of the promotion (no way to express: they DO match):
+# "O1 visa holders" -> o1; "tropospheric O3 levels" -> o3. Out-of-domain for an
+# AI-text corpus; documented in the o1/o3 uncertainties fields.
+
+# ---- markdown / code / table / cloud-id shapes
+- { text: "**GPT-4o** is the free-tier default", node: gpt-4o }
+- { text: "`gpt-4.1-mini` in code", node: gpt-4.1-mini }
+- { text: "| Model | o3 | o4-mini | GPT-4.1 | 4o |", node: o3 }
+- { text: "| Model | o3 | o4-mini | GPT-4.1 | 4o |", node: gpt-4o }
+- { text: "model=\"gpt-3.5-turbo\"", node: gpt-3.5-turbo }
+- { text: "gpt-oss:20b via ollama", node: gpt-oss-20b }
+- { text: "gpt-4o-mini-search-preview", node: gpt-4o-mini }
+- { text: "gpt-5.6-sol-2026-07-09", node: gpt-5.6-sol }
+- { text: "GPT-4 Turbo 128k context", node: gpt-4-turbo }
+- { text: "davinci-003 was the Alpaca teacher", node: text-davinci-003 }
+- { text: "cushman-codex", node: codex-2021 }
+- { text: "Sol/Terra/Luna tiers compared", node: gpt-5.6 }
+- { text: "GPT-5.6 Sol vs Terra pricing", node: gpt-5.6-terra }
+
+# ---- N.x hazard: multiplier prose and version/section numbers must not match
+- { text: "it is 5x cheaper and 4x faster", node: none }
+- { text: "we saw a 3.5x speedup", node: none }
+- { text: "section 4.1 discusses this", node: none }
+- { text: "Python 3.5 and iOS 4.1", node: none }
+- { text: "5.1 surround sound", node: none }
+- { text: "rated 4.5 stars out of 5", node: none }
+# bare "3.5 turbo" deliberately omitted as a pattern (car-engine designations,
+# and the model is essentially always written with the gpt- prefix):
+- { text: "a 3.5 Turbo V6 engine", node: none }
+# bare "4.1"/"5.1"/"4.5" deliberately omitted: section numbers and software
+# versions dominate. Accepted miss:
+- { text: "the new 4.1 models are out", node: none }
+
+# ---- boundary guards
+- { text: "gpt-40 is not a model", not_node: gpt-4 }
+- { text: "SGPT-4 is a different thing", node: none }

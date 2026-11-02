@@ -1,0 +1,271 @@
+# Fixtures for _build/09-pre-llm.yaml — every mention pattern in its natural surface
+# forms (the size/version variants that this section keeps as patterns rather than
+# nodes), plus negative fixtures for the collision traps where a candidate pattern was
+# dropped entirely. Weak patterns (inception, glove, canine, cicero, rainbow, dino,
+# dreamer, ntm) match by design, so no negative fixture can be written for them —
+# their false positives are handled by the matcher's context policy, not here.
+
+# ----------------------------------------------------------------- CNN backbones
+- { text: "LeNet", node: lenet-5 }
+- { text: "LeNet-5", node: lenet-5 }
+- { text: "lenet5", node: lenet-5 }
+- { text: "AlexNet", node: alexnet-1 }
+- { text: "alexnet", node: alexnet-1 }
+- { text: "Alex-Net", node: alexnet-1 }
+- { text: "VGG", node: vgg-1 }
+- { text: "VGG-16", node: vgg-1 }
+- { text: "vgg16", node: vgg-1 }
+- { text: "VGG19", node: vgg-1 }
+- { text: "VGG-11", node: vgg-1 }
+- { text: "vgg 13", node: vgg-1 }
+- { text: "VGGNet", node: vgg-1 }
+- { text: "GoogLeNet", node: inception-1 }
+- { text: "googlenet", node: inception-1 }
+- { text: "Inception-v1", node: inception-1 }
+- { text: "Inception v2", node: inception-1 }
+- { text: "Inception-v3", node: inception-1 }
+- { text: "InceptionV3", node: inception-1 }
+- { text: "inception-v4", node: inception-1 }
+- { text: "Inception-ResNet-v2", node: inception-1 }
+- { text: "the Inception architecture", node: inception-1 }
+- { text: "ResNet", node: resnet-1 }
+- { text: "resnet", node: resnet-1 }
+- { text: "ResNet-18", node: resnet-1 }
+- { text: "ResNet-34", node: resnet-1 }
+- { text: "ResNet-50", node: resnet-1 }
+- { text: "resnet50", node: resnet-1 }
+- { text: "ResNet101", node: resnet-1 }
+- { text: "ResNet-152", node: resnet-1 }
+- { text: "ResNet-20", node: resnet-1 }
+- { text: "resnet-56", node: resnet-1 }
+- { text: "ResNet-110", node: resnet-1 }
+- { text: "Wide ResNet", node: resnet-1 }
+- { text: "WideResNet-28-10", node: resnet-1 }
+- { text: "wide-resnet", node: resnet-1 }
+- { text: "ResNeXt", node: resnext-1 }
+- { text: "resnext", node: resnext-1 }
+- { text: "ResNeXt-50", node: resnext-1 }
+- { text: "ResNeXt-101 32x8d", node: resnext-1 }
+- { text: "DenseNet", node: densenet-1 }
+- { text: "densenet-121", node: densenet-1 }
+- { text: "DenseNet169", node: densenet-1 }
+- { text: "DenseNet-201", node: densenet-1 }
+- { text: "SqueezeNet", node: none }  # v0.8: was node squeezenet-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "squeeze-net", node: none }  # v0.8: was node squeezenet-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "MobileNet", node: mobilenet-1 }
+- { text: "mobilenet", node: mobilenet-1 }
+- { text: "MobileNetV1", node: mobilenet-1 }
+- { text: "MobileNetV2", node: mobilenet-1 }
+- { text: "MobileNet-v3", node: mobilenet-1 }
+- { text: "NASNet", node: none }  # v0.8: was node nasnet-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "NASNet-A Large", node: none }  # v0.8: was node nasnet-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "EfficientNet", node: efficientnet-1 }
+- { text: "EfficientNet-B0", node: efficientnet-1 }
+- { text: "efficientnet-b4", node: efficientnet-1 }
+- { text: "EfficientNetB7", node: efficientnet-1 }
+- { text: "EfficientNetV2", node: efficientnet-1 }
+- { text: "ConvNeXt", node: convnext-1 }
+- { text: "convnext", node: convnext-1 }
+- { text: "ConvNeXt-V2", node: convnext-1 }
+
+# --------------------------------------------------- Vision transformers/encoders
+- { text: "ViT", node: vit-1 }
+- { text: "vit", node: vit-1 }
+- { text: "ViT-B/16", node: vit-1 }
+- { text: "ViT-H/14", node: vit-1 }
+- { text: "Vision Transformer", node: vit-1 }
+- { text: "vision transformers", node: none }  # v0.9: was vit-1 (vision transformers removed, architecture plural)
+- { text: "Swin", node: swin-1 }
+- { text: "Swin Transformer", node: swin-1 }
+- { text: "Swin-B", node: swin-1 }
+- { text: "SwinV2", node: swin-1 }
+- { text: "DINO", node: dino-1 }
+- { text: "DINOv2", node: dinov2 }
+- { text: "dino-v2", node: dinov2 }
+- { text: "CapsNet", node: none }  # v0.7: was node capsnet-1; technique-named classic dropped (method D7)
+- { text: "capsule network", node: none }  # v0.7: was node capsnet-1; technique-named classic dropped (method D7)
+- { text: "Capsule Networks", node: none }  # v0.7: was node capsnet-1; technique-named classic dropped (method D7)
+- { text: "FaceNet", node: facenet-1 }
+- { text: "face-net", node: facenet-1 }
+
+# ---------------------------------------------------- Detection and segmentation
+- { text: "R-CNN", node: r-cnn-1 }
+- { text: "rcnn", node: r-cnn-1 }
+- { text: "Fast R-CNN", node: r-cnn-1 }
+- { text: "Faster R-CNN", node: r-cnn-1 }
+- { text: "faster rcnn", node: r-cnn-1 }
+- { text: "Mask R-CNN", node: r-cnn-1 }
+- { text: "mask-rcnn", node: r-cnn-1 }
+- { text: "YOLO", node: yolo-1 }
+- { text: "yolo", node: yolo-1 }
+- { text: "YOLOv1", node: yolo-1 }
+- { text: "YOLOv2", node: yolo-1 }
+- { text: "YOLOv3", node: yolo-1 }
+- { text: "YOLOv4", node: yolo-1 }
+- { text: "YOLOv5", node: yolo-1 }
+- { text: "yolov6", node: yolo-1 }
+- { text: "YOLOv7", node: yolo-1 }
+- { text: "YOLOv8", node: yolo-1 }
+- { text: "YOLOv9", node: yolo-1 }
+- { text: "YOLOv10", node: yolo-1 }
+- { text: "YOLOv11", node: yolo-1 }
+- { text: "YOLOv12", node: yolo-1 }
+- { text: "YOLO-NAS", node: yolo-1 }
+- { text: "YOLOX", node: none }  # v0.9: was yolo-1 (separate detector lines YOLOX/YOLOR removed from yolo-1)
+- { text: "YOLOR", node: none }  # v0.9: was yolo-1 (separate detector lines YOLOX/YOLOR removed from yolo-1)
+- { text: "DETR", node: detr-1 }
+- { text: "Deformable DETR", node: detr-1 }
+- { text: "RT-DETR", node: detr-1 }
+- { text: "DeepLab", node: none }  # v0.8: was node deeplab-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "DeepLabv3+", node: none }  # v0.8: was node deeplab-1; low-count classic line removed (owner decision 2026-10-17)
+
+# ------------------------------------------------------------------ GANs / VAEs
+- { text: "DCGAN", node: none }  # v0.7: was node dcgan-1; technique-named classic dropped (method D7)
+- { text: "dc-gan", node: none }  # v0.7: was node dcgan-1; technique-named classic dropped (method D7)
+- { text: "ProGAN", node: none }  # v0.8: was node progan-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "PGGAN", node: none }  # v0.8: was node progan-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "Progressive GAN", node: none }  # v0.8: was node progan-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "StyleGAN", node: stylegan-1 }
+- { text: "stylegan", node: stylegan-1 }
+- { text: "StyleGAN2", node: stylegan-1 }
+- { text: "StyleGAN2-ADA", node: stylegan-1 }
+- { text: "StyleGAN3", node: stylegan-1 }
+- { text: "StyleGAN-XL", node: stylegan-1 }
+- { text: "BigGAN", node: biggan-1 }
+- { text: "BigGAN-deep", node: biggan-1 }
+- { text: "pix2pix", node: pix2pix-1 }
+- { text: "CycleGAN", node: cyclegan-1 }
+- { text: "cycle-gan", node: cyclegan-1 }
+- { text: "StarGAN", node: none }  # v0.8: was node stargan-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "VQGAN", node: vqgan-1 }
+- { text: "VQ-GAN", node: vqgan-1 }
+- { text: "VQ-VAE", node: none }  # v0.7: was node vq-vae-1; technique-named classic dropped (method D7)
+- { text: "VQVAE", node: none }  # v0.7: was node vq-vae-1; technique-named classic dropped (method D7)
+- { text: "VQ-VAE-2", node: none }  # v0.7: was node vq-vae-1; technique-named classic dropped (method D7)
+- { text: "PixelCNN", node: none }  # v0.7: was node pixelcnn-1; technique-named classic dropped (method D7)
+- { text: "PixelCNN++", node: none }  # v0.7: was node pixelcnn-1; technique-named classic dropped (method D7)
+- { text: "PixelRNN", node: none }  # v0.7: was node pixelcnn-1; technique-named classic dropped (method D7)
+
+# ---------------------------------------------------------------- Speech / audio
+- { text: "WaveNet", node: wavenet-1 }
+- { text: "wavenet", node: wavenet-1 }
+- { text: "Tacotron", node: none }  # v0.8: was node tacotron-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "Tacotron 2", node: none }  # v0.8: was node tacotron-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "Tacotron2", node: none }  # v0.8: was node tacotron-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "DeepSpeech", node: deepspeech-1 }
+- { text: "Deep Speech 2", node: deepspeech-1 }
+- { text: "deepspeech2", node: deepspeech-1 }
+
+# ----------------------------------------------------- Word/sentence embeddings
+- { text: "word2vec", node: word2vec-1 }
+- { text: "Word2Vec", node: word2vec-1 }
+- { text: "doc2vec", node: none }  # v0.8: was node doc2vec-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "Paragraph Vectors", node: none }  # v0.8: was node doc2vec-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "GloVe", node: glove-1 }
+- { text: "glove", node: glove-1 }
+- { text: "GloVe embeddings", node: glove-1 }
+- { text: "fastText", node: fasttext-1 }
+- { text: "fasttext", node: fasttext-1 }
+- { text: "ELMo", node: elmo-1 }
+- { text: "elmo", node: elmo-1 }
+- { text: "Embeddings from Language Models", node: elmo-1 }
+- { text: "ULMFiT", node: none }  # v0.8: was node ulmfit-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "Universal Language Model Fine-tuning", node: none }  # v0.8: was node ulmfit-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "InferSent", node: none }  # v0.8: was node infersent-1; low-count classic line removed (owner decision 2026-10-17)
+- { text: "Universal Sentence Encoder", node: universal-sentence-encoder-1 }
+- { text: "Transformer-XL", node: transformer-xl-1 }
+- { text: "transformer xl", node: transformer-xl-1 }
+
+# ------------------------------------------------ OCR / character-level encoders
+- { text: "TrOCR", node: none }  # v0.7: was node trocr-1; OCR/translation models get no node (method D4/X4)
+- { text: "trocr", node: none }  # v0.7: was node trocr-1; OCR/translation models get no node (method D4/X4)
+- { text: "CANINE", node: canine-1 }
+- { text: "Canine", node: canine-1 }
+- { text: "LayoutLM", node: none }  # v0.7: was node layoutlm-1; OCR/translation models get no node (method D4/X4)
+- { text: "LayoutLMv2", node: none }  # v0.7: was node layoutlm-1; OCR/translation models get no node (method D4/X4)
+- { text: "LayoutLMv3", node: none }  # v0.7: was node layoutlm-1; OCR/translation models get no node (method D4/X4)
+
+# ------------------------------------------------------- DeepMind Alpha systems
+- { text: "AlphaGo", node: alphago }
+- { text: "alphago", node: alphago }
+- { text: "Alpha Go", node: alphago }
+- { text: "AlphaGo Zero", node: alphago-zero }
+- { text: "alphago-zero", node: alphago-zero }
+- { text: "AlphaZero", node: alphazero }
+- { text: "alpha-zero", node: alphazero }
+- { text: "MuZero", node: muzero }
+- { text: "muzero", node: muzero }
+- { text: "AlphaStar", node: alphastar }
+- { text: "AlphaFold", node: alphafold }
+- { text: "AlphaFold2", node: alphafold }
+- { text: "AlphaFold 3", node: alphafold }
+- { text: "AlphaCode", node: alphacode }
+- { text: "AlphaCode 2", node: alphacode }
+- { text: "AlphaTensor", node: alphatensor }
+- { text: "AlphaGeometry", node: alphageometry }
+- { text: "AlphaGeometry2", node: alphageometry }
+- { text: "AlphaProof", node: alphaproof }
+
+# -------------------------------------------------------------------- RL agents
+- { text: "DQN", node: dqn-1 }
+- { text: "dqn", node: dqn-1 }
+- { text: "Deep Q-Network", node: dqn-1 }
+- { text: "deep Q networks", node: dqn-1 }
+- { text: "Rainbow DQN", node: rainbow-1 }
+- { text: "Rainbow", node: rainbow-1 }
+- { text: "R2D2", node: r2d2-1 }
+- { text: "R2-D2", node: r2d2-1 }
+- { text: "Recurrent Replay Distributed DQN", node: r2d2-1 }
+- { text: "Agent57", node: agent57-1 }
+- { text: "agent-57", node: agent57-1 }
+- { text: "IMPALA", node: impala-1 }
+- { text: "Impala", node: impala-1 }
+- { text: "Dreamer", node: dreamer-1 }
+- { text: "DreamerV3", node: dreamer-1 }
+- { text: "Dreamer-v2", node: dreamer-1 }
+- { text: "DreamerV1", node: dreamer-1 }
+- { text: "EfficientZero", node: efficientzero-1 }
+- { text: "efficient-zero", node: efficientzero-1 }
+- { text: "Gato", node: gato-1 }
+- { text: "GATO", node: gato-1 }
+- { text: "CICERO", node: cicero-1 }
+- { text: "Cicero", node: cicero-1 }
+- { text: "OpenAI Five", node: openai-five-1 }
+- { text: "openai-five", node: openai-five-1 }
+- { text: "Neural Turing Machine", node: none }  # v0.7: was node ntm-1; technique-named classic dropped (method D7)
+- { text: "neural turing machines", node: none }  # v0.7: was node ntm-1; technique-named classic dropped (method D7)
+- { text: "NTM", node: none }  # v0.7: was node ntm-1; technique-named classic dropped (method D7)
+- { text: "Differentiable Neural Computer", node: none }  # v0.7: was node ntm-1; technique-named classic dropped (method D7)
+
+# ------------------------------------------- Negatives: candidates deliberately
+# dropped, parked, or never patterned (see ../non-models.md). Each of these would
+# have matched if the corresponding pattern had been kept.
+- { text: "fast text generation is cheap", node: none }   # `fast text` dropped from fastText
+- { text: "the apex predator", node: none }               # Ape-X dropped: `ape x` matches "apex"
+- { text: "we use the encoder outputs", node: none }       # USE abbreviation never patterned
+- { text: "WGAN-GP training", node: none }                 # WGAN parked as an objective
+- { text: "a U-Net backbone", node: none }                 # U-Net parked as an architecture
+- { text: "a seq2seq model", node: none }                  # seq2seq parked as an architecture
+- { text: "fully convolutional networks", node: none }     # FCN parked as an architecture
+- { text: "learns a world model", node: none }             # "world models" too generic to pattern
+- { text: "eat a donut", node: none }                      # Donut OCR parked (7% true positives)
+- { text: "Tesseract OCR engine", node: none }             # Tesseract parked: software, not a model
+- { text: "IBM Watson", node: none }                       # Watson parked: system, huge name collision
+- { text: "Deep Blue beat Kasparov", node: none }          # not a learned model
+- { text: "the Xception architecture", node: none }        # 2 corpus documents, below the bar
+- { text: "ArcFace loss", node: none }                     # parked: primarily a loss function
+- { text: "ESRGAN upscaler", node: none }                  # 1 corpus document, below the bar
+- { text: "AlphaDev sorting kernels", node: none }         # 0 corpus documents
+- { text: "trained with PPO", node: none }                 # algorithm, not a model
+- { text: "SAC and TD3 baselines", node: none }            # algorithms, not models
+- { text: "OpenPose keypoints", node: none }               # 2 corpus documents, below the bar
+
+# ------------------------------------------- Boundary-guard regressions (probed
+# 2026-08-01 against the compiler; each of these was checked to behave as stated).
+- { text: "ResNet-32", node: resnet-1 }            # unlisted depth still hits bare `resnet`
+- { text: "resnet-50-fpn", node: resnet-1 }
+- { text: "YOLO-v5s detector", node: yolo-1 }      # separator before the size suffix -> hits
+- { text: "yolov5-s", node: yolo-1 }
+- { text: "EfficientNet-B4 backbone", node: efficientnet-1 }
+- { text: "vitality", node: none }                 # `vit` guard: no match inside a word
+- { text: "invite", node: none }

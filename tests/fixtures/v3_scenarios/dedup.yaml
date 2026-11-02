@@ -1,0 +1,170 @@
+# v3 dedup decision table, mined from tests/test_dedup.py at v3 commit 9312c8c (T1.8, D40).
+# The v3 test ran Writer.mark_duplicate / clear_duplicate / repoint / mask against Postgres;
+# the file is retired with the DB. Consumer: T2.7a (gather: union, identity, overrides; M2),
+# which reproduces v3's merges as overrides/identity.yaml operations (minus automatic content
+# merge). No test reads this file yet.
+#
+# Conventions. Sources are listed oldest first (discovered_at strictly increasing in list
+# order; v3 stamped ages explicitly because PGlite's clock could tie). `ext: true` = carries an
+# external_id (wins the election lead over URL-only sources). `quality` = text_quality of the
+# latest snapshot (absent = no snapshot). Origins: `machine` = {origin: wf:dedupe@1,
+# method: content}; `human` = {origin: human:tomas}. `ops` run in order; `expect` holds after
+# the last op unless an op carries its own `expect`. `dof` = duplicate_of (null = representative).
+#
+# v3 election order (10-design §3): has external_id > better text_quality > earliest
+# discovered_at > lowest source_id. Groups are stars (path compression, no chains). A
+# human-set pointer is sticky: a machine op that would move it is flagged and aborts (no raise),
+# and is recorded in runs.detail.dedup_disagreements when a run_id rides along.
+
+rows:
+  - id: external_id_wins
+    v3_test: test_mark_duplicate_external_id_wins
+    sources: {A: {ext: true}, B: {ext: false}}
+    ops:
+      - {op: mark_duplicate, a: A, b: B, info: machine}
+    expect:
+      rep: A
+      changed: true
+      dof: {A: null, B: A}
+      duplicate_info_B: {method: content, origin: "wf:dedupe@1", has_at: true}
+
+  - id: path_compression
+    v3_test: test_mark_duplicate_path_compression
+    sources: {A: {ext: true}, B: {ext: false}, C: {ext: true}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: machine}
+      - {op: mark_duplicate, a: C, b: B, info: machine}   # B resolves to A; A older -> A wins
+    expect:
+      rep: A
+      dof: {A: null, B: A, C: A}
+
+  - id: merge_rep_with_satellites
+    v3_test: test_merge_rep_with_satellites
+    sources: {A: {ext: true}, B: {ext: false}, C: {ext: false}, D: {ext: false}, E: {ext: false}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: machine}
+      - {op: mark_duplicate, a: C, b: A, info: machine}
+      - {op: mark_duplicate, a: E, b: D, info: machine}
+      - {op: mark_duplicate, a: D, b: A, info: machine}   # whole group D moves to A
+    expect:
+      rep: A
+      dof: {A: null, B: A, C: A, D: A, E: A}
+      no_chains: true
+
+  - id: election_text_quality
+    v3_test: test_election_text_quality
+    sources: {A: {ext: true, quality: partial}, B: {ext: true, quality: complete}}
+    ops:
+      - {op: mark_duplicate, a: A, b: B, info: machine}
+    expect:
+      rep: B            # complete beats partial despite being younger
+      dof: {A: B, B: null}
+
+  - id: election_discovered_at
+    v3_test: test_election_discovered_at
+    sources: {A: {ext: true}, B: {ext: true}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: machine}
+    expect:
+      rep: A
+      dof: {A: null, B: A}
+
+  - id: election_id_tiebreak
+    v3_test: test_election_id_tiebreak
+    sources: {I1: {ext: true, discovered_at: "2026-01-01T00:00:00Z"}, I2: {ext: true, discovered_at: "2026-01-01T00:00:00Z"}}
+    ops:
+      - {op: elect, members: [I1, I2]}
+    expect:
+      rep: lowest_source_id
+
+  - id: humans_stick
+    v3_test: test_humans_stick_flag_paths
+    sources: {C: {ext: true}, A: {ext: true}, B: {ext: true}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: human,
+         expect: {dof: {B: A}, origin_B: "human:tomas"}}
+      - {op: mark_duplicate, a: B, b: C, info: machine, with_run: true,
+         expect: {flagged: true, changed: false, dof: {B: A, C: null}, run_detail_disagreement_for: B}}
+      - {op: clear_duplicate, a: B, info: machine,
+         expect: {flagged: true, changed: false, dof: {B: A}}}
+      - {op: clear_duplicate, a: B, info: human,
+         expect: {changed: true, dof: {B: null}}}
+
+  - id: machine_confirm_preserves_human_origin
+    v3_test: test_machine_confirm_refreshes_preserving_human_origin
+    sources: {A: {ext: true}, B: {ext: true}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: human}
+      - {op: mark_duplicate, a: B, b: A, info: machine, extra: {confidence: 0.9}}
+    expect:
+      rep: A
+      changed: false
+      duplicate_info_B: {origin: "human:tomas", method: content, at: refreshed}
+
+  - id: repoint_promote_satellite
+    v3_test: test_repoint_promote_satellite
+    sources: {A: {ext: true}, B: {ext: false}, C: {ext: false}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: machine}
+      - {op: mark_duplicate, a: C, b: A, info: machine}
+      - {op: repoint, old_rep: A, new_rep: B, info: human}
+    expect:
+      rep: B
+      changed: true
+      dof: {A: B, B: null, C: B}
+
+  - id: repoint_rejects_non_rep_old_rep
+    v3_test: test_repoint_rejects_non_rep_old_rep
+    sources: {A: {ext: true}, B: {ext: false}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: machine}
+      - {op: repoint, old_rep: B, new_rep: A, info: human}
+    expect:
+      raises: ValidationFailed   # old_rep must currently be a representative
+
+  - id: repoint_rejects_third_group
+    v3_test: test_repoint_rejects_new_rep_from_third_group
+    sources: {A: {ext: true}, B: {ext: false}, D: {ext: true}, E: {ext: false}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: machine}
+      - {op: mark_duplicate, a: E, b: D, info: machine}
+      - {op: repoint, old_rep: A, new_rep: E, info: human}
+    expect:
+      raises: ValidationFailed   # new_rep must be a rep or a satellite of old_rep
+
+  - id: repoint_machine_over_human_stuck
+    v3_test: test_repoint_machine_over_human_stuck_aborts
+    sources: {A: {ext: true}, B: {ext: false}, C: {ext: false}}
+    ops:
+      - {op: mark_duplicate, a: B, b: A, info: human}
+      - {op: mark_duplicate, a: C, b: A, info: machine}
+      - {op: repoint, old_rep: A, new_rep: C, info: machine}
+    expect:
+      flagged: true
+      changed: false
+      dof: {A: null, B: A, C: A}
+
+  - id: clear_returns_satellite_to_corpus
+    v3_test: test_clear_returns_satellite_to_corpus
+    sources: {A: {ext: true, quality: complete}, S: {ext: true, quality: complete}}
+    ops:
+      - {op: mark_duplicate, a: S, b: A, info: machine,
+         expect: {dof: {S: A}, in_corpus: {S: false}}}
+      - {op: clear_duplicate, a: S, info: human}
+    expect:
+      dof: {S: null}
+      in_corpus: {S: true}
+
+  - id: mask_reelects_representative
+    v3_test: test_mask_reelects_representative
+    sources: {R: {ext: true, quality: complete}, S1: {ext: true, quality: complete}, S2: {ext: true, quality: complete}}
+    ops:
+      - {op: mark_duplicate, a: S1, b: R, info: machine}
+      - {op: mark_duplicate, a: S2, b: R, info: machine}
+      - {op: mask, a: R, reason: off-topic, origin: "human:tomas",
+         expect: {masked: {R: true}, dof: {R: S1, S1: null, S2: S1}}}
+      - {op: unmask, a: R, origin: "human:tomas"}
+    expect:
+      masked: {R: false}
+      live: {R: true}
+      dof: {R: S1, S1: null, S2: S1}   # re-election is durable across unmask

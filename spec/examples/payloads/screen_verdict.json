@@ -1,0 +1,6 @@
+{
+  "verdict": "relevant",
+  "rationale": "First-party model card describing the alignment methods used for a frontier release.",
+  "buckets": ["lab_safety_doc", "release_news"],
+  "grounding_idx": [0]
+}

@@ -1,0 +1,28 @@
+# TEST-ONLY plan of the build scenario (tests/test_scenario_m5.py, T5.1a): the stand-in stages of
+# tests/synth/stages/ (STACK_WORKFLOWS_ROOT) over the synthetic world (tests/synth/world.py).
+# max_partials 2 makes the second build compact at its start; screen's max_rows leaves one row
+# not_attempted in the first build; acquire is scope_complete from its second consecutive run.
+plan: synth-m5
+schema_version: 2
+series: main
+gate:
+  screen:
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+versions:
+  compaction: {max_partials: 2, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: true
+recovery: {dead_run_charge: false}
+stages:
+  - {stage: collect.arxiv, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: gather}
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence]}
+  - {stage: acquire, out: {kind: part}, repeat: {until: scope_complete, max_runs: 2}, options: {complete_after: 2}}
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], options: {max_rows: 6}}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents]

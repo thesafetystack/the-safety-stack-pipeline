@@ -1,0 +1,772 @@
+# Fixtures for _build/05-european-misc.yaml — every name-variant string from the
+# MD entries (verbatim, "(bedrock)"-style annotations stripped) plus canonical
+# display names. Parenthesized display names ("Mistral Small (2402)", "Jamba
+# (v0.1)", "Command (original)", "Sonar (2025)", "Leanstral (2603)") are replaced
+# by their unparenthesized forms — "(" is not a separator char, so the literal
+# display string cannot match its own version pattern by design.
+# Rolling API aliases (-latest, jamba-large/-mini) map to their line/family per
+# schema group-level attribution. Bare brand words map per the audit's
+# typical-reading table (family/line), not to first models.
+# Character AI strings (character ai, character.ai, c.ai) have no node — skipped.
+
+# ---- Mistral family
+- { text: "Mistral", node: mistral }
+- { text: "mistral", node: mistral }
+- { text: "mistral ai", node: mistral }
+- { text: "mistralai", node: mistral }
+
+# Mistral 7B
+- { text: "Mistral 7B", node: mistral-7b }
+- { text: "mistral 7b", node: mistral-7b }
+- { text: "mistral-7b", node: mistral-7b }
+- { text: "mistral-tiny", node: mistral-7b }   # Dec-2023 La Plateforme alias for 7B
+- { text: "mistral-7b-v0.1", node: mistral-7b }
+- { text: "mistral-7b-v0.2", node: mistral-7b }
+- { text: "mistral-7b-v0.3", node: mistral-7b }
+- { text: "mistral-7b-instruct", node: mistral-7b }
+- { text: "mistralai/mistral-7b-instruct-v0.2", node: mistral-7b }
+- { text: "mistral.mistral-7b-instruct-v0:2", node: mistral-7b }
+- { text: "open-mistral-7b", node: mistral-7b }
+
+# Mixtral
+- { text: "Mixtral", node: mixtral }
+- { text: "mixtral", node: mixtral }
+- { text: "mixtral of experts", node: mixtral }
+- { text: "Mixtral 8x7B", node: mixtral-8x7b }
+- { text: "mixtral 8x7b", node: mixtral-8x7b }
+- { text: "mixtral-8x7b", node: mixtral-8x7b }
+- { text: "mixtral-8x7b-instruct-v0.1", node: mixtral-8x7b }
+- { text: "mistralai/mixtral-8x7b-instruct-v0.1", node: mixtral-8x7b }
+- { text: "mistral.mixtral-8x7b-instruct-v0:1", node: mixtral-8x7b }
+- { text: "open-mixtral-8x7b", node: mixtral-8x7b }
+- { text: "Mixtral 8x22B", node: mixtral-8x22b }
+- { text: "mixtral 8x22b", node: mixtral-8x22b }
+- { text: "mixtral-8x22b", node: mixtral-8x22b }
+- { text: "mixtral-8x22b-instruct-v0.1", node: mixtral-8x22b }
+- { text: "open-mixtral-8x22b", node: mixtral-8x22b }
+# Bare MoE-size forms (weak): texts routinely drop the brand on the second mention,
+# and "Mistral 8x7B" (a very common mis-write of Mixtral) is only reachable this way.
+- { text: "8x7b", node: mixtral-8x7b }
+- { text: "the 8x22B model", node: mixtral-8x22b }
+- { text: "we ran Mixtral 8x7B and 8x22B", node: mixtral-8x22b }
+- { text: "Mistral 8x7B", node: mixtral-8x7b }
+- { text: "the model is 8x faster", node: none }
+# Unicode multiplication sign — used in papers/press alongside the ASCII "x" form
+- { text: "Mixtral 8×7B", node: mixtral-8x7b }
+- { text: "mixtral-8×22b", node: mixtral-8x22b }
+# Le Chat is Mistral's product, not a model — must never be a pattern
+- { text: "le chat", node: none }
+- { text: "Mistral's Le Chat", not_node: mistral-large-3 }
+
+# Mistral Small line
+- { text: "Mistral Small", node: mistral-small }
+- { text: "mistral small", node: mistral-small }
+- { text: "mistral-small", node: mistral-small }
+- { text: "mistral-small-latest", node: mistral-small }
+- { text: "Mistral Small 2402", node: mistral-small-2402 }
+- { text: "mistral-small-2402", node: mistral-small-2402 }
+- { text: "mistral.mistral-small-2402-v1:0", node: mistral-small-2402 }
+- { text: "Mistral Small 2", node: mistral-small-2 }
+- { text: "mistral small 2", node: mistral-small-2 }
+- { text: "mistral-small-2409", node: mistral-small-2 }
+- { text: "mistral small 22b", node: mistral-small-2 }
+- { text: "mistral-small-instruct-2409", node: mistral-small-2 }
+- { text: "Mistral Small 3", node: mistral-small-3 }
+- { text: "mistral small 3", node: mistral-small-3 }
+- { text: "mistral-small-3", node: mistral-small-3 }
+- { text: "mistral-small-2501", node: mistral-small-3 }
+- { text: "mistral-small-24b-instruct-2501", node: mistral-small }  # v0.9: was mistral-small-3 (mistral small 24b moved to the line: Small 3, 3.1, 3.2 are all 24B)
+- { text: "mistral small 24b", node: mistral-small }  # v0.9: was mistral-small-3 (mistral small 24b moved to the line: Small 3, 3.1, 3.2 are all 24B)
+- { text: "Mistral Small 3.1", node: mistral-small-3.1 }
+- { text: "mistral small 3.1", node: mistral-small-3.1 }
+- { text: "mistral-small-3.1", node: mistral-small-3.1 }
+- { text: "mistral-small-2503", node: mistral-small-3.1 }
+- { text: "mistral-small-3.1-24b-instruct-2503", node: mistral-small-3.1 }
+- { text: "Mistral Small 3.2", node: mistral-small-3.2 }
+- { text: "mistral small 3.2", node: mistral-small-3.2 }
+- { text: "mistral-small-3.2", node: mistral-small-3.2 }
+- { text: "mistral-small-2506", node: mistral-small-3.2 }
+- { text: "mistral-small-3.2-24b-instruct-2506", node: mistral-small-3.2 }
+- { text: "Mistral Small 4", node: mistral-small-4 }
+- { text: "mistral small 4", node: mistral-small-4 }
+- { text: "mistral-small-4", node: mistral-small-4 }
+- { text: "small 4", node: mistral-small-4 }
+- { text: "mistral-small-2603", node: mistral-small-4 }
+
+# Mistral Medium line
+- { text: "Mistral Medium", node: mistral-medium }
+- { text: "mistral medium", node: mistral-medium }
+- { text: "mistral-medium", node: mistral-medium }
+- { text: "mistral-medium-latest", node: mistral-medium }
+- { text: "Mistral Medium 2312", node: mistral-medium-2312 }
+- { text: "mistral-medium-2312", node: mistral-medium-2312 }
+- { text: "Mistral Medium 3", node: mistral-medium-3 }
+- { text: "mistral medium 3", node: mistral-medium-3 }
+- { text: "mistral-medium-3", node: mistral-medium-3 }
+- { text: "mistral-medium-2505", node: mistral-medium-3 }
+- { text: "Mistral Medium 3.5", node: mistral-medium-3.5 }
+- { text: "mistral medium 3.5", node: mistral-medium-3.5 }
+- { text: "mistral-medium-3.5", node: mistral-medium-3.5 }
+- { text: "medium 3.5", node: mistral-medium-3.5 }   # now weak (cf. "medium 3.5 mm")
+- { text: "the medium is the message", node: none }
+- { text: "mistral-medium-3-5", node: mistral-medium-3.5 }
+
+# Mistral Large line
+- { text: "Mistral Large", node: mistral-large }
+- { text: "mistral large", node: mistral-large }
+- { text: "mistral-large", node: mistral-large }
+- { text: "Mistral Large 2402", node: mistral-large-2402 }
+- { text: "mistral-large-2402", node: mistral-large-2402 }
+- { text: "mistral.mistral-large-2402-v1:0", node: mistral-large-2402 }
+- { text: "Mistral Large 2", node: mistral-large-2 }
+- { text: "mistral large 2", node: mistral-large-2 }
+- { text: "mistral-large-2", node: mistral-large-2 }
+- { text: "mistral-large-2407", node: mistral-large-2 }
+- { text: "mistral.mistral-large-2407-v1:0", node: mistral-large-2 }
+- { text: "mistral-large-instruct-2407", node: mistral-large-2 }
+- { text: "Mistral Large 24.11", node: mistral-large-2 }
+- { text: "mistral-large-2411", node: mistral-large-2 }
+- { text: "Mistral Large 3", node: mistral-large-3 }
+- { text: "mistral large 3", node: mistral-large-3 }
+- { text: "mistral-large-3", node: mistral-large-3 }
+- { text: "mistral-large-3-25-12", node: mistral-large-3 }
+- { text: "large 3", node: mistral-large-3 }
+- { text: "mistral 3", node: mistral-large-3 }
+
+# Ministral
+- { text: "Ministral", node: ministral }
+- { text: "ministral", node: ministral }
+- { text: "les ministraux", node: ministral }
+- { text: "Ministral 3B", node: ministral-3b }
+- { text: "ministral 3b", node: ministral-3b }
+- { text: "ministral-3b-2410", node: ministral-3b }
+- { text: "Ministral 8B", node: ministral-8b }
+- { text: "ministral 8b", node: ministral-8b }
+- { text: "ministral-8b-2410", node: ministral-8b }
+- { text: "ministral-8b-instruct-2410", node: ministral-8b }
+- { text: "Ministral 3", node: ministral-3 }
+- { text: "ministral 3", node: ministral-3 }
+- { text: "Ministral 3 3B", node: ministral-3-3b }
+- { text: "ministral 3 3b", node: ministral-3-3b }
+- { text: "Ministral 3 8B", node: ministral-3-8b }
+- { text: "ministral 3 8b", node: ministral-3-8b }
+- { text: "Ministral 3 14B", node: ministral-3-14b }
+- { text: "ministral 3 14b", node: ministral-3-14b }
+- { text: "ministral-3-14b", node: ministral-3-14b }
+
+# Mistral NeMo
+- { text: "Mistral NeMo", node: mistral-nemo }
+- { text: "mistral nemo", node: mistral-nemo }
+- { text: "mistral-nemo", node: mistral-nemo }
+- { text: "mistral-nemo-instruct-2407", node: mistral-nemo }
+- { text: "open-mistral-nemo", node: mistral-nemo }
+- { text: "nemo 12b", node: mistral-nemo }
+
+# Codestral
+- { text: "Codestral", node: codestral }
+- { text: "codestral", node: codestral }
+- { text: "codestral-latest", node: codestral }
+- { text: "Codestral 22B", node: codestral-22b }
+- { text: "codestral-22b", node: codestral-22b }
+- { text: "codestral-2405", node: codestral-22b }
+- { text: "Codestral Mamba", node: codestral-mamba }
+- { text: "codestral mamba", node: codestral-mamba }
+- { text: "codestral-mamba", node: codestral-mamba }
+- { text: "mamba-codestral-7b", node: codestral-mamba }
+- { text: "codestral-mamba-2407", node: codestral-mamba }
+- { text: "Codestral 25.01", node: codestral-25.01 }
+- { text: "codestral 25.01", node: codestral-25.01 }
+- { text: "codestral-2501", node: codestral-25.01 }
+- { text: "codestral-25.01", node: codestral-25.01 }
+
+# Pixtral
+- { text: "Pixtral", node: pixtral }
+- { text: "pixtral", node: pixtral }
+- { text: "Pixtral 12B", node: pixtral-12b }
+- { text: "pixtral 12b", node: pixtral-12b }
+- { text: "pixtral-12b", node: pixtral-12b }
+- { text: "pixtral-12b-2409", node: pixtral-12b }
+- { text: "Pixtral Large", node: pixtral-large }
+- { text: "pixtral large", node: pixtral-large }
+- { text: "pixtral-large", node: pixtral-large }
+- { text: "pixtral-large-2411", node: pixtral-large }
+- { text: "pixtral-large-instruct-2411", node: pixtral-large }
+
+# Magistral
+- { text: "Magistral", node: magistral }
+- { text: "magistral", node: magistral }
+- { text: "Magistral Small", node: magistral-small }
+- { text: "magistral small", node: magistral-small }
+- { text: "magistral-small", node: magistral-small }
+- { text: "magistral-small-2506", node: magistral-small }
+- { text: "magistral-small-2507", node: magistral-small }
+- { text: "magistral-small-2509", node: magistral-small }
+- { text: "magistral small 1.2", node: magistral-small }
+- { text: "Magistral Medium", node: magistral-medium }
+- { text: "magistral medium", node: magistral-medium }
+- { text: "magistral-medium", node: magistral-medium }
+- { text: "magistral-medium-2506", node: magistral-medium }
+- { text: "magistral-medium-2507", node: magistral-medium }
+- { text: "magistral-medium-2509", node: magistral-medium }
+
+# Devstral
+- { text: "Devstral", node: devstral }
+- { text: "devstral", node: devstral }
+- { text: "Devstral Small", node: devstral-small }
+- { text: "devstral small", node: devstral-small }
+- { text: "devstral-small", node: devstral-small }
+- { text: "devstral-small-2505", node: devstral-small }
+- { text: "devstral-small-2507", node: devstral-small }
+- { text: "Devstral 2", node: devstral-2 }
+- { text: "devstral 2", node: devstral-2 }
+- { text: "devstral-2", node: devstral-2 }
+- { text: "devstral small 2", node: devstral-2 }
+- { text: "devstral-small-2", node: devstral-2 }
+
+# Voxtral
+- { text: "Voxtral", node: voxtral }
+- { text: "voxtral", node: voxtral }
+- { text: "Voxtral Small", node: voxtral-small }
+- { text: "voxtral small", node: voxtral-small }
+- { text: "voxtral-small-24b-2507", node: voxtral-small }
+- { text: "Voxtral Mini", node: voxtral-mini }
+- { text: "voxtral mini", node: voxtral-mini }
+- { text: "voxtral-mini-3b-2507", node: voxtral-mini }
+- { text: "voxtral mini transcribe", node: voxtral-mini }
+
+# Saba
+- { text: "Mistral Saba", node: mistral-saba }
+- { text: "mistral saba", node: mistral-saba }
+- { text: "mistral-saba", node: mistral-saba }
+- { text: "mistral-saba-2502", node: mistral-saba }
+
+# Leanstral
+- { text: "Leanstral", node: leanstral }
+- { text: "leanstral", node: leanstral }
+- { text: "mistral leanstral", node: leanstral }
+- { text: "Leanstral 2603", node: leanstral-2603 }
+- { text: "leanstral 2603", node: leanstral-2603 }
+- { text: "labs-leanstral-2603", node: leanstral-2603 }
+- { text: "Leanstral 1.5", node: leanstral-1.5 }
+- { text: "leanstral 1.5", node: leanstral-1.5 }
+- { text: "leanstral-1-5", node: leanstral-1.5 }
+- { text: "labs-leanstral-1-5", node: leanstral-1.5 }
+- { text: "leanstral-1.5", node: leanstral-1.5 }
+# "mistral leanstral" was removed from the group (redundant with bare "leanstral")
+# because it out-spanned the versioned model patterns.
+- { text: "mistral leanstral 2603", node: leanstral-2603 }
+- { text: "mistral leanstral 1.5", node: leanstral-1.5 }
+
+# ---- Cohere Command
+- { text: "Cohere Command", node: command }
+- { text: "cohere command", node: command }
+- { text: "command", node: none }  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- { text: "Command Light", node: command-original }
+- { text: "command-light", node: command-original }
+- { text: "command-nightly", node: command-original }
+- { text: "cohere.command-text-v14", node: command-original }
+- { text: "cohere.command-light-text-v14", node: command-original }
+- { text: "command r series", node: command-r-line }
+- { text: "Command R", node: command-r }
+- { text: "command r", node: command-r }
+- { text: "command-r", node: command-r }
+- { text: "command-r-03-2024", node: command-r }
+- { text: "command-r-08-2024", node: command-r }
+- { text: "c4ai-command-r-v01", node: command-r }
+- { text: "cohere.command-r-v1:0", node: command-r }
+- { text: "Command R+", node: command-r-plus }
+- { text: "command r+", node: command-r-plus }
+- { text: "command r plus", node: command-r-plus }
+- { text: "command-r-plus", node: command-r-plus }
+- { text: "command-r-plus-04-2024", node: command-r-plus }
+- { text: "command-r-plus-08-2024", node: command-r-plus }
+- { text: "c4ai-command-r-plus", node: command-r-plus }
+- { text: "cohere.command-r-plus-v1:0", node: command-r-plus }
+- { text: "Command R7B", node: command-r7b }
+- { text: "command r7b", node: command-r7b }
+- { text: "command-r7b", node: command-r7b }
+- { text: "command-r7b-12-2024", node: command-r7b }
+- { text: "c4ai-command-r7b-12-2024", node: command-r7b }
+- { text: "Command A", node: command-a }
+- { text: "command a", node: command-a }
+- { text: "command-a", node: command-a }
+- { text: "command-a-03-2025", node: command-a }
+- { text: "c4ai-command-a-03-2025", node: command-a }
+- { text: "Command A Reasoning", node: command-a-reasoning }
+- { text: "command a reasoning", node: command-a-reasoning }
+- { text: "command-a-reasoning", node: command-a-reasoning }
+- { text: "command-a-reasoning-08-2025", node: command-a-reasoning }
+- { text: "Command A Vision", node: command-a-vision }
+- { text: "command a vision", node: command-a-vision }
+- { text: "command-a-vision", node: command-a-vision }
+- { text: "command-a-vision-07-2025", node: command-a-vision }
+- { text: "Command A Translate", node: command-a-line }  # v0.7: was node command-a-translate; OCR/translation models get no node (method D4/X4)
+- { text: "command a translate", node: command-a-line }  # v0.7: was node command-a-translate; OCR/translation models get no node (method D4/X4)
+- { text: "command-a-translate", node: command-a-line }  # v0.7: was node command-a-translate; OCR/translation models get no node (method D4/X4)
+- { text: "command-a-translate-08-2025", node: command-a-line }  # v0.7: was node command-a-translate; OCR/translation models get no node (method D4/X4)
+- { text: "Command A+", node: command-a-plus }
+- { text: "command a+", node: command-a-plus }
+- { text: "command a plus", node: command-a-plus }
+- { text: "command-a-plus", node: command-a-plus }
+- { text: "command-a-plus-05-2026", node: command-a-plus }
+# Vendor-qualified forms: "cohere command" (14 chars) out-spanned the shorter model
+# patterns, so every model it could shadow now carries the qualified form too.
+- { text: "Cohere Command Light", node: command-original }
+- { text: "cohere command r series", node: command-r-line }
+- { text: "Cohere Command R+", node: command-r-plus }
+- { text: "cohere command a+", node: command-a-plus }
+- { text: "Cohere Command A Plus", node: command-a-plus }
+- { text: "Cohere Command A Vision", node: command-a-vision }
+- { text: "cohere command a reasoning", node: command-a-reasoning }
+- { text: "cohere command a translate", node: command-a-line }  # v0.7: was node command-a-translate; OCR/translation models get no node (method D4/X4)
+
+# ---- Aya
+- { text: "Aya", node: aya }
+- { text: "aya", node: aya }
+- { text: "cohere aya", node: aya }
+- { text: "c4ai aya", node: aya }
+- { text: "Aya 101", node: aya-101 }
+- { text: "aya 101", node: aya-101 }
+- { text: "aya-101", node: aya-101 }
+# "aya model" was DROPPED from aya-101 (it came from the paper title "Aya Model",
+# but in prose "the Aya model" is generic far more often) — it now degrades to the
+# family, which is the correct reading for the generic phrase.
+- { text: "the Aya model", node: aya }
+- { text: "aya model", not_node: aya-101 }
+- { text: "Aya 23", node: aya-23 }
+- { text: "aya 23", node: aya-23 }
+- { text: "aya-23", node: aya-23 }
+- { text: "Aya 23 8B", node: aya-23-8b }
+- { text: "aya-23-8b", node: aya-23-8b }
+- { text: "Aya 23 35B", node: aya-23-35b }
+- { text: "aya-23-35b", node: aya-23-35b }
+- { text: "Aya Expanse", node: aya-expanse }
+- { text: "aya expanse", node: aya-expanse }
+- { text: "aya-expanse", node: aya-expanse }
+- { text: "Aya Expanse 8B", node: aya-expanse-8b }
+- { text: "aya-expanse-8b", node: aya-expanse-8b }
+- { text: "c4ai-aya-expanse-8b", node: aya-expanse-8b }
+- { text: "Aya Expanse 32B", node: aya-expanse-32b }
+- { text: "aya-expanse-32b", node: aya-expanse-32b }
+- { text: "Aya Vision", node: aya-vision }
+- { text: "aya vision", node: aya-vision }
+- { text: "aya-vision", node: aya-vision }
+- { text: "Aya Vision 8B", node: aya-vision-8b }
+- { text: "aya-vision-8b", node: aya-vision-8b }
+- { text: "Aya Vision 32B", node: aya-vision-32b }
+- { text: "aya-vision-32b", node: aya-vision-32b }
+- { text: "c4ai-aya-vision-32b", node: aya-vision-32b }
+# "cohere aya"/"c4ai aya" were removed from the family (redundant with bare "aya");
+# they out-spanned the short model patterns.
+- { text: "Cohere Aya Vision 32B", node: aya-vision-32b }
+- { text: "cohere aya 101", node: aya-101 }
+- { text: "c4ai aya 23 8b", node: aya-23-8b }
+- { text: "Tiny Aya", node: tiny-aya }
+- { text: "tiny aya", node: tiny-aya }
+- { text: "tiny-aya", node: tiny-aya }
+- { text: "tinyaya", node: tiny-aya }
+- { text: "tiny-aya-global", node: tiny-aya }
+- { text: "tiny-aya-fire", node: tiny-aya }
+- { text: "tiny-aya-earth", node: tiny-aya }
+- { text: "tiny-aya-water", node: tiny-aya }
+
+# ---- AI21 / Jurassic / Jamba
+- { text: "AI21", node: ai21 }
+- { text: "ai21", node: ai21 }
+- { text: "ai21 labs", node: ai21 }
+- { text: "Jurassic-1", node: jurassic-1 }
+- { text: "jurassic-1", node: jurassic-1 }
+- { text: "jurassic 1", node: jurassic-1 }
+- { text: "j1", node: jurassic-1 }
+- { text: "j1-jumbo", node: jurassic-1 }
+- { text: "j1-grande", node: jurassic-1 }
+- { text: "j1-large", node: jurassic-1 }
+- { text: "Jurassic-2", node: jurassic-2 }
+- { text: "jurassic-2", node: jurassic-2 }
+- { text: "j2", node: jurassic-2 }
+- { text: "j2-ultra", node: jurassic-2 }
+- { text: "j2-mid", node: jurassic-2 }
+- { text: "j2-light", node: jurassic-2 }
+- { text: "ai21.j2-ultra-v1", node: jurassic-2 }
+- { text: "ai21.j2-mid-v1", node: jurassic-2 }
+- { text: "Jamba", node: jamba }
+- { text: "jamba", node: jamba }
+- { text: "jamba-large", node: jamba }
+- { text: "jamba-mini", node: jamba }
+- { text: "Jamba v0.1", node: jamba-v0.1 }
+- { text: "jamba-v0.1", node: jamba-v0.1 }
+- { text: "jamba-instruct", node: jamba-v0.1 }
+- { text: "ai21.jamba-instruct-v1:0", node: jamba-v0.1 }
+- { text: "Jamba 1.5", node: jamba-1.5 }
+- { text: "jamba 1.5", node: jamba-1.5 }
+- { text: "Jamba 1.5 Mini", node: jamba-1.5-mini }
+- { text: "jamba-1.5-mini", node: jamba-1.5-mini }
+- { text: "jamba-mini-1.5-2024-08", node: jamba-1.5-mini }
+- { text: "ai21-jamba-1.5-mini", node: jamba-1.5-mini }
+- { text: "ai21.jamba-1-5-mini-v1:0", node: jamba-1.5-mini }
+- { text: "Jamba 1.5 Large", node: jamba-1.5-large }
+- { text: "jamba-1.5-large", node: jamba-1.5-large }
+- { text: "jamba-large-1.5-2024-08", node: jamba-1.5-large }
+- { text: "ai21-jamba-1.5-large", node: jamba-1.5-large }
+- { text: "ai21.jamba-1-5-large-v1:0", node: jamba-1.5-large }
+- { text: "Jamba 1.6", node: jamba-1.6 }
+- { text: "jamba 1.6", node: jamba-1.6 }
+- { text: "jamba-1.6", node: jamba-1.6 }
+- { text: "Jamba 1.6 Mini", node: jamba-1.6-mini }
+- { text: "jamba-mini-1.6", node: jamba-1.6-mini }
+- { text: "jamba-mini-1.6-2025-03", node: jamba-1.6-mini }
+- { text: "Jamba 1.6 Large", node: jamba-1.6-large }
+- { text: "jamba-large-1.6", node: jamba-1.6-large }
+- { text: "jamba-large-1.6-2025-03", node: jamba-1.6-large }
+- { text: "Jamba 1.7", node: jamba-1.7 }
+- { text: "jamba 1.7", node: jamba-1.7 }
+- { text: "jamba-1.7", node: jamba-1.7 }
+- { text: "Jamba 1.7 Mini", node: jamba-1.7-mini }
+- { text: "jamba-mini-1.7", node: jamba-1.7-mini }
+- { text: "jamba-mini-1.7-2025-08", node: jamba-1.7-mini }
+- { text: "Jamba 1.7 Large", node: jamba-1.7-large }
+- { text: "jamba-large-1.7", node: jamba-1.7-large }
+- { text: "jamba-large-1.7-2025-07", node: jamba-1.7-large }
+- { text: "Jamba Reasoning 3B", node: jamba-reasoning-3b }
+- { text: "jamba reasoning 3b", node: jamba-reasoning-3b }
+- { text: "jamba-reasoning-3b", node: jamba-reasoning-3b }
+- { text: "Jamba Reasoning", node: jamba-reasoning-3b }
+- { text: "Jamba2", node: jamba2 }
+- { text: "jamba2", node: jamba2 }
+- { text: "jamba 2", node: jamba2 }
+- { text: "Jamba2 3B", node: jamba2-3b }
+- { text: "jamba2-3b", node: jamba2-3b }
+- { text: "jamba 3b", node: jamba2-3b }
+- { text: "Jamba2 Mini", node: jamba2-mini }
+- { text: "jamba2-mini", node: jamba2-mini }
+- { text: "jamba2 mini", node: jamba2-mini }
+- { text: "jamba mini 2", node: jamba2-mini }
+- { text: "jamba-mini-2-2026-01", node: jamba2-mini }
+
+# ---- Falcon (TII)
+- { text: "Falcon", node: falcon }
+- { text: "falcon", node: falcon }
+- { text: "tii falcon", node: falcon }
+# "tii falcon" was removed as a pattern (bare "falcon" already covers it, and it
+# out-spanned falcon 7b / 40b / 2 / 3 / h1 / h1r)
+- { text: "TII Falcon 40B", node: falcon-40b }
+- { text: "TII Falcon-7B", node: falcon-7b }
+- { text: "tii falcon h1 34b", node: falcon-h1-34b }
+- { text: "falcon llm", node: falcon }
+- { text: "Falcon 7B", node: falcon-7b }
+- { text: "falcon 7b", node: falcon-7b }
+- { text: "falcon-7b", node: falcon-7b }
+- { text: "falcon-7b-instruct", node: falcon-7b }
+- { text: "Falcon 40B", node: falcon-40b }
+- { text: "falcon 40b", node: falcon-40b }
+- { text: "falcon-40b", node: falcon-40b }
+- { text: "falcon-40b-instruct", node: falcon-40b }
+- { text: "tiiuae/falcon-40b", node: falcon-40b }
+- { text: "Falcon 180B", node: falcon-180b }
+- { text: "falcon 180b", node: falcon-180b }
+- { text: "falcon-180b", node: falcon-180b }
+- { text: "falcon-180b-chat", node: falcon-180b }
+- { text: "tiiuae/falcon-180b", node: falcon-180b }
+- { text: "Falcon 2 11B", node: falcon-2-11b }
+- { text: "falcon 2", node: falcon-2-11b }
+- { text: "falcon 2 11b", node: falcon-2-11b }
+- { text: "falcon-11b", node: falcon-2-11b }
+- { text: "falcon2-11b", node: falcon-2-11b }
+- { text: "falcon 2 11b vlm", node: falcon-2-11b-vlm }  # v0.9: was falcon-2-11b (the VLM variant has its own node)
+- { text: "Falcon Mamba 7B", node: falcon-mamba-7b }
+- { text: "falcon mamba", node: falcon-mamba-7b }
+- { text: "falcon-mamba-7b", node: falcon-mamba-7b }
+- { text: "falconmamba", node: falcon-mamba-7b }
+- { text: "Falcon 3", node: falcon-3 }
+- { text: "falcon 3", node: falcon-3 }
+- { text: "falcon3", node: falcon-3 }
+- { text: "falcon3-mamba-7b", node: falcon-3 }
+- { text: "Falcon 3 1B", node: falcon-3-1b }
+- { text: "falcon3-1b", node: falcon-3-1b }
+- { text: "Falcon 3 3B", node: falcon-3-3b }
+- { text: "falcon3-3b", node: falcon-3-3b }
+- { text: "Falcon 3 7B", node: falcon-3-7b }
+- { text: "falcon3-7b", node: falcon-3-7b }
+- { text: "Falcon 3 10B", node: falcon-3-10b }
+- { text: "falcon3-10b", node: falcon-3-10b }
+- { text: "Falcon-H1", node: falcon-h1 }
+- { text: "falcon h1", node: falcon-h1 }
+- { text: "falcon-h1", node: falcon-h1 }
+- { text: "Falcon-H1 0.5B", node: falcon-h1-0.5b }
+- { text: "falcon-h1-0.5b", node: falcon-h1-0.5b }
+- { text: "Falcon-H1 1.5B", node: falcon-h1-1.5b }
+- { text: "falcon-h1-1.5b", node: falcon-h1-1.5b }
+- { text: "Falcon-H1 3B", node: falcon-h1-3b }
+- { text: "falcon-h1-3b", node: falcon-h1-3b }
+- { text: "Falcon-H1 7B", node: falcon-h1-7b }
+- { text: "falcon-h1-7b", node: falcon-h1-7b }
+- { text: "Falcon-H1 34B", node: falcon-h1-34b }
+- { text: "falcon-h1-34b", node: falcon-h1-34b }
+- { text: "Falcon-H1R-7B", node: falcon-h1r-7b }
+- { text: "falcon h1r", node: falcon-h1r-7b }
+- { text: "falcon-h1r-7b", node: falcon-h1r-7b }
+- { text: "falcon h1r 7b", node: falcon-h1r-7b }
+
+# ---- Aleph Alpha
+- { text: "Aleph Alpha", node: aleph-alpha }
+- { text: "aleph alpha", node: aleph-alpha }
+- { text: "Luminous", node: luminous }
+- { text: "luminous", node: luminous }
+- { text: "luminous-base", node: luminous }
+- { text: "luminous-extended", node: luminous }
+- { text: "luminous-supreme", node: luminous }
+- { text: "luminous-supreme-control", node: luminous }
+- { text: "aleph alpha luminous", node: luminous }
+- { text: "Pharia-1-LLM-7B", node: pharia-1 }
+- { text: "pharia-1", node: pharia-1 }
+- { text: "pharia-1-llm-7b", node: pharia-1 }
+- { text: "pharia 1 7b", node: pharia-1 }
+- { text: "pharia-1-llm-7b-control", node: pharia-1 }
+
+# ---- StableLM
+- { text: "StableLM", node: stablelm }
+- { text: "stablelm", node: stablelm }
+- { text: "stable lm", node: stablelm }
+- { text: "stability ai stablelm", node: stablelm }
+# "stability ai stablelm" was removed as a pattern (redundant with "stable lm",
+# which matches the "stablelm" token inside it, and it out-spanned the alpha/2 models)
+- { text: "Stability AI StableLM Alpha", node: stablelm-alpha }
+- { text: "stablelm-zephyr-3b", node: stablelm }   # no node for it: degrade to family
+- { text: "StableLM-Alpha", node: stablelm-alpha }
+- { text: "stablelm alpha", node: stablelm-alpha }
+- { text: "stablelm-base-alpha-3b", node: stablelm-alpha }
+- { text: "stablelm-base-alpha-7b", node: stablelm-alpha }
+- { text: "stablelm-tuned-alpha", node: stablelm-alpha }
+- { text: "Stable LM 2", node: stablelm-2 }
+- { text: "Stable LM 2 1.6B", node: stablelm-2-1.6b }
+- { text: "stable lm 2 1.6b", node: stablelm-2-1.6b }
+- { text: "stablelm-2-1_6b", node: stablelm-2-1.6b }
+- { text: "stablelm 2 1.6b", node: stablelm-2-1.6b }
+- { text: "stablelm-2-zephyr-1_6b", node: stablelm-2-1.6b }
+- { text: "Stable LM 2 12B", node: stablelm-2-12b }
+- { text: "stable lm 2 12b", node: stablelm-2-12b }
+- { text: "stablelm-2-12b", node: stablelm-2-12b }
+- { text: "stablelm 2 12b", node: stablelm-2-12b }
+- { text: "stablelm-2-12b-chat", node: stablelm-2-12b }
+
+# ---- EuroLLM / Teuken
+- { text: "EuroLLM", node: eurollm }
+- { text: "eurollm", node: eurollm }
+- { text: "EuroLLM-1.7B", node: eurollm-1.7b }
+- { text: "eurollm-1.7b", node: eurollm-1.7b }
+- { text: "EuroLLM-9B", node: eurollm-9b }
+- { text: "eurollm-9b", node: eurollm-9b }
+- { text: "Teuken", node: teuken }
+- { text: "teuken", node: teuken }
+- { text: "opengpt-x", node: teuken }
+- { text: "Teuken-7B", node: teuken-7b }
+- { text: "teuken-7b", node: teuken-7b }
+- { text: "teuken-7b-instruct-commercial-v0.4", node: teuken-7b }
+- { text: "teuken-7b-instruct-v0.6", node: teuken-7b }
+
+# ---- Amazon Titan
+- { text: "Amazon Titan", node: titan }
+- { text: "amazon titan", node: titan }
+- { text: "titan", node: titan }
+- { text: "titan text", node: titan }
+- { text: "titan text g1", node: titan }
+- { text: "Titan Text Lite", node: titan-text-lite }
+- { text: "titan text lite", node: titan-text-lite }
+- { text: "amazon.titan-text-lite-v1", node: titan-text-lite }
+- { text: "Titan Text Express", node: titan-text-express }
+- { text: "titan text express", node: titan-text-express }
+- { text: "amazon.titan-text-express-v1", node: titan-text-express }
+- { text: "Titan Text Premier", node: titan-text-premier }
+- { text: "titan text premier", node: titan-text-premier }
+- { text: "amazon.titan-text-premier-v1:0", node: titan-text-premier }
+# Bedrock console display names ("Titan Text G1 - Express"): the " - " gap is 3
+# separator chars, inside the {0,3} join budget
+- { text: "Titan Text G1 - Express", node: titan-text-express }
+- { text: "Titan Text G1 - Lite", node: titan-text-lite }
+- { text: "the Titan rocket", not_node: titan-text-lite }
+
+# ---- Amazon Nova
+- { text: "Amazon Nova", node: nova }
+- { text: "amazon nova", node: nova }
+- { text: "nova", node: none }  # weak pattern dropped 2026-08-01 (73% of 1,855 corpus hits = Nova DasSarma)
+- { text: "Nova 1", node: none }  # v0.9: was nova-1 (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- { text: "Amazon Nova 1", node: nova-1 }
+- { text: "Nova 1.0", node: nova-1 }
+- { text: "a supernova exploded", node: none }
+- { text: "Nova Micro", node: nova-micro }
+- { text: "nova micro", node: nova-micro }
+- { text: "amazon.nova-micro-v1:0", node: nova-micro }
+- { text: "Nova 1.0 Micro", node: nova-micro }
+- { text: "Nova Lite", node: nova-lite }
+- { text: "nova lite", node: nova-lite }
+- { text: "amazon.nova-lite-v1:0", node: nova-lite }
+- { text: "Nova 1.0 Lite", node: nova-lite }
+- { text: "Nova Pro", node: nova-pro }
+- { text: "nova pro", node: nova-pro }
+- { text: "amazon.nova-pro-v1:0", node: nova-pro }
+- { text: "Nova 1.0 Pro", node: nova-pro }
+- { text: "Amazon Nova 1.0 Pro", node: nova-pro }
+- { text: "Nova Premier", node: nova-premier }
+- { text: "nova premier", node: nova-premier }
+- { text: "amazon.nova-premier-v1:0", node: nova-premier }
+- { text: "Nova 1.0 Premier", node: nova-premier }
+- { text: "Nova Sonic", node: nova-sonic }
+- { text: "nova sonic", node: nova-sonic }
+- { text: "amazon.nova-sonic-v1:0", node: nova-sonic }
+- { text: "Nova 1.0 Sonic", node: nova-sonic }
+- { text: "Nova 2", node: none }  # v0.9: was nova-2 (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- { text: "nova 2", node: none }  # v0.9: was nova-2 (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- { text: "amazon nova 2", node: nova-2 }
+- { text: "Nova 2.0", node: nova-2 }
+# the dotted group pattern out-spans Deepgram's weak "nova 2" and breaks the tie
+# that bare "Nova 2" leaves ambiguous (joint-check assertion; trivially true alone)
+- { text: "Nova 2.0", not_node: deepgram-nova-2 }
+- { text: "Nova 1.0", not_node: deepgram-nova }
+- { text: "Nova 2 Lite", node: nova-2-lite }
+- { text: "nova 2 lite", node: nova-2-lite }
+- { text: "Nova 2.0 Lite", node: nova-2-lite }
+- { text: "Amazon Nova 2.0 Lite", node: nova-2-lite }
+- { text: "Nova 2 Pro", node: nova-2-pro }
+- { text: "nova 2 pro", node: nova-2-pro }
+- { text: "Nova 2.0 Pro", node: nova-2-pro }
+- { text: "Nova 2 Sonic", node: nova-2-sonic }
+- { text: "nova 2 sonic", node: nova-2-sonic }
+- { text: "Nova 2.0 Sonic", node: nova-2-sonic }
+- { text: "Nova 2 Omni", node: nova-2-omni }
+- { text: "nova 2 omni", node: nova-2-omni }
+- { text: "Nova 2.0 Omni", node: nova-2-omni }
+
+# ---- Inflection
+- { text: "Inflection", node: inflection }
+- { text: "inflection", node: inflection }
+- { text: "inflection ai", node: inflection }
+- { text: "personal intelligence", node: inflection }
+# "pi.ai" is mentions_verbatim, NOT a flexible "pi ai" pattern: the flexible form
+# would fire on "Raspberry Pi AI Kit"/"Raspberry Pi AI HAT" (real 2024-26 products).
+- { text: "pi.ai", node: inflection }
+- { text: "https://pi.ai/", node: inflection }
+- { text: "Raspberry Pi AI Kit", node: none }
+# Bare "pi" was DROPPED as a pattern (was weak). Rationale: pi/π/Raspberry Pi
+# swamp the Inflection reading, and the in-file precedent for worst-case
+# collision strings is no pattern at all (cf. the reka note on "spark").
+# Qualified forms carry the load instead; unqualified "Pi" degrades to the
+# family hit from the neighbouring "Inflection".
+- { text: "pi", node: none }
+- { text: "pi is 3.14159", node: none }
+- { text: "a Raspberry Pi 5 cluster", node: none }
+- { text: "inflection pi", node: inflection }
+- { text: "the Pi chatbot", node: inflection }
+- { text: "Pi assistant", node: inflection }
+- { text: "Pi from Inflection", node: inflection }
+- { text: "Inflection-1", node: inflection-1 }
+- { text: "inflection-1", node: inflection-1 }
+- { text: "inflection 1", node: inflection-1 }
+- { text: "Inflection-2", node: inflection-2 }
+- { text: "inflection-2", node: inflection-2 }
+- { text: "inflection 2", node: inflection-2 }
+- { text: "Inflection-2.5", node: inflection-2.5 }
+- { text: "inflection-2.5", node: inflection-2.5 }
+- { text: "inflection 2.5", node: inflection-2.5 }
+- { text: "Inflection 3.0", node: inflection-3 }
+- { text: "inflection 3.0", node: inflection-3 }
+- { text: "inflection-3", node: inflection-3 }
+- { text: "inflection 3 pi", node: inflection-3 }
+- { text: "inflection 3 productivity", node: inflection-3 }
+
+# ---- Reka
+- { text: "Reka", node: reka }
+- { text: "reka", node: reka }
+- { text: "reka ai", node: reka }
+- { text: "Reka Edge", node: reka-edge }
+- { text: "reka edge", node: reka-edge }
+- { text: "reka-edge", node: reka-edge }
+- { text: "Reka Flash", node: reka-flash }
+- { text: "reka flash", node: reka-flash }
+- { text: "reka-flash", node: reka-flash }
+- { text: "Reka Core", node: reka-core }
+- { text: "reka core", node: reka-core }
+- { text: "reka-core", node: reka-core }
+- { text: "Reka Flash 3", node: reka-flash-3 }
+- { text: "reka flash 3", node: reka-flash-3 }
+- { text: "reka-flash-3", node: reka-flash-3 }
+- { text: "rekaai/reka-flash-3", node: reka-flash-3 }
+
+# ---- Perplexity Sonar
+- { text: "Perplexity Sonar", node: sonar }
+- { text: "perplexity sonar", node: sonar }
+- { text: "sonar", node: sonar }
+- { text: "pplx", node: sonar }
+- { text: "pplx-online", node: pplx-online }
+- { text: "pplx online llms", node: pplx-online }
+- { text: "pplx-7b-online", node: pplx-7b-online }
+- { text: "pplx-70b-online", node: pplx-70b-online }
+- { text: "new sonar", node: sonar-2025 }
+- { text: "new Sonar", node: sonar-2025 }
+- { text: "Sonar Reasoning", node: sonar-reasoning }
+- { text: "sonar reasoning", node: sonar-reasoning }
+- { text: "sonar-reasoning", node: sonar-reasoning }
+- { text: "Sonar Reasoning Pro", node: sonar-reasoning-pro }
+- { text: "sonar reasoning pro", node: sonar-reasoning-pro }
+- { text: "sonar-reasoning-pro", node: sonar-reasoning-pro }
+- { text: "Perplexity Sonar Reasoning", node: sonar-reasoning }
+- { text: "Perplexity Sonar Reasoning Pro", node: sonar-reasoning-pro }
+# Sonar Pro / sonar-deep-research have no nodes: must degrade to the family, not
+# to a more specific sibling
+- { text: "sonar-pro", not_node: sonar-reasoning-pro }
+- { text: "sonar-deep-research", node: sonar }
+
+# ---- Apple
+- { text: "Apple Foundation Models", node: afm }
+- { text: "apple foundation models", node: afm }
+- { text: "apple intelligence models", node: afm }
+- { text: "apple intelligence model", node: afm }
+# "Apple Intelligence" bare is the product/feature, not a model — no pattern
+- { text: "Apple Intelligence", node: none }
+- { text: "afm", node: afm }
+- { text: "OpenELM", node: openelm }
+- { text: "openelm", node: openelm }
+- { text: "openelm-270m", node: openelm }
+- { text: "openelm-450m", node: openelm }
+- { text: "openelm-1_1b", node: openelm }
+- { text: "openelm-3b", node: openelm }
+- { text: "AFM-on-device", node: afm-on-device }
+- { text: "afm-on-device", node: afm-on-device }
+- { text: "apple on-device model", node: afm-on-device }
+- { text: "AFM-server", node: afm-server }
+- { text: "afm-server", node: afm-server }
+- { text: "AFM 3", node: afm-3 }
+- { text: "afm 3", node: afm-3 }
+- { text: "apple foundation models 3", node: afm-3 }
+- { text: "afm 3 core", node: afm-3 }
+- { text: "third generation apple foundation models", node: afm-3 }
+
+# ---- Writer Palmyra
+- { text: "Writer Palmyra", node: palmyra }
+- { text: "writer palmyra", node: palmyra }
+# "writer palmyra" was removed as a pattern (redundant with bare "palmyra"; it
+# out-spanned palmyra x4/x5, which is exactly how AWS/press write them)
+- { text: "Writer Palmyra X5", node: palmyra-x5 }
+- { text: "writer palmyra x4", node: palmyra-x4 }
+- { text: "palmyra", node: palmyra }
+- { text: "Palmyra X4", node: palmyra-x4 }
+- { text: "palmyra-x4", node: palmyra-x4 }
+- { text: "Palmyra X5", node: palmyra-x5 }
+- { text: "palmyra-x5", node: palmyra-x5 }
+- { text: "palmyra x5", node: palmyra-x5 }
+
+# ---- Liquid AI LFM
+- { text: "LFM", node: lfm }
+- { text: "lfm", node: lfm }
+- { text: "liquid foundation models", node: lfm }
+- { text: "LFM-1B", node: lfm-1b }
+- { text: "LFM-3B", node: lfm-3b }
+- { text: "LFM-40B", node: lfm-40b }
+- { text: "lfm-40b", node: lfm-40b }
+- { text: "LFM2", node: lfm2 }
+- { text: "lfm2", node: lfm2 }
+- { text: "lfm2-2.6b", node: lfm2 }
+- { text: "LFM2-VL", node: lfm2-vl }
+- { text: "lfm2-vl", node: lfm2-vl }
+- { text: "LFM2.5", node: lfm2.5 }
+- { text: "lfm2.5", node: lfm2.5 }
+- { text: "lfm2.5-vl", node: lfm2.5 }

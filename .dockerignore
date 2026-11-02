@@ -1,0 +1,22 @@
+# The image holds code and configs only (Dockerfile, docs/DEPLOY-railway.md). Never secrets, stores or a venv.
+.env
+**/.env
+.env.*
+!.env.example
+.local
+**/.local
+data
+**/data
+v4/mirror
+v4/store-*
+.venv
+**/.venv
+.git
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+# not read at run time
+docs
+tests

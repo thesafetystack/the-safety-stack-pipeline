@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/config/llm.schema.json",
+  "title": "llm.yaml",
+  "description": "Provider config, role -> model/fallbacks/max_tokens, egress classes -> provider policy per license_class, and budget defaults (10-design §8, §9.1; 20-technical §8). Secrets never live here: the provider key is read from the env var named by provider.api_key_env.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "provider", "roles", "egress", "budget"],
+  "properties": {
+    "version": { "$ref": "#/$defs/semver" },
+    "provider": { "$ref": "#/$defs/provider" },
+    "providers": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/provider" },
+      "description": "further transports a role may name (roles.<r>.provider, D714); a role without one uses `provider`."
+    },
+    "roles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/role" },
+      "description": "role name -> model config; workflow.llm_role keys must exist here."
+    },
+    "egress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default"],
+      "properties": {
+        "transport": { "type": "string", "description": "The wire counterparty every call routes through (e.g. openrouter); a transport is not itself a sanctioned provider — the gate is over the model-id's provider prefix (§8)." },
+        "provider_prefixes": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "model-id prefix (before '/') -> egress provider slug; how a role model/fallback is mapped to a `providers` entry for gating (§8)."
+        },
+        "default": { "$ref": "#/$defs/egressRule" },
+        "by_license_class": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/egressRule" },
+          "description": "license_class -> egress rule; corpus text never ships to a provider not listed (EXEC-7)."
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["per_run_usd"],
+      "properties": {
+        "per_run_usd": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "USD per 1M tokens; drives ledger reservations (D36) and the actual cost when a response has no usage.cost. A model without an entry is priced at `fallback`.",
+      "properties": {
+        "fallback": { "$ref": "#/$defs/price" },
+        "models": { "type": "object", "additionalProperties": { "$ref": "#/$defs/price" } }
+      }
+    }
+  },
+  "$defs": {
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_url", "api_key_env"],
+      "properties": {
+        "base_url": { "type": "string" },
+        "api_key_env": { "type": "string", "description": "env var holding the API key (never the key itself)" },
+        "referer": { "type": "string" },
+        "title": { "type": "string" },
+        "dialect": { "enum": ["openrouter", "openai", "anthropic"], "description": "the request's wire shape (D714, D722): openrouter (default), openai (the OpenAI API itself) or anthropic (the Anthropic Messages API)" },
+        "strip_model_prefix": { "type": "string", "description": "removed from the model id on the wire only (D714)" },
+        "timeout_s": { "type": "number", "exclusiveMinimum": 0, "description": "socket timeout of this provider's requests, seconds (D714); default the transport's" },
+        "egress_provider": { "type": "string", "description": "egress slug of the counterparty for every model this provider serves (a direct API, D722); unset = by the model id's prefix (egress.provider_prefixes)" },
+        "stream": { "type": "boolean", "description": "dialect anthropic only: server-sent events reassembled by the transport (keepalive pings on long calls, D722)" }
+      }
+    },
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_usd_per_m", "out_usd_per_m"],
+      "properties": {
+        "in_usd_per_m": { "type": "number", "minimum": 0 },
+        "out_usd_per_m": { "type": "number", "minimum": 0 },
+        "retired": { "type": "boolean", "description": "Prices historical rows only: no role may name the model; the client refuses new calls." },
+        "cached_in_usd_per_m": { "type": "number", "minimum": 0, "description": "cached-input rate for replies without usage.cost (D714); unset = in_usd_per_m" },
+        "cache_write_usd_per_m": { "type": "number", "minimum": 0, "description": "cache-write rate for replies without usage.cost (D714); unset = in_usd_per_m" },
+        "long_above_tokens": { "type": "integer", "minimum": 1, "description": "prompt tokens above which `long` prices the call" },
+        "long": { "$ref": "#/$defs/price" }
+      }
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "max_tokens"],
+      "properties": {
+        "model": { "type": "string", "description": "provider/model string, pinned exactly after verify-at-setup" },
+        "fallbacks": { "type": "array", "items": { "type": "string" } },
+        "max_tokens": { "type": "integer", "minimum": 1, "description": "explicit max_tokens is mandatory on every call (EXEC-2)" },
+        "temperature": { "type": "number", "minimum": 0 },
+        "reasoning_effort": { "enum": ["minimal", "low", "medium", "high"], "description": "sent as OpenRouter's reasoning: {effort}; absent = the provider default (techpipe D612)" },
+        "provider": { "type": "string", "description": "an llm.providers entry the role's calls go to instead of `provider` (D714); a transport choice, in no digest. A model reference `<provider>:<model id>` (model, fallbacks, plan pins) overrides it per model (D722)" }
+      }
+    },
+    "egressRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["providers", "data_collection"],
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "sanctioned providers; empty [] means this class never ships to any LLM (if configured)."
+        },
+        "data_collection": { "type": "string", "enum": ["deny", "allow"] },
+        "allow_fallbacks": { "type": "boolean", "description": "whether role fallbacks may engage for this class; restricted/shadow set false (only the sanctioned providers list, no fallback drift). Default true (§8)." }
+      }
+    }
+  }
+}

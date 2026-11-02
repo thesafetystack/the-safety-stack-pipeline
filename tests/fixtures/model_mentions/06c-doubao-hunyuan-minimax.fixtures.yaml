@@ -1,0 +1,215 @@
+- {text: "Doubao / Seed (ByteDance)", node: doubao}
+- {text: "doubao", node: doubao}
+- {text: "豆包", node: doubao}
+- {text: "bytedance seed", node: doubao}
+- {text: "seed llm", node: doubao}
+- {text: "volcengine", node: doubao}
+- {text: "volcano engine", node: doubao}
+- {text: "doubao-seed", node: doubao}
+
+- {text: "Doubao-pro", node: doubao-pro}
+- {text: "doubao-pro", node: doubao-pro}
+- {text: "doubao pro", node: doubao-pro}
+- {text: "doubao-pro-4k", node: doubao-pro}
+- {text: "doubao-pro-32k", node: doubao-pro}
+- {text: "doubao-pro-128k", node: doubao-pro}
+- {text: "doubao-lite", node: doubao}  # v0.9: was doubao-pro (doubao lite moved to the family, L4)
+
+- {text: "Doubao-1.5-pro", node: doubao-1.5-pro}
+- {text: "doubao-1.5-pro", node: doubao-1.5-pro}
+- {text: "doubao 1.5 pro", node: doubao-1.5-pro}
+- {text: "doubao-1.5-pro-32k", node: doubao-1.5-pro}
+- {text: "doubao-1.5-pro-256k", node: doubao-1.5-pro}
+- {text: "doubao-1.5-vision-pro", node: doubao-1.5-pro}
+- {text: "doubao-1.5-thinking-pro", node: doubao-1.5-thinking-pro}  # v0.9: was doubao-1.5-pro (thinking variant split out)
+- {text: "doubao-1-5-pro", node: doubao-1.5-pro}
+
+- {text: "Doubao Seed 1.6", node: doubao-seed-1.6}
+- {text: "doubao-seed-1.6", node: doubao-seed-1.6}
+- {text: "doubao seed 1.6", node: doubao-seed-1.6}
+- {text: "seed 1.6", node: doubao-seed-1.6}
+- {text: "doubao-seed-1-6", node: doubao-seed-1.6}
+- {text: "doubao-seed-1-6-thinking", node: doubao-seed-1.6}
+- {text: "doubao-seed-1-6-flash", node: doubao-seed-1.6}
+- {text: "seed1.6", node: doubao-seed-1.6}
+
+- {text: "Seed-OSS-36B", node: seed-oss-36b}
+- {text: "seed-oss", node: seed-oss-36b}
+- {text: "seed-oss-36b", node: seed-oss-36b}
+- {text: "seed oss 36b", node: seed-oss-36b}
+- {text: "bytedance seed-oss", node: seed-oss-36b}
+
+- {text: "Doubao Seed 2.0", node: doubao-seed-2.0}
+- {text: "doubao seed 2.0", node: doubao-seed-2.0}
+- {text: "doubao-seed-2.0", node: doubao-seed-2.0}
+- {text: "seed 2.0", node: doubao-seed-2.0}
+- {text: "seed2.0", node: doubao-seed-2.0}
+- {text: "doubao 2.0", node: doubao-seed-2.0}
+
+- {text: "Doubao Seed 2.0 Pro", node: doubao-seed-2.0-pro}
+- {text: "doubao-seed-2-0-pro", node: doubao-seed-2.0-pro}
+- {text: "seed 2.0 pro", node: doubao-seed-2.0-pro}
+
+- {text: "Doubao Seed 2.0 Lite", node: doubao-seed-2.0-lite}
+- {text: "seed 2.0 lite", node: doubao-seed-2.0-lite}
+
+- {text: "Doubao Seed 2.0 Mini", node: doubao-seed-2.0-mini}
+- {text: "seed 2.0 mini", node: doubao-seed-2.0-mini}
+
+- {text: "Doubao Seed 2.0 Code", node: doubao-seed-2.0-code}
+- {text: "seed 2.0 code", node: doubao-seed-2.0-code}
+
+- {text: "Doubao Seed 2.1", node: doubao-seed-2.1}
+- {text: "doubao seed 2.1", node: doubao-seed-2.1}
+- {text: "doubao-seed-2.1", node: doubao-seed-2.1}
+- {text: "seed 2.1", node: doubao-seed-2.1}
+
+- {text: "Doubao Seed 2.1 Pro", node: doubao-seed-2.1-pro}
+- {text: "doubao-seed-2-1-pro", node: doubao-seed-2.1-pro}
+- {text: "seed 2.1 pro", node: doubao-seed-2.1-pro}
+
+- {text: "Doubao Seed 2.1 Turbo", node: doubao-seed-2.1-turbo}
+- {text: "seed 2.1 turbo", node: doubao-seed-2.1-turbo}
+
+- {text: "Hunyuan (Tencent)", node: hunyuan}
+- {text: "hunyuan", node: hunyuan}
+- {text: "混元", node: hunyuan}
+- {text: "tencent hunyuan", node: hunyuan}
+- {text: "tencent hy", node: hunyuan}
+- {text: "hy", node: hunyuan}
+# repaired: most-specific-wins — the model shadows the family here (schema.md
+# "Resolution rule"), so the family cannot be a winner on this text
+- {text: "hunyuan-large", not_node: hunyuan}
+- {text: "tencent-hunyuan", node: hunyuan}
+
+# repaired: "(" is not in the separator class, so no pattern can span
+# "Hunyuan (2023)"; the display label degrades to the family, as designed
+- {text: "Hunyuan (2023)", node: hunyuan}
+# repaired: bare family name belongs to the family node, not to the 2023
+# generation (it would otherwise contradict the "hunyuan" -> hunyuan fixture above)
+- {text: "hunyuan", not_node: hunyuan-2023}
+# repaired: "the Hunyuan-Large model" is the far likelier reading of this string
+# than the 2023-generation "Hunyuan large model" (混元大模型)
+- {text: "hunyuan large model", node: hunyuan-large}
+# repaired: same "(" issue as above
+- {text: "tencent hunyuan (2023)", node: hunyuan}
+- {text: "hunyuan-standard", node: hunyuan-2023}
+- {text: "hunyuan-pro", node: hunyuan-2023}
+
+- {text: "Hunyuan-Large", node: hunyuan-large}
+- {text: "hunyuan-large", node: hunyuan-large}
+- {text: "hunyuan large", node: hunyuan-large}
+- {text: "hunyuan-a52b", node: hunyuan-large}
+- {text: "hunyuan-large-instruct", node: hunyuan-large}
+
+- {text: "Hunyuan Turbo S", node: hunyuan-turbo-s}
+- {text: "hunyuan turbo s", node: hunyuan-turbo-s}
+- {text: "hunyuan-turbos", node: hunyuan-turbo-s}
+- {text: "turbos", node: hunyuan-turbo-s}
+- {text: "hunyuan-turbo-s", node: hunyuan-turbo-s}
+- {text: "hunyuan turbo", node: hunyuan-turbo-s}
+
+- {text: "Hunyuan-T1", node: hunyuan-t1}
+- {text: "hunyuan-t1", node: hunyuan-t1}
+- {text: "hunyuan t1", node: hunyuan-t1}
+- {text: "t1", node: none}  # v0.9: was hunyuan-t1 (weak bare 't1' removed, near-zero corpus precision)
+- {text: "tencent t1", node: hunyuan-t1}
+
+- {text: "Hunyuan-A13B", node: hunyuan-a13b}
+- {text: "hunyuan-a13b", node: hunyuan-a13b}
+- {text: "hunyuan a13b", node: hunyuan-a13b}
+- {text: "hunyuan-a13b-instruct", node: hunyuan-a13b}
+- {text: "tencent/hunyuan-a13b-instruct", node: hunyuan-a13b}
+
+- {text: "Hunyuan 2.0", node: hunyuan-2.0}
+- {text: "hunyuan 2.0", node: hunyuan-2.0}
+- {text: "hunyuan-2.0", node: hunyuan-2.0}
+- {text: "hunyuan2", node: hunyuan-2.0}
+- {text: "hunyuan 2.0 think", node: hunyuan-2.0}
+- {text: "hunyuan 2.0 instruct", node: hunyuan-2.0}
+
+- {text: "Hunyuan Hy3", node: hunyuan-hy3}
+- {text: "hy3", node: hunyuan-hy3}
+- {text: "hunyuan 3", node: hunyuan-hy3}
+- {text: "hunyuan-3", node: hunyuan-hy3}
+- {text: "tencent hy3", node: hunyuan-hy3}
+- {text: "hunyuan hy3", node: hunyuan-hy3}
+
+- {text: "MiniMax", node: none}  # v0.9: was minimax (weak bare 'minimax' removed, near-zero corpus precision)
+- {text: "minimax", node: none}  # v0.9: was minimax (weak bare 'minimax' removed, near-zero corpus precision)
+- {text: "minimax ai", node: minimax}
+- {text: "稀宇科技", node: minimax}
+- {text: "minimaxi", node: minimax}
+
+- {text: "abab series", node: abab}
+- {text: "abab", node: abab}
+- {text: "minimax abab", node: abab}
+
+- {text: "abab5.5", node: abab-5.5}
+- {text: "abab5.5s", node: abab-5.5}
+
+- {text: "abab6", node: abab-6}
+
+- {text: "abab6.5", node: abab-6.5}
+- {text: "abab6.5s", node: abab-6.5}
+- {text: "abab6.5g", node: abab-6.5}
+
+- {text: "MiniMax-Text-01", node: minimax-text-01}
+- {text: "minimax-text-01", node: minimax-text-01}
+- {text: "minimax text 01", node: minimax-text-01}
+- {text: "minimax-01", node: minimax-text-01}
+- {text: "minimax 01", node: minimax-text-01}
+- {text: "minimax/minimax-01", node: minimax-text-01}
+- {text: "minimax-vl-01", node: minimax}  # v0.9: was minimax-text-01 (minimax vl 01 moved to the family, L4)
+
+- {text: "MiniMax M-series", node: minimax-m}
+
+- {text: "MiniMax-M1", node: minimax-m1}
+- {text: "minimax-m1", node: minimax-m1}
+- {text: "minimax m1", node: minimax-m1}
+- {text: "m1", node: minimax-m1}
+- {text: "minimax-m1-40k", node: minimax-m1}
+- {text: "minimax-m1-80k", node: minimax-m1}
+- {text: "minimax/minimax-m1", node: minimax-m1}
+
+- {text: "MiniMax-M2", node: minimax-m2}
+- {text: "minimax-m2", node: minimax-m2}
+- {text: "minimax m2", node: minimax-m2}
+- {text: "m2", node: minimax-m2}
+- {text: "minimax/minimax-m2", node: minimax-m2}
+- {text: "minimax-m2.1", node: minimax-m2.1}  # v0.9: was minimax-m2 (M2.1 point release split out)
+- {text: "minimax m2.1", node: minimax-m2.1}  # v0.9: was minimax-m2 (M2.1 point release split out)
+
+- {text: "MiniMax-M2.5", node: minimax-m2.5}
+- {text: "minimax-m2.5", node: minimax-m2.5}
+- {text: "minimax m2.5", node: minimax-m2.5}
+- {text: "m2.5", node: minimax-m2.5}
+- {text: "minimax-m2.5-highspeed", node: minimax-m2.5}
+
+- {text: "MiniMax-M2.7", node: minimax-m2.7}
+- {text: "minimax-m2.7", node: minimax-m2.7}
+- {text: "minimax m2.7", node: minimax-m2.7}
+- {text: "m2.7", node: minimax-m2.7}
+- {text: "minimax-m2.7-highspeed", node: minimax-m2.7}
+
+- {text: "MiniMax M3", node: minimax-m3}
+- {text: "minimax m3", node: minimax-m3}
+- {text: "minimax-m3", node: minimax-m3}
+- {text: "m3", node: minimax-m3}
+
+# --- traps closed by the mention design (added with the pattern pass) ---
+# no bare `seed` pattern: the word is far too common on its own
+- {text: "seed round funding", node: none}
+- {text: "the random seed used", node: none}
+# dotted-version patterns must not reach into multiplier prose
+- {text: "3x faster than the dense baseline", node: none}
+# out-of-scope modality lines (Hunyuan3D, Seedance) must not hit the text families
+- {text: "hunyuan3d", node: none}
+- {text: "seedance 2.0", node: seedance-2.0}  # v0.7: was node none; Seedance is admitted since v0.7 (method S3), still never a doubao text node
+- {text: "the Hunyuan-Large model on HF", not_node: hunyuan-2023}
+# family qualifier prefixes must not out-span their own descendants
+- {text: "bytedance seed 2.0 pro", node: doubao-seed-2.0-pro}
+- {text: "tencent/hunyuan-t1", node: hunyuan-t1}
+# cross-section: the deepest node takes the longest span (vs Gemini's `1.5 pro`)
+- {text: "we used Doubao-1.5-pro for this", node: doubao-1.5-pro}
+- {text: "we used Doubao-1.5-pro for this", not_node: gemini-1.5-pro}

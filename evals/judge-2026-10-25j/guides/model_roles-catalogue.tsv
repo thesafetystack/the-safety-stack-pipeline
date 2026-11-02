@@ -1,0 +1,1878 @@
+node_id	kind	name	parent	maker	mentions	weak_mentions
+gpt	family	GPT		openai	generative pre trained transformer	gpt; chat gpt
+gpt-1	model	GPT-1	gpt	openai	gpt 1; original gpt; improving language understanding by generative pre training	
+gpt-2	group	GPT-2	gpt		gpt 2	
+gpt-2-small	model	GPT-2 Small	gpt-2	openai	gpt 2 small; gpt 2 124m; gpt 2 117m	
+gpt-2-medium	model	GPT-2 Medium	gpt-2	openai	gpt 2 medium; gpt 2 355m; gpt 2 345m	
+gpt-2-large	model	GPT-2 Large	gpt-2	openai	gpt 2 large; gpt 2 774m; gpt 2 762m	
+gpt-2-xl	model	GPT-2 XL	gpt-2	openai	gpt 2 xl; gpt 2 1.5b; gpt 2 1558m; full gpt 2	
+gpt-3	group	GPT-3	gpt		gpt 3	
+gpt-3-ada	model	GPT-3 Ada	gpt-3	openai	gpt 3 ada; text ada 001; ada 001	
+gpt-3-babbage	model	GPT-3 Babbage	gpt-3	openai	gpt 3 babbage; text babbage 001; babbage 001	babbage
+gpt-3-curie	model	GPT-3 Curie	gpt-3	openai	gpt 3 curie; text curie 001; curie 001	curie
+gpt-3-davinci	model	GPT-3 Davinci	gpt-3	openai	gpt 3 davinci; davinci 001; gpt 3 175b	davinci
+instructgpt	model	InstructGPT	gpt-3	openai	instruct gpt; text davinci 001	
+gpt-3.5	group	GPT-3.5	gpt		gpt 3.5; gpt 35	
+text-davinci-002	model	text-davinci-002	gpt-3.5	openai	text davinci 002; gpt 3.5 davinci	
+text-davinci-003	model	text-davinci-003	gpt-3.5	openai	text davinci 003; davinci 003	
+gpt-3.5-turbo	model	GPT-3.5 Turbo	gpt-3.5	openai	gpt 3.5 turbo; gpt 35 turbo; chat gpt 3.5; chatgpt api model	
+davinci-002	model	davinci-002	gpt-3.5	openai	davinci 002	
+babbage-002	model	babbage-002	gpt-3.5	openai	babbage 002	
+codex	group	Codex	gpt			codex; openai codex
+codex-2021	model	Codex (2021)	codex	openai	code davinci; code davinci 002; code cushman; cushman codex	cushman; davinci codex
+codex-mini	model	codex-mini (2025)	codex	openai	codex mini; codex 1; openai codex mini; openai codex 1	
+gpt-4-2023	group	GPT-4 (2023 generation)	gpt			
+gpt-4	model	GPT-4	gpt-4-2023	openai	gpt 4; chat gpt 4	
+gpt-4v	model	GPT-4V	gpt-4-2023	openai	gpt 4v; gpt 4 vision; gpt 4 with vision	
+gpt-4-turbo	model	GPT-4 Turbo	gpt-4-2023	openai	gpt 4 turbo; chat gpt 4 turbo; gpt 4 1106 preview; gpt 4 0125 preview; gpt 4 vision preview; gpt 4 1106 vision preview	
+gpt-4o-series	group	GPT-4o (series)	gpt			
+gpt-4o	model	GPT-4o	gpt-4o-series	openai	gpt 4o; chat gpt 4o; 4o	
+gpt-4o-mini	model	GPT-4o mini	gpt-4o-series	openai	gpt 4o mini; chat gpt 4o mini; 4o mini	
+gpt-4.1-series	group	GPT-4.1 (series)	gpt			
+gpt-4.1	model	GPT-4.1	gpt-4.1-series	openai	gpt 4.1; chat gpt 4.1	
+gpt-4.1-mini	model	GPT-4.1 mini	gpt-4.1-series	openai	gpt 4.1 mini; chat gpt 4.1 mini	
+gpt-4.1-nano	model	GPT-4.1 nano	gpt-4.1-series	openai	gpt 4.1 nano; chat gpt 4.1 nano	
+gpt-4.5	model	GPT-4.5	gpt	openai	gpt 4.5; chat gpt 4.5	orion
+o-series	family	o-series		openai	o series; openai o	
+o1-series	group	o1 (series)	o-series			
+o1-preview	model	o1-preview	o1-series	openai	o1 preview	strawberry
+o1-mini	model	o1-mini	o1-series	openai	o1 mini; openai o1 mini	
+o1	model	o1	o1-series	openai	o1; full o1; o1 full; o1 pro; o1 pro mode; openai o1	
+o3-series	group	o3 (series)	o-series			
+o3-mini	model	o3-mini	o3-series	openai	o3 mini; openai o3 mini	
+o3	model	o3	o3-series	openai	o3; o3 pro; openai o3	
+o3-deep-research	model	o3-deep-research	o3-series	openai	o3 deep research; openai deep research; chat gpt deep research	
+o4-mini	model	o4-mini	o-series	openai	o4 mini	
+o4-mini-deep-research	model	o4-mini-deep-research	o-series	openai	o4 mini deep research	
+gpt-5.x	group	GPT-5.x	gpt		gpt 5 series; gpt 5.x	
+gpt-5-gen	group	GPT-5 (2025 generation)	gpt-5.x			
+gpt-5	model	GPT-5	gpt-5-gen	openai	gpt 5; chat gpt 5; gpt 5 pro; chat gpt 5 pro; gpt 5 thinking pro	
+gpt-5-mini	model	GPT-5 mini	gpt-5-gen	openai	gpt 5 mini; gpt 5 main mini; gpt 5 thinking mini	
+gpt-5-nano	model	GPT-5 nano	gpt-5-gen	openai	gpt 5 nano; gpt 5 thinking nano	
+gpt-5-codex	model	GPT-5-Codex	gpt-5-gen	openai	gpt 5 codex	
+gpt-5.1-gen	group	GPT-5.1 (generation)	gpt-5.x			
+gpt-5.1	model	GPT-5.1	gpt-5.1-gen	openai	gpt 5.1; chat gpt 5.1	
+gpt-5.1-codex	model	GPT-5.1-Codex	gpt-5.1-gen	openai	gpt 5.1 codex	
+gpt-5.1-codex-mini	model	GPT-5.1-Codex-Mini	gpt-5.1-gen	openai	gpt 5.1 codex mini; gpt 5 codex mini	
+gpt-5.1-codex-max	model	GPT-5.1-Codex-Max	gpt-5.1-gen	openai	gpt 5.1 codex max; codex max	
+gpt-5.2-gen	group	GPT-5.2 (generation)	gpt-5.x			
+gpt-5.2	model	GPT-5.2	gpt-5.2-gen	openai	gpt 5.2; chat gpt 5.2	
+gpt-5.2-codex	model	GPT-5.2-Codex	gpt-5.2-gen	openai	gpt 5.2 codex	
+gpt-5.3-gen	group	GPT-5.3 (generation)	gpt-5.x			
+gpt-5.3	model	GPT-5.3	gpt-5.3-gen	openai	gpt 5.3; chat gpt 5.3	
+gpt-5.3-codex	model	GPT-5.3-Codex	gpt-5.3-gen	openai	gpt 5.3 codex	
+gpt-5.3-codex-spark	model	GPT-5.3-Codex-Spark	gpt-5.3-gen	openai	gpt 5.3 codex spark; codex spark	
+gpt-5.4-gen	group	GPT-5.4 (generation)	gpt-5.x			
+gpt-5.4	model	GPT-5.4	gpt-5.4-gen	openai	gpt 5.4; chat gpt 5.4	
+gpt-5.4-mini	model	GPT-5.4 mini	gpt-5.4-gen	openai	gpt 5.4 mini	
+gpt-5.4-nano	model	GPT-5.4 nano	gpt-5.4-gen	openai	gpt 5.4 nano	
+gpt-5.5-gen	group	GPT-5.5 (generation)	gpt-5.x			
+gpt-5.5	model	GPT-5.5	gpt-5.5-gen	openai	gpt 5.5; chat gpt 5.5	spud
+gpt-5.5-cyber	model	GPT-5.5-Cyber	gpt-5.5-gen	openai	gpt 5.5 cyber	
+gpt-5.6	group	GPT-5.6	gpt-5.x		gpt 5.6; chat gpt 5.6; sol terra luna	
+gpt-5.6-sol	model	GPT-5.6 Sol	gpt-5.6	openai	gpt 5.6 sol	sol
+gpt-5.6-terra	model	GPT-5.6 Terra	gpt-5.6	openai	gpt 5.6 terra	terra
+gpt-5.6-luna	model	GPT-5.6 Luna	gpt-5.6	openai	gpt 5.6 luna	luna
+gpt-5.6-cyber	model	GPT-5.6 Cyber	gpt-5.6	openai	gpt 5.6 cyber	
+gpt-6.x	group	GPT-6.x	gpt			
+gpt-6	group	GPT-6	gpt-6.x		gpt 6	
+gpt-6-astra	model	GPT-6 Astra	gpt-6	openai	gpt 6 astra	astra
+gpt-6-sol	model	GPT-6 Sol	gpt-6	openai	gpt 6 sol	
+gpt-6-luna	model	GPT-6 Luna	gpt-6	openai	gpt 6 luna	
+gpt-6.1	group	GPT-6.1	gpt-6.x		gpt 6.1; gpt 6.1 luna	
+gpt-6.1-sol	model	GPT-6.1 Sol	gpt-6.1	openai	gpt 6.1 sol	
+gpt-rosalind	model	GPT-Rosalind	gpt	openai	gpt rosalind	
+gpt-oss	family	gpt-oss		openai	gpt oss	
+gpt-oss-120b	model	gpt-oss-120b	gpt-oss	openai	gpt oss 120b; oss 120b	
+gpt-oss-20b	model	gpt-oss-20b	gpt-oss	openai	gpt oss 20b; oss 20b	
+gpt-oss-safeguard	group	gpt-oss-safeguard	gpt-oss		gpt oss safeguard	
+gpt-oss-safeguard-120b	model	gpt-oss-safeguard-120b	gpt-oss-safeguard	openai	gpt oss safeguard 120b	
+gpt-oss-safeguard-20b	model	gpt-oss-safeguard-20b	gpt-oss-safeguard	openai	gpt oss safeguard 20b	
+openai-embeddings	family	OpenAI Embeddings	embedding-reranking	openai	openai embeddings	
+text-embedding-ada-002	model	text-embedding-ada-002	openai-embeddings	openai	text embedding ada 002; ada 002; ada embeddings; openai ada	
+text-embedding-3	group	text-embedding-3	openai-embeddings		text embedding 3	
+text-embedding-3-small	model	text-embedding-3-small	text-embedding-3	openai	text embedding 3 small; embedding 3 small; te3 small	
+text-embedding-3-large	model	text-embedding-3-large	text-embedding-3	openai	text embedding 3 large; embedding 3 large; te3 large	
+whisper	family	Whisper	speech-recognition	openai		whisper
+whisper-v1	model	Whisper v1	whisper	openai	whisper v1; whisper tiny; whisper base; whisper small; whisper medium; whisper large; whisper large v1	
+whisper-large-v2	model	Whisper large-v2	whisper	openai	whisper large v2; whisper 1	large v2
+whisper-large-v3	model	Whisper large-v3	whisper	openai	whisper large v3; whisper v3	large v3
+whisper-large-v3-turbo	model	Whisper large-v3-turbo	whisper	openai	whisper large v3 turbo; whisper turbo	large v3 turbo
+clip	family	CLIP	vision-encoders	openai		
+clip-2021	model	CLIP	clip	openai	openai clip; clip vit; contrastive language image pretraining	clip
+dall-e	family	DALL-E	image-generation	openai	dall e	
+dall-e-1	model	DALL-E 1	dall-e	openai	dall e 1	
+dall-e-2	model	DALL-E 2	dall-e	openai	dall e 2; unclip	
+dall-e-3	model	DALL-E 3	dall-e	openai	dall e 3	
+gpt-image	family	GPT Image	image-generation	openai	gpt image	
+gpt-image-1	model	gpt-image-1	gpt-image	openai	gpt image 1; 4o image generation	
+gpt-image-1-mini	model	gpt-image-1-mini	gpt-image	openai	gpt image 1 mini	
+gpt-image-1.5	model	gpt-image-1.5	gpt-image	openai	gpt image 1.5; chat gpt image latest	
+gpt-image-2	model	gpt-image-2	gpt-image	openai	gpt image 2	
+gpt-image-2.5	group	GPT-Image-2.5	gpt-image		gpt image 2.5	
+gpt-image-2.5-sunburst	model	GPT-Image-2.5 Sunburst	gpt-image-2.5	openai	gpt image 2.5 sunburst	
+gpt-image-2.5-flare	model	GPT-Image-2.5 Flare	gpt-image-2.5	openai	gpt image 2.5 flare	
+sora	family	Sora	video-generation	openai	sora; openai sora	
+sora-1	model	Sora 1	sora	openai	sora 1; sora turbo; openai sora 1; openai sora turbo	
+sora-2	model	Sora 2	sora	openai	sora 2; openai sora 2	
+sora-2-pro	model	Sora 2 Pro	sora	openai	sora 2 pro; openai sora 2 pro	
+openai-realtime-audio	family	OpenAI Realtime & Audio	speech-synthesis	openai	realtime api models; openai voice models; advanced voice mode; gpt realtime translate	
+tts-1	model	tts-1 / tts-1-hd	openai-realtime-audio	openai	tts 1; openai tts	
+gpt-4o-realtime-preview	model	gpt-4o-realtime-preview	openai-realtime-audio	openai	gpt 4o realtime; gpt 4o mini realtime; gpt 4o audio	
+gpt-4o-transcribe	model	gpt-4o-transcribe	openai-transcribe	openai	gpt 4o transcribe	
+gpt-4o-mini-transcribe	model	gpt-4o-mini-transcribe	openai-transcribe	openai	gpt 4o mini transcribe	
+gpt-4o-mini-tts	model	gpt-4o-mini-tts	openai-realtime-audio	openai	gpt 4o mini tts	
+gpt-realtime-line	group	gpt-realtime (line)	openai-realtime-audio			
+gpt-realtime	model	gpt-realtime	gpt-realtime-line	openai	gpt realtime	
+gpt-realtime-2	model	GPT-Realtime-2	gpt-realtime-line	openai	gpt realtime 2	
+gpt-realtime-2.1	model	gpt-realtime-2.1	gpt-realtime-line	openai	gpt realtime 2.1	
+gpt-audio	model	gpt-audio	openai-realtime-audio	openai	gpt audio	
+gpt-transcribe	model	gpt-transcribe / gpt-live-transcribe	openai-transcribe	openai	gpt transcribe; gpt live transcribe	
+gpt-live-1	model	GPT-Live 1	openai-realtime-audio	openai	gpt live 1; gpt live	
+jukebox	family	Jukebox	music-audio-generation	openai	openai jukebox; jukebox 5b; openai jukebox 5b; jukebox 5b lyrics; jukebox 1b; openai jukebox 1b; jukebox 1b lyrics	jukebox
+claude	family	Claude		anthropic	claude	
+claude-numbered-line	group	Claude (numbered line)	claude			
+claude-2.x	group	Claude 2.x	claude-numbered-line		claude 2.x	
+claude-haiku	group	Claude Haiku	claude		claude haiku	haiku
+claude-haiku-3.x	group	Claude Haiku 3.x	claude-haiku		claude haiku 3.x	
+claude-sonnet	group	Claude Sonnet	claude		claude sonnet	sonnet
+claude-sonnet-3.x	group	Claude Sonnet 3.x	claude-sonnet		claude sonnet 3.x	
+claude-sonnet-4.x	group	Claude Sonnet 4.x	claude-sonnet		claude sonnet 4.x	
+claude-opus	group	Claude Opus	claude		claude opus	opus
+claude-opus-4.x	group	Claude Opus 4.x	claude-opus		claude opus 4.x; claude opus 4 series; opus 4 series	
+claude-mythos	group	Claude Mythos	claude		claude mythos; mythos class	mythos
+claude-1	model	Claude 1	claude-numbered-line	anthropic	claude 1; claude v1	
+claude-instant	model	Claude Instant	claude	anthropic	claude instant	
+claude-2	model	Claude 2	claude-2.x	anthropic	claude 2; claude v2	
+claude-2.1	model	Claude 2.1	claude-2.x	anthropic	claude 2.1; claude v2:1	
+claude-3-haiku	model	Claude 3 Haiku	claude-haiku-3.x	anthropic	claude 3 haiku; claude haiku 3; haiku 3	
+claude-3.5-haiku	model	Claude 3.5 Haiku	claude-haiku-3.x	anthropic	claude 3.5 haiku; claude haiku 3.5; haiku 3.5	
+claude-haiku-4.5	model	Claude Haiku 4.5	claude-haiku	anthropic	claude haiku 4.5; haiku 4.5; claude 4.5 haiku	
+claude-haiku-5.5	model	Claude Haiku 5.5	claude-haiku	anthropic	claude haiku 5.5; haiku 5.5	
+claude-3-sonnet	model	Claude 3 Sonnet	claude-sonnet-3.x	anthropic	claude 3 sonnet; claude 3.0 sonnet; claude sonnet 3; sonnet 3	
+claude-3.5-sonnet	model	Claude 3.5 Sonnet	claude-sonnet-3.x	anthropic	claude 3.5 sonnet; claude sonnet 3.5; sonnet 3.5; claude 3.6; claude 3.6 sonnet; claude sonnet 3.6; sonnet 3.6	
+claude-3.7-sonnet	model	Claude 3.7 Sonnet	claude-sonnet-3.x	anthropic	claude 3.7 sonnet; claude sonnet 3.7; sonnet 3.7	
+claude-sonnet-4	model	Claude Sonnet 4	claude-sonnet-4.x	anthropic	claude sonnet 4; claude 4 sonnet; sonnet 4	
+claude-sonnet-4.5	model	Claude Sonnet 4.5	claude-sonnet-4.x	anthropic	claude sonnet 4.5; claude 4.5 sonnet; sonnet 4.5	
+claude-sonnet-4.6	model	Claude Sonnet 4.6	claude-sonnet-4.x	anthropic	claude sonnet 4.6; claude 4.6 sonnet; sonnet 4.6	
+claude-sonnet-5	model	Claude Sonnet 5	claude-sonnet	anthropic	claude sonnet 5; claude 5 sonnet; sonnet 5	
+claude-sonnet-5.5	model	Claude Sonnet 5.5	claude-sonnet	anthropic	claude sonnet 5.5; sonnet 5.5	
+claude-3-opus	model	Claude 3 Opus	claude-opus	anthropic	claude 3 opus; claude opus 3; opus 3	
+claude-opus-4	model	Claude Opus 4	claude-opus-4.x	anthropic	claude opus 4; claude 4 opus; opus 4	
+claude-opus-4.1	model	Claude Opus 4.1	claude-opus-4.x	anthropic	claude opus 4.1; claude 4.1 opus; opus 4.1	
+claude-opus-4.5	model	Claude Opus 4.5	claude-opus-4.x	anthropic	claude opus 4.5; claude 4.5 opus; opus 4.5	
+claude-opus-4.6	model	Claude Opus 4.6	claude-opus-4.x	anthropic	claude opus 4.6; claude 4.6 opus; opus 4.6	
+claude-opus-4.7	model	Claude Opus 4.7	claude-opus-4.x	anthropic	claude opus 4.7; claude 4.7 opus; opus 4.7	
+claude-opus-4.8	model	Claude Opus 4.8	claude-opus-4.x	anthropic	claude opus 4.8; claude 4.8 opus; opus 4.8	
+claude-opus-5	model	Claude Opus 5	claude-opus	anthropic	claude opus 5; claude 5 opus; opus 5	
+claude-opus-5.5	model	Claude Opus 5.5	claude-opus	anthropic	claude opus 5.5; opus 5.5	
+claude-mythos-preview	model	Claude Mythos Preview	claude-mythos	anthropic	claude mythos preview; mythos preview; project glasswing model	
+claude-fable-5	model	Claude Fable 5	claude	anthropic	claude fable 5; fable 5; claude fable	fable
+claude-fable-5.1	model	Claude Fable 5.1	claude	anthropic	claude fable 5.1; fable 5.1	
+claude-mythos-5	model	Claude Mythos 5	claude-mythos	anthropic	claude mythos 5; mythos 5; glasswing mythos	
+claude-mythos-5.1	model	Claude Mythos 5.1	claude-mythos	anthropic	claude mythos 5.1; mythos 5.1	
+gemini	family	Gemini		google	gemini; gemini exp	gemini pro; gemini flash; gemini flash lite; flash lite
+gemini-1.0	group	Gemini 1.0	gemini		gemini 1.0; gemini 1	
+gemini-1.0-ultra	model	Gemini 1.0 Ultra	gemini-1.0	google	gemini 1.0 ultra; gemini ultra; ultra 1.0	
+gemini-1.0-pro	model	Gemini 1.0 Pro	gemini-1.0	google	gemini 1.0 pro; gemini pro vision	
+gemini-1.0-nano	model	Gemini 1.0 Nano	gemini-1.0	google	gemini 1.0 nano; gemini nano	nano 1; nano 2
+gemini-1.5	group	Gemini 1.5	gemini		gemini 1.5	
+gemini-1.5-pro	model	Gemini 1.5 Pro	gemini-1.5	google	gemini 1.5 pro; gemini pro 1.5	
+gemini-1.5-flash	model	Gemini 1.5 Flash	gemini-1.5	google	gemini 1.5 flash; gemini flash 1.5	
+gemini-1.5-flash-8b	model	Gemini 1.5 Flash-8B	gemini-1.5	google	gemini 1.5 flash 8b; gemini flash 8b; gemini flash 1.5 8b; flash 8b	
+gemini-2.0	group	Gemini 2.0	gemini		gemini 2.0; gemini 2	
+gemini-2.0-flash	model	Gemini 2.0 Flash	gemini-2.0	google	gemini 2.0 flash; gemini 2 flash	
+gemini-2.0-flash-thinking	model	Gemini 2.0 Flash Thinking	gemini-2.0	google	gemini 2.0 flash thinking; gemini 2 flash thinking; gemini flash thinking; gemini 2.0 flash thinking experimental	
+gemini-diffusion	model	Gemini Diffusion	gemini	google	gemini diffusion; google gemini diffusion	
+gemini-2.0-flash-lite	model	Gemini 2.0 Flash-Lite	gemini-2.0	google	gemini 2.0 flash lite	
+gemini-2.0-pro	model	Gemini 2.0 Pro (Experimental)	gemini-2.0	google	gemini 2.0 pro; gemini 2 pro	
+gemini-2.5	group	Gemini 2.5	gemini		gemini 2.5	
+gemini-2.5-pro	model	Gemini 2.5 Pro	gemini-2.5	google	gemini 2.5 pro	
+gemini-2.5-flash	model	Gemini 2.5 Flash	gemini-2.5	google	gemini 2.5 flash	
+gemini-2.5-flash-lite	model	Gemini 2.5 Flash-Lite	gemini-2.5	google	gemini 2.5 flash lite	
+gemini-2.5-computer-use	model	Gemini 2.5 Computer Use	gemini-2.5	google	gemini 2.5 computer use; gemini computer use	
+gemini-deep-think	group	Gemini Deep Think	gemini		gemini deep think	deep think
+gemini-2.5-deep-think	model	Gemini 2.5 Deep Think	gemini-deep-think	google	gemini 2.5 deep think; deep think 2.5	
+gemini-3-deep-think	model	Gemini 3 Deep Think	gemini-deep-think	google	gemini 3 deep think; deep think 3	
+gemini-3.1-deep-think	model	Gemini 3.1 Deep Think	gemini-deep-think	google	gemini 3.1 deep think; deep think upgrade; updated deep think	
+gemini-3	group	Gemini 3	gemini		gemini 3; gemini 3.0	
+gemini-3-pro	model	Gemini 3 Pro	gemini-3	google	gemini 3 pro; gemini 3.0 pro	
+gemini-3-flash	model	Gemini 3 Flash	gemini-3	google	gemini 3 flash	
+gemini-3.1	group	Gemini 3.1	gemini		gemini 3.1	
+gemini-3.1-pro	model	Gemini 3.1 Pro	gemini-3.1	google	gemini 3.1 pro	
+gemini-3.1-flash-lite	model	Gemini 3.1 Flash-Lite	gemini-3.1	google	gemini 3.1 flash lite	
+gemini-3.1-flash-tts	model	Gemini 3.1 Flash TTS	gemini-3.1	google	gemini 3.1 flash tts	
+gemini-3.1-flash-live	model	Gemini 3.1 Flash Live	gemini-3.1	google	gemini 3.1 flash live	
+gemini-3.5	group	Gemini 3.5	gemini		gemini 3.5	
+gemini-3.5-flash	model	Gemini 3.5 Flash	gemini-3.5	google	gemini 3.5 flash	
+gemini-3.5-flash-lite	model	Gemini 3.5 Flash-Lite	gemini-3.5	google	gemini 3.5 flash lite	
+gemini-3.5-flash-cyber	model	Gemini 3.5 Flash Cyber	gemini-3.5	google	gemini 3.5 flash cyber; flash cyber; gemini cyber	
+gemini-3.5-transcribe	model	Gemini 3.5 Transcribe	gemini-3.5	google	gemini 3.5 transcribe	
+gemini-3.6	group	Gemini 3.6	gemini		gemini 3.6	
+gemini-3.6-flash	model	Gemini 3.6 Flash	gemini-3.6	google	gemini 3.6 flash	
+gemini-3.7	group	Gemini 3.7	gemini		gemini 3.7	
+gemini-3.7-flash	model	Gemini 3.7 Flash	gemini-3.7	google	gemini 3.7 flash	
+gemini-3.8	group	Gemini 3.8	gemini		gemini 3.8	
+gemini-3.8-flash	model	Gemini 3.8 Flash	gemini-3.8	google	gemini 3.8 flash	
+gemini-3.8-flash-cyber	model	Gemini 3.8 Flash Cyber	gemini-3.8	google	gemini 3.8 flash cyber	
+gemini-3.8-live	model	Gemini 3.8 Live	gemini-3.8	google	gemini 3.8 live	
+gemini-3.8-flash-tts	model	Gemini 3.8 Flash TTS	gemini-3.8	google	gemini 3.8 flash tts	
+gemini-3.8-flash-lite-tts	model	Gemini 3.8 Flash-Lite TTS	gemini-3.8	google	gemini 3.8 flash lite tts	
+gemini-omni	group	Gemini Omni	gemini		gemini omni	
+gemini-omni-flash	model	Gemini Omni Flash	gemini-omni	google	gemini omni flash; omni flash; gemini omni 1.1 flash	
+gemini-4	group	Gemini 4	gemini			
+gemini-4-argon	model	Gemini 4 Argon	gemini-4	google	gemini 4 argon	
+nano-banana	group	Nano Banana (Gemini image models)	gemini		nano banana; gemini flash image; nano banana 2.1	gemini image
+nano-banana-1	model	Nano Banana (Gemini 2.5 Flash Image)	nano-banana	google	gemini 2.5 flash image; nano banana 1	
+nano-banana-pro	model	Nano Banana Pro (Gemini 3 Pro Image)	nano-banana	google	nano banana pro; gemini 3 pro image	
+nano-banana-2	model	Nano Banana 2 (Gemini 3.1 Flash Image)	nano-banana	google	nano banana 2; gemini 3.1 flash image	nb2
+nano-banana-2-lite	model	Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)	nano-banana	google	nano banana 2 lite; nano banana lite; gemini 3.1 flash lite image	
+gemini-embeddings	group	Gemini embeddings	gemini		gemini embedding; gemini embeddings; google text embedding; gecko embedding; text embedding gecko	gecko
+text-embedding-004	model	text-embedding-004	gemini-embeddings	google	text embedding 004; text embedding preview 0409; google text embedding 004	
+text-embedding-005	model	text-embedding-005	gemini-embeddings	google	text embedding 005; text multilingual embedding 002; google text embedding 005	
+gemini-embedding-001	model	Gemini Embedding (gemini-embedding-001)	gemini-embeddings	google	gemini embedding 001; gemini embedding exp	
+gemini-embedding-2	model	gemini-embedding-2	gemini-embeddings	google	gemini embedding 2	
+gemini-robotics	group	Gemini Robotics	gemini			
+gemini-robotics-1	model	Gemini Robotics	gemini-robotics	google	gemini robotics; gemini robotics 1.0	
+gemini-robotics-on-device-line	group	Gemini Robotics On-Device	gemini-robotics			
+gemini-robotics-on-device	model	Gemini Robotics On-Device	gemini-robotics-on-device-line	google	gemini robotics on device; gemini robotics on device 1	
+gemini-robotics-on-device-2	model	Gemini Robotics On-Device 2	gemini-robotics-on-device-line	google	gemini robotics on device 2	
+gemini-robotics-1.5	model	Gemini Robotics 1.5	gemini-robotics	google	gemini robotics 1.5	
+gemini-robotics-2	model	Gemini Robotics 2	gemini-robotics	google	gemini robotics 2	
+gemini-robotics-er	group	Gemini Robotics-ER	gemini-robotics			
+gemini-robotics-er-1	model	Gemini Robotics-ER	gemini-robotics-er	google	gemini robotics er; gemini robotics er 1.0	
+gemini-robotics-er-1.5	model	Gemini Robotics-ER 1.5	gemini-robotics-er	google	gemini robotics er 1.5; gemini robotics er 1.5 preview	
+gemini-robotics-er-1.6	model	Gemini Robotics-ER 1.6	gemini-robotics-er	google	gemini robotics er 1.6; gemini robotics er 1.6 preview	
+gemini-robotics-er-2	model	Gemini Robotics-ER 2	gemini-robotics-er	google	gemini robotics er 2; gemini robotics er 2 preview; gemini robotics er 2 streaming	
+gemma	family	Gemma		google	gemma; translate gemma; sign gemma; dolphin gemma; embedding gemma 2	
+gemma-1	group	Gemma 1	gemma		gemma 1; gemma 1.1	
+gemma-1-2b	model	Gemma 2B	gemma-1	google	gemma 2b	
+gemma-1-7b	model	Gemma 7B	gemma-1	google	gemma 7b	
+gemma-2	group	Gemma 2	gemma		gemma 2	
+gemma-2-2b	model	Gemma 2 2B	gemma-2	google	gemma 2 2b	
+gemma-2-9b	model	Gemma 2 9B	gemma-2	google	gemma 2 9b	
+gemma-2-27b	model	Gemma 2 27B	gemma-2	google	gemma 2 27b	
+gemma-3	group	Gemma 3	gemma		gemma 3	
+gemma-3-1b	model	Gemma 3 1B	gemma-3	google	gemma 3 1b	
+gemma-3-4b	model	Gemma 3 4B	gemma-3	google	gemma 3 4b	
+gemma-3-12b	model	Gemma 3 12B	gemma-3	google	gemma 3 12b	
+gemma-3-27b	model	Gemma 3 27B	gemma-3	google	gemma 3 27b	
+gemma-3n	group	Gemma 3n	gemma-3		gemma 3n	
+gemma-3n-e2b	model	Gemma 3n E2B	gemma-3n	google	gemma 3n e2b	
+gemma-3n-e4b	model	Gemma 3n E4B	gemma-3n	google	gemma 3n e4b	
+gemma-3-270m	model	Gemma 3 270M	gemma-3	google	gemma 3 270m; 270m gemma	
+gemma-4	group	Gemma 4	gemma		gemma 4	
+gemma-4-e2b	model	Gemma 4 E2B	gemma-4	google	gemma 4 e2b	
+gemma-4-e4b	model	Gemma 4 E4B	gemma-4	google	gemma 4 e4b	
+gemma-4-12b	model	Gemma 4 12B	gemma-4	google	gemma 4 12b	
+gemma-4-26b-a4b	model	Gemma 4 26B A4B	gemma-4	google	gemma 4 26b a4b; gemma 4 26b; gemma 4 27b	
+gemma-4-31b	model	Gemma 4 31B	gemma-4	google	gemma 4 31b	
+medgemma	group	MedGemma	gemma		med gemma	
+medgemma-1	group	MedGemma 1	medgemma		med gemma 1	
+medgemma-1-4b	model	MedGemma 4B	medgemma-1	google	med gemma 4b; med gemma 1 4b	
+medgemma-1-27b	model	MedGemma 27B	medgemma-1	google	med gemma 27b; med gemma 1 27b	
+medgemma-1.5-4b	model	MedGemma 1.5 4B	medgemma	google	med gemma 1.5; med gemma 1.5 4b	
+txgemma	group	TxGemma	gemma		tx gemma	
+txgemma-2b	model	TxGemma 2B	txgemma	google	tx gemma 2b	
+txgemma-9b	model	TxGemma 9B	txgemma	google	tx gemma 9b	
+txgemma-27b	model	TxGemma 27B	txgemma	google	tx gemma 27b	
+recurrentgemma	group	RecurrentGemma	gemma		recurrent gemma	
+recurrentgemma-2b	model	RecurrentGemma 2B	recurrentgemma	google	recurrent gemma 2b	
+recurrentgemma-9b	model	RecurrentGemma 9B	recurrentgemma	google	recurrent gemma 9b	
+datagemma	group	DataGemma	gemma		data gemma	
+datagemma-rig-27b	model	DataGemma RIG 27B	datagemma	google	data gemma rig; data gemma rig 27b	
+datagemma-rag-27b	model	DataGemma RAG 27B	datagemma	google	data gemma rag; data gemma rag 27b	
+vaultgemma-1b	model	VaultGemma	gemma	google	vault gemma; vault gemma 1b	
+t5gemma	group	T5Gemma	gemma		t5 gemma	
+t5gemma-1	group	T5Gemma (2025)	t5gemma			
+t5gemma-2b-2b	model	T5Gemma 2B-2B	t5gemma-1	google	t5 gemma 2b 2b	
+t5gemma-9b-9b	model	T5Gemma 9B-9B	t5gemma-1	google	t5 gemma 9b 9b	
+t5gemma-9b-2b	model	T5Gemma 9B-2B	t5gemma-1	google	t5 gemma 9b 2b	
+t5gemma-2	group	T5Gemma 2	t5gemma		t5 gemma 2	
+t5gemma-2-270m	model	T5Gemma 2 270M-270M	t5gemma-2	google	t5 gemma 2 270m; t5 gemma 2 270m 270m	
+t5gemma-2-1b	model	T5Gemma 2 1B-1B	t5gemma-2	google	t5 gemma 2 1b; t5 gemma 2 1b 1b	
+t5gemma-2-4b	model	T5Gemma 2 4B-4B	t5gemma-2	google	t5 gemma 2 4b; t5 gemma 2 4b 4b	
+shieldgemma	group	ShieldGemma	gemma		shield gemma	
+shieldgemma-1	group	ShieldGemma 1	shieldgemma		shield gemma 1	
+shieldgemma-1-2b	model	ShieldGemma 2B	shieldgemma-1	google	shield gemma 2b; shield gemma 1 2b	
+shieldgemma-1-9b	model	ShieldGemma 9B	shieldgemma-1	google	shield gemma 9b; shield gemma 1 9b	
+shieldgemma-1-27b	model	ShieldGemma 27B	shieldgemma-1	google	shield gemma 27b; shield gemma 1 27b	
+shieldgemma-2-4b	model	ShieldGemma 2	shieldgemma	google	shield gemma 2; shield gemma 2 4b	
+diffusiongemma-26b-a4b	model	DiffusionGemma 26B A4B	gemma	google	diffusion gemma	
+embeddinggemma	model	EmbeddingGemma	gemma	google	embedding gemma	
+codegemma	group	CodeGemma	gemma		code gemma	
+codegemma-2b	model	CodeGemma 2B	codegemma	google	code gemma 2b	
+codegemma-7b	model	CodeGemma 7B	codegemma	google	code gemma 7b	
+paligemma	model	PaliGemma	gemma	google	pali gemma	
+paligemma-2	group	PaliGemma 2	gemma		pali gemma 2	
+paligemma-2-3b	model	PaliGemma 2 3B	paligemma-2	google	pali gemma 2 3b	
+paligemma-2-10b	model	PaliGemma 2 10B	paligemma-2	google	pali gemma 2 10b	
+paligemma-2-28b	model	PaliGemma 2 28B	paligemma-2	google	pali gemma 2 28b	
+gemma-scope	family	Gemma Scope		google	gemma scope	
+gemma-scope-1	model	Gemma Scope	gemma-scope	google		
+gemma-scope-2	model	Gemma Scope 2	gemma-scope	google	gemma scope 2	
+palm	family	PaLM	google-pre-gemini-llms	google	google palm; pathways language model	palm
+palm-1	model	PaLM	palm	google	palm 540b; palm 62b; palm 8b; google palm 540b; google palm 62b; google palm 8b	
+flan-palm	model	Flan-PaLM	palm	google	flan palm; flan palm 540b; flan u palm	
+u-palm	model	U-PaLM	palm	google	u palm; u palm 540b	
+palm-2	model	PaLM 2	palm	google	palm 2; text bison; chat bison; text unicorn; google palm 2	
+med-palm	group	Med-PaLM	palm		med palm; google med palm	
+med-palm-1	model	Med-PaLM	med-palm	google	med palm 1; med palm 540b; google med palm 1; google med palm 540b	
+med-palm-2	model	Med-PaLM 2	med-palm	google	med palm 2; google med palm 2	
+lamda	family	LaMDA	google-pre-gemini-llms	google		
+lamda-1	model	LaMDA	lamda	google	lamda; language model for dialogue applications	
+lamda-2	model	LaMDA 2	lamda	google	lamda 2; google lamda 2	
+glam	family	GLaM	google-pre-gemini-llms	google		
+glam-1	model	GLaM	glam	google	glam moe	glam; generalist language model
+switch-transformer	family	Switch Transformer	google-pre-gemini-llms	google		
+switch-transformer-1	model	Switch Transformer	switch-transformer	google	switch transformer; switch xxl	switch large; switch base; switch c
+gopher	family	Gopher	google-pre-gemini-llms	google		
+gopher-1	model	Gopher	gopher	google	gopher 280b; deepmind gopher; gopher	
+chinchilla	family	Chinchilla	google-pre-gemini-llms	google		
+chinchilla-1	model	Chinchilla	chinchilla	google	chinchilla 70b	chinchilla
+flamingo	family	Flamingo	google-pre-gemini-llms	google		
+flamingo-1	model	Flamingo	flamingo	google	flamingo 80b; deepmind flamingo	flamingo
+t5	family	T5	bert-era-encoders	google	text to text transfer transformer	t5
+t5-2019	model	T5	t5	google	t5 small; t5 base; t5 large; t5 3b; t5 11b; t5 xl; t5 xxl; t5 v1 1; t5 1.1	
+mt5	model	mT5	t5	google	mt5; multilingual t5	
+flan-t5	group	Flan-T5	t5		flan t5; flan t5 small; flan t5 base; flan t5 large; flan t5 xxl	
+flan-t5-xl	model	Flan-T5-XL	flan-t5	google	flan t5 xl	
+ul2	model	UL2	t5	google	ul2; ul2 20b	
+flan-ul2	model	Flan-UL2	t5	google	flan ul2	
+bert	family	BERT	bert-era-encoders	google		bert
+bert-base	model	BERT Base	bert	google	bert base; mbert	
+bert-large	model	BERT Large	bert	google	bert large	
+albert	family	ALBERT	bert-era-encoders	['google', 'ttic']		
+albert-1	model	ALBERT	albert	['google', 'ttic']	albert base; albert large; albert xlarge; albert xxlarge; a lite bert	
+electra	family	ELECTRA	bert-era-encoders	['google', 'stanford']		
+electra-1	model	ELECTRA	electra	['google', 'stanford']	electra small; electra base; electra large	electra
+xlnet	family	XLNet	bert-era-encoders	['google', 'cmu']		
+xlnet-1	model	XLNet	xlnet	['google', 'cmu']	xlnet; xlnet base; xlnet large	
+imagen	family	Imagen	image-generation	google	google imagen	imagen
+imagen-1	model	Imagen 1	imagen	google	imagen 1; google imagen 1	
+imagen-2	model	Imagen 2	imagen	google	imagen 2; google imagen 2	
+imagen-3	model	Imagen 3	imagen	google	imagen 3; google imagen 3	
+imagen-4	model	Imagen 4	imagen	google	imagen 4; google imagen 4	
+veo	family	Veo	video-generation	google	google veo; deepmind veo	veo
+veo-1	model	Veo 1	veo	google	veo 1; google veo 1	
+veo-2	model	Veo 2	veo	google	veo 2; google veo 2	
+veo-3-gen	group	Veo 3 (generation)	veo			
+veo-3	model	Veo 3	veo-3-gen	google	veo 3; google veo 3; deepmind veo 3	
+veo-3-fast	model	Veo 3 Fast	veo-3-gen	google	veo 3 fast; veo 3.0 fast; google veo 3 fast; deepmind veo 3 fast; google veo 3.0 fast; deepmind veo 3.0 fast	
+veo-3.1-gen	group	Veo 3.1 (generation)	veo			
+veo-3.1	model	Veo 3.1	veo-3.1-gen	google	veo 3.1; google veo 3.1; deepmind veo 3.1	
+veo-3.1-fast	model	Veo 3.1 Fast	veo-3.1-gen	google	veo 3.1 fast; google veo 3.1 fast; deepmind veo 3.1 fast	
+veo-3.1-lite	model	Veo 3.1 Lite	veo-3.1-gen	google	veo 3.1 lite; google veo 3.1 lite; deepmind veo 3.1 lite	
+lyria	family	Lyria	music-audio-generation	google	lyria; lyria realtime; lyria 2; google lyria 2; lyria 3; lyria 3.5	
+magenta	family	Magenta	music-audio-generation	google	google magenta; magenta realtime; magenta rt; magenta real time; google magenta rt; google magenta realtime; magenta realtime 2; magenta rt 2; google magenta rt 2; google magenta realtime 2; magenta realtime 2 base; magenta rt 2 base; google magenta realtime 2 base; google magenta rt 2 base; magenta realtime 2 small; magenta rt 2 small; google magenta realtime 2 small; google magenta rt 2 small	magenta; mrt2
+llama	family	Llama		meta	llama	
+llama-1	group	LLaMA 1	llama	meta	llama 1; llama v1	
+llama-1-7b	model	LLaMA 7B	llama-1	meta	llama 7b; llama 1 7b; llama 6.7b	
+llama-1-13b	model	LLaMA 13B	llama-1	meta	llama 13b; llama 1 13b	
+llama-1-33b	model	LLaMA 33B	llama-1	meta	llama 33b; llama 1 33b; llama 30b	
+llama-1-65b	model	LLaMA 65B	llama-1	meta	llama 65b; llama 1 65b	
+llama-fine-tunes	group	Llama fine-tunes (third-party)	llama		vicuna; vicuna 33b; koala 13b; berkeley koala; tulu; tülu; tulu 1; tulu v1; tulu 65b; tulu 7b; tulu 2; tulu 2 dpo; tulu 3; tülu 3; llama 3.1 tulu 3; tulu 3 405b; orca 1; orca 13b; orca 2; wizardlm; wizard lm; wizardmath; nous hermes; nous hermes 13b	koala; orca; hermes; hermes 3
+vicuna-7b	model	Vicuna-7B	llama-fine-tunes	lmsys	vicuna 7b	
+vicuna-13b	model	Vicuna-13B	llama-fine-tunes	lmsys	vicuna 13b	
+alpaca-7b	model	Alpaca 7B	llama-fine-tunes	stanford	alpaca 7b; stanford alpaca	
+llama-2	group	Llama 2	llama	meta	llama 2; llama v2	
+llama-2-7b	model	Llama 2 7B	llama-2	meta	llama 2 7b; llama 2 chat 7b	
+llama-2-13b	model	Llama 2 13B	llama-2	meta	llama 2 13b; llama 2 chat 13b	
+llama-2-70b	model	Llama 2 70B	llama-2	meta	llama 2 70b; llama 2 chat 70b	
+code-llama	group	Code Llama	llama	meta	code llama	
+code-llama-7b	model	Code Llama 7B	code-llama	meta	code llama 7b; code llama python 7b; code llama instruct 7b	
+code-llama-13b	model	Code Llama 13B	code-llama	meta	code llama 13b; code llama python 13b; code llama instruct 13b	
+code-llama-34b	model	Code Llama 34B	code-llama	meta	code llama 34b; code llama python 34b; code llama instruct 34b	
+code-llama-70b	model	Code Llama 70B	code-llama	meta	code llama 70b; code llama python 70b; code llama instruct 70b	
+llama-3	group	Llama 3	llama	meta	llama 3	
+llama-3-8b	model	Llama 3 8B	llama-3	meta	llama 3 8b	
+llama-3-70b	model	Llama 3 70B	llama-3	meta	llama 3 70b	
+llama-3.1	group	Llama 3.1	llama	meta	llama 3.1	
+llama-3.1-8b	model	Llama 3.1 8B	llama-3.1	meta	llama 3.1 8b	
+llama-3.1-70b	model	Llama 3.1 70B	llama-3.1	meta	llama 3.1 70b	
+llama-3.1-405b	model	Llama 3.1 405B	llama-3.1	meta	llama 3.1 405b; llama 405b; llama 3 405b	
+llama-3.2	group	Llama 3.2	llama	meta	llama 3.2	
+llama-3.2-1b	model	Llama 3.2 1B	llama-3.2	meta	llama 3.2 1b	
+llama-3.2-3b	model	Llama 3.2 3B	llama-3.2	meta	llama 3.2 3b	
+llama-3.2-11b-vision	model	Llama 3.2 11B Vision	llama-3.2	meta	llama 3.2 11b vision; llama 3.2 11b; llama 3.2 vision 11b	
+llama-3.2-90b-vision	model	Llama 3.2 90B Vision	llama-3.2	meta	llama 3.2 90b vision; llama 3.2 90b; llama 3.2 vision 90b	
+llama-3.3-70b	model	Llama 3.3 70B	llama	meta	llama 3.3 70b; llama 3.3	
+llama-4	group	Llama 4	llama	meta	llama 4	
+llama-4-scout	model	Llama 4 Scout	llama-4	meta	llama 4 scout	scout
+llama-4-maverick	model	Llama 4 Maverick	llama-4	meta	llama 4 maverick	maverick
+llama-4-behemoth	model	Llama 4 Behemoth	llama-4	meta	llama 4 behemoth	behemoth
+llama-guard	group	Llama Guard	llama		llama guard; meta llama guard	
+llama-guard-1-7b	model	Llama Guard	llama-guard	meta	llama guard 7b; llama guard 1; llama guard v1; meta llama guard 7b; meta llama guard 1; meta llama guard v1	
+llama-guard-2-8b	model	Meta Llama Guard 2	llama-guard	meta	llama guard 2; meta llama guard 2; llama guard 2 8b; meta llama guard 2 8b	
+llama-guard-3	group	Llama Guard 3	llama-guard		llama guard 3; meta llama guard 3	
+llama-guard-3-8b	model	Llama Guard 3 8B	llama-guard-3	meta	llama guard 3 8b; meta llama guard 3 8b	
+llama-guard-3-1b	model	Llama Guard 3 1B	llama-guard-3	meta	llama guard 3 1b; meta llama guard 3 1b	
+llama-guard-3-11b-vision	model	Llama Guard 3 11B-Vision	llama-guard-3	meta	llama guard 3 11b vision; llama guard 3 vision; llama guard 3 11b; meta llama guard 3 11b vision; meta llama guard 3 vision; meta llama guard 3 11b	
+llama-guard-4-12b	model	Llama Guard 4	llama-guard	meta	llama guard 4; llama guard 4 12b; meta llama guard 4; meta llama guard 4 12b	
+llama-prompt-guard	group	Llama Prompt Guard	llama		llama prompt guard; meta prompt guard	prompt guard
+llama-prompt-guard-86m	model	Prompt Guard 86M	llama-prompt-guard	meta	prompt guard 86m; llama prompt guard 86m; meta prompt guard 86m	prompt guard 1
+llama-prompt-guard-2	group	Llama Prompt Guard 2	llama-prompt-guard		llama prompt guard 2; meta prompt guard 2	prompt guard 2
+llama-prompt-guard-2-86m	model	Llama Prompt Guard 2 86M	llama-prompt-guard-2	meta	llama prompt guard 2 86m; prompt guard 2 86m; meta prompt guard 2 86m	
+llama-prompt-guard-2-22m	model	Llama Prompt Guard 2 22M	llama-prompt-guard-2	meta	llama prompt guard 2 22m; prompt guard 2 22m; meta prompt guard 2 22m	
+llama-scope	family	Llama Scope		fudan		
+llama-scope-1	model	Llama Scope	llama-scope	fudan	llama scope	
+muse	family	Meta Muse		meta	meta muse	muse
+muse-spark	model	Muse Spark	muse	meta	muse spark; project avocado	avocado
+muse-spark-1.1	model	Muse Spark 1.1	muse	meta	muse spark 1.1	spark 1.1
+muse-spark-1.2	model	Muse Spark 1.2	muse	meta	muse spark 1.2	
+muse-spark-1.3	model	Muse Spark 1.3	muse	meta	muse spark 1.3	
+muse-spark-open	model	Muse Spark Open	muse	meta	muse spark open	
+muse-glimmer	model	Muse Glimmer	muse	meta	muse glimmer	
+muse-image	model	Muse Image	muse	meta	muse image	
+muse-video	model	Muse Video	muse	meta	muse video	
+mobilemoe	family	MobileMoE	small-lms	meta	mobilemoe; mobile moe	
+mobilemoe-l	model	MobileMoE-L	mobilemoe	meta	mobilemoe l	
+opt	family	OPT	early-open-llms	meta	open pre trained transformer	opt
+opt-125m	model	OPT 125M	opt	meta	opt 125m	
+opt-350m	model	OPT 350M	opt	meta	opt 350m	
+opt-1.3b	model	OPT 1.3B	opt	meta	opt 1.3b	
+opt-2.7b	model	OPT 2.7B	opt	meta	opt 2.7b	
+opt-6.7b	model	OPT 6.7B	opt	meta	opt 6.7b	
+opt-13b	model	OPT 13B	opt	meta	opt 13b	
+opt-30b	model	OPT 30B	opt	meta	opt 30b	
+opt-66b	model	OPT 66B	opt	meta	opt 66b	
+opt-175b	model	OPT-175B	opt	meta	opt 175b	
+galactica	family	Galactica	early-open-llms	meta	galactica; galai	
+galactica-120b	model	Galactica 120B	galactica	meta	galactica 120b	
+roberta	family	RoBERTa	bert-era-encoders	meta		roberta
+roberta-base	model	RoBERTa base	roberta	meta	roberta base	
+roberta-large	model	RoBERTa large	roberta	meta	roberta large	
+bart	family	BART	bert-era-encoders	meta		bart
+bart-base	model	BART base	bart	meta	bart base	
+bart-large	model	BART large	bart	meta	bart large	
+wav2vec	family	wav2vec	speech-recognition	meta	wav2vec	
+wav2vec-2.0	model	wav2vec 2.0	wav2vec	meta	wav2vec 2.0; wav2vec 2	
+segment-anything	family	Segment Anything	detection-segmentation	meta	segment anything model; segment anything	
+sam-1	model	SAM 1	segment-anything	meta	sam 1; sam vit	
+sam-2	model	SAM 2	segment-anything	meta	sam 2; segment anything 2; segment anything model 2; segment anything in images and videos	
+sam-3	model	SAM 3	segment-anything	meta	sam 3; segment anything 3; segment anything model 3; segment anything with concepts; sam 3.1; segment anything 3.1	
+chameleon	family	Chameleon	open-research-vlms	meta	meta chameleon	chameleon
+chameleon-7b	model	Chameleon 7B	chameleon	meta	chameleon 7b; meta chameleon 7b	
+chameleon-34b	model	Chameleon 34B	chameleon	meta	chameleon 34b; chameleon 30b; meta chameleon 34b; meta chameleon 30b	
+code-world-model	family	Code World Model	coding-models	meta	code world model	
+cwm	model	Code World Model (CWM)	code-world-model	meta		cwm
+blenderbot	family	BlenderBot	early-open-llms	meta	blender bot	
+blenderbot-1	model	BlenderBot 1	blenderbot	meta	blender bot 1; blender bot 2.7b; blender bot 9.4b	
+blenderbot-2	model	BlenderBot 2	blenderbot	meta	blender bot 2	
+blenderbot-3	model	BlenderBot 3	blenderbot	meta	blender bot 3	bb3
+grok	family	Grok		xai	grok	
+grok-1	model	Grok-1	grok	xai	grok 1; grok 0	
+grok-1.5	model	Grok-1.5	grok	xai	grok 1.5	
+grok-1.5v	model	Grok-1.5V	grok	xai	grok 1.5v; grok 1.5 vision	
+grok-2	model	Grok-2	grok	xai	grok 2.5; grok vision beta; sus column r; grok 2	grok beta
+grok-2-mini	model	Grok-2 mini	grok	xai	grok 2 mini	
+grok-aurora	model	Aurora	grok	xai	grok 2 image	aurora
+grok-3	model	Grok 3	grok	xai	grok 3	big brain mode
+grok-3-mini	model	Grok 3 mini	grok	xai	grok 3 mini	
+grok-4	model	Grok 4	grok	xai	grok 4	
+grok-4-fast	model	Grok 4 Fast	grok	xai	grok 4 fast	
+grok-code-fast-1	model	Grok Code Fast 1	grok	xai	grok code fast 1; grok code fast	sonic; grok code
+grok-4.1	model	Grok 4.1	grok	xai	grok 4.1	
+grok-4.20	model	Grok 4.20	grok	xai	grok 4.20; grok 420	
+grok-4.3	model	Grok 4.3	grok	xai	grok 4.3	
+grok-4.5	model	Grok 4.5	grok	xai	grok 4.5	
+grok-4.6	model	Grok 4.6	grok	xai	grok 4.6	
+grok-4.7	model	Grok 4.7	grok	xai	grok 4.7	
+grok-build-0.1	model	Grok Build 0.1	grok	xai	grok build 0.1; grok build	
+grok-imagine	group	Grok Imagine	grok	xai	grok imagine	
+grok-imagine-image	model	grok-imagine-image	grok-imagine	xai	grok imagine image	
+grok-imagine-video	model	grok-imagine-video	grok-imagine	xai	grok imagine video	
+grok-imagine-video-1.5	model	grok-imagine-video-1.5	grok-imagine	xai	grok imagine video 1.5	
+grok-imagine-image-2.0	model	Grok Imagine Image 2.0	grok-imagine	xai	grok imagine image 2.0	
+grok-voice	group	Grok Voice	grok		grok voice	
+grok-voice-1.0	model	Grok Voice 1.0	grok-voice	xai	grok voice 1.0	
+grok-voice-2.0	model	Grok Voice 2.0	grok-voice	xai	grok voice 2.0	
+grok-voice-3.0	model	Grok Voice 3.0	grok-voice	xai	grok voice 3.0	
+grok-voice-transcribe-2.0	model	Grok Voice Transcribe 2.0	grok-voice	xai	grok voice transcribe 2.0; grok voice transcribe	
+mistral	family	Mistral		mistral	mistral; mistral ocr	mistral ai
+mistral-7b	model	Mistral 7B	mistral	mistral	mistral 7b; mistral tiny	
+mathstral-7b	model	Mathstral 7B	mistral	mistral	mathstral; mathstral 7b; mistral mathstral	
+mixtral	group	Mixtral	mistral		mixtral; mixtral of experts	
+mixtral-8x7b	model	Mixtral 8x7B	mixtral	mistral	mixtral 8x7b; mixtral 8×7b	8x7b
+mixtral-8x22b	model	Mixtral 8x22B	mixtral	mistral	mixtral 8x22b; mixtral 8×22b	8x22b
+mistral-fine-tunes	group	Mistral fine-tunes (third-party)	mistral		zephyr 141b; openhermes; open hermes; nous hermes 2 mixtral	zephyr
+zephyr-7b	model	Zephyr-7B	mistral-fine-tunes	hugging-face	zephyr 7b	
+mistral-small	group	Mistral Small	mistral		mistral small	mistral small 24b
+mistral-small-2402	model	Mistral Small (2402)	mistral-small	mistral	mistral small 2402	
+mistral-small-2	model	Mistral Small 2 (2409)	mistral-small	mistral	mistral small 2; mistral small 2409; mistral small 22b; mistral small instruct 2409	
+mistral-small-3	model	Mistral Small 3	mistral-small	mistral	mistral small 3; mistral small 2501	
+mistral-small-3.1	model	Mistral Small 3.1	mistral-small	mistral	mistral small 3.1; mistral small 2503	
+mistral-small-3.2	model	Mistral Small 3.2	mistral-small	mistral	mistral small 3.2; mistral small 2506	
+mistral-small-4	model	Mistral Small 4	mistral-small	mistral	mistral small 4; mistral small 2603	small 4
+mistral-medium	group	Mistral Medium	mistral		mistral medium	
+mistral-medium-2312	model	Mistral Medium (2312)	mistral-medium	mistral	mistral medium 2312	
+mistral-medium-3	model	Mistral Medium 3	mistral-medium	mistral	mistral medium 3; mistral medium 2505	
+mistral-medium-3.1	model	Mistral Medium 3.1	mistral-medium	mistral	mistral medium 3.1; mistral medium 2508	
+mistral-medium-3.5	model	Mistral Medium 3.5	mistral-medium	mistral	mistral medium 3.5	medium 3.5
+mistral-large	group	Mistral Large	mistral		mistral large	
+mistral-large-2402	model	Mistral Large (2402)	mistral-large	mistral	mistral large 2402	
+mistral-large-2	model	Mistral Large 2	mistral-large	mistral	mistral large 2; mistral large 2407; mistral large 24.11; mistral large 2411; mistral large instruct 2407	
+mistral-large-3	model	Mistral Large 3	mistral-large	mistral	mistral large 3; mistral 3	large 3
+mistral-large-4	model	Mistral Large 4	mistral-large	mistral	mistral large 4	
+ministral	group	Ministral	mistral		ministral; les ministraux	
+ministral-3b	model	Ministral 3B	ministral	mistral	ministral 3b	
+ministral-8b	model	Ministral 8B	ministral	mistral	ministral 8b	
+ministral-3	group	Ministral 3	ministral		ministral 3	
+ministral-3-3b	model	Ministral 3 3B	ministral-3	mistral	ministral 3 3b	
+ministral-3-8b	model	Ministral 3 8B	ministral-3	mistral	ministral 3 8b	
+ministral-3-14b	model	Ministral 3 14B	ministral-3	mistral	ministral 3 14b	
+mistral-nemo	model	Mistral NeMo	mistral	mistral	mistral nemo; nemo 12b	
+codestral	group	Codestral	mistral		codestral	
+codestral-22b	model	Codestral (22B)	codestral	mistral	codestral 22b; codestral 2405	
+codestral-mamba	model	Codestral Mamba	codestral	mistral	codestral mamba; mamba codestral	
+codestral-25.01	model	Codestral 25.01	codestral	mistral	codestral 25.01; codestral 2501	
+codestral-embed	model	Codestral Embed	codestral	mistral	codestral embed; codestral embed 2505; mistral codestral embed	
+pixtral	group	Pixtral	mistral		pixtral	
+pixtral-12b	model	Pixtral 12B	pixtral	mistral	pixtral 12b	
+pixtral-large	model	Pixtral Large	pixtral	mistral	pixtral large	
+magistral	group	Magistral	mistral		magistral	
+magistral-small	model	Magistral Small	magistral	mistral	magistral small	
+magistral-medium	model	Magistral Medium	magistral	mistral	magistral medium	
+devstral	group	Devstral	mistral		devstral	
+devstral-small	model	Devstral Small	devstral	mistral	devstral small	
+devstral-2	model	Devstral 2	devstral	mistral	devstral 2; devstral small 2	
+voxtral	group	Voxtral	mistral		voxtral	
+voxtral-small	model	Voxtral Small	voxtral	mistral	voxtral small	
+voxtral-mini	model	Voxtral Mini	voxtral	mistral	voxtral mini	
+voxtral-tts	model	Voxtral TTS	voxtral	mistral	voxtral tts; voxtral 4b tts	
+mistral-moderation	group	Mistral Moderation	mistral		mistral moderation; mistral moderation latest	
+mistral-moderation-1	model	Mistral Moderation	mistral-moderation	mistral	mistral moderation 2411; mistral moderation 24.11	
+mistral-moderation-2	model	Mistral Moderation 2	mistral-moderation	mistral	mistral moderation 2; mistral moderation 2603; mistral moderation 26.03	
+shieldstral-1.0-3b	model	Shieldstral 1.0 3B	mistral	mistral	shieldstral; shieldstral 1.0; shieldstral 1.0 3b; mistral shieldstral	
+mistral-saba	model	Mistral Saba	mistral	mistral	mistral saba	
+mistral-embed	model	Mistral Embed	mistral	mistral	mistral embed; mistral ai embed	
+leanstral	group	Leanstral	mistral		leanstral; labs leanstral	
+leanstral-2603	model	Leanstral (2603)	leanstral	mistral	leanstral 2603; labs leanstral 2603	
+leanstral-1.5	model	Leanstral 1.5	leanstral	mistral	leanstral 1.5; labs leanstral 1.5	
+command	family	Cohere Command		cohere	cohere command	
+command-original	model	Command (original)	command	cohere	command light; cohere command light; command nightly; command text v14; command light text v14	
+command-r-line	group	Command R (line)	command		command r series; cohere command r series	
+command-r	model	Command R	command-r-line	cohere	command r; cohere command r	
+command-r-plus	model	Command R+	command-r-line	cohere	command r+; command r plus; cohere command r+; cohere command r plus	
+command-r7b	model	Command R7B	command-r-line	cohere	command r7b; cohere command r7b	
+command-a-line	group	Command A (line)	command		command a translate	
+command-a	model	Command A	command-a-line	cohere	cohere command a	command a
+command-a-reasoning	model	Command A Reasoning	command-a-line	cohere	command a reasoning	
+command-a-vision	model	Command A Vision	command-a-line	cohere	command a vision; cohere command a vision	
+command-a-plus	model	Command A+	command-a-line	cohere	command a+; command a plus; cohere command a+; cohere command a plus	
+cohere-north	family	North (Cohere)	coding-models	cohere	cohere north; north small translate	
+north-mini-code	model	North Mini Code	cohere-north	cohere	north mini code	
+cohere-asr	family	Cohere Transcribe	speech-recognition	cohere		
+cohere-embed	family	Cohere Embed	embedding-reranking	cohere	cohere embed	
+cohere-embed-v3	model	Embed v3	cohere-embed	cohere	cohere embed v3; cohere embed english v3; cohere embed multilingual v3; embed english v3; embed multilingual v3	embed v3
+cohere-embed-4	model	Embed 4	cohere-embed	cohere	cohere embed 4; cohere embed v4; embed v4.0	embed 4
+cohere-embed-5-pro	model	Embed 5 Pro	cohere-embed	cohere	embed 5 pro; embed v5.0 pro; cohere embed 5 pro	
+cohere-embed-5-fast	model	Embed 5 Fast	cohere-embed	cohere	embed 5 fast; embed v5.0 fast	
+cohere-rerank	family	Cohere Rerank	embedding-reranking	cohere	cohere rerank; cohere rerank 3; cohere rerank v3; rerank english v3; rerank multilingual v3; cohere rerank 3.5; rerank v3.5; cohere rerank v3.5; cohere rerank 4 pro; rerank v4.0 pro; cohere rerank v4.0 pro; cohere rerank 4 fast; rerank v4.0 fast; cohere rerank v4.0 fast; cohere rerank 4; rerank v4.0; cohere rerank v4.0	rerank 3.5; rerank 4 pro; rerank 4 fast; rerank 4
+cohere-transcribe	model	Cohere Transcribe	cohere-asr	cohere	cohere transcribe	
+aya	family	Aya		cohere	aya	
+aya-101	model	Aya 101	aya	cohere	aya 101	
+aya-23	group	Aya 23	aya		aya 23	
+aya-23-8b	model	Aya 23 8B	aya-23	cohere	aya 23 8b	
+aya-23-35b	model	Aya 23 35B	aya-23	cohere	aya 23 35b	
+aya-expanse	group	Aya Expanse	aya		aya expanse	
+aya-expanse-8b	model	Aya Expanse 8B	aya-expanse	cohere	aya expanse 8b	
+aya-expanse-32b	model	Aya Expanse 32B	aya-expanse	cohere	aya expanse 32b	
+aya-vision	group	Aya Vision	aya		aya vision	
+aya-vision-8b	model	Aya Vision 8B	aya-vision	cohere	aya vision 8b	
+aya-vision-32b	model	Aya Vision 32B	aya-vision	cohere	aya vision 32b	
+tiny-aya	model	Tiny Aya	aya	cohere	tiny aya	
+ai21	family	AI21		ai21	ai21; ai21 labs	
+jurassic-1	model	Jurassic-1	ai21	ai21	jurassic 1	j1
+jurassic-2	model	Jurassic-2	ai21	ai21	jurassic 2	j2
+jamba	group	Jamba	ai21		jamba; jamba large; jamba mini	
+jamba-v0.1	model	Jamba (v0.1)	jamba	ai21	jamba v0.1; jamba instruct	
+jamba-1.5	group	Jamba 1.5	jamba		jamba 1.5	
+jamba-1.5-mini	model	Jamba 1.5 Mini	jamba-1.5	ai21	jamba 1.5 mini; jamba mini 1.5	
+jamba-1.5-large	model	Jamba 1.5 Large	jamba-1.5	ai21	jamba 1.5 large; jamba large 1.5	
+jamba-1.6	group	Jamba 1.6	jamba		jamba 1.6	
+jamba-1.6-mini	model	Jamba 1.6 Mini	jamba-1.6	ai21	jamba 1.6 mini; jamba mini 1.6	
+jamba-1.6-large	model	Jamba 1.6 Large	jamba-1.6	ai21	jamba 1.6 large; jamba large 1.6	
+jamba-1.7	group	Jamba 1.7	jamba		jamba 1.7	
+jamba-1.7-mini	model	Jamba 1.7 Mini	jamba-1.7	ai21	jamba 1.7 mini; jamba mini 1.7	
+jamba-1.7-large	model	Jamba 1.7 Large	jamba-1.7	ai21	jamba 1.7 large; jamba large 1.7	
+jamba-reasoning-3b	model	Jamba Reasoning 3B	jamba	ai21	jamba reasoning; jamba reasoning 3b	
+jamba2	group	Jamba2	jamba		jamba 2	
+jamba2-3b	model	Jamba2 3B	jamba2	ai21	jamba 2 3b; jamba 3b	
+jamba2-mini	model	Jamba2 Mini	jamba2	ai21	jamba 2 mini; jamba mini 2	
+falcon	family	Falcon		tii	falcon llm	falcon
+falcon-7b	model	Falcon 7B	falcon	tii	falcon 7b	
+falcon-40b	model	Falcon 40B	falcon	tii	falcon 40b	
+falcon-180b	model	Falcon 180B	falcon	tii	falcon 180b	
+falcon-2-11b	model	Falcon 2 11B	falcon	tii	falcon 2; falcon 2 11b; falcon 11b	
+falcon-2-11b-vlm	model	Falcon 2 11B VLM	falcon	tii	falcon 2 11b vlm; falcon 2 vlm	
+falcon-mamba-7b	model	Falcon Mamba 7B	falcon	tii	falcon mamba	
+falcon-3	group	Falcon 3	falcon		falcon 3	
+falcon-3-1b	model	Falcon 3 1B	falcon-3	tii	falcon 3 1b	
+falcon-3-3b	model	Falcon 3 3B	falcon-3	tii	falcon 3 3b	
+falcon-3-7b	model	Falcon 3 7B	falcon-3	tii	falcon 3 7b	
+falcon-3-10b	model	Falcon 3 10B	falcon-3	tii	falcon 3 10b	
+falcon-h1	group	Falcon-H1	falcon		falcon h1	
+falcon-h1-0.5b	model	Falcon-H1 0.5B	falcon-h1	tii	falcon h1 0.5b	
+falcon-h1-1.5b	model	Falcon-H1 1.5B	falcon-h1	tii	falcon h1 1.5b	
+falcon-h1-3b	model	Falcon-H1 3B	falcon-h1	tii	falcon h1 3b	
+falcon-h1-7b	model	Falcon-H1 7B	falcon-h1	tii	falcon h1 7b	
+falcon-h1-34b	model	Falcon-H1 34B	falcon-h1	tii	falcon h1 34b	
+falcon-h1r-7b	model	Falcon-H1R-7B	falcon-h1	tii	falcon h1r; falcon h1r 7b	
+aleph-alpha	family	Aleph Alpha	european-open-llms	aleph-alpha	aleph alpha	
+luminous	model	Luminous	aleph-alpha	aleph-alpha	aleph alpha luminous; luminous base; luminous extended; luminous supreme	luminous
+pharia-1	model	Pharia-1-LLM-7B	aleph-alpha	aleph-alpha	pharia 1	
+kolibri	model	Kolibri	aleph-alpha	aleph-alpha	aleph alpha kolibri; kolibri 78b	kolibri
+stablelm	family	StableLM	early-open-llms	stability	stable lm	
+stablelm-alpha	model	StableLM-Alpha	stablelm	stability	stablelm alpha; stablelm base alpha; stablelm tuned alpha	
+stablelm-2	group	Stable LM 2	stablelm		stable lm 2	
+stablelm-2-1.6b	model	Stable LM 2 1.6B	stablelm-2	stability	stable lm 2 1.6b; stablelm 2 zephyr	
+stablelm-2-12b	model	Stable LM 2 12B	stablelm-2	stability	stable lm 2 12b	
+eurollm	family	EuroLLM	european-open-llms	eurollm	eurollm	
+eurollm-1.7b	model	EuroLLM-1.7B	eurollm	eurollm	eurollm 1.7b	
+eurollm-9b	model	EuroLLM-9B	eurollm	eurollm	eurollm 9b	
+eurollm-22b	model	EuroLLM-22B	eurollm	eurollm	eurollm 22b	
+teuken	family	Teuken	european-open-llms	opengpt-x	teuken; opengpt x	
+teuken-7b	model	Teuken-7B	teuken	opengpt-x	teuken 7b	
+titan	family	Amazon Titan		amazon	amazon titan; titan text; titan image generator; amazon titan image generator	titan
+titan-text-lite	model	Titan Text Lite	titan	amazon	titan text lite; titan text g1 lite	
+titan-text-express	model	Titan Text Express	titan	amazon	titan text express; titan text g1 express	
+titan-text-premier	model	Titan Text Premier	titan	amazon	titan text premier	
+titan-embed-text-v1	model	Titan Text Embeddings G1	titan	amazon	titan text embeddings g1; titan embeddings g1; titan text embeddings v1; titan embed text v1; amazon titan embeddings g1	
+titan-embed-text-v2	model	Titan Text Embeddings V2	titan	amazon	titan text embeddings v2; amazon titan text embeddings v2; titan embed text v2	
+nova	family	Amazon Nova		amazon	amazon nova	
+nova-1	group	Nova 1	nova		amazon nova 1; amazon nova 1.0	nova 1.0
+nova-micro	model	Nova Micro	nova-1	amazon	nova micro; amazon nova micro; nova 1.0 micro; amazon nova 1.0 micro	
+nova-lite	model	Nova Lite	nova-1	amazon	nova lite; amazon nova lite; nova 1.0 lite; amazon nova 1.0 lite	
+nova-pro	model	Nova Pro	nova-1	amazon	nova pro; amazon nova pro; nova 1.0 pro; amazon nova 1.0 pro	
+nova-premier	model	Nova Premier	nova-1	amazon	nova premier; amazon nova premier; nova 1.0 premier; amazon nova 1.0 premier	
+nova-sonic	model	Nova Sonic	nova-1	amazon	nova sonic; amazon nova sonic; nova 1.0 sonic; amazon nova 1.0 sonic	
+nova-canvas	model	Amazon Nova Canvas	nova-1	amazon	nova canvas; amazon nova canvas	
+nova-reel	model	Amazon Nova Reel	nova-1	amazon	nova reel; amazon nova reel	
+nova-2	group	Nova 2	nova		amazon nova 2; amazon nova 2.0	nova 2.0
+nova-2-lite	model	Nova 2 Lite	nova-2	amazon	nova 2 lite; amazon nova 2 lite; nova 2.0 lite; amazon nova 2.0 lite	
+nova-2-pro	model	Nova 2 Pro	nova-2	amazon	nova 2 pro; amazon nova 2 pro; nova 2.0 pro; amazon nova 2.0 pro	
+nova-2-sonic	model	Nova 2 Sonic	nova-2	amazon	nova 2 sonic; amazon nova 2 sonic; nova 2.0 sonic; amazon nova 2.0 sonic	
+nova-2-omni	model	Nova 2 Omni	nova-2	amazon	nova 2 omni; amazon nova 2 omni; nova 2.0 omni; amazon nova 2.0 omni	
+inflection	family	Inflection	us-ai-startup-llms	inflection	inflection ai; inflection pi; pi chatbot; pi assistant	inflection; personal intelligence
+inflection-1	model	Inflection-1	inflection	inflection	inflection 1	
+inflection-2	model	Inflection-2	inflection	inflection	inflection 2	
+inflection-2.5	model	Inflection-2.5	inflection	inflection	inflection 2.5	
+inflection-3	model	Inflection 3.0	inflection	inflection	inflection 3; inflection 3.0	
+reka	family	Reka	us-ai-startup-llms	reka	reka; reka ai	
+reka-edge	model	Reka Edge	reka	reka	reka edge	
+reka-flash	model	Reka Flash (v1)	reka	reka	reka flash	
+reka-core	model	Reka Core	reka	reka	reka core	
+reka-flash-3	model	Reka Flash 3	reka	reka	reka flash 3	
+sonar	family	Perplexity Sonar	branded-post-trains	perplexity	perplexity sonar; pplx	sonar
+pplx-online	group	pplx-online	sonar		pplx online	
+pplx-7b-online	model	pplx-7b-online	pplx-online	perplexity	pplx 7b	
+pplx-70b-online	model	pplx-70b-online	pplx-online	perplexity	pplx 70b	
+sonar-2025	model	Sonar (2025)	sonar	perplexity	new sonar	
+sonar-reasoning	model	Sonar Reasoning	sonar	perplexity	sonar reasoning; perplexity sonar reasoning	
+sonar-reasoning-pro	model	Sonar Reasoning Pro	sonar	perplexity	sonar reasoning pro; perplexity sonar reasoning pro	
+r1-1776	family	R1 1776	branded-post-trains	perplexity		
+r1-1776-671b	model	R1 1776	r1-1776	perplexity	r1 1776; perplexity r1 1776	
+afm	family	Apple Foundation Models		apple	apple foundation models; apple intelligence models; apple intelligence model	afm
+openelm	model	OpenELM	afm	apple	openelm	
+afm-2024	group	AFM 2024	afm			
+afm-on-device	model	AFM-on-device	afm-2024	apple	afm on device; apple on device model	
+afm-server	model	AFM-server	afm-2024	apple	afm server	
+afm-3	model	AFM 3	afm	apple	afm 3; apple foundation models 3; third generation apple foundation models	
+palmyra	family	Writer Palmyra	us-ai-startup-llms	writer	palmyra	
+palmyra-x4	model	Palmyra X4	palmyra	writer	palmyra x4	
+palmyra-x5	model	Palmyra X5	palmyra	writer	palmyra x5	
+palmyra-x6	model	Palmyra X6	palmyra	writer	palmyra x6	
+lfm	family	LFM	alt-architecture-lms	liquid	liquid foundation models	lfm
+lfm-1b	model	LFM-1B	lfm	liquid	lfm 1b	
+lfm-3b	model	LFM-3B	lfm	liquid	lfm 3b	
+lfm-40b	model	LFM-40B	lfm	liquid	lfm 40b	
+lfm2	model	LFM2	lfm	liquid	lfm 2	
+lfm2-vl	model	LFM2-VL	lfm	liquid	lfm 2 vl	
+lfm2.5	model	LFM2.5	lfm	liquid	lfm 2.5	
+liquid-d1	family	Liquid d1	decision-models	liquid	liquid d1	
+liquid-d1-hosted	model	d1	liquid-d1	liquid	liquid d1 hosted	
+liquid-d1-ultra	model	d1-ultra	liquid-d1	liquid	liquid d1 ultra	d1 ultra
+liquid-d1-3b	model	d1-3B	liquid-d1	liquid	liquid d1 3b	d1 3b
+liquid-d1-omni-600m	model	d1-omni-600M	liquid-d1	liquid	d1 omni 600m; liquid d1 omni	
+deepseek	family	DeepSeek		deepseek	deepseek; deep seek; 深度求索	
+deepseek-llm	group	DeepSeek LLM	deepseek		deepseek llm	
+deepseek-llm-7b	model	DeepSeek LLM 7B	deepseek-llm	deepseek	deepseek llm 7b; deepseek 7b	
+deepseek-llm-67b	model	DeepSeek LLM 67B	deepseek-llm	deepseek	deepseek llm 67b; deepseek 67b	
+deepseek-moe-16b	model	DeepSeekMoE 16B	deepseek	deepseek	deepseek moe; deepseek moe 16b	
+deepseek-coder-line	group	DeepSeek Coder line	deepseek		deepseek coder line	
+deepseek-coder	group	DeepSeek-Coder	deepseek-coder-line		deepseek coder	
+deepseek-coder-1.3b	model	DeepSeek-Coder 1.3B	deepseek-coder	deepseek	deepseek coder 1.3b	
+deepseek-coder-6.7b	model	DeepSeek-Coder 6.7B	deepseek-coder	deepseek	deepseek coder 6.7b	
+deepseek-coder-33b	model	DeepSeek-Coder 33B	deepseek-coder	deepseek	deepseek coder 33b	
+deepseek-math-7b	model	DeepSeekMath 7B	deepseek-coder	deepseek	deepseek math; deepseek math 7b	
+deepseek-coder-v2	model	DeepSeek-Coder-V2	deepseek-coder-line	deepseek	deepseek coder v2	
+deepseek-coder-v2-lite	model	DeepSeek-Coder-V2-Lite	deepseek-coder-line	deepseek	deepseek coder v2 lite	
+deepseek-prover	group	DeepSeek-Prover	deepseek		deepseek prover	
+deepseek-prover-v1.5	model	DeepSeek-Prover-V1.5	deepseek-prover	deepseek	deepseek prover v1.5; deepseek prover 1.5; deepseek prover v1.5 7b	
+deepseek-prover-v2	group	DeepSeek-Prover-V2	deepseek-prover		deepseek prover v2; deepseek prover 2; deepseek prover v2 671b; deepseek prover v2 7b	
+deepseek-v-series	group	DeepSeek-V series	deepseek		deepseek v series; deepseek v; deepseek chat	
+deepseek-v2	model	DeepSeek-V2	deepseek-v-series	deepseek	deepseek v2	
+deepseek-v2-lite	model	DeepSeek-V2-Lite	deepseek-v-series	deepseek	deepseek v2 lite	
+deepseek-v2.5	model	DeepSeek-V2.5	deepseek-v-series	deepseek	deepseek v2.5; deepseek 2.5	
+deepseek-v3	model	DeepSeek-V3	deepseek-v-series	deepseek	deepseek v3; deepseek 3; deepseek chat v3	
+deepseek-v3.1	model	DeepSeek-V3.1	deepseek-v-series	deepseek	deepseek v3.1; deepseek 3.1	
+deepseek-v3.2	model	DeepSeek-V3.2	deepseek-v-series	deepseek	deepseek v3.2; deepseek 3.2	
+deepseek-v4	group	DeepSeek-V4	deepseek-v-series		deepseek v4; deepseek 4	
+deepseek-v4-pro	model	DeepSeek-V4 Pro	deepseek-v4	deepseek	deepseek v4 pro	
+deepseek-v4-flash	model	DeepSeek-V4 Flash	deepseek-v4	deepseek	deepseek v4 flash	v4 flash
+deepseek-v4-flash-vision-exp	model	DeepSeek-V4-Flash-Vision-Exp	deepseek-v4	deepseek	deepseek v4 flash vision	
+deepseek-v4.1-flash	model	DeepSeek-V4.1 Flash	deepseek-v-series	deepseek	deepseek v4.1 flash	
+deepseek-r-series	group	DeepSeek R series	deepseek		deepseek r series; deepseek r; deepseek reasoner	r series
+deepseek-r1	model	DeepSeek-R1	deepseek-r-series	deepseek	deepseek r1	
+deepseek-r1-zero	model	DeepSeek-R1-Zero	deepseek-r-series	deepseek	deepseek r1 zero; r1 zero	
+deepseek-r1-distill-qwen-1.5b	model	DeepSeek-R1-Distill-Qwen-1.5B	deepseek-r-series	deepseek	deepseek r1 distill qwen 1.5b; r1 distill qwen 1.5b	
+deepseek-r1-distill-qwen-7b	model	DeepSeek-R1-Distill-Qwen-7B	deepseek-r-series	deepseek	deepseek r1 distill qwen 7b; r1 distill qwen 7b	
+deepseek-r1-distill-qwen-14b	model	DeepSeek-R1-Distill-Qwen-14B	deepseek-r-series	deepseek	deepseek r1 distill qwen 14b; r1 distill qwen 14b	
+deepseek-r1-distill-qwen-32b	model	DeepSeek-R1-Distill-Qwen-32B	deepseek-r-series	deepseek	deepseek r1 distill qwen 32b; r1 distill qwen 32b	
+deepseek-r1-distill-llama-8b	model	DeepSeek-R1-Distill-Llama-8B	deepseek-r-series	deepseek	deepseek r1 distill llama 8b; r1 distill llama 8b	
+deepseek-r1-distill-llama-70b	model	DeepSeek-R1-Distill-Llama-70B	deepseek-r-series	deepseek	deepseek r1 distill llama 70b; r1 distill llama 70b	
+deepseek-vl	group	DeepSeek-VL	deepseek		deepseek vl	
+deepseek-vl-1	model	DeepSeek-VL	deepseek-vl	deepseek	deepseek vl 1; deepseek vl 7b; deepseek vl 1.3b	
+deepseek-vl2	model	DeepSeek-VL2	deepseek-vl	deepseek	deepseek vl 2	
+janus	group	Janus	deepseek		deepseek janus	janus
+janus-1	model	Janus	janus	deepseek	janus 1.3b; deepseek janus 1.3b	
+janus-flow	model	JanusFlow	janus	deepseek	janus flow; deepseek janus flow	
+janus-pro	model	Janus-Pro	janus	deepseek	janus pro; deepseek janus pro	
+qwen	family	Qwen		alibaba	qwen; tongyi qianwen; 通义千问	tongyi
+qwen1	group	Qwen 1	qwen		qwen 1	
+qwen1-1.8b	model	Qwen-1.8B	qwen1	alibaba	qwen 1.8b	
+qwen1-7b	model	Qwen-7B	qwen1	alibaba	qwen 7b	
+qwen1-14b	model	Qwen-14B	qwen1	alibaba	qwen 14b	
+qwen1-72b	model	Qwen-72B	qwen1	alibaba	qwen 72b	
+qwen1.5	group	Qwen1.5	qwen		qwen 1.5; codeqwen; codeqwen 1.5	
+qwen1.5-0.5b	model	Qwen1.5-0.5B	qwen1.5	alibaba	qwen 1.5 0.5b	
+qwen1.5-1.8b	model	Qwen1.5-1.8B	qwen1.5	alibaba	qwen 1.5 1.8b	
+qwen1.5-4b	model	Qwen1.5-4B	qwen1.5	alibaba	qwen 1.5 4b	
+qwen1.5-7b	model	Qwen1.5-7B	qwen1.5	alibaba	qwen 1.5 7b	
+qwen1.5-14b	model	Qwen1.5-14B	qwen1.5	alibaba	qwen 1.5 14b	
+qwen1.5-32b	model	Qwen1.5-32B	qwen1.5	alibaba	qwen 1.5 32b	
+qwen1.5-72b	model	Qwen1.5-72B	qwen1.5	alibaba	qwen 1.5 72b	
+qwen1.5-110b	model	Qwen1.5-110B	qwen1.5	alibaba	qwen 1.5 110b	
+qwen1.5-moe-a2.7b	model	Qwen1.5-MoE-A2.7B	qwen1.5	alibaba	qwen 1.5 moe a2.7b; qwen 1.5 moe	
+qwen2	group	Qwen2	qwen		qwen 2	
+qwen2-0.5b	model	Qwen2-0.5B	qwen2	alibaba	qwen 2 0.5b	
+qwen2-1.5b	model	Qwen2-1.5B	qwen2	alibaba	qwen 2 1.5b	
+qwen2-7b	model	Qwen2-7B	qwen2	alibaba	qwen 2 7b	
+qwen2-72b	model	Qwen2-72B	qwen2	alibaba	qwen 2 72b	
+qwen2-57b-a14b	model	Qwen2-57B-A14B	qwen2	alibaba	qwen 2 57b a14b; qwen 2 57b	
+qwen2.5	group	Qwen2.5	qwen		qwen 2.5	
+qwen2.5-dense	group	Qwen2.5 (dense)	qwen2.5		qwen 2.5 dense	
+qwen2.5-0.5b	model	Qwen2.5-0.5B	qwen2.5-dense	alibaba	qwen 2.5 0.5b	
+qwen2.5-1.5b	model	Qwen2.5-1.5B	qwen2.5-dense	alibaba	qwen 2.5 1.5b	
+qwen2.5-3b	model	Qwen2.5-3B	qwen2.5-dense	alibaba	qwen 2.5 3b	
+qwen2.5-7b	model	Qwen2.5-7B	qwen2.5-dense	alibaba	qwen 2.5 7b	
+qwen2.5-14b	model	Qwen2.5-14B	qwen2.5-dense	alibaba	qwen 2.5 14b	
+qwen2.5-32b	model	Qwen2.5-32B	qwen2.5-dense	alibaba	qwen 2.5 32b	
+qwen2.5-72b	model	Qwen2.5-72B	qwen2.5-dense	alibaba	qwen 2.5 72b	
+qwen2.5-max	model	Qwen2.5-Max	qwen2.5	alibaba	qwen 2.5 max; qwen max 2025 01 25	
+qwen2.5-coder	group	Qwen2.5-Coder	qwen2.5		qwen 2.5 coder	
+qwen2.5-coder-0.5b	model	Qwen2.5-Coder-0.5B	qwen2.5-coder	alibaba	qwen 2.5 coder 0.5b	
+qwen2.5-coder-1.5b	model	Qwen2.5-Coder-1.5B	qwen2.5-coder	alibaba	qwen 2.5 coder 1.5b	
+qwen2.5-coder-3b	model	Qwen2.5-Coder-3B	qwen2.5-coder	alibaba	qwen 2.5 coder 3b	
+qwen2.5-coder-7b	model	Qwen2.5-Coder-7B	qwen2.5-coder	alibaba	qwen 2.5 coder 7b	
+qwen2.5-coder-14b	model	Qwen2.5-Coder-14B	qwen2.5-coder	alibaba	qwen 2.5 coder 14b	
+qwen2.5-coder-32b	model	Qwen2.5-Coder-32B	qwen2.5-coder	alibaba	qwen 2.5 coder 32b	
+qwen2.5-math	group	Qwen2.5-Math	qwen2.5		qwen 2.5 math	
+qwen2.5-math-1.5b	model	Qwen2.5-Math-1.5B	qwen2.5-math	alibaba	qwen 2.5 math 1.5b	
+qwen2.5-math-7b	model	Qwen2.5-Math-7B	qwen2.5-math	alibaba	qwen 2.5 math 7b	
+qwen2.5-math-72b	model	Qwen2.5-Math-72B	qwen2.5-math	alibaba	qwen 2.5 math 72b	
+qwen2.5-math-prm	group	Qwen2.5-Math-PRM	qwen2.5-math		qwen 2.5 math prm	
+qwen2.5-math-prm-7b	model	Qwen2.5-Math-PRM-7B	qwen2.5-math-prm	alibaba	qwen 2.5 math prm 7b	
+qwen2.5-math-prm-72b	model	Qwen2.5-Math-PRM-72B	qwen2.5-math-prm	alibaba	qwen 2.5 math prm 72b	
+qwen2.5-vl	group	Qwen2.5-VL	qwen2.5		qwen 2.5 vl	
+qwen2.5-vl-3b	model	Qwen2.5-VL-3B	qwen2.5-vl	alibaba	qwen 2.5 vl 3b	
+qwen2.5-vl-7b	model	Qwen2.5-VL-7B	qwen2.5-vl	alibaba	qwen 2.5 vl 7b	
+qwen2.5-vl-32b	model	Qwen2.5-VL-32B	qwen2.5-vl	alibaba	qwen 2.5 vl 32b	
+qwen2.5-vl-72b	model	Qwen2.5-VL-72B	qwen2.5-vl	alibaba	qwen 2.5 vl 72b	
+qwen2.5-omni	group	Qwen2.5-Omni	qwen2.5		qwen 2.5 omni	
+qwen2.5-omni-3b	model	Qwen2.5-Omni-3B	qwen2.5-omni	alibaba	qwen 2.5 omni 3b	
+qwen2.5-omni-7b	model	Qwen2.5-Omni-7B	qwen2.5-omni	alibaba	qwen 2.5 omni 7b	
+qwq-32b	model	QwQ-32B	qwen2.5-dense	alibaba	qwq 32b; qwq; qwen qwq	
+qwen-vl	model	Qwen-VL	qwen	alibaba	qwen vl	
+qwen2-vl	group	Qwen2-VL	qwen		qwen 2 vl	
+qwen2-vl-2b	model	Qwen2-VL-2B	qwen2-vl	alibaba	qwen 2 vl 2b	
+qwen2-vl-7b	model	Qwen2-VL-7B	qwen2-vl	alibaba	qwen 2 vl 7b	
+qwen2-vl-72b	model	Qwen2-VL-72B	qwen2-vl	alibaba	qwen 2 vl 72b	
+qvq-72b-preview	model	QVQ-72B-Preview	qwen	alibaba	qvq 72b preview; qvq 72b	qvq
+qwen-audio	model	Qwen-Audio	qwen	alibaba	qwen audio; qwen audio chat	
+qwen2-audio-7b	model	Qwen2-Audio-7B	qwen	alibaba	qwen 2 audio; qwen 2 audio 7b; qwen 2 audio 7b instruct	
+qwen3	group	Qwen3	qwen		qwen 3	
+qwen3-235b-a22b	model	Qwen3-235B-A22B	qwen3	alibaba	qwen 3 235b a22b; qwen 3 235b	
+qwen3-30b-a3b	model	Qwen3-30B-A3B	qwen3	alibaba	qwen 3 30b a3b; qwen 3 30b	
+qwen3-dense	group	Qwen3 dense	qwen3		qwen 3 dense	
+qwen3-0.6b	model	Qwen3-0.6B	qwen3-dense	alibaba	qwen 3 0.6b	
+qwen3-1.7b	model	Qwen3-1.7B	qwen3-dense	alibaba	qwen 3 1.7b	
+qwen3-4b	model	Qwen3-4B	qwen3-dense	alibaba	qwen 3 4b	
+qwen3-8b	model	Qwen3-8B	qwen3-dense	alibaba	qwen 3 8b	
+qwen3-14b	model	Qwen3-14B	qwen3-dense	alibaba	qwen 3 14b	
+qwen3-32b	model	Qwen3-32B	qwen3-dense	alibaba	qwen 3 32b	
+qwen3-coder	model	Qwen3-Coder	qwen3	alibaba	qwen 3 coder	
+qwen3-coder-flash	model	Qwen3-Coder-Flash	qwen3	alibaba	qwen 3 coder flash; qwen 3 coder 30b a3b	
+qwen3-max	model	Qwen3-Max	qwen3	alibaba	qwen 3 max	
+qwen3-next	model	Qwen3-Next-80B-A3B	qwen3	alibaba	qwen 3 next	
+qwen3-omni	model	Qwen3-Omni	qwen3	alibaba	qwen 3 omni	
+qwen3-embedding	group	Qwen3 Embedding	qwen3		qwen 3 embedding; qwen 3 reranker	
+qwen3-embedding-0.6b	model	Qwen3-Embedding-0.6B	qwen3-embedding	alibaba	qwen 3 embedding 0.6b	
+qwen3-embedding-4b	model	Qwen3-Embedding-4B	qwen3-embedding	alibaba	qwen 3 embedding 4b	
+qwen3-embedding-8b	model	Qwen3-Embedding-8B	qwen3-embedding	alibaba	qwen 3 embedding 8b	
+qwen3-reranker-0.6b	model	Qwen3-Reranker-0.6B	qwen3-embedding	alibaba	qwen 3 reranker 0.6b	
+qwen3-reranker-4b	model	Qwen3-Reranker-4B	qwen3-embedding	alibaba	qwen 3 reranker 4b	
+qwen3-reranker-8b	model	Qwen3-Reranker-8B	qwen3-embedding	alibaba	qwen 3 reranker 8b	
+qwen3-vl-embedding	group	Qwen3-VL-Embedding	qwen3		qwen 3 vl embedding; qwen 3 vl reranker	
+qwen3-vl-embedding-2b	model	Qwen3-VL-Embedding-2B	qwen3-vl-embedding	alibaba	qwen 3 vl embedding 2b	
+qwen3-vl-embedding-8b	model	Qwen3-VL-Embedding-8B	qwen3-vl-embedding	alibaba	qwen 3 vl embedding 8b	
+qwen3-vl-reranker-2b	model	Qwen3-VL-Reranker-2B	qwen3-vl-embedding	alibaba	qwen 3 vl reranker 2b	
+qwen3-vl-reranker-8b	model	Qwen3-VL-Reranker-8B	qwen3-vl-embedding	alibaba	qwen 3 vl reranker 8b	
+qwen3-tts	group	Qwen3-TTS	qwen3		qwen 3 tts	
+qwen3-tts-0.6b	model	Qwen3-TTS-12Hz-0.6B	qwen3-tts	alibaba	qwen 3 tts 0.6b; qwen 3 tts 12hz 0.6b	
+qwen3-tts-1.7b	model	Qwen3-TTS-12Hz-1.7B	qwen3-tts	alibaba	qwen 3 tts 1.7b; qwen 3 tts 12hz 1.7b	
+qwen3-asr	group	Qwen3-ASR	qwen3		qwen 3 asr	
+qwen3-asr-0.6b	model	Qwen3-ASR-0.6B	qwen3-asr	alibaba	qwen 3 asr 0.6b	
+qwen3-asr-1.7b	model	Qwen3-ASR-1.7B	qwen3-asr	alibaba	qwen 3 asr 1.7b	
+qwen3-vl	group	Qwen3-VL	qwen3		qwen 3 vl	
+qwen3-vl-235b-a22b	model	Qwen3-VL-235B-A22B	qwen3-vl	alibaba	qwen 3 vl 235b a22b; qwen 3 vl 235b	
+qwen3-vl-30b-a3b	model	Qwen3-VL-30B-A3B	qwen3-vl	alibaba	qwen 3 vl 30b a3b; qwen 3 vl 30b	
+qwen3-vl-32b	model	Qwen3-VL-32B	qwen3-vl	alibaba	qwen 3 vl 32b	
+qwen3-vl-8b	model	Qwen3-VL-8B	qwen3-vl	alibaba	qwen 3 vl 8b	
+qwen3-vl-4b	model	Qwen3-VL-4B	qwen3-vl	alibaba	qwen 3 vl 4b	
+qwen3-vl-2b	model	Qwen3-VL-2B	qwen3-vl	alibaba	qwen 3 vl 2b	
+qwen3guard	group	Qwen3Guard	qwen3		qwen 3 guard	
+qwen3guard-gen-0.6b	model	Qwen3Guard-Gen-0.6B	qwen3guard	alibaba	qwen 3 guard gen 0.6b	
+qwen3guard-gen-4b	model	Qwen3Guard-Gen-4B	qwen3guard	alibaba	qwen 3 guard gen 4b	
+qwen3guard-gen-8b	model	Qwen3Guard-Gen-8B	qwen3guard	alibaba	qwen 3 guard gen 8b	
+qwen3guard-stream-0.6b	model	Qwen3Guard-Stream-0.6B	qwen3guard	alibaba	qwen 3 guard stream 0.6b	
+qwen3guard-stream-4b	model	Qwen3Guard-Stream-4B	qwen3guard	alibaba	qwen 3 guard stream 4b	
+qwen3guard-stream-8b	model	Qwen3Guard-Stream-8B	qwen3guard	alibaba	qwen 3 guard stream 8b	
+qwen3.5	group	Qwen 3.5	qwen		qwen 3.5; qwen 3.5 small	
+qwen3.5-397b-a17b	model	Qwen3.5-397B-A17B	qwen3.5	alibaba	qwen 3.5 397b a17b; qwen 3.5 plus	
+qwen3.5-122b-a10b	model	Qwen3.5-122B-A10B	qwen3.5	alibaba	qwen 3.5 122b a10b; qwen 3.5 122b	
+qwen3.5-35b-a3b	model	Qwen3.5-35B-A3B	qwen3.5	alibaba	qwen 3.5 35b a3b; qwen 3.5 35b; qwen 3.5 flash	
+qwen3.5-27b	model	Qwen3.5-27B	qwen3.5	alibaba	qwen 3.5 27b	
+qwen3.5-9b	model	Qwen3.5-9B	qwen3.5	alibaba	qwen 3.5 9b	
+qwen3.5-4b	model	Qwen3.5-4B	qwen3.5	alibaba	qwen 3.5 4b	
+qwen3.5-2b	model	Qwen3.5-2B	qwen3.5	alibaba	qwen 3.5 2b	
+qwen3.5-0.8b	model	Qwen3.5-0.8B	qwen3.5	alibaba	qwen 3.5 0.8b	
+qwen3.5-omni	model	Qwen3.5-Omni	qwen3.5	alibaba	qwen 3.5 omni	
+qwen3.6	group	Qwen3.6	qwen		qwen 3.6	
+qwen3.6-35b-a3b	model	Qwen3.6-35B-A3B	qwen3.6	alibaba	qwen 3.6 35b a3b; qwen 3.6 35b	
+qwen3.6-27b	model	Qwen3.6-27B	qwen3.6	alibaba	qwen 3.6 27b	
+qwen3.6-plus	model	Qwen3.6-Plus	qwen3.6	alibaba	qwen 3.6 plus	
+qwen3.6-flash	model	Qwen3.6-Flash	qwen3.6	alibaba	qwen 3.6 flash	
+qwen3.6-max-preview	model	Qwen3.6-Max-Preview	qwen3.6	alibaba	qwen 3.6 max preview; qwen 3.6 max	
+qwen3.7	group	Qwen3.7	qwen		qwen 3.7	
+qwen3.7-max	model	Qwen3.7-Max	qwen3.7	alibaba	qwen 3.7 max	
+qwen3.7-plus	model	Qwen3.7-Plus	qwen3.7	alibaba	qwen 3.7 plus	
+qwen3.7-flash	model	Qwen3.7-Flash	qwen3.7	alibaba	qwen 3.7 flash	
+qwen3.8	group	Qwen3.8	qwen		qwen 3.8; qwen 3.8 27b	
+qwen3.8-max	model	Qwen3.8-Max	qwen3.8	alibaba	qwen 3.8 max; qwen 3.8 2.4t a95b	
+qwen3.8-flash	model	Qwen3.8-Flash	qwen3.8	alibaba	qwen 3.8 flash	
+qwen3.8-flash-next	model	Qwen3.8-Flash-Next	qwen3.8	alibaba	qwen 3.8 flash next	
+qwen3.8-omni-flash	model	Qwen3.8-Omni-Flash	qwen3.8	alibaba	qwen 3.8 omni flash; qwen 3.8 omni	
+qwen3.7-text-embedding	model	Qwen3.7-Text-Embedding	qwen3.7	alibaba	qwen 3.7 text embedding	
+qwen3.7-text-embedding-flash	model	Qwen3.7-Text-Embedding-Flash	qwen3.7	alibaba	qwen 3.7 text embedding flash	
+qwen3.7-text-rerank	model	Qwen3.7-Text-Rerank	qwen3.7	alibaba	qwen 3.7 text rerank; qwen 3.7 rerank; qwen 3.7 reranker	
+qwen-image	group	Qwen-Image	qwen		qwen image	
+qwen-image-20b	model	Qwen-Image	qwen-image	alibaba	qwen image 20b; qwen image 2512	
+qwen-image-edit	model	Qwen-Image-Edit	qwen-image	alibaba	qwen image edit; qwen image edit 2509; qwen image edit 2511	
+qwen-image-2.1	model	Qwen-Image-2.1	qwen-image	alibaba	qwen image 2.1	
+qwen-image-3.0	model	Qwen-Image 3.0	qwen-image	alibaba	qwen image 3.0	
+qwen-audio-3.0	group	Qwen-Audio 3.0	qwen		qwen audio 3.0	
+qwen-audio-3.0-tts-plus	model	Qwen-Audio-3.0-TTS-Plus	qwen-audio-3.0	alibaba	qwen audio 3.0 tts plus	
+qwen-audio-3.0-asr-flash	model	Qwen-Audio-3.0-ASR-Flash	qwen-audio-3.0	alibaba	qwen audio 3.0 asr flash; qwen audio 3.0 asr	
+qwen-audio-3.0-realtime-plus	model	Qwen-Audio-3.0-Realtime-Plus	qwen-audio-3.0	alibaba	qwen audio 3.0 realtime plus	
+qwen-audio-3.1-realtime-plus	model	Qwen-Audio-3.1-Realtime-Plus	qwen	alibaba	qwen audio 3.1 realtime plus; qwen audio 3.1	
+qwen-agentworld-35b-a3b	model	Qwen-AgentWorld-35B-A3B	qwen	alibaba	qwen agentworld; qwen agentworld 35b a3b; qwen agentworld 35b	agentworld
+wan	family	Wan	video-generation	alibaba	wan ai; tongyi wanxiang; wan animate; wan dancer	
+wan-2.1	group	Wan2.1	wan		wan 2.1; tongyi wanxiang 2.1; wan ai 2.1	
+wan-2.1-1.3b	model	Wan2.1 T2V-1.3B	wan-2.1	alibaba	wan 2.1 1.3b; wan 2.1 t2v 1.3b; wan 2.1 vace 1.3b	
+wan-2.1-14b	model	Wan2.1 14B	wan-2.1	alibaba	wan 2.1 14b; wan 2.1 t2v 14b; wan 2.1 i2v 14b; wan 2.1 flf2v 14b; wan 2.1 vace 14b	
+wan-2.2	group	Wan2.2	wan		wan 2.2; tongyi wanxiang 2.2; wan ai 2.2	
+wan-2.2-ti2v-5b	model	Wan2.2 TI2V-5B	wan-2.2	alibaba	wan 2.2 ti2v 5b; wan 2.2 5b; wan 2.2 ti2v	
+wan-2.2-a14b	model	Wan2.2 A14B	wan-2.2	alibaba	wan 2.2 a14b; wan 2.2 t2v a14b; wan 2.2 i2v a14b	
+wan-2.5	model	Wan2.5	wan	alibaba	wan 2.5; tongyi wanxiang 2.5	
+wan-2.6	model	Wan2.6	wan	alibaba	wan 2.6; tongyi wanxiang 2.6	
+wan-2.7	model	Wan2.7	wan	alibaba	wan 2.7	
+wan-3.0	model	Wan3.0	wan	alibaba	wan 3.0	
+glm	family	GLM		zhipu	zhipu qingyan; 智谱; glm 3; glm 4.6v	glm; z ai; zhipu; thudm; z.ai
+glm-130b	model	GLM-130B	glm	['zhipu', 'tsinghua']	glm 130b	
+chatglm	group	ChatGLM	glm		chatglm	
+chatglm-6b	model	ChatGLM-6B	chatglm	zhipu	chatglm 6b	
+chatglm2-6b	model	ChatGLM2-6B	chatglm	zhipu	chatglm 2; chatglm 2 6b	
+chatglm3-6b	model	ChatGLM3-6B	chatglm	zhipu	chatglm 3; chatglm 3 6b	
+glm-4	model	GLM-4	glm	zhipu	glm 4; glm 4v	
+glm-4-9b	model	GLM-4-9B	glm	zhipu	glm 4 9b; glm 4 9b 0414	
+glm-4v-9b	model	GLM-4V-9B	glm	zhipu	glm 4v 9b	
+glm-4-32b	model	GLM-4-32B-0414	glm	zhipu	glm 4 32b; glm 4 32b 0414	
+glm-z1	group	GLM-Z1	glm		glm z1; glm 4 z1	
+glm-z1-32b	model	GLM-Z1-32B-0414	glm-z1	zhipu	glm z1 32b; glm z1 32b 0414; glm 4 z1 32b	
+glm-z1-9b	model	GLM-Z1-9B-0414	glm-z1	zhipu	glm z1 9b; glm z1 9b 0414; glm 4 z1 9b	
+glm-z1-rumination-32b	model	GLM-Z1-Rumination-32B-0414	glm-z1	zhipu	glm z1 rumination; glm z1 rumination 32b; glm z1 rumination 32b 0414; glm 4 z1 rumination 32b	
+glm-4.1v-9b-thinking	model	GLM-4.1V-9B-Thinking	glm	zhipu	glm 4.1v; glm 4.1v thinking; glm 4.1v 9b; glm 4.1v 9b thinking	
+glm-4.5	model	GLM-4.5	glm	zhipu	glm 4.5	
+glm-4.5-air	model	GLM-4.5-Air	glm	zhipu	glm 4.5 air	
+glm-4.5v	model	GLM-4.5V	glm	zhipu	glm 4.5v	
+glm-4.6	model	GLM-4.6	glm	zhipu	glm 4.6	
+glm-4.7	model	GLM-4.7	glm	zhipu	glm 4.7	
+glm-5	model	GLM-5	glm	zhipu	glm 5	
+glm-5.1	model	GLM-5.1	glm	zhipu	glm 5.1	
+glm-5.2	model	GLM-5.2	glm	zhipu	glm 5.2	
+glm-5.3	model	GLM-5.3	glm	zhipu	glm 5.3	
+glm-5.3-flash	model	GLM-5.3-Flash	glm	zhipu	glm 5.3 flash	
+cogvlm	family	CogVLM	open-research-vlms	zhipu	cogvlm	
+cogvlm-1	model	CogVLM	cogvlm	zhipu	cogvlm 17b; cogvlm chat; cogvlm grounding; cogvlm base	
+cogvlm2	model	CogVLM2	cogvlm	zhipu	cogvlm 2	
+cogagent	model	CogAgent	cogvlm	zhipu	cogagent	
+cogvideo	family	CogVideo	video-generation	zhipu	cogvideo; cogvideox; zhipu cogvideox; scail 2	
+cogvideox-2b	model	CogVideoX-2B	cogvideo	zhipu	cogvideox 2b; zhipu cogvideox 2b	
+cogvideox-5b	model	CogVideoX-5B	cogvideo	zhipu	cogvideox 5b; cogvideox 5b i2v; zhipu cogvideox 5b	
+cogvideox-1.5-5b	model	CogVideoX1.5-5B	cogvideo	zhipu	cogvideox 1.5; cogvideox 1.5 5b; cogvideox 1.5 5b i2v; zhipu cogvideox 1.5	
+cogview	family	CogView	image-generation	zhipu	cogview; zhipu cogview; cogview 3; zhipu cogview 3	
+cogview-3-plus-3b	model	CogView-3Plus-3B	cogview	zhipu	cogview 3 plus; cogview 3 plus 3b; cogview 3plus; zhipu cogview 3 plus	
+cogview-4-6b	model	CogView4-6B	cogview	zhipu	cogview 4; cogview 4 6b; zhipu cogview 4; zhipu cogview 4 6b	
+kimi	family	Kimi		moonshot	kimi; 月之暗面; kimi dev; kimi k2.7	moonshot; moonshot ai; k2.7
+moonshot-v1	model	moonshot-v1	kimi	moonshot	moonshot v1	
+kimi-k1.5	model	Kimi k1.5	kimi	moonshot	kimi k1.5; kimi 1.5; k1.5; k0 math	
+kimi-vl	group	Kimi-VL	kimi		kimi vl; moonshot ai kimi vl	
+kimi-vl-a3b-instruct	model	Kimi-VL-A3B-Instruct	kimi-vl	moonshot	kimi vl a3b instruct; kimi vl a3b; kimi vl instruct; moonshot ai kimi vl a3b instruct; moonshot ai kimi vl a3b; moonshot ai kimi vl instruct	
+kimi-vl-a3b-thinking	model	Kimi-VL-A3B-Thinking	kimi-vl	moonshot	kimi vl a3b thinking; kimi vl thinking; kimi vl a3b thinking 2506; moonshot ai kimi vl a3b thinking; moonshot ai kimi vl thinking	
+kimi-audio-7b	model	Kimi-Audio-7B	kimi	moonshot	kimi audio; kimi audio 7b; kimi audio 7b instruct; moonshot ai kimi audio	
+kimi-linear-48b-a3b	model	Kimi-Linear-48B-A3B	kimi	moonshot	kimi linear; kimi linear 48b a3b; kimi linear 48b; moonshot ai kimi linear	
+kimi-k2.x	group	Kimi K2.x	kimi		kimi k2.x	
+kimi-k2	model	Kimi K2	kimi-k2.x	moonshot	kimi k2	k2
+kimi-k2-thinking	model	Kimi K2 Thinking	kimi-k2.x	moonshot	kimi k2 thinking; k2 thinking	
+kimi-k2.5	model	Kimi K2.5	kimi	moonshot	kimi k2.5; kimi 2.5; k2.5	
+kimi-k2.6	model	Kimi K2.6	kimi	moonshot	kimi k2.6; k2.6	
+kimi-k3	model	Kimi K3	kimi	moonshot	kimi k3; kimi k3 swarm; k3 swarm	k3
+yi	family	Yi	chinese-tech-company-llms	01-ai	zero one ai; 零一万物; lingyiwanwu; yi series; yi coder; yi 9b	
+yi-2023	group	Yi (2023 generation)	yi			
+yi-6b	model	Yi 6B	yi-2023	01-ai	yi 6b	
+yi-34b	model	Yi 34B	yi-2023	01-ai	yi 34b	
+yi-1.5	group	Yi-1.5	yi		yi 1.5	
+yi-1.5-6b	model	Yi-1.5 6B	yi-1.5	01-ai	yi 1.5 6b	
+yi-1.5-9b	model	Yi-1.5 9B	yi-1.5	01-ai	yi 1.5 9b	
+yi-1.5-34b	model	Yi-1.5 34B	yi-1.5	01-ai	yi 1.5 34b	
+yi-large	model	Yi-Large	yi	01-ai	yi large	
+yi-lightning	model	Yi-Lightning	yi	01-ai	yi lightning	
+yi-vl	model	Yi-VL	yi	01-ai	yi vl	
+ernie	family	ERNIE		baidu	ernie bot; baidu ernie; wenxin; wenxin yiyan; wenxin da moxing; 文心; 文心一言; ernie speed; ernie lite; ernie tiny	ernie
+ernie-3.0	model	ERNIE 3.0	ernie	baidu	ernie 3.0; baidu ernie 3.0	
+ernie-3.5	model	ERNIE 3.5	ernie	baidu	ernie 3.5; ernie bot 3.5; baidu ernie 3.5	
+ernie-4.0	model	ERNIE 4.0	ernie	baidu	ernie 4.0; ernie 4; ernie bot 4; baidu ernie 4.0; baidu ernie 4	
+ernie-4.5	group	ERNIE 4.5	ernie		ernie 4.5; baidu ernie 4.5; ernie 4.5 vl	
+ernie-4.5-300b-a47b	model	ERNIE 4.5 300B-A47B	ernie-4.5	baidu	ernie 4.5 300b a47b; ernie 4.5 300b; baidu ernie 4.5 300b	
+ernie-4.5-21b-a3b	model	ERNIE 4.5 21B-A3B	ernie-4.5	baidu	ernie 4.5 21b a3b; ernie 4.5 21b; baidu ernie 4.5 21b	
+ernie-4.5-0.3b	model	ERNIE 4.5 0.3B	ernie-4.5	baidu	ernie 4.5 0.3b; baidu ernie 4.5 0.3b	
+ernie-4.5-vl-424b-a47b	model	ERNIE 4.5 VL 424B-A47B	ernie-4.5	baidu	ernie 4.5 vl 424b a47b; ernie 4.5 vl 424b	
+ernie-4.5-vl-28b-a3b	model	ERNIE 4.5 VL 28B-A3B	ernie-4.5	baidu	ernie 4.5 vl 28b a3b; ernie 4.5 vl 28b	
+ernie-x1	model	ERNIE X1	ernie	baidu	ernie x1; baidu ernie x1	
+ernie-5.0	model	ERNIE 5.0	ernie	baidu	ernie 5.0; ernie 5; wenxin 5.0; wenxin da moxing 5.0; baidu ernie 5.0; baidu ernie 5	
+ernie-5.1	model	ERNIE 5.1	ernie	baidu	ernie 5.1; baidu ernie 5.1	
+ernie-image	model	ERNIE-Image	ernie	baidu	ernie image	
+doubao	family	Doubao / Seed (ByteDance)		bytedance	doubao; 豆包; doubao seed; bytedance seed; seed llm; doubao lite	volcengine; volcano engine
+doubao-pro	model	Doubao-pro	doubao	bytedance	doubao pro	
+doubao-1.5-pro	model	Doubao-1.5-pro	doubao	bytedance	doubao 1.5 pro; doubao 1.5; doubao 1.5 vision pro	
+doubao-1.5-thinking-pro	model	Doubao-1.5-thinking-pro	doubao	bytedance	doubao 1.5 thinking pro	
+doubao-seed-1.6	model	Doubao Seed 1.6	doubao	bytedance	doubao seed 1.6; bytedance seed 1.6; doubao 1.6	seed 1.6
+seed-oss-36b	model	Seed-OSS-36B	doubao	bytedance	seed oss 36b; seed oss; bytedance seed oss; doubao seed oss	
+doubao-seed-2.0	group	Doubao Seed 2.0	doubao	bytedance	doubao seed 2.0; bytedance seed 2.0; doubao 2.0	seed 2.0
+doubao-seed-2.0-pro	model	Doubao Seed 2.0 Pro	doubao-seed-2.0	bytedance	doubao seed 2.0 pro; bytedance seed 2.0 pro; doubao 2.0 pro; seed 2.0 pro	
+doubao-seed-2.0-lite	model	Doubao Seed 2.0 Lite	doubao-seed-2.0	bytedance	doubao seed 2.0 lite; bytedance seed 2.0 lite; doubao 2.0 lite; seed 2.0 lite	
+doubao-seed-2.0-mini	model	Doubao Seed 2.0 Mini	doubao-seed-2.0	bytedance	doubao seed 2.0 mini; bytedance seed 2.0 mini; doubao 2.0 mini; seed 2.0 mini	
+doubao-seed-2.0-code	model	Doubao Seed 2.0 Code	doubao-seed-2.0	bytedance	doubao seed 2.0 code; bytedance seed 2.0 code; doubao 2.0 code; seed 2.0 code	
+doubao-seed-2.1	group	Doubao Seed 2.1	doubao	bytedance	doubao seed 2.1; bytedance seed 2.1; doubao 2.1	seed 2.1
+doubao-seed-2.1-pro	model	Doubao Seed 2.1 Pro	doubao-seed-2.1	bytedance	doubao seed 2.1 pro; bytedance seed 2.1 pro; doubao 2.1 pro; seed 2.1 pro	
+doubao-seed-2.1-turbo	model	Doubao Seed 2.1 Turbo	doubao-seed-2.1	bytedance	doubao seed 2.1 turbo; bytedance seed 2.1 turbo; doubao 2.1 turbo; seed 2.1 turbo	
+seedance	family	Seedance	video-generation	bytedance	seedance; bytedance seedance; seedance 2.0 fast	
+seedance-1.0	group	Seedance 1.0	seedance		seedance 1.0; bytedance seedance 1.0; seedance 1.0 pro fast; bytedance seedance 1.0 pro fast	
+seedance-1.0-lite	model	Seedance 1.0 Lite	seedance-1.0	bytedance	seedance 1.0 lite; bytedance seedance 1.0 lite	
+seedance-1.0-pro	model	Seedance 1.0 Pro	seedance-1.0	bytedance	seedance 1.0 pro; bytedance seedance 1.0 pro	
+seedance-1.5-pro	model	Seedance 1.5 pro	seedance	bytedance	seedance 1.5 pro; seedance 1.5; bytedance seedance 1.5 pro; bytedance seedance 1.5	
+seedance-2.0	model	Seedance 2.0	seedance	bytedance	seedance 2.0; seedance 2; bytedance seedance 2.0; bytedance seedance 2; dreamina seedance 2.0	
+seedance-2.5	model	Seedance 2.5	seedance	bytedance	seedance 2.5; bytedance seedance 2.5; dreamina seedance 2.5	
+seedream	family	Seedream	image-generation	bytedance	seedream; bytedance seedream; seedream 2.0	
+seedream-3.0	model	Seedream 3.0	seedream	bytedance	seedream 3.0; seedream 3; bytedance seedream 3.0; bytedance seedream 3	
+seedream-4.0	model	Seedream 4.0	seedream	bytedance	seedream 4.0; seedream 4; bytedance seedream 4.0; bytedance seedream 4	
+seedream-4.5	model	Seedream 4.5	seedream	bytedance	seedream 4.5; bytedance seedream 4.5	
+seedream-5.0	group	Seedream 5.0	seedream		seedream 5.0; seedream 5; bytedance seedream 5.0; bytedance seedream 5; seedream 5.0 flash	
+seedream-5.0-lite	model	Seedream 5.0 Lite	seedream-5.0	bytedance	seedream 5.0 lite; bytedance seedream 5.0 lite	
+seedream-5.0-pro	model	Seedream 5.0 Pro	seedream-5.0	bytedance	seedream 5.0 pro; bytedance seedream 5.0 pro; dola seedream 5.0 pro	
+ui-tars	family	UI-TARS	computer-use-agents	bytedance	ui tars	
+ui-tars-1	group	UI-TARS	ui-tars		ui tars 1; ui tars 1.0; ui tars 2b; ui tars 2b sft; ui tars 7b; ui tars 7b sft; ui tars 7b dpo; ui tars 72b; ui tars 72b sft; ui tars 72b dpo	
+ui-tars-1.5	model	UI-TARS-1.5	ui-tars	bytedance	ui tars 1.5; ui tars 1.5 7b	
+ui-tars-2	model	UI-TARS-2	ui-tars	bytedance	ui tars 2	
+hunyuan	family	Hunyuan (Tencent)		tencent	hunyuan; 混元; tencent hy; hy mt2; hunyuan mt2; hunyuan mt 2; tencent hy mt2	hy
+hunyuan-2023	model	Hunyuan (2023)	hunyuan	tencent	hunyuan 2023; hunyuan standard; hunyuan pro	
+hunyuan-large	model	Hunyuan-Large	hunyuan	tencent	hunyuan large; hunyuan a52b	
+hunyuan-turbo-s	model	Hunyuan Turbo S	hunyuan	tencent	hunyuan turbo s; hunyuan turbo	turbo s
+hunyuan-t1	model	Hunyuan-T1	hunyuan	tencent	hunyuan t1; tencent t1	
+hunyuan-a13b	model	Hunyuan-A13B	hunyuan	tencent	hunyuan a13b	
+hunyuan-2.0	model	Hunyuan 2.0	hunyuan	tencent	hunyuan 2.0; hunyuan 2	
+hunyuan-hy3	model	Hunyuan Hy3	hunyuan	tencent	hunyuan hy 3; tencent hy 3; hunyuan 3; hy 3	
+hunyuan-hy4	model	Hy4 (preview)	hunyuan	tencent	hunyuan hy 4; tencent hy 4; hunyuan 4; hy 4	
+hunyuanvideo-13b	model	HunyuanVideo	hunyuan	tencent	hunyuan video; hunyuan video 13b; hunyuan video i2v; tencent hunyuan video	
+hunyuanvideo-1.5	model	HunyuanVideo 1.5	hunyuan	tencent	hunyuan video 1.5; tencent hunyuan video 1.5	
+hunyuanimage-2.1	model	HunyuanImage-2.1	hunyuan	tencent	hunyuan image 2.1; tencent hunyuan image 2.1	
+hunyuanimage-3.0	model	HunyuanImage-3.0	hunyuan	tencent	hunyuan image 3.0; hunyuan image 3; tencent hunyuan image 3.0	
+auk	family	AuK	speech-synthesis	tencent		auk
+auk-1.5b	model	AuK	auk	tencent	tencent auk; auk 1.5b; auk flash	
+wemm	family	WeMM	embedding-reranking	tencent	wemm; tencent wemm; wemm embedding; wemm embedding 2b; wemm embedding 4b; wemm embedding 9b	
+evie	family	EVIE	embedding-reranking	tencent	tencent evie; evie 8b; tencent evie 8b; evie 4.5b; evie preview 4.5b; tencent evie 4.5b	evie
+hy-embodied	group	HY-Embodied	hunyuan		hy embodied; tencent hy embodied; hunyuan embodied	
+hy-embodied-0.5	model	HY-Embodied-0.5 MoT-2B	hy-embodied	tencent	hy embodied 0.5; tencent hy embodied 0.5; hunyuan embodied 0.5; hy embodied 0.5 mot 2b	
+hy-embodied-vlm-1.0	model	Hy-Embodied-VLM-1.0	hy-embodied	tencent	hy embodied vlm 1.0; tencent hy embodied vlm 1.0; hy embodied 1.0; tencent hy embodied 1.0; hunyuan embodied 1.0	
+minimax	family	MiniMax		minimax	minimax ai; minimaxi; 稀宇科技; minimax music; minimax speech 01; minimax vl 01	
+abab	group	abab	minimax	minimax	abab; minimax abab	
+abab-5.5	model	abab5.5	abab	minimax	abab 5.5; abab 5.5s; abab 5; minimax abab 5.5; minimax abab 5.5s; minimax abab 5	
+abab-6	model	abab6	abab	minimax	abab 6; minimax abab 6	
+abab-6.5	model	abab6.5	abab	minimax	abab 6.5; abab 6.5s; abab 6.5g; minimax abab 6.5; minimax abab 6.5s; minimax abab 6.5g	
+minimax-text-01	model	MiniMax-Text-01	minimax	minimax	minimax text 01; minimax 01	
+minimax-m	group	MiniMax M-series	minimax	minimax	minimax m series	
+minimax-m1	model	MiniMax-M1	minimax-m	minimax	minimax m1	m1
+minimax-m2	model	MiniMax-M2	minimax-m	minimax	minimax m2	m2
+minimax-m2.1	model	MiniMax-M2.1	minimax-m	minimax	minimax m2.1	
+minimax-m2.5	model	MiniMax-M2.5	minimax-m	minimax	minimax m2.5	m2.5
+minimax-m2.7	model	MiniMax-M2.7	minimax-m	minimax	minimax m2.7	m2.7
+minimax-m3	model	MiniMax M3	minimax-m	minimax	minimax m3	m3
+minimax-music-3	model	MiniMax Music 3	minimax	minimax	minimax music 3	
+minimax-speech	group	MiniMax Speech	minimax		minimax speech	
+minimax-speech-02	model	MiniMax Speech-02	minimax-speech	minimax	minimax speech 02; speech 02 hd; speech 02 turbo; minimax speech 02 hd; minimax speech 02 turbo	speech 02
+minimax-speech-2.5	model	MiniMax Speech 2.5	minimax-speech	minimax	minimax speech 2.5; speech 2.5 hd; speech 2.5 turbo	speech 2.5
+minimax-speech-2.6	model	MiniMax Speech 2.6	minimax-speech	minimax	minimax speech 2.6; speech 2.6 hd; speech 2.6 turbo	speech 2.6
+minimax-speech-2.8	model	MiniMax Speech 2.8	minimax-speech	minimax	minimax speech 2.8; speech 2.8 hd; speech 2.8 turbo	speech 2.8
+internlm	family	InternLM		internlm	intern lm; shusheng; 书生; atria dawn	shanghai ai lab; shanghai ai laboratory; pjlab
+internlm-2023	group	InternLM (2023)	internlm	internlm		
+internlm-7b	model	InternLM-7B	internlm-2023	internlm	internlm 7b; internlm chat 7b	
+internlm-20b	model	InternLM-20B	internlm-2023	internlm	internlm 20b; internlm chat 20b	
+internlm2	group	InternLM2	internlm	internlm	internlm 2	
+internlm2-7b	model	InternLM2-7B	internlm2	internlm	internlm 2 7b; internlm 2 chat 7b	
+internlm2-20b	model	InternLM2-20B	internlm2	internlm	internlm 2 20b; internlm 2 chat 20b	
+internlm2-reward	group	InternLM2-Reward	internlm2		internlm 2 reward	
+internlm2-reward-1.8b	model	InternLM2-1.8B-Reward	internlm2-reward	internlm	internlm 2 1.8b reward	
+internlm2-reward-7b	model	InternLM2-7B-Reward	internlm2-reward	internlm	internlm 2 7b reward	
+internlm2-reward-20b	model	InternLM2-20B-Reward	internlm2-reward	internlm	internlm 2 20b reward	
+internlm2.5	group	InternLM2.5	internlm	internlm	internlm 2.5	
+internlm2.5-7b	model	InternLM2.5-7B	internlm2.5	internlm	internlm 2.5 7b	
+internlm2.5-1.8b	model	InternLM2.5-1.8B	internlm2.5	internlm	internlm 2.5 1.8b	
+internlm2.5-20b	model	InternLM2.5-20B	internlm2.5	internlm	internlm 2.5 20b	
+internlm3-8b	model	InternLM3-8B	internlm	internlm	internlm 3; internlm 3 8b	
+intern-s1-line	group	Intern-S1 line	internlm	internlm	intern s1 line	
+intern-s1	model	Intern-S1	intern-s1-line	internlm	intern s1	
+intern-s1-pro	model	Intern-S1-Pro	intern-s1-line	internlm	intern s1 pro	
+intern-s2	group	Intern-S2	internlm		intern s2	
+intern-s2-preview	model	Intern-S2-Preview	intern-s2	internlm	intern s2 preview	
+intern-s2-397b	model	Intern-S2-397B	intern-s2	internlm	intern s2 397b	
+intern-decision	model	Intern-Decision	internlm	internlm	intern decision	
+internvl	family	InternVL		internlm	internvl; intern vl	
+internvl-1.5	model	InternVL 1.5	internvl	internlm	internvl 1.5; internvl chat v1 5; internvl chat v1.5; mini internvl chat	
+internvl2	group	InternVL2	internvl		internvl 2; internvl 2.0; internvl 2 1b; internvl 2 2b; internvl 2 4b; internvl 2 26b; internvl 2 40b; internvl 2 76b; internvl 2 llama3 76b	
+internvl2-8b	model	InternVL2-8B	internvl2	internlm	internvl 2 8b	
+internvl2.5	group	InternVL 2.5	internvl		internvl 2.5; internvl 2.5 1b; internvl 2.5 2b; internvl 2.5 4b; internvl 2.5 26b; internvl 2.5 38b; internvl 2.5 78b	
+internvl2.5-8b	model	InternVL2.5-8B	internvl2.5	internlm	internvl 2.5 8b	
+internvl3	group	InternVL3	internvl		internvl 3; internvl 3 1b; internvl 3 2b; internvl 3 9b; internvl 3 38b; internvl 3 78b	
+internvl3-8b	model	InternVL3-8B	internvl3	internlm	internvl 3 8b	
+internvl3-14b	model	InternVL3-14B	internvl3	internlm	internvl 3 14b	
+internvl3.5	group	InternVL3.5	internvl		internvl 3.5; internvl 3.5 1b; internvl 3.5 2b; internvl 3.5 4b; internvl 3.5 14b; internvl 3.5 20b a4b; internvl 3.5 gpt oss 20b a4b; internvl 3.5 gpt oss 20b a4b preview; internvl 3.5 30b a3b; internvl 3.5 30b; internvl 3.5 241b a28b; internvl 3.5 241b	
+internvl3.5-8b	model	InternVL3.5-8B	internvl3.5	internlm	internvl 3.5 8b	
+internvl3.5-38b	model	InternVL3.5-38B	internvl3.5	internlm	internvl 3.5 38b	
+stepfun	family	Step (StepFun)	chinese-tech-company-llms	stepfun	step fun; step fun ai; jieyue xingchen; 阶跃星辰; step series	
+step-1	model	Step-1	stepfun	stepfun	stepfun step 1	
+step-2	model	Step-2	stepfun	stepfun	stepfun step 2	
+step-3	model	Step-3	stepfun	stepfun	stepfun step 3	
+step-3.7-flash	model	Step 3.7 Flash	stepfun	stepfun	step 3.7 flash; stepfun step 3.7	step 3.7
+step-3.5-flash	model	Step 3.5 Flash	stepfun	stepfun	step 3.5 flash; stepfun step 3.5	
+step-5-preview	model	Step 5 Preview	stepfun	stepfun	step 5 preview; stepfun step 5	
+iflytek-spark	family	Spark (iFlytek)	chinese-tech-company-llms	iflytek	iflytek spark; spark desk; xinghuo; 星火; starfire	
+sparkdesk	group	SparkDesk	iflytek-spark	iflytek	sparkdesk; iflytek spark desk; spark lite; spark pro; spark max; iflytek spark lite; iflytek spark pro; iflytek spark max	
+sparkdesk-v1	model	SparkDesk V1.0	sparkdesk	iflytek	sparkdesk v1; xinghuo v1; iflytek spark v1	spark v1
+sparkdesk-v2	model	SparkDesk V2.0	sparkdesk	iflytek	sparkdesk v2; xinghuo v2; iflytek spark v2	spark v2
+sparkdesk-v3	model	SparkDesk V3.0	sparkdesk	iflytek	sparkdesk v3; xinghuo v3; iflytek spark v3	spark v3
+sparkdesk-v3.5	model	SparkDesk V3.5	sparkdesk	iflytek	sparkdesk v3.5; xinghuo v3.5; iflytek spark v3.5	spark v3.5
+sparkdesk-v4	model	SparkDesk V4.0	sparkdesk	iflytek	sparkdesk v4; xinghuo v4; xinghuo 4.0; iflytek spark v4; iflytek spark 4.0	spark v4; spark 4.0
+spark-x1	model	Spark X1	iflytek-spark	iflytek	spark x1; xinghuo x1; iflytek x1; iflytek spark x1; spark deep reasoning x1	
+spark-x1.5	model	Spark X1.5	iflytek-spark	iflytek	spark x1.5; xinghuo x1.5; iflytek x1.5; iflytek spark x1.5	
+spark-x2.5	model	Spark X2.5	iflytek-spark	iflytek	spark x2.5; xinghuo x2.5; iflytek spark x2.5	
+baichuan	family	Baichuan	chinese-tech-company-llms	baichuan	baichuan; 百川	
+baichuan-1	group	Baichuan 1	baichuan	baichuan	baichuan 1	
+baichuan-7b	model	Baichuan-7B	baichuan-1	baichuan	baichuan 7b	
+baichuan-13b	model	Baichuan-13B	baichuan-1	baichuan	baichuan 13b	
+baichuan2	group	Baichuan 2	baichuan	baichuan	baichuan 2	
+baichuan2-7b	model	Baichuan2-7B	baichuan2	baichuan	baichuan 2 7b	
+baichuan2-13b	model	Baichuan2-13B	baichuan2	baichuan	baichuan 2 13b	
+baichuan-3	model	Baichuan 3	baichuan	baichuan	baichuan 3	
+baichuan-4	model	Baichuan 4	baichuan	baichuan	baichuan 4; baichuan turbo	
+gpt-neo	family	GPT-Neo	early-open-llms	eleutherai	gpt neo	
+gpt-neo-125m	model	GPT-Neo 125M	gpt-neo	eleutherai	gpt neo 125m	
+gpt-neo-1.3b	model	GPT-Neo 1.3B	gpt-neo	eleutherai	gpt neo 1.3b	
+gpt-neo-2.7b	model	GPT-Neo 2.7B	gpt-neo	eleutherai	gpt neo 2.7b	
+gpt-j	family	GPT-J	early-open-llms	eleutherai		
+gpt-j-6b	model	GPT-J-6B	gpt-j	eleutherai	gpt j; gpt j 6b	
+gpt-neox	family	GPT-NeoX	early-open-llms	eleutherai		
+gpt-neox-20b	model	GPT-NeoX-20B	gpt-neox	eleutherai	gpt neox 20b; neox 20b	gpt neox; neox
+pythia	family	Pythia	early-open-llms	eleutherai	pythia; pythia suite	
+pythia-70m	model	Pythia 70M	pythia	eleutherai	pythia 70m	
+pythia-160m	model	Pythia 160M	pythia	eleutherai	pythia 160m	
+pythia-410m	model	Pythia 410M	pythia	eleutherai	pythia 410m	
+pythia-1b	model	Pythia 1B	pythia	eleutherai	pythia 1b	
+pythia-1.4b	model	Pythia 1.4B	pythia	eleutherai	pythia 1.4b	
+pythia-2.8b	model	Pythia 2.8B	pythia	eleutherai	pythia 2.8b	
+pythia-6.9b	model	Pythia 6.9B	pythia	eleutherai	pythia 6.9b	
+pythia-12b	model	Pythia 12B	pythia	eleutherai	pythia 12b	
+bloom	family	BLOOM	early-open-llms	bigscience	bloom 560m; bloom 1b1; bloom 1b7; bloom 3b; bloom 7b1	
+bloom-176b	model	BLOOM	bloom	bigscience	bloom 176b; bigscience bloom	
+bloomz	model	BLOOMZ	bloom	bigscience	bloomz	
+redpajama	family	RedPajama-INCITE	early-open-llms	together	redpajama incite	red pajama; redpajama
+redpajama-incite-3b	model	RedPajama-INCITE 3B	redpajama	together	redpajama incite 3b; redpajama 3b	
+redpajama-incite-7b	model	RedPajama-INCITE 7B	redpajama	together	redpajama incite 7b; redpajama 7b	
+olmo	family	OLMo		ai2	olmo	
+olmo-1	group	OLMo 1	olmo		olmo 1	
+olmo-1-1b	model	OLMo 1 1B	olmo-1	ai2	olmo 1b	
+olmo-1-7b	model	OLMo 1 7B	olmo-1	ai2	olmo 7b; olmo 1.7	
+olmo-2	group	OLMo 2	olmo		olmo 2	
+olmo-2-7b	model	OLMo 2 7B	olmo-2	ai2	olmo 2 1124 7b; olmo 2 7b	
+olmo-2-13b	model	OLMo 2 13B	olmo-2	ai2	olmo 2 1124 13b; olmo 2 13b	
+olmo-2-32b	model	OLMo 2 32B	olmo-2	ai2	olmo 2 0325 32b; olmo 2 32b	
+olmo-3	group	OLMo 3	olmo		olmo 3; olmo 3 think; olmo 3 instruct; olmo 3 base; olmo 3 rl zero	
+olmo-3-7b	model	OLMo 3 7B	olmo-3	ai2	olmo 3 7b	
+olmo-3-32b	model	OLMo 3 32B	olmo-3	ai2	olmo 3 32b	
+olmo-3.1	model	Olmo 3.1	olmo	ai2	olmo 3.1	
+olmo-hybrid	model	Olmo Hybrid	olmo	ai2	olmo hybrid	
+olmoe-1b-7b	model	OLMoE-1B-7B	olmo	ai2	olmoe; olmoe 1b 7b; olmoe 1b 7b 0924; olmoe 1b 7b 0125	
+bolmo	model	Bolmo	olmo	ai2	bolmo	
+molmo	family	Molmo	open-research-vlms	ai2	molmo	
+molmo-1	model	Molmo	molmo	ai2	molmo 1; molmo 72b; molmo 7b; molmoe 1b	
+molmo-2	model	Molmo 2	molmo	ai2	molmo 2	
+molmoact	group	MolmoAct	molmo		molmoact; ai2 molmoact	
+molmoact-7b	model	MolmoAct-7B	molmoact	ai2	molmoact 7b; molmoact 1; ai2 molmoact 7b; ai2 molmoact 1	
+molmoact-2	group	MolmoAct 2	molmoact			
+molmoact-2-5b	model	MolmoAct 2	molmoact-2	ai2	molmoact 2; ai2 molmoact 2	
+molmoact-2-think	model	MolmoAct 2-Think	molmoact-2	ai2	molmoact 2 think; ai2 molmoact 2 think	
+mpt	family	MPT	early-open-llms	mosaicml		mpt
+mpt-7b	model	MPT-7B	mpt	mosaicml	mpt 7b	
+mpt-30b	model	MPT-30B	mpt	mosaicml	mpt 30b	
+dolly	family	Dolly	early-open-llms	databricks		dolly
+dolly-1.0	model	Dolly 1.0	dolly	databricks	dolly 1.0; dolly v1	
+dolly-2.0	model	Dolly 2.0	dolly	databricks	dolly 2.0; dolly v2	
+dbrx	family	DBRX	early-open-llms	databricks		
+dbrx-132b	model	DBRX	dbrx	databricks	dbrx	
+snowflake-arctic	family	Snowflake Arctic	early-open-llms	snowflake		
+arctic	model	Snowflake Arctic	snowflake-arctic	snowflake	snowflake arctic	arctic
+granite	family	IBM Granite		ibm	ibm granite; granite embedding; granite embedding r2	granite
+granite-13b	model	Granite 13B	granite	ibm	granite 13b	
+granite-code	model	Granite Code	granite	ibm	granite code; granite 8b code; granite 20b code; granite 34b code	
+granite-3.x	group	Granite 3.x	granite		granite 3; ibm granite 3	
+granite-3.0	group	Granite 3.0	granite-3.x		granite 3.0; ibm granite 3.0; granite 3.0 2b; ibm granite 3.0 2b; granite 3.0 8b; ibm granite 3.0 8b; granite 3.0 1b a400m; ibm granite 3.0 1b a400m; granite 3.0 3b a800m; ibm granite 3.0 3b a800m	
+granite-3.1	group	Granite 3.1	granite-3.x		granite 3.1; ibm granite 3.1; granite 3.1 2b; ibm granite 3.1 2b; granite 3.1 8b; ibm granite 3.1 8b; granite 3.1 1b a400m; ibm granite 3.1 1b a400m; granite 3.1 3b a800m; ibm granite 3.1 3b a800m	
+granite-3.2	group	Granite 3.2	granite-3.x		granite 3.2; ibm granite 3.2; granite 3.2 2b; ibm granite 3.2 2b; granite 3.2 8b; ibm granite 3.2 8b	
+granite-3.3	group	Granite 3.3	granite-3.x		granite 3.3; ibm granite 3.3; granite 3.3 2b; ibm granite 3.3 2b	
+granite-3.3-8b	model	Granite 3.3 8B	granite-3.3	ibm	granite 3.3 8b; ibm granite 3.3 8b	
+granite-4.0	group	Granite 4.0	granite		granite 4; granite 4.0; ibm granite 4	
+granite-4.0-h-small	model	Granite 4.0 H-Small	granite-4.0	ibm	granite 4.0 h small	
+granite-4.0-h-tiny	model	Granite 4.0 H-Tiny	granite-4.0	ibm	granite 4.0 h tiny; granite 4.0 tiny	
+granite-4.0-h-micro	model	Granite 4.0 H-Micro	granite-4.0	ibm	granite 4.0 h micro; granite 4.0 micro	
+granite-4.0-nano	model	Granite 4.0 Nano	granite-4.0	ibm	granite 4.0 nano; granite 4.0 350m; granite 4.0 h 1b	
+granite-4.1	group	Granite 4.1	granite		granite 4.1; ibm granite 4.1	
+granite-4.1-3b	model	Granite 4.1 3B	granite-4.1	ibm	granite 4.1 3b; ibm granite 4.1 3b	
+granite-4.1-8b	model	Granite 4.1 8B	granite-4.1	ibm	granite 4.1 8b; ibm granite 4.1 8b	
+granite-4.1-30b	model	Granite 4.1 30B	granite-4.1	ibm	granite 4.1 30b; ibm granite 4.1 30b	
+granite-4.2	group	Granite 4.2	granite		granite 4.2; ibm granite 4.2	
+granite-speech	group	Granite Speech	granite		granite speech; ibm granite speech; granite speech 3.2; granite 4.0 speech	
+granite-speech-3.3	group	Granite Speech 3.3	granite-speech		granite speech 3.3; ibm granite speech 3.3; granite speech 3.3 8b; ibm granite speech 3.3 8b; granite speech 3.3 2b; ibm granite speech 3.3 2b	
+granite-speech-4.1-2b	model	Granite Speech 4.1 2B	granite-speech	ibm	granite speech 4.1 2b; granite speech 4.1; ibm granite speech 4.1; granite speech 4.1 2b nar; granite speech 4.1 2b plus	
+granite-speech-5.0-470m	model	Granite Speech 5.0 TurboCTC	granite-speech	ibm	granite speech 5.0 turboctc; granite speech 5.0 470m; granite speech 5.0; ibm granite speech 5.0	
+granite-4.2-3b	model	Granite 4.2 3B	granite-4.2	ibm	granite 4.2 3b; ibm granite 4.2 3b	
+granite-4.2-8b	model	Granite 4.2 8B	granite-4.2	ibm	granite 4.2 8b; ibm granite 4.2 8b	
+granite-4.2-30b	model	Granite 4.2 30B	granite-4.2	ibm	granite 4.2 30b; ibm granite 4.2 30b	
+granite-guardian	group	Granite Guardian	granite		granite guardian; ibm granite guardian; granite guardian factuality; granite guardian toxicity	
+granite-guardian-hap	group	Granite Guardian HAP	granite-guardian		granite guardian hap; ibm granite guardian hap	
+granite-guardian-hap-38m	model	Granite Guardian HAP 38M	granite-guardian-hap	ibm	granite guardian hap 38m; ibm granite guardian hap 38m	
+granite-guardian-hap-125m	model	Granite Guardian HAP 125M	granite-guardian-hap	ibm	granite guardian hap 125m; ibm granite guardian hap 125m	
+granite-guardian-3	group	Granite Guardian 3.x	granite-guardian		granite guardian 3; granite guardian 3.x; ibm granite guardian 3	
+granite-guardian-3.0	group	Granite Guardian 3.0	granite-guardian-3		granite guardian 3.0; ibm granite guardian 3.0	
+granite-guardian-3.0-2b	model	Granite Guardian 3.0 2B	granite-guardian-3.0	ibm	granite guardian 3.0 2b; ibm granite guardian 3.0 2b	
+granite-guardian-3.0-8b	model	Granite Guardian 3.0 8B	granite-guardian-3.0	ibm	granite guardian 3.0 8b; ibm granite guardian 3.0 8b	
+granite-guardian-3.1	group	Granite Guardian 3.1	granite-guardian-3		granite guardian 3.1; ibm granite guardian 3.1	
+granite-guardian-3.1-2b	model	Granite Guardian 3.1 2B	granite-guardian-3.1	ibm	granite guardian 3.1 2b; ibm granite guardian 3.1 2b	
+granite-guardian-3.1-8b	model	Granite Guardian 3.1 8B	granite-guardian-3.1	ibm	granite guardian 3.1 8b; ibm granite guardian 3.1 8b	
+granite-guardian-3.2	group	Granite Guardian 3.2	granite-guardian-3		granite guardian 3.2; ibm granite guardian 3.2	
+granite-guardian-3.2-5b	model	Granite Guardian 3.2 5B	granite-guardian-3.2	ibm	granite guardian 3.2 5b; ibm granite guardian 3.2 5b	
+granite-guardian-3.2-3b-a800m	model	Granite Guardian 3.2 3B-A800M	granite-guardian-3.2	ibm	granite guardian 3.2 3b a800m; granite guardian 3.2 3b; ibm granite guardian 3.2 3b a800m; ibm granite guardian 3.2 3b	
+granite-guardian-3.3-8b	model	Granite Guardian 3.3 8B	granite-guardian-3	ibm	granite guardian 3.3; granite guardian 3.3 8b; ibm granite guardian 3.3; ibm granite guardian 3.3 8b	
+granite-guardian-4.1-8b	model	Granite Guardian 4.1 8B	granite-guardian	ibm	granite guardian 4.1; granite guardian 4.1 8b; ibm granite guardian 4.1; ibm granite guardian 4.1 8b	
+megatron	family	Megatron	early-open-llms	nvidia		megatron
+megatron-lm	model	Megatron-LM	megatron	nvidia	megatron 8.3b; megatron gpt2	megatron lm
+megatron-turing-nlg	model	Megatron-Turing NLG 530B	megatron	['nvidia', 'microsoft']	megatron turing nlg; megatron turing; mt nlg; mtnlg	
+nemotron	family	Nemotron		nvidia	nemotron	
+nemotron-4	group	Nemotron-4	nemotron		nemotron 4	
+nemotron-4-15b	model	Nemotron-4 15B	nemotron-4	nvidia	nemotron 4 15b; nemotron 15b	
+nemotron-4-340b	model	Nemotron-4 340B	nemotron-4	nvidia	nemotron 4 340b; nemotron 340b	
+nemotron-4-340b-reward	model	Nemotron-4-340B-Reward	nemotron-4	nvidia	nemotron 4 340b reward; nemotron 340b reward	
+llama-nemotron	group	Llama-Nemotron	nemotron		llama nemotron	
+llama-3.1-nemotron-70b	model	Llama-3.1-Nemotron-70B-Instruct	llama-nemotron	nvidia	llama 3.1 nemotron 70b; llama nemotron 70b; llama 3.1 nemotron; nemotron 70b	
+llama-nemotron-nano	model	Llama-Nemotron Nano	llama-nemotron	nvidia	llama nemotron nano; llama 3.1 nemotron nano; nemotron nano	
+llama-nemotron-super	model	Llama-Nemotron Super	llama-nemotron	nvidia	llama nemotron super; llama 3.3 nemotron super; nemotron super	
+llama-nemotron-ultra	model	Llama-Nemotron Ultra	llama-nemotron	nvidia	llama nemotron ultra; llama 3.1 nemotron ultra; nemotron ultra	
+llama-3.1-nemotron-70b-reward	model	Llama-3.1-Nemotron-70B-Reward	llama-nemotron	nvidia	llama 3.1 nemotron 70b reward; nemotron 70b reward	
+llama-nemotron-safety-guard	group	Llama Nemotron Safety Guard	llama-nemotron		llama nemotron safety guard; nemotron safety guard	nemoguard
+llama-nemotron-safety-guard-v1	group	Llama Nemotron Safety Guard V1	llama-nemotron-safety-guard		llama nemotron safety guard v1; aegis ai content safety; aegis content safety; nvidia aegis	
+llama-nemotron-safety-guard-defensive-v1	model	Llama Nemotron Safety Guard Defensive V1	llama-nemotron-safety-guard-v1	nvidia	llama nemotron safety guard defensive v1; llama nemotron safety guard defensive; aegis ai content safety llamaguard defensive; aegis ai content safety llamaguard llm defensive; aegis defensive	
+llama-nemotron-safety-guard-permissive-v1	model	Llama Nemotron Safety Guard Permissive V1	llama-nemotron-safety-guard-v1	nvidia	llama nemotron safety guard permissive v1; llama nemotron safety guard permissive; aegis ai content safety llamaguard permissive; aegis ai content safety llamaguard llm permissive; aegis permissive	
+llama-nemotron-safety-guard-v2	model	Llama Nemotron Safety Guard V2	llama-nemotron-safety-guard	nvidia	llama nemotron safety guard v2; llama 3.1 nemoguard 8b content safety; nemoguard 8b content safety; nemoguard content safety	
+llama-nemotron-safety-guard-v3	model	Llama-3.1-Nemotron-Safety-Guard-8B-v3	llama-nemotron-safety-guard	nvidia	llama 3.1 nemotron safety guard 8b v3; llama 3.1 nemotron safety guard 8b; nemotron safety guard 8b v3; llama nemotron safety guard v3; nemotron safety guard v3	
+llama-nemotron-topic-guard-v1	model	Llama Nemotron Topic Guard V1	llama-nemotron	nvidia	llama nemotron topic guard v1; llama nemotron topic guard; llama 3.1 nemoguard 8b topic control; nemoguard 8b topic control; nemoguard topic control	
+nemotron-h	model	Nemotron-H	nemotron	nvidia	nemotron h	
+nemotron-nano-2	group	Nemotron Nano 2	nemotron		nemotron nano 2; nemotron nano 12b	
+nemotron-nano-2-9b	model	NVIDIA-Nemotron-Nano-9B-v2	nemotron-nano-2	nvidia	nemotron nano 9b v2; nvidia nemotron nano 9b v2; nemotron nano 9b	
+nemotron-3	group	Nemotron 3	nemotron		nemotron 3	
+nemotron-3-nano	model	Nemotron 3 Nano	nemotron-3	nvidia	nemotron 3 nano; nemotron 3 nano 30b a3b	
+nemotron-3-super	model	Nemotron 3 Super	nemotron-3	nvidia	nemotron 3 super	
+nemotron-3-ultra	model	Nemotron 3 Ultra	nemotron-3	nvidia	nemotron 3 ultra	
+nemotron-3-nano-omni	model	Nemotron 3 Nano Omni	nemotron-3	nvidia	nemotron 3 nano omni; nemotron 3 omni	
+nemotron-3.5-lightning-30b-a3b	model	Nemotron-3.5-Lightning-30B-A3B	nemotron	nvidia	nemotron 3.5 lightning 30b a3b	
+nemotron-3.5	group	Nemotron 3.5	nemotron		nemotron 3.5	
+nemotron-3.5-bolt-74b-a9b	model	Nemotron 3.5 Bolt 74B-A9B	nemotron-3.5	nvidia	nemotron 3.5 bolt 74b a9b; nemotron 3.5 bolt	
+nemotron-3.5-super-vl	model	Nemotron 3.5 Super VL	nemotron-3.5	nvidia	nemotron 3.5 super vl; nemotron 3.5 super	
+nemotron-3.5-asr-streaming-0.6b	model	Nemotron 3.5 ASR Streaming 0.6B	nemotron-3.5	nvidia	nemotron 3.5 asr streaming 0.6b; nemotron 3.5 asr streaming; nemotron 3.5 asr	
+nemotron-3.5-embed	group	Nemotron 3.5 Embed	nemotron-3.5		nemotron 3.5 embed	
+nemotron-3.5-embed-8b	model	Nemotron-3.5-Embed-8B	nemotron-3.5-embed	nvidia	nemotron 3.5 embed 8b	
+nemotron-3.5-embed-1b	model	Nemotron-3.5-Embed-1B	nemotron-3.5-embed	nvidia	nemotron 3.5 embed 1b	
+nemotron-3.5-rerank-8b	model	Nemotron-3.5-Rerank-8B	nemotron-3.5	nvidia	nemotron 3.5 rerank 8b; nemotron 3.5 rerank	
+nemotron-labs-audex	model	Nemotron-Labs Audex 30B-A3B	nemotron	nvidia	nemotron labs audex; audex 30b a3b	
+nemotron-labs-3-puzzle-75b-a9b	model	Nemotron-Labs 3 Puzzle 75B-A9B	nemotron	nvidia	nemotron labs 3 puzzle 75b a9b; nemotron labs 3 puzzle; puzzle 75b a9b	
+nemotron-content-safety	group	Nemotron Content Safety	nemotron		nemotron content safety	
+nemotron-content-safety-reasoning-4b	model	Nemotron-Content-Safety-Reasoning-4B	nemotron-content-safety	nvidia	nemotron content safety reasoning 4b; nemotron content safety reasoning	
+nemotron-3-content-safety	model	Nemotron 3 Content Safety	nemotron-content-safety	nvidia	nemotron 3 content safety	
+nemotron-3.5-content-safety	model	Nemotron 3.5 Content Safety	nemotron-content-safety	nvidia	nemotron 3.5 content safety	
+aceinstruct	family	AceInstruct	branded-post-trains	nvidia	ace instruct	
+aceinstruct-1.5b	model	AceInstruct-1.5B	aceinstruct	nvidia	ace instruct 1.5b	
+turing	family	Microsoft Turing	early-open-llms	microsoft		
+turing-nlg	model	Turing-NLG	turing	microsoft	turing nlg; t nlg; tnlg; turing natural language generation	
+deberta	family	DeBERTa	bert-era-encoders	microsoft	deberta	
+deberta-v1-v2	model	DeBERTa (v1/v2)	deberta	microsoft	deberta v1; deberta v2; deberta base; deberta large; deberta xlarge	
+deberta-v3	model	DeBERTaV3	deberta	microsoft	deberta v3; debertav3; mdeberta	
+phi	family	Phi		microsoft	phi family; phi models	
+phi-1	model	Phi-1	phi	microsoft	phi 1	
+phi-1.5	model	Phi-1.5	phi	microsoft	phi 1.5	
+phi-2	model	Phi-2	phi	microsoft	phi 2	
+phi-3	group	Phi-3	phi		phi 3	
+phi-3-mini	model	Phi-3-mini	phi-3	microsoft	phi 3 mini	
+phi-3-small	model	Phi-3-small	phi-3	microsoft	phi 3 small	
+phi-3-medium	model	Phi-3-medium	phi-3	microsoft	phi 3 medium	
+phi-3-vision	model	Phi-3-vision	phi-3	microsoft	phi 3 vision	
+phi-3.5	group	Phi-3.5	phi		phi 3.5	
+phi-3.5-mini	model	Phi-3.5-mini	phi-3.5	microsoft	phi 3.5 mini	
+phi-3.5-moe	model	Phi-3.5-MoE	phi-3.5	microsoft	phi 3.5 moe	
+phi-3.5-vision	model	Phi-3.5-vision	phi-3.5	microsoft	phi 3.5 vision	
+phi-4	group	Phi-4	phi			
+phi-4-14b	model	Phi-4	phi-4	microsoft	phi 4	
+phi-4-mini	model	Phi-4-mini	phi-4	microsoft	phi 4 mini	
+phi-4-multimodal	model	Phi-4-multimodal	phi-4	microsoft	phi 4 multimodal	
+phi-4-reasoning	model	Phi-4-reasoning	phi-4	microsoft	phi 4 reasoning; phi 4 reasoning plus	
+phi-4-mini-reasoning	model	Phi-4-mini-reasoning	phi-4	microsoft	phi 4 mini reasoning; microsoft phi 4 mini reasoning	
+phi-4-mini-flash-reasoning	model	Phi-4-mini-flash-reasoning	phi-4	microsoft	phi 4 mini flash	
+phi-4-reasoning-vision	model	Phi-4-reasoning-vision-15B	phi-4	microsoft	phi 4 reasoning vision	
+mai	family	MAI		microsoft	mai models	microsoft ai models
+mai-1-preview	model	MAI-1-preview	mai	microsoft	mai 1; mai 1 preview; microsoft mai 1	
+mai-voice-1	model	MAI-Voice-1	mai	microsoft	mai voice; mai voice 1	
+mai-image-1	model	MAI-Image-1	mai	microsoft	mai image 1; microsoft mai image 1	
+mai-thinking-1	model	MAI-Thinking-1	mai	microsoft	mai thinking; mai thinking 1	
+mai-code-1	model	MAI-Code-1	mai	microsoft	mai code; mai code 1; mai code 1 flash	
+mai-transcribe-1	model	MAI-Transcribe-1	mai	microsoft	mai transcribe 1; mai transcribe	
+mai-transcribe-2	model	MAI-Transcribe-2	mai	microsoft	mai transcribe 2	
+mai-image-2	model	MAI-Image-2	mai	microsoft	mai image 2	
+mai-image-2.5	model	MAI-Image-2.5	mai	microsoft	mai image 2.5	
+mai-image-2.6	model	MAI-Image-2.6	mai	microsoft	mai image 2.6	
+mai-voice-2	model	MAI-Voice-2	mai	microsoft	mai voice 2	
+mai-voice-2.1	model	MAI-Voice-2.1	mai	microsoft	mai voice 2.1	
+mai-code-1.1-flash	model	MAI-Code-1.1-Flash	mai	microsoft	mai code 1.1 flash; mai code 1.1	
+mai-cyber-1-flash	model	MAI-Cyber-1-Flash	mai	microsoft	mai cyber 1 flash; mai cyber 1; mai cyber	
+mai-ds-r1	model	MAI-DS-R1	mai	microsoft	mai ds r1; microsoft mai ds r1	
+magenticbrain	family	MagenticBrain	computer-use-agents	microsoft		
+magenticbrain-14b	model	MagenticBrain	magenticbrain	microsoft	magentic brain; microsoft magentic brain	
+codegen	family	CodeGen	coding-models	salesforce		codegen; code gen
+codegen-350m	model	CodeGen 350M	codegen	salesforce	codegen 350m	
+codegen-2b	model	CodeGen 2.7B	codegen	salesforce	codegen 2b	
+codegen-6b	model	CodeGen 6.1B	codegen	salesforce	codegen 6b	
+codegen-16b	model	CodeGen 16.1B	codegen	salesforce	codegen 16b	
+codegen-2	group	CodeGen2	codegen		codegen2; salesforce codegen2; codegen 2 1b; salesforce codegen 2 1b; codegen 2 3.7b; salesforce codegen 2 3.7b; codegen2 7b; salesforce codegen2 7b; codegen 2 16b; salesforce codegen 2 16b	
+codegen-2.5-7b	model	CodeGen2.5-7B	codegen	salesforce	codegen 2.5; codegen 2.5 7b; salesforce codegen 2.5; codegen25; codegen25 7b	
+xgen	family	XGen	early-open-llms	salesforce		
+xgen-7b	model	XGen-7B	xgen	salesforce	xgen; xgen 7b	
+santacoder	family	SantaCoder	coding-models	bigcode		
+santacoder-1.1b	model	SantaCoder	santacoder	bigcode	santacoder; santa coder	
+starcoder	family	StarCoder	coding-models	bigcode		
+starcoder-1	model	StarCoder	starcoder	bigcode	starcoder; star coder; starcoderbase; starcoderplus; starcoder 15b	
+starcoder2	model	StarCoder2	starcoder	bigcode	starcoder 2	
+starcoder-fine-tunes	group	StarCoder fine-tunes (third-party)	starcoder		wizardcoder	
+replit-code	family	Replit Code	coding-models	replit		
+replit-code-3b	model	Replit Code	replit-code	replit	replit code	
+llava	family	LLaVA	open-research-vlms	['uw-madison', 'microsoft']	llava	
+llava-1	model	LLaVA v1	llava	['uw-madison', 'microsoft']	llava 1; llava v1	
+llava-1.5	group	LLaVA-1.5	llava		llava 1.5; llava v1.5	
+llava-1.5-7b	model	LLaVA-1.5 7B	llava-1.5	['uw-madison', 'microsoft']	llava 1.5 7b; llava v1.5 7b	
+llava-1.5-13b	model	LLaVA-1.5 13B	llava-1.5	['uw-madison', 'microsoft']	llava 1.5 13b; llava v1.5 13b	
+llava-next	model	LLaVA-NeXT	llava	['uw-madison', 'microsoft']	llava next; llava 1.6; llava v1.6	
+llava-onevision	model	LLaVA-OneVision	llava	['uw-madison', 'microsoft']	llava one vision; llava ov	
+minigpt	family	MiniGPT	open-research-vlms	kaust	mini gpt	
+minigpt-4	model	MiniGPT-4	minigpt	kaust	mini gpt 4	
+minigpt-v2	model	MiniGPT-v2	minigpt	kaust	mini gpt v2; mini gpt 2	
+sharegpt4v	family	ShareGPT4V	open-research-vlms	['ustc', 'internlm']	share gpt4v	
+sharegpt4v-7b	model	ShareGPT4V-7B	sharegpt4v	['ustc', 'internlm']	share gpt4v 7b	
+blip	family	BLIP	open-research-vlms	salesforce		
+blip-2	model	BLIP-2	blip	salesforce	blip 2	
+instructblip	model	InstructBLIP	blip	salesforce	instruct blip	
+mplug-owl	family	mPLUG-Owl	open-research-vlms	alibaba	mplug owl	
+mplug-owl-1	model	mPLUG-Owl	mplug-owl	alibaba	mplug owl 1	
+mplug-owl2	model	mPLUG-Owl2	mplug-owl	alibaba	mplug owl 2	
+mplug-owl3	model	mPLUG-Owl3	mplug-owl	alibaba	mplug owl 3	
+idefics	family	IDEFICS	open-research-vlms	hugging-face	idefics	
+idefics-1	model	IDEFICS	idefics	hugging-face	idefics 1; idefics 9b; idefics 80b	
+idefics2	model	IDEFICS2	idefics	hugging-face	idefics 2	
+idefics3	model	IDEFICS3	idefics	hugging-face	idefics 3	
+fuyu	family	Fuyu	open-research-vlms	adept	fuyu	
+fuyu-8b	model	Fuyu-8B	fuyu	adept	fuyu 8b	
+minicpm	family	MiniCPM		['modelbest', 'tsinghua']	minicpm	
+minicpm3-4b	model	MiniCPM3-4B	minicpm	['modelbest', 'tsinghua']	minicpm 3; minicpm 3 4b; minicpm 3.0	
+minicpm4	group	MiniCPM4	minicpm		minicpm 4; minicpm 4 8b; minicpm 4 0.5b	
+minicpm4.1-8b	model	MiniCPM4.1-8B	minicpm	['modelbest', 'tsinghua']	minicpm 4.1; minicpm 4.1 8b	
+minicpm5	group	MiniCPM5	minicpm		minicpm 5; minicpm 5 1b; minicpm 5 2b	
+minicpm-v	group	MiniCPM-V	minicpm		minicpm v	
+minicpm-llama3-v-2.5	model	MiniCPM-Llama3-V 2.5	minicpm-v	['modelbest', 'tsinghua']	minicpm llama3 v 2.5; minicpm v 2.5	
+minicpm-v-2.6	model	MiniCPM-V 2.6	minicpm-v	['modelbest', 'tsinghua']	minicpm v 2.6	
+minicpm-o-2.6	model	MiniCPM-o 2.6	minicpm-v	['modelbest', 'tsinghua']	minicpm o 2.6; minicpm o	
+minicpm-v-4	model	MiniCPM-V 4.0	minicpm-v	['modelbest', 'tsinghua']	minicpm v 4; minicpm v 4.0	
+minicpm-v-4.5	model	MiniCPM-V 4.5	minicpm-v	['modelbest', 'tsinghua']	minicpm v 4.5	
+minicpm-o-4.5	model	MiniCPM-o 4.5	minicpm-v	['modelbest', 'tsinghua']	minicpm o 4.5	
+minicpm-v-4.6	model	MiniCPM-V 4.6	minicpm-v	['modelbest', 'tsinghua']	minicpm v 4.6	
+minicpm-v-4.6-thinking	model	MiniCPM-V 4.6 Thinking	minicpm-v	['modelbest', 'tsinghua']	minicpm v 4.6 thinking	
+minicpm-v-4.7	model	MiniCPM-V 4.7	minicpm-v	['modelbest', 'tsinghua']	minicpm v 4.7	
+voxcpm	family	VoxCPM	speech-synthesis	openbmb	voxcpm; openbmb voxcpm; voxcpm 1.5; voxcpm 0.5b; voxcpm 1.5	
+voxcpm2	model	VoxCPM2	voxcpm	openbmb	voxcpm 2; openbmb voxcpm 2	
+smollm	family	SmolLM	small-lms	hugging-face	smol lm; smol vlm	
+smollm-1	model	SmolLM	smollm	hugging-face	smollm 1	
+smollm2	group	SmolLM2	smollm		smollm 2	
+smollm2-135m	model	SmolLM2-135M	smollm2	hugging-face	smollm 2 135m	
+smollm2-360m	model	SmolLM2-360M	smollm2	hugging-face	smollm 2 360m	
+smollm2-1.7b	model	SmolLM2-1.7B	smollm2	hugging-face	smollm 2 1.7b	
+smollm3	model	SmolLM3	smollm	hugging-face	smollm 3	
+distilbert	family	DistilBERT	bert-era-encoders	hugging-face		
+distilbert-base	model	DistilBERT	distilbert	hugging-face	distilbert; distil bert	
+sbert	family	Sentence-BERT / sentence-transformers	embedding-reranking	ukp-lab	sbert; sentence bert	sentence transformers
+all-minilm-l6-v2	model	all-MiniLM-L6-v2	sbert	ukp-lab	all minilm l6 v2	
+all-mpnet-base-v2	model	all-mpnet-base-v2	sbert	ukp-lab	all mpnet base v2	
+e5	family	E5	embedding-reranking	microsoft	multilingual e5	e5
+e5-small	model	E5-small	e5	microsoft	e5 small	
+e5-base	model	E5-base	e5	microsoft	e5 base	
+e5-large	model	E5-large	e5	microsoft	e5 large	
+e5-mistral-7b	model	E5-Mistral-7B-Instruct	e5	microsoft	e5 mistral; e5 mistral 7b	
+vibevoice	family	VibeVoice	speech-synthesis	microsoft	vibevoice; microsoft vibevoice; vibe voice; vibevoice asr streaming; vibevoice realtime	
+vibevoice-1.5b	model	VibeVoice-1.5B	vibevoice	microsoft	vibevoice 1.5b; vibevoice tts 1.5b; microsoft vibevoice 1.5b; microsoft vibevoice tts 1.5b	
+vibevoice-large	model	VibeVoice-Large	vibevoice	microsoft	vibevoice large; vibevoice 7b; vibevoice tts 7b; microsoft vibevoice large; microsoft vibevoice 7b; microsoft vibevoice tts 7b	
+vibevoice-asr	model	VibeVoice-ASR	speech-recognition	microsoft	vibevoice asr; vibevoice asr 7b; microsoft vibevoice asr	
+vall-e	family	VALL-E	speech-synthesis	microsoft		
+vall-e-1	model	VALL-E	vall-e	microsoft	vall e; microsoft vall e	
+vall-e-2	model	VALL-E 2	vall-e	microsoft	vall e 2; microsoft vall e 2	
+bge	family	BGE	embedding-reranking	baai		bge
+bge-small	model	BGE-small	bge	baai	bge small	
+bge-base	model	BGE-base	bge	baai	bge base	
+bge-large	model	BGE-large	bge	baai	bge large; bge large en	
+bge-m3	model	BGE-M3	bge	baai	bge m3	
+gte	family	GTE	embedding-reranking	alibaba		gte
+gte-small	model	GTE-small	gte	alibaba	gte small	
+gte-base	model	GTE-base	gte	alibaba	gte base	
+gte-large	model	GTE-large	gte	alibaba	gte large	
+jina-embeddings	family	Jina Embeddings	embedding-reranking	jina-ai	jina embeddings; jina ai	
+jina-embeddings-v2	model	Jina Embeddings v2	jina-embeddings	jina-ai	jina embeddings v2	
+jina-embeddings-v3	model	Jina Embeddings v3	jina-embeddings	jina-ai	jina embeddings v3	
+jina-embeddings-v4	model	Jina Embeddings v4	jina-embeddings	jina-ai	jina embeddings v4; jina v4	
+jina-embeddings-v5	model	jina-embeddings-v5	jina-embeddings	jina-ai	jina embeddings v5; jina v5	
+jina-reranker	family	Jina Reranker	embedding-reranking	jina-ai	jina reranker; jina ai reranker; jina reranker v3; jina ai reranker v3; jina reranker v3.5; jina ai reranker v3.5	
+voyage	family	Voyage AI	embedding-reranking	voyage-ai	voyage ai; rerank 2 lite; rerank 2.5 lite; voyage multimodal 3.5	voyage
+voyage-2	model	voyage-2	voyage	voyage-ai	voyage 2; voyage large 2	
+voyage-3	model	voyage-3	voyage	voyage-ai	voyage 3	
+voyage-multimodal-3	model	voyage-multimodal-3	voyage	voyage-ai	voyage multimodal 3	
+voyage-3.5	model	voyage-3.5	voyage	voyage-ai	voyage 3.5	
+voyage-4	model	Voyage 4	voyage	voyage-ai	voyage 4	
+voyage-context-4	model	voyage-context-4	voyage	voyage-ai	voyage context 4	
+voyage-code-4	model	voyage-code-4	voyage	voyage-ai	voyage code 4	
+voyage-rerank-2	model	rerank-2	voyage	voyage-ai	voyage rerank 2; voyage ai rerank 2	rerank 2
+voyage-rerank-2.5	model	rerank-2.5	voyage	voyage-ai	voyage rerank 2.5; voyage ai rerank 2.5	rerank 2.5
+voyage-rerank-3-gen	group	Rerank 3 (Voyage, generation)	voyage			
+voyage-rerank-3	model	rerank-3	voyage-rerank-3-gen	voyage-ai	voyage rerank 3; voyage ai rerank 3	
+voyage-rerank-3-lite	model	rerank-3-lite	voyage-rerank-3-gen	voyage-ai	voyage rerank 3 lite; voyage ai rerank 3 lite	rerank 3 lite
+mamba	family	Mamba	alt-architecture-lms	['cmu', 'princeton']		mamba
+mamba-1	model	Mamba	mamba	['cmu', 'princeton']	mamba 1; mamba ssm; mamba 130m; mamba 370m; mamba 790m; mamba 1.4b; mamba 2.8b	selective state space
+mamba-2	model	Mamba-2	mamba	['cmu', 'princeton']	mamba 2	state space duality
+rwkv	family	RWKV	alt-architecture-lms	rwkv-community	rwkv	
+rwkv-4	model	RWKV-4	rwkv	rwkv-community	rwkv 4; rwkv 4 raven	raven
+rwkv-5	model	RWKV-5 "Eagle"	rwkv	rwkv-community	rwkv 5; eagle 7b	eagle
+rwkv-6	model	RWKV-6 "Finch"	rwkv	rwkv-community	rwkv 6	finch
+rwkv-7	model	RWKV-7 "Goose"	rwkv	rwkv-community	rwkv 7; rwkv 7 goose	goose
+stable-diffusion	family	Stable Diffusion	image-generation	stability	stable diffusion	
+stable-diffusion-1.x	group	SD 1.x	stable-diffusion		stable diffusion v1; sd v1	
+stable-diffusion-1.4	model	Stable Diffusion 1.4	stable-diffusion-1.x	['compvis', 'stability', 'runway']	stable diffusion 1.4; sd 1.4; stable diffusion v1.4; sd v1.4	
+stable-diffusion-1.5	model	Stable Diffusion 1.5	stable-diffusion-1.x	runway	stable diffusion 1.5; sd 1.5; sd15; sd v1.5; stable diffusion v1.5	
+stable-diffusion-2.x	group	SD 2.x	stable-diffusion			
+stable-diffusion-2.0	model	Stable Diffusion 2.0	stable-diffusion-2.x	stability	stable diffusion 2; sd 2; stable diffusion v2	
+stable-diffusion-2.1	model	Stable Diffusion 2.1	stable-diffusion-2.x	stability	stable diffusion 2.1; sd 2.1; sd21	
+sdxl	group	SDXL	stable-diffusion			
+sdxl-1.0	model	SDXL 1.0	sdxl	stability	sd xl; sd xl 1.0; sd xl base; stable diffusion xl	
+sdxl-turbo	model	SDXL Turbo	sdxl	stability	sd xl turbo; sd turbo	
+stable-diffusion-3.x	group	SD 3.x	stable-diffusion			
+stable-diffusion-3-medium	model	Stable Diffusion 3 Medium	stable-diffusion-3.x	stability	stable diffusion 3; sd 3; sd 3 medium; stable diffusion 3 medium	
+stable-diffusion-3.5	group	SD 3.5	stable-diffusion-3.x			
+stable-diffusion-3.5-large	model	Stable Diffusion 3.5 Large	stable-diffusion-3.5	stability	stable diffusion 3.5; sd 3.5; sd3.5l; stable diffusion 3.5 large; sd 3.5 large	
+stable-diffusion-3.5-large-turbo	model	Stable Diffusion 3.5 Large Turbo	stable-diffusion-3.5	stability	sd 3.5 large turbo; stable diffusion 3.5 large turbo; sd 3.5 turbo	
+stable-diffusion-3.5-medium	model	Stable Diffusion 3.5 Medium	stable-diffusion-3.5	stability	sd 3.5 medium; sd3.5m; stable diffusion 3.5 medium	
+stable-video-diffusion	family	Stable Video Diffusion	video-generation	stability		stable video
+svd	model	Stable Video Diffusion (SVD / SVD-XT)	stable-video-diffusion	stability	stable video diffusion; svd xt	img2vid
+stable-audio	family	Stable Audio	music-audio-generation	stability	stable audio	
+stable-audio-1.0	model	Stable Audio 1.0	stable-audio	stability	stable audio 1.0; stable audio 1	
+stable-audio-open	model	Stable Audio Open	stable-audio	stability	stable audio open	
+stable-audio-2.0	model	Stable Audio 2.0	stable-audio	stability	stable audio 2.0; stable audio 2	
+stable-audio-2.5	model	Stable Audio 2.5	stable-audio	stability	stable audio 2.5	
+stable-audio-3.0	model	Stable Audio 3.0	stable-audio	stability	stable audio 3.0; stable audio 3	
+flux	family	FLUX	image-generation	black-forest-labs	bfl flux; black forest labs flux	flux
+flux.1	group	FLUX.1	flux		flux 1; bfl flux 1; black forest labs flux 1	
+flux.1-pro	model	FLUX.1 [pro]	flux.1	black-forest-labs	flux 1 pro; flux pro; black forest labs flux 1 pro; black forest labs flux pro	
+flux.1-dev	model	FLUX.1 [dev]	flux.1	black-forest-labs	flux 1 dev; flux dev; black forest labs flux 1 dev; black forest labs flux dev	
+flux.1-schnell	model	FLUX.1 [schnell]	flux.1	black-forest-labs	flux 1 schnell; flux schnell; black forest labs flux 1 schnell; black forest labs flux schnell	
+flux-1.1-pro	model	FLUX 1.1 [pro]	flux	black-forest-labs	flux 1.1 pro; flux 1.1; black forest labs flux 1.1 pro; black forest labs flux 1.1; bfl flux 1.1	blueberry
+flux.1-kontext	model	FLUX.1 Kontext	flux	black-forest-labs	flux 1 kontext; flux kontext; black forest labs flux 1 kontext; black forest labs flux kontext	kontext
+flux.2	group	FLUX.2	flux		flux 2; bfl flux 2; black forest labs flux 2	
+flux.2-pro	model	FLUX.2 [pro]	flux.2	black-forest-labs	flux 2 pro; flux 2 flex; black forest labs flux 2 pro; black forest labs flux 2 flex	
+flux.2-dev	model	FLUX.2 [dev]	flux.2	black-forest-labs	flux 2 dev; black forest labs flux 2 dev	
+flux.2-klein	group	FLUX.2 [klein]	flux.2		flux 2 klein; black forest labs flux 2 klein	
+flux.2-klein-4b	model	FLUX.2 Klein 4B	flux.2-klein	black-forest-labs	flux 2 klein 4b; klein 4b; black forest labs flux 2 klein 4b	
+flux.2-klein-9b	model	FLUX.2 Klein 9B	flux.2-klein	black-forest-labs	flux 2 klein 9b; klein 9b; black forest labs flux 2 klein 9b	
+flux-3	model	FLUX 3	flux	black-forest-labs	flux 3; flux mimic; bfl flux 3; black forest labs flux 3; black forest labs flux mimic	
+flux-3-image-klein	model	FLUX 3 Image Klein	flux	black-forest-labs	flux 3 image klein; flux 3 klein; black forest labs flux 3 image klein; black forest labs flux 3 klein	
+flux-3-action	model	FLUX 3 Action	flux	black-forest-labs	flux 3 action; bfl flux 3 action; black forest labs flux 3 action	
+midjourney	family	Midjourney	image-generation	midjourney	midjourney	mj
+midjourney-v4	model	Midjourney V4	midjourney	midjourney	midjourney v4; midjourney 4; mj v4	
+midjourney-v5	model	Midjourney V5	midjourney	midjourney	midjourney v5; midjourney 5; mj v5	
+midjourney-v5.1	model	Midjourney V5.1	midjourney	midjourney	midjourney v5.1; midjourney 5.1; mj v5.1	
+midjourney-v5.2	model	Midjourney V5.2	midjourney	midjourney	midjourney v5.2; midjourney 5.2; mj v5.2	
+midjourney-v6	model	Midjourney V6	midjourney	midjourney	midjourney v6; midjourney 6; mj v6	
+midjourney-v6.1	model	Midjourney V6.1	midjourney	midjourney	midjourney v6.1; midjourney 6.1; mj v6.1	
+midjourney-v7	model	Midjourney V7	midjourney	midjourney	midjourney v7; midjourney 7; mj v7	
+midjourney-v8	model	Midjourney V8	midjourney	midjourney	midjourney v8; midjourney 8; mj v8	
+midjourney-v8.1	model	Midjourney V8.1	midjourney	midjourney	midjourney v8.1; midjourney 8.1; mj v8.1	
+midjourney-v8.2	model	Midjourney V8.2	midjourney	midjourney	midjourney v8.2; midjourney 8.2; mj v8.2	
+midjourney-v1-video	model	Midjourney V1 Video	midjourney	midjourney	midjourney video; midjourney v1 video; mj video	v1 video
+runway-gen	family	Runway Gen	video-generation	runway	runway gen; runway ml	runway
+runway-gen-1	model	Runway Gen-1	runway-gen	runway	runway gen 1	gen 1
+runway-gen-2	model	Runway Gen-2	runway-gen	runway	runway gen 2	gen 2
+runway-gen-3-alpha	model	Runway Gen-3 Alpha	runway-gen	runway	runway gen 3; gen 3 alpha	gen 3
+runway-gen-4	model	Runway Gen-4	runway-gen	runway	runway gen 4; gen 4 turbo	gen 4
+runway-gen-4.5	model	Runway Gen-4.5	runway-gen	runway	runway gen 4.5; gen 4.5	
+runway-aleph-2.0	model	Runway Aleph 2.0	runway-gen	runway	runway aleph 2.0	aleph 2.0
+pika	family	Pika	video-generation	pika	pika; pika labs; pika art; pika 1; pika v1; pika 2; pika 2.1; pikaswaps; pika 2.2; pikaframes; pika 2.5	
+luma-ray	family	Luma Ray	video-generation	luma	luma ray	dream machine
+luma-ray1	model	Luma Dream Machine (Ray1)	luma-ray	luma	luma dream machine; luma ray 1; luma video	ray 1
+luma-ray2	model	Luma Ray2	luma-ray	luma	luma ray 2; dream machine ray 2	ray 2
+luma-ray3	model	Luma Ray3	luma-ray	luma	luma ray 3	ray 3
+luma-ray3.14	model	Luma Ray3.14	luma-ray	luma	luma ray 3.14; luma ai ray 3.14; luma labs ray 3.14	ray 3.14
+luma-ray3.2	model	Luma Ray3.2	luma-ray	luma	luma ray 3.2; luma ai ray 3.2; luma labs ray 3.2	ray 3.2
+luma-photon	family	Luma Photon	image-generation	luma	luma photon; luma ai photon; luma labs photon; photon flash; luma photon flash	photon
+luma-photon-1	model	Photon	luma-photon	luma	luma photon 1; luma ai photon 1	photon 1
+luma-uni	family	Luma Uni	image-generation	luma	luma uni; luma ai uni; luma labs uni	
+luma-uni-1	model	Uni-1	luma-uni	luma	luma uni 1; luma ai uni 1; luma labs uni 1	uni 1
+luma-uni-1.1	model	Uni-1.1	luma-uni	luma	luma uni 1.1; luma ai uni 1.1; luma labs uni 1.1	uni 1.1
+kling	family	Kling	video-generation	kuaishou	kling; kling ai; kuaishou kling; 可灵	keling
+kling-1.0	model	Kling 1.0	kling	kuaishou	kling 1; kling v1; kuaishou kling 1; kuaishou kling v1	
+kling-1.6	model	Kling 1.6	kling	kuaishou	kling 1.6; kling v1.6; kling 1.5; kuaishou kling 1.6; kuaishou kling v1.6; kuaishou kling 1.5	
+kling-2.0	model	Kling 2.0	kling	kuaishou	kling 2; kling v2; kuaishou kling 2; kuaishou kling v2; kling ai 2; kuaishou kling ai 2	
+kling-2.1	model	Kling 2.1	kling	kuaishou	kling 2.1; kling v2.1; kling 2.1 master; kling ai 2.1; kuaishou kling 2.1; kuaishou kling ai 2.1; kuaishou kling v2.1	
+kling-2.5-turbo	model	Kling 2.5 Turbo	kling	kuaishou	kling 2.5 turbo; kling 2.5; kling v2.5; kuaishou kling 2.5 turbo; kuaishou kling 2.5; kuaishou kling v2.5	
+kling-2.6	model	Kling 2.6	kling	kuaishou	kling 2.6; kling v2.6; kling video 2.6; kuaishou kling 2.6; kuaishou kling v2.6	
+kling-3.0	model	Kling 3.0	kling	kuaishou	kling 3; kling v3; kling video 3.0; kling image 3.0; kuaishou kling 3; kuaishou kling v3	
+kat-coder	family	KAT-Coder	coding-models	kuaishou	kat coder; kwaipilot kat	
+kat-coder-v2.5	model	KAT-Coder V2.5	kat-coder	kuaishou	kat coder v2.5	
+hailuo	family	Hailuo	video-generation	minimax	hailuo; hailuo ai; minimax hailuo; minimax video; 海螺	
+hailuo-video-01	model	Hailuo video-01	hailuo	minimax	hailuo video 01; minimax video 01; hailuo ai video; t2v 01; i2v 01	video 01
+hailuo-02	model	Hailuo 02	hailuo	minimax	hailuo 02; minimax hailuo 02; hailuo 2.0; minimax hailuo 2.0	
+hailuo-2.3	model	Hailuo 2.3	hailuo	minimax	hailuo 2.3; minimax hailuo 2.3	
+hailuo-3	model	MiniMax H3 (Hailuo 3)	hailuo	minimax	minimax h3; hailuo 3; minimax hailuo 3	
+suno	family	Suno	music-audio-generation	suno	suno; suno ai; suno v3; suno 3; suno v3.5; suno 3.5; suno v4; suno 4; suno v4.5; suno 4.5; suno v4.5 plus; suno v5; suno 5; suno v5.5; suno 5.5; suno v6; suno 6	
+udio	family	Udio	music-audio-generation	udio	udio; udio v1; udio 130; udio 32	
+elevenlabs	family	ElevenLabs	speech-synthesis	elevenlabs		eleven labs
+eleven-multilingual-v2	model	Eleven Multilingual v2	elevenlabs	elevenlabs	eleven multilingual v2; multilingual v2	
+eleven-flash-v2.5	model	Eleven Flash v2.5	elevenlabs	elevenlabs	eleven flash v2.5; flash v2.5; eleven turbo v2.5	
+eleven-v3	model	Eleven v3	elevenlabs	elevenlabs	eleven v3; eleven labs v3	
+eleven-v4	model	Eleven v4	elevenlabs	elevenlabs	eleven v4; eleven labs v4	
+eleven-music-v1	model	Eleven Music	music-audio-generation	elevenlabs	eleven music; elevenlabs music; eleven labs music; eleven music v1	music v1
+eleven-music-v2	model	Eleven Music v2	music-audio-generation	elevenlabs	eleven music v2; elevenlabs music v2; eleven labs music v2	music v2
+eleven-scribe-v1	model	Scribe	elevenlabs-scribe	elevenlabs	elevenlabs scribe; eleven labs scribe; elevenlabs scribe v1; eleven labs scribe v1	scribe v1
+eleven-scribe-v2-realtime	model	Scribe v2 Realtime	elevenlabs-scribe	elevenlabs	scribe v2 realtime; elevenlabs scribe v2 realtime; eleven labs scribe v2 realtime	
+eleven-scribe-v2	model	Scribe v2	elevenlabs-scribe	elevenlabs	elevenlabs scribe v2; eleven labs scribe v2	scribe v2
+musicgen	family	MusicGen	music-audio-generation	meta	music gen	
+musicgen-small	model	MusicGen Small	musicgen	meta	music gen small	
+musicgen-medium	model	MusicGen Medium	musicgen	meta	music gen medium	
+musicgen-large	model	MusicGen Large	musicgen	meta	music gen large	
+musicgen-melody	model	MusicGen Melody	musicgen	meta	music gen melody	
+voicebox	family	Voicebox	speech-synthesis	meta		
+voicebox-1	model	Voicebox	voicebox	meta	meta voicebox; meta ai voicebox	voicebox
+movie-gen	family	Movie Gen	video-generation	meta	movie gen; meta movie gen	
+movie-gen-video	model	Movie Gen Video	movie-gen	meta	movie gen video; meta movie gen video	
+movie-gen-audio	model	Movie Gen Audio	movie-gen	meta	movie gen audio; meta movie gen audio	
+bark	family	Bark	music-audio-generation	suno		
+suno-bark	model	Bark	bark	suno	suno bark	bark
+assemblyai-universal	family	AssemblyAI Universal	speech-recognition	assemblyai	assembly ai universal; universal 1; assembly ai universal 1; universal 2; assembly ai universal 2; universal 3.5 pro; assembly ai universal 3.5; universal 3.6 pro; assembly ai universal 3.6	
+deepgram-nova	family	Deepgram Nova	speech-recognition	deepgram	deepgram nova; deepgram nova 2; deepgram nova 3; nova 3 medical; deepgram nova 3 medical; nova 3 pharma; deepgram nova 3 pharma	nova 3; deepgram
+deepgram-flux	family	Deepgram Flux	speech-recognition	deepgram	deepgram flux; deepgram flux tts; flux tts	
+deepgram-flux-stt	model	Flux STT	deepgram-flux	deepgram	flux stt; deepgram flux stt	
+parakeet	family	Parakeet	speech-recognition	nvidia	parakeet; nvidia parakeet; parakeet tdt	
+parakeet-tdt-0.6b	model	Parakeet-TDT 0.6B	parakeet	nvidia	parakeet tdt 0.6b	
+canary	family	Canary	speech-recognition	nvidia	nvidia canary	
+canary-1b	model	Canary-1B	canary	nvidia	canary 1b; nvidia canary 1b	
+canary-qwen-2.5b	model	Canary-Qwen-2.5B	canary	nvidia	canary qwen 2.5b; canary qwen; nvidia canary qwen	
+nv-embed	family	NV-Embed	embedding-reranking	nvidia	nv embed; nvidia nv embed	
+nv-embed-v1	model	NV-Embed-v1	nv-embed	nvidia	nv embed v1; nvidia nv embed v1	
+nv-embed-v2	model	NV-Embed-v2	nv-embed	nvidia	nv embed v2; nvidia nv embed v2	
+lenet	family	LeNet	classic-vision-backbones	bell-labs		
+lenet-5	model	LeNet-5	lenet	bell-labs	lenet; lenet 5	
+alexnet	family	AlexNet	classic-vision-backbones	toronto		
+alexnet-1	model	AlexNet	alexnet	toronto	alex net	
+vgg	family	VGG	classic-vision-backbones	oxford		
+vgg-1	model	VGG	vgg	oxford	vgg; vgg 11; vgg 13; vgg 16; vgg 19; vgg net	
+inception	family	Inception / GoogLeNet	classic-vision-backbones	google		
+inception-1	model	Inception / GoogLeNet	inception	google	googlenet; inception net; inception v1; inception v2; inception v3; inception v4; inception resnet	inception
+resnet	family	ResNet	classic-vision-backbones	microsoft		
+resnet-1	model	ResNet	resnet	microsoft	resnet; resnet 18; resnet 20; resnet 34; resnet 50; resnet 56; resnet 101; resnet 110; resnet 152; wide resnet	
+resnext	family	ResNeXt	classic-vision-backbones	meta		
+resnext-1	model	ResNeXt	resnext	meta	res next; resnext 50; resnext 101	
+densenet	family	DenseNet	classic-vision-backbones	cornell		
+densenet-1	model	DenseNet	densenet	cornell	dense net; dense net 121; dense net 169; dense net 201	
+mobilenet	family	MobileNet	classic-vision-backbones	google		
+mobilenet-1	model	MobileNet	mobilenet	google	mobile net; mobile net v1; mobile net v2; mobile net v3	
+efficientnet	family	EfficientNet	classic-vision-backbones	google		
+efficientnet-1	model	EfficientNet	efficientnet	google	efficient net; efficient net b0; efficient net b1; efficient net b2; efficient net b3; efficient net b4; efficient net b5; efficient net b6; efficient net b7; efficient net v2	
+convnext	family	ConvNeXt	classic-vision-backbones	meta		
+convnext-1	model	ConvNeXt	convnext	meta	conv next; conv next v2	
+vit	family	Vision Transformer (ViT)	classic-vision-backbones	google		
+vit-1	model	Vision Transformer (ViT)	vit	google		vision transformer; vit
+swin	family	Swin Transformer	classic-vision-backbones	microsoft		
+swin-1	model	Swin Transformer	swin	microsoft	swin; swin transformer; swin v2	
+dino	family	DINO	classic-vision-backbones	meta		
+dino-1	model	DINO	dino	meta		dino
+dinov2	model	DINOv2	dino	meta	dino v2	
+facenet	family	FaceNet	classic-vision-backbones	google		
+facenet-1	model	FaceNet	facenet	google	face net	
+r-cnn	family	R-CNN family	detection-segmentation	berkeley		
+r-cnn-1	model	R-CNN family (Fast / Faster / Mask R-CNN)	r-cnn		r cnn; fast r cnn; faster r cnn; mask r cnn	
+yolo	family	YOLO	detection-segmentation	uw		
+yolo-1	model	YOLO	yolo		yolo v1; yolo v2; yolo v3; yolo v4; yolo v5; yolo v6; yolo v7; yolo v8; yolo v9; yolo v10; yolo v11; yolo v12	yolo
+detr	family	DETR	detection-segmentation	meta		
+detr-1	model	DETR	detr	meta	detr	
+stylegan	family	StyleGAN	gans-early-generators	nvidia		
+stylegan-1	model	StyleGAN	stylegan	nvidia	style gan; style gan 2; style gan 3; style gan xl; style gan ada	
+biggan	family	BigGAN	gans-early-generators	google		
+biggan-1	model	BigGAN	biggan	google	big gan	
+pix2pix	family	pix2pix	gans-early-generators	berkeley		
+pix2pix-1	model	pix2pix	pix2pix	berkeley	pix2pix	
+cyclegan-1	model	CycleGAN	cyclegan	berkeley	cycle gan	
+cyclegan	family	CycleGAN	gans-early-generators	berkeley		
+vqgan	family	VQGAN	gans-early-generators	heidelberg		
+vqgan-1	model	VQGAN	vqgan	heidelberg	vq gan	
+wavenet	family	WaveNet	speech-synthesis	google		
+wavenet-1	model	WaveNet	wavenet	google	wave net	
+deepspeech	family	DeepSpeech	speech-recognition	baidu		
+deepspeech-1	model	DeepSpeech	deepspeech	baidu	deep speech; deep speech 2	
+word2vec	family	word2vec	classic-word-embeddings	google		
+word2vec-1	model	word2vec	word2vec	google	word2vec	
+glove	family	GloVe	classic-word-embeddings	stanford		
+glove-1	model	GloVe	glove	stanford		glove
+fasttext	family	fastText	classic-word-embeddings	meta		
+fasttext-1	model	fastText	fasttext	meta	fasttext	
+elmo	family	ELMo	bert-era-encoders	ai2		
+elmo-1	model	ELMo	elmo	ai2	elmo; embeddings from language models	
+universal-sentence-encoder	family	Universal Sentence Encoder	embedding-reranking	google		
+universal-sentence-encoder-1	model	Universal Sentence Encoder	universal-sentence-encoder	google	universal sentence encoder	
+transformer-xl	family	Transformer-XL	bert-era-encoders	['cmu', 'google']		
+transformer-xl-1	model	Transformer-XL	transformer-xl	['cmu', 'google']	transformer xl	
+canine	family	CANINE	bert-era-encoders	google		
+canine-1	model	CANINE	canine	google		canine
+deepmind-alpha	family	DeepMind Alpha systems	game-rl-agents	google		
+alphago	model	AlphaGo	deepmind-alpha	google	alpha go	
+alphago-zero	model	AlphaGo Zero	deepmind-alpha	google	alpha go zero	
+alphazero	model	AlphaZero	deepmind-alpha	google	alpha zero	
+muzero	model	MuZero	deepmind-alpha	google	mu zero	
+alphastar	model	AlphaStar	deepmind-alpha	google	alpha star	
+alphafold	model	AlphaFold	bio-science-models	google	alpha fold; alpha fold 2; alpha fold 3	
+alphacode	model	AlphaCode	coding-models	google	alpha code; alpha code 2	
+alphatensor	model	AlphaTensor	deepmind-alpha	google	alpha tensor	
+alphageometry	model	AlphaGeometry	deepmind-alpha	google	alpha geometry; alpha geometry 2	
+alphaproof	model	AlphaProof	deepmind-alpha	google	alpha proof	
+dqn	family	DQN line	game-rl-agents	google		
+dqn-1	model	DQN	dqn	google		dqn; deep q network; deep q networks
+rainbow-1	model	Rainbow	dqn	google	rainbow dqn	rainbow
+r2d2-1	model	R2D2	dqn	google	r2 d2; recurrent replay distributed dqn	
+agent57-1	model	Agent57	dqn	google	agent 57	
+impala	family	IMPALA	game-rl-agents	google		
+impala-1	model	IMPALA	impala	google	impala	
+dreamer	family	Dreamer	game-rl-agents	google		
+dreamer-1	model	Dreamer	dreamer	google	dreamer v1; dreamer v2; dreamer v3	dreamer
+efficientzero	family	EfficientZero	game-rl-agents	tsinghua		
+efficientzero-1	model	EfficientZero	efficientzero	tsinghua	efficient zero	
+gato	family	Gato	game-rl-agents	google		
+gato-1	model	Gato	gato	google	gato	
+cicero	family	CICERO	game-rl-agents	meta		
+cicero-1	model	CICERO	cicero	meta	meta cicero	cicero
+openai-five	family	OpenAI Five	game-rl-agents	openai		
+openai-five-1	model	OpenAI Five	openai-five	openai	openai five	
+inkling	family	Inkling	us-ai-startup-llms	thinking-machines		inkling
+inkling-small	model	Inkling-Small	inkling	thinking-machines	inkling small	
+jev	family	Jev	decision-models	typesafe	typesafe jev	jev
+jev-1.13	model	Jev 1.13	jev	typesafe	jev 1.13; typesafe jev 1.13	
+jev-1.14	model	Jev 1.14	jev	typesafe	jev 1.14; typesafe jev 1.14	
+mercury	family	Mercury	diffusion-lms	inception	inception mercury	mercury
+mercury-coder	group	Mercury Coder	mercury		mercury coder; inception mercury coder	
+mercury-coder-mini	model	Mercury Coder Mini	mercury-coder	inception	mercury coder mini; inception mercury coder mini	
+mercury-coder-small	model	Mercury Coder Small	mercury-coder	inception	mercury coder small; inception mercury coder small	
+mercury-2	model	Mercury 2	mercury	inception	inception mercury 2	mercury 2
+mercury-2.5	model	Mercury 2.5	mercury	inception	mercury 2.5; inception mercury 2.5	
+llada	family	LLaDA	diffusion-lms	ant-group	llada; llada 2.0; llada 2.1	
+llada-2.2-flash	model	LLaDA2.2-flash	llada	ant-group	llada 2.2 flash; llada 2.2	
+llada-2.2-mini	model	LLaDA2.2-mini	llada	ant-group	llada 2.2 mini	
+llada-image	model	LLaDA-Image	llada	ant-group	llada image; llada image turbo	
+llada-8b	model	LLaDA 8B	llada	['renmin', 'ant-group']	llada 8b	
+llada-1.5	model	LLaDA 1.5	llada	['renmin', 'ant-group']	llada 1.5	
+ming	family	Ming	image-generation	ant-group	inclusionai ming	
+ming-image-0.1-design	model	Ming-Image-0.1-Design	ming	ant-group	ming image 0.1 design; ming image design; ming image 0.1; inclusionai ming image 0.1; inclusionai ming image	
+cursor-composer	family	Cursor Composer	coding-models	anysphere	cursor composer	
+composer-1	model	Composer	cursor-composer	anysphere	cursor composer 1	composer 1
+composer-1.5	model	Composer 1.5	cursor-composer	anysphere	composer 1.5; cursor composer 1.5	
+composer-2	model	Composer 2	cursor-composer	anysphere	cursor composer 2	composer 2
+composer-2.5	model	Composer 2.5	cursor-composer	anysphere	cursor composer 2.5	composer 2.5
+cognition-swe	family	Cognition SWE	coding-models	cognition	cognition swe; windsurf swe	
+swe-1	model	SWE-1	cognition-swe	windsurf	cognition swe 1; windsurf swe 1	swe 1
+swe-1.5	model	SWE-1.5	cognition-swe	cognition	swe 1.5; cognition swe 1.5; windsurf swe 1.5	
+swe-1.6	model	SWE-1.6	cognition-swe	cognition	cognition swe 1.6; windsurf swe 1.6	swe 1.6
+swe-1.7	model	SWE-1.7	cognition-swe	cognition	cognition swe 1.7; windsurf swe 1.7	swe 1.7
+swe-2	model	SWE-2	cognition-swe	cognition	cognition swe 2	swe 2
+laguna	family	Laguna	coding-models	poolside	poolside laguna	laguna
+laguna-xs.2	model	Laguna XS.2	laguna	poolside	laguna xs 2; poolside laguna xs 2	
+laguna-m.1	model	Laguna M.1	laguna	poolside	laguna m 1; poolside laguna m 1	
+laguna-xs-2.1	model	Laguna XS 2.1	laguna	poolside	laguna xs 2.1; poolside laguna xs 2.1	
+laguna-s-2.1	model	Laguna S 2.1	laguna	poolside	laguna s 2.1; poolside laguna s 2.1	
+reflection-beam	family	Beam	us-ai-startup-llms	reflection-ai	reflection beam	
+beam-1.0	model	Beam 1.0	reflection-beam	reflection-ai	beam 1.0 501b a23b; reflection beam 1.0	beam 1.0
+zaya	family	ZAYA	us-ai-startup-llms	zyphra	zaya1; zaya	
+zaya1-8b	model	ZAYA1-8B	zaya	zyphra	zaya1 8b	
+zaya1-74b-preview	model	ZAYA1-74B-preview	zaya	zyphra	zaya1 74b	
+zaya1-vl-8b	model	ZAYA1-VL-8B	zaya	zyphra	zaya1 vl 8b; zaya1 vl	
+zonos	family	Zonos	speech-synthesis	zyphra	zonos; zyphra zonos	
+zonos-v0.1	model	Zonos-v0.1	zonos	zyphra	zonos v0.1; zonos 0.1; zyphra zonos v0.1; zyphra zonos 0.1; zonos v0.1 transformer; zonos v0.1 hybrid	
+zonos-2	model	ZONOS2	zonos	zyphra	zonos 2; zyphra zonos 2	
+apriel	family	Apriel	us-ai-startup-llms	servicenow	apriel; servicenow apriel	
+super-apriel-15b	model	Super Apriel 15B	apriel	servicenow	super apriel 15b; super apriel	
+longcat	family	LongCat	chinese-tech-company-llms	meituan	longcat; meituan longcat; longcat flash; longcat flash chat; longcat flash thinking	
+longcat-2.0	model	LongCat-2.0	longcat	meituan	longcat 2.0; longcat 2; meituan longcat 2; meituan longcat 2.0	
+longcat-flash-lite-sparse	model	LongCat-Flash-Lite-Sparse	longcat	meituan	longcat flash lite sparse; longcat flash lite	
+mimo	family	MiMo	chinese-tech-company-llms	xiaomi	xiaomi mimo; mimo 7b; mimo v2 flash; xiaomi mimo 7b	mimo
+mimo-v2.5-gen	group	MiMo-V2.5 (generation)	mimo			
+mimo-v2.6	group	MiMo-V2.6	mimo		mimo v2.6; xiaomi mimo v2.6	
+mimo-v2.5	model	MiMo-V2.5	mimo-v2.5-gen	xiaomi	mimo v2.5; xiaomi mimo v2.5	
+mimo-v2.5-pro	model	MiMo-V2.5-Pro	mimo-v2.5-gen	xiaomi	mimo v2.5 pro; xiaomi mimo v2.5 pro	
+mimo-v2.5-asr	model	MiMo-V2.5-ASR	mimo	xiaomi	mimo v2.5 asr; xiaomi mimo v2.5 asr	
+mimo-v2.6-pro	model	MiMo-V2.6-Pro	mimo-v2.6	xiaomi	mimo v2.6 pro; xiaomi mimo v2.6 pro	
+mimo-v2.6-flash	model	MiMo-V2.6-Flash	mimo-v2.6	xiaomi	mimo v2.6 flash; xiaomi mimo v2.6 flash	
+ling	family	Ling / Ring	chinese-tech-company-llms	ant-group	inclusionai ling; ant ling; bailing; ling 1t; ling 2.0; ring 1t; ling lite; ling plus	
+ling-2.6-1t	model	Ling-2.6-1T	ling	ant-group	ling 2.6 1t; inclusionai ling 2.6; inclusionai ling 2.6.1t	ling 2.6
+ring-2.6-1t	model	Ring-2.6-1T	ling	ant-group	ring 2.6 1t	ring 2.6
+ling-3.0	model	Ling-3.0	ling	ant-group	inclusionai ling 3.0	ling 3.0
+ling-3.1-flash	model	Ling-3.1-flash	ling	ant-group	ling 3.1 flash; inclusionai ling 3.1; inclusionai ling 3.1 flash	ling 3.1
+sensenova	family	SenseNova	chinese-tech-company-llms	sensetime	sensenova; sense nova	
+sensenova-u1	model	SenseNova U1	sensenova	sensetime	sensenova u1	
+sensenova-u1.5	model	SenseNova U1.5	sensenova	sensetime	sensenova u1.5	
+pangu	family	Pangu	chinese-tech-company-llms	huawei	openpangu; huawei pangu; pangu model	
+openpangu-2.0	model	openPangu 2.0	pangu	huawei	openpangu 2.0; openpangu 2	
+exaone	family	EXAONE	korean-sovereign-llms	lg	exaone; lg exaone; exaone 3.0; exaone 3.5; exaone 4.0; k exaone 236b; lg exaone 3.5; lg exaone 4.0	
+exaone-4.5	model	EXAONE 4.5	exaone	lg	exaone 4.5	
+k-exaone-2.0	model	K-EXAONE 2.0	exaone	lg	k exaone 2.0; k exaone 2	
+a-x	family	A.X	korean-sovereign-llms	sk-telecom	skt a.x; sk telecom a.x	
+a-x-k1	model	A.X K1	a-x	sk-telecom	a.x k1; sk telecom a.x k1; skt a.x k1	
+a-x-k2	model	A.X K2	a-x	sk-telecom	a.x k2; sk telecom a.x k2; skt a.x k2	
+a-x-k2-alm	model	A.X K2 ALM	a-x	sk-telecom	a.x k2 alm; sk telecom a.x k2 alm; skt a.x k2 alm	
+solar	family	Solar	korean-sovereign-llms	upstage	upstage solar; solar open; solar pro; solar open 100b; solar 10.7b; solar pro	
+solar-open-2	model	Solar Open 2	solar	upstage	solar open 2; upstage solar open 2	
+motif	family	Motif	korean-sovereign-llms	motif	motif llm	
+motif-3	model	Motif 3	motif	motif		motif 3; motif technologies
+motif-video-2b	model	Motif-Video 2B	motif	motif	motif video 2b; motif video	
+gigachat	family	GigaChat	national-llms-other	sber	gigachat; giga chat	
+gigachat-3.5	model	GigaChat 3.5 Ultra	gigachat	sber	gigachat 3.5; gigachat 3.5 ultra	
+gigachat-3.1-audio	model	GigaChat Audio 10B (A1.8B)	gigachat	sber	gigachat 3.1 audio; gigachat audio; gigachat audio 10b; gigachat 3.1 audio 10b a1.8b	
+apertus	family	Apertus	european-open-llms	swiss-ai	apertus	
+apertus-1	group	Apertus 1	apertus		apertus 1.0	
+apertus-1-8b	model	Apertus 8B	apertus-1	swiss-ai	apertus 8b; swiss ai apertus 8b	
+apertus-1-70b	model	Apertus 70B	apertus-1	swiss-ai	apertus 70b; swiss ai apertus 70b	
+apertus-1.5	model	Apertus 1.5	apertus	swiss-ai	apertus 1.5	
+mbzuai-k2	family	K2 (MBZUAI / LLM360)	national-llms-other	mbzuai	k2 think; llm360 k2; k2 think; k2 v2	
+k2-think-v2	model	K2 Think V2	mbzuai-k2	mbzuai	k2 think v2	
+k2-horizon	model	K2 Horizon	mbzuai-k2	mbzuai	k2 horizon	
+namazu	family	Namazu	japanese-llms	sakana		namazu
+sakana-namazu	model	Sakana Namazu	namazu	sakana	sakana namazu; namazu api	
+tsuzumi	family	tsuzumi	japanese-llms	ntt	tsuzumi; ntt tsuzumi	
+tsuzumi-2	model	tsuzumi 2	tsuzumi	ntt	tsuzumi 2; ntt tsuzumi 2	
+rakutenai	family	RakutenAI	japanese-llms	rakuten	rakutenai; rakuten ai	
+rakutenai-3.0	model	RakutenAI-3.0	rakutenai	rakuten	rakutenai 3.0; rakuten ai 3.0	
+sarvam	family	Sarvam	national-llms-other	sarvam	sarvam; sarvam ai	
+sarvam-105b	model	Sarvam 105B	sarvam	sarvam	sarvam 105b	
+sarvam-30b	model	Sarvam 30B	sarvam	sarvam	sarvam 30b	
+wildguard	family	WildGuard	guard-moderation-models	ai2		
+wildguard-7b	model	WildGuard	wildguard	ai2	wildguard 7b; allenai wildguard; ai2 wildguard	wildguard
+openai-moderation	family	OpenAI Moderation	guard-moderation-models	openai	openai moderation	
+text-moderation	model	text-moderation	openai-moderation	openai	text moderation 007; text moderation stable; text moderation latest; openai text moderation	text moderation
+omni-moderation	model	omni-moderation	openai-moderation	openai	omni moderation; omni moderation latest; omni moderation 2024 09 26; openai omni moderation	
+openai-privacy-filter	family	OpenAI Privacy Filter	guard-moderation-models	openai		
+privacy-filter	model	OpenAI Privacy Filter	openai-privacy-filter	openai	openai privacy filter	privacy filter
+rt	family	RT (Robotics Transformer)	robot-foundation-models	google	robotics transformer; robotic transformer	
+rt-1	model	RT-1	rt	google	robotics transformer 1; google rt 1	rt 1
+rt-2	model	RT-2	rt	google	robotic transformer 2; robotics transformer 2; google rt 2; deepmind rt 2	rt 2
+genie	family	Genie	world-models	google	deepmind genie; google genie; genie world model	genie
+genie-1	model	Genie	genie	google	deepmind genie 1; google genie 1; genie generative interactive environments	genie 1
+genie-2	model	Genie 2	genie	google	deepmind genie 2; google genie 2	genie 2
+genie-3	model	Genie 3	genie	google	deepmind genie 3; google genie 3; project genie	genie 3
+v-jepa	family	V-JEPA	world-models	meta	v jepa; meta v jepa	
+v-jepa-2	group	V-JEPA 2	v-jepa		v jepa 2; meta v jepa 2; v jepa 2 vit l; meta v jepa 2 vit l; v jepa 2 vit h; meta v jepa 2 vit h; v jepa 2 vit g; meta v jepa 2 vit g; v jepa 2 ac; meta v jepa 2 ac	
+v-jepa-2.1	group	V-JEPA 2.1	v-jepa		v jepa 2.1; meta v jepa 2.1; v jepa 2.1 vit b; meta v jepa 2.1 vit b; v jepa 2.1 vit l; meta v jepa 2.1 vit l; v jepa 2.1 1b; meta v jepa 2.1 1b; v jepa 2.1 2b; meta v jepa 2.1 2b	
+cosmos	family	Cosmos	world-models	nvidia	nvidia cosmos; cosmos world foundation model; cosmos world foundation models; cosmos wfm; cosmos transfer	cosmos
+cosmos-predict	group	Cosmos Predict	cosmos		cosmos predict; nvidia cosmos predict	
+cosmos-predict-1	group	Cosmos-Predict1	cosmos-predict		cosmos predict 1; nvidia cosmos predict 1; cosmos 1.0; nvidia cosmos 1.0; cosmos predict 1 7b; nvidia cosmos predict 1 7b; cosmos 1.0 diffusion 7b; nvidia cosmos 1.0 diffusion 7b; cosmos predict 1 14b; nvidia cosmos predict 1 14b; cosmos 1.0 diffusion 14b; nvidia cosmos 1.0 diffusion 14b; cosmos predict 1 4b; nvidia cosmos predict 1 4b; cosmos 1.0 autoregressive 4b; nvidia cosmos 1.0 autoregressive 4b; cosmos predict 1 5b; nvidia cosmos predict 1 5b; cosmos 1.0 autoregressive 5b; cosmos predict 1 12b; nvidia cosmos predict 1 12b; cosmos 1.0 autoregressive 12b; nvidia cosmos 1.0 autoregressive 12b; cosmos predict 1 13b; nvidia cosmos predict 1 13b; cosmos 1.0 autoregressive 13b	
+cosmos-predict-2	group	Cosmos-Predict2	cosmos-predict		cosmos predict 2; nvidia cosmos predict 2; cosmos predict 2 2b; nvidia cosmos predict 2 2b; cosmos predict 2 14b; nvidia cosmos predict 2 14b	
+cosmos-predict-2.5	group	Cosmos-Predict2.5	cosmos-predict		cosmos predict 2.5; nvidia cosmos predict 2.5; cosmos predict 2.5 2b; nvidia cosmos predict 2.5 2b; cosmos predict 2.5 14b; nvidia cosmos predict 2.5 14b	
+cosmos-reason	family	Cosmos Reason	open-research-vlms	nvidia	cosmos reason; nvidia cosmos reason	
+cosmos-reason-1-7b	model	Cosmos-Reason1-7B	cosmos-reason	nvidia	cosmos reason 1; cosmos reason 1 7b; nvidia cosmos reason 1	
+cosmos-reason-2	group	Cosmos-Reason2	cosmos-reason		cosmos reason 2; nvidia cosmos reason 2; cosmos reason 2 2b; nvidia cosmos reason 2 2b; cosmos reason 2 8b; nvidia cosmos reason 2 8b; cosmos reason 2 32b; nvidia cosmos reason 2 32b	
+cosmos-3	group	Cosmos 3	cosmos		nvidia cosmos 3	cosmos 3
+cosmos-3-super	model	Cosmos 3 Super	cosmos-3	nvidia	cosmos 3 super; nvidia cosmos 3 super	
+cosmos-3-nano	model	Cosmos 3 Nano	cosmos-3	nvidia	cosmos 3 nano; nvidia cosmos 3 nano	
+cosmos-3-edge	model	Cosmos 3 Edge	cosmos-3	nvidia	cosmos 3 edge; nvidia cosmos 3 edge	
+gr00t	family	Isaac GR00T	robot-foundation-models	nvidia	gr00t; isaac gr00t; nvidia gr00t; nvidia isaac gr00t	groot
+gr00t-n1	model	Isaac GR00T N1	gr00t	nvidia	gr00t n1; groot n1; isaac gr00t n1; nvidia gr00t n1; nvidia isaac gr00t n1	
+gr00t-n1.5	model	Isaac GR00T N1.5	gr00t	nvidia	gr00t n1.5; groot n1.5; isaac gr00t n1.5; nvidia gr00t n1.5; nvidia isaac gr00t n1.5	
+gr00t-n1.6	model	Isaac GR00T N1.6	gr00t	nvidia	gr00t n1.6; groot n1.6; isaac gr00t n1.6; nvidia gr00t n1.6; nvidia isaac gr00t n1.6	
+gr00t-n1.7	model	Isaac GR00T N1.7	gr00t	nvidia	gr00t n1.7; groot n1.7; isaac gr00t n1.7; nvidia gr00t n1.7; nvidia isaac gr00t n1.7; gr00t 1.7; isaac gr00t 1.7; nvidia gr00t 1.7; nvidia isaac gr00t 1.7	
+pi	family	π (Physical Intelligence)	robot-foundation-models	physical-intelligence	physical intelligence π; physical intelligence pi; openpi	
+pi-0	model	π0	pi	physical-intelligence	physical intelligence π0; physical intelligence pi 0	π0; pi 0; pi zero
+pi-0-fast	model	π0-FAST	pi	physical-intelligence	π0 fast; pi 0 fast; physical intelligence π0 fast; physical intelligence pi 0 fast	
+pi-0.5	model	π0.5	pi	physical-intelligence	pi05; physical intelligence π0.5; physical intelligence pi 0.5	π0.5; pi 0.5
+pi-0.6	model	π0.6	pi	physical-intelligence	pi star 0.6; physical intelligence π0.6; physical intelligence pi 0.6; physical intelligence pi star 0.6	π0.6; pi 0.6; π*0.6; pi*0.6
+pi-0.7	model	π0.7	pi	physical-intelligence	physical intelligence π0.7; physical intelligence pi 0.7	π0.7; pi 0.7
+helix	family	Helix (Figure)	robot-foundation-models	figure	figure helix; figure ai helix; helix vla	helix
+helix-1	model	Helix	helix	figure	figure helix 1; figure ai helix 1	helix 1
+helix-02	model	Helix 02	helix	figure	figure helix 02; figure ai helix 02	helix 02; helix 2
+helix-2.5	model	Helix 2.5	helix	figure	figure helix 2.5; figure ai helix 2.5	helix 2.5
+rho	family	Rho (Microsoft)	robot-foundation-models	microsoft	microsoft rho	
+rho-alpha	model	Rho-alpha	rho	microsoft	microsoft rho alpha	ρα; rho alpha
+rho-base	model	rho-base	rho	microsoft	rho base; microsoft rho base	
+musevla-family	family	MuseVLA	robot-foundation-models	microsoft		
+musevla	model	MuseVLA	musevla-family	microsoft	muse vla; microsoft musevla	
+ms-muse	family	Muse (Microsoft)	world-models	microsoft	microsoft muse; world and human action model; xbox muse	wham
+wham-1.6b	model	WHAM 1.6B	ms-muse	microsoft	wham 1.6b; muse wham; microsoft muse wham	
+wham-200m	model	WHAM 200M	ms-muse	microsoft	wham 200m; microsoft wham 200m	
+openvla	family	OpenVLA	robot-foundation-models	['stanford', 'berkeley', 'google', 'tri']	openvla	
+openvla-7b	model	OpenVLA 7B	openvla	['stanford', 'berkeley', 'google', 'tri']	openvla 7b	
+octo	family	Octo	robot-foundation-models	['berkeley', 'stanford', 'cmu', 'google']	octo robot policy; octo generalist robot policy; octo small; octo base	octo
+reki	family	REKI	robot-foundation-models	kyutai	kyutai reki	reki
+reki-2b	model	REKI-2B	reki	kyutai	reki 2b; kyutai reki 2b	
+matrix-game	family	Matrix-Game	world-models	skywork	skywork matrix game; matrix game 4.0; skywork matrix game 4.0	matrix game
+matrix-game-1	model	Matrix-Game	matrix-game	skywork	matrix game 1.0; skywork matrix game 1.0; skywork matrix game 1	matrix game 1
+matrix-game-2.0	model	Matrix-Game 2.0	matrix-game	skywork	matrix game 2.0; skywork matrix game 2.0; skywork matrix game 2	matrix game 2
+matrix-game-3.0	model	Matrix-Game 3.0	matrix-game	skywork	matrix game 3.0; skywork matrix game 3.0; skywork matrix game 3	matrix game 3
+pixverse	family	PixVerse	world-models	pixverse	pixverse	
+pixverse-r1	model	PixVerse R1	pixverse	pixverse	pixverse r1	
+pixverse-r2	model	PixVerse R2	pixverse	pixverse	pixverse r2	
+odyssey	family	Odyssey	world-models	odyssey	odyssey world model	odyssey
+odyssey-2	group	Odyssey-2	odyssey		odyssey 2 pro	
+odyssey-2-base	model	Odyssey-2	odyssey-2	odyssey		odyssey 2
+odyssey-2-max	model	Odyssey-2 Max	odyssey-2	odyssey	odyssey 2 max	
+odyssey-3	model	Odyssey-3	odyssey	odyssey	odyssey 3 world model	odyssey 3
+agora	family	Agora (Odyssey)	world-models	odyssey	odyssey agora	agora
+agora-1	model	Agora-1	agora	odyssey	odyssey agora 1	agora 1
+agora-2	model	Agora-2	agora	odyssey	odyssey agora 2	agora 2
+nvlm	family	NVLM	open-research-vlms	nvidia	nvlm; nvlm 1.0; nvidia nvlm	
+nvlm-d-72b	model	NVLM-D-72B	nvlm	nvidia	nvlm d 72b; nvlm 1.0 d 72b; nvlm d 1.0 72b; nvlm d; nvidia nvlm d 72b; nvidia nvlm d	
+openai-cua	family	OpenAI CUA	computer-use-agents	openai		
+computer-use-preview	model	computer-use-preview	openai-cua	openai	computer use preview; openai computer use preview; openai cua; openai computer using agent	cua; computer using agent
+chinese-tech-company-llms	family	Other Chinese LLMs				
+korean-sovereign-llms	family	Korean LLMs				
+japanese-llms	family	Japanese LLMs				
+european-open-llms	family	Other European LLMs				
+national-llms-other	family	Other regional LLMs				
+us-ai-startup-llms	family	Other US LLMs				
+early-open-llms	family	Open and research LLMs				
+google-pre-gemini-llms	family	Google and DeepMind LLMs before Gemini				
+bert-era-encoders	family	Pre-LLM NLP models (BERT, T5, ELMo)				
+open-research-vlms	family	Open research vision-language models				
+openflamingo	family	OpenFlamingo	open-research-vlms			
+openflamingo-1	model	OpenFlamingo	openflamingo		open flamingo	
+small-lms	family	Small on-device language models				
+tinyllama	family	TinyLlama	small-lms	sutd		
+tinyllama-1.1b	model	TinyLlama-1.1B	tinyllama	sutd	tinyllama; tinyllama 1.1b; tiny llama 1.1b	
+alt-architecture-lms	family	Recurrent and state-space LMs				
+diffusion-lms	family	Diffusion language models			nemotron labs diffusion; cola dlm	
+decision-models	family	Decision and predictor models			mercury decide; lightning rod foresight; nanojev; bespoke nimble	
+branded-post-trains	family	Branded derivatives of open models			astabrief; openthinkeragent; open thinker agent; huatuogpt; huatuo gpt; pythagoras prover; valley3; baai arex; mimo v2.6 distill	arex
+coding-models	family	Code models and coding agents			tmax 27b; ai2 tmax; colgrep agent	
+computer-use-agents	family	Computer-use and GUI agent models			fara 1.5; fara 7b; microsoft fara; holotron; h company holo; ui mate; ui venus	holo 4; holo 3.1
+image-generation	family	Image generation models			krea 2; krea 3; krea ai; ideogram; recraft; hidream	krea
+video-generation	family	Video generation models			lightricks ltx; ltx video; ltx 2; sand ai magi; magi 2; vidu; vasa 1; microsoft vasa; open sora plan	kandinsky
+open-sora	family	Open-Sora	video-generation	hpc-ai-tech	open sora; open sora 2; open sora 2.0	
+open-sora-1	model	Open-Sora 1.x	open-sora	hpc-ai-tech	open sora 1; open sora 1.0; open sora 1.1; open sora 1.2; open sora 1.3	
+music-audio-generation	family	Music and sound generation models			ace step; mureka	
+speech-recognition	family	Speech recognition models			cartesia ink	
+elevenlabs-scribe	family	ElevenLabs Scribe	speech-recognition	elevenlabs		
+openai-transcribe	family	OpenAI Transcribe	speech-recognition	openai	gpt realtime whisper	
+speech-synthesis	family	Speech generation and voice			cartesia sonic; hume octave; hume evi; fish speech; fish audio s2; inworld tts; rime mist; resemble chatterbox; sesame csm; kyutai moshi; hibiki zero; pocket tts	moshi; chatterbox
+embedding-reranking	family	Embedding and reranking models			harrier oss; bitnet embedding; pplx embed; mxbai embed	
+nomic-embed	family	Nomic Embed	embedding-reranking	nomic	nomic embed	
+classic-word-embeddings	family	Classic word embeddings				
+guard-moderation-models	family	Other guard and reward models			nemoguard jailbreakdetect; nemoguard jailbreak detect	
+harmbench-cls	family	HarmBench classifiers	guard-moderation-models	cais	harmbench classifier; harmbench classifiers; harmbench cls	
+harmbench-llama-2-13b-cls	model	HarmBench-Llama-2-13b-cls	harmbench-cls	cais	harmbench llama 2 13b cls; cais harmbench llama 2 13b cls	
+harmbench-mistral-7b-val-cls	model	HarmBench-Mistral-7b-val-cls	harmbench-cls	cais	harmbench mistral 7b val cls; cais harmbench mistral 7b val cls	
+skywork-reward	family	Skywork-Reward	guard-moderation-models	skywork	skywork reward	
+skywork-reward-v1	group	Skywork-Reward (V1)	skywork-reward			
+skywork-reward-gemma-2-27b	model	Skywork-Reward-Gemma-2-27B	skywork-reward-v1	skywork	skywork reward gemma 2 27b	
+skywork-reward-llama-3.1-8b	model	Skywork-Reward-Llama-3.1-8B	skywork-reward-v1	skywork	skywork reward llama 3.1 8b	
+skywork-reward-v2	group	Skywork-Reward-V2	skywork-reward		skywork reward v2; skywork reward v2 llama 3.1 8b 40m; skywork reward v2 llama 3.2 1b; skywork reward v2 llama 3.2 3b; skywork reward v2 qwen 3 0.6b; skywork reward v2 qwen 3 1.7b; skywork reward v2 qwen 3 4b; skywork reward v2 qwen 3 8b	
+skywork-reward-v2-llama-3.1-8b	model	Skywork-Reward-V2-Llama-3.1-8B	skywork-reward-v2	skywork	skywork reward v2 llama 3.1 8b	
+armorm	family	ArmoRM	guard-moderation-models	rlhflow	armorm	
+armorm-llama3-8b	model	ArmoRM-Llama3-8B-v0.1	armorm	rlhflow	armorm llama 3 8b; armorm llama 3 8b v0.1	
+prometheus	family	Prometheus (judge models)	guard-moderation-models	kaist	prometheus 7b	
+prometheus-1-13b	model	Prometheus 13B v1.0	prometheus	kaist	prometheus 13b; prometheus 13b v1.0	
+prometheus-2	group	Prometheus 2	prometheus		prometheus 2	
+prometheus-2-7b	model	Prometheus 2 7B v2.0	prometheus-2	kaist	prometheus 2 7b; prometheus 7b v2.0	
+prometheus-2-8x7b	model	Prometheus 2 8x7B v2.0	prometheus-2	kaist	prometheus 2 8x7b; prometheus 8x7b v2.0	
+robot-foundation-models	family	Robot foundation models (VLA)				
+world-models	family	World models			world labs marble; hy world 2.0; hunyuan world 2.0	
+vision-encoders	family	Vision and multimodal encoders			metaencoder; moe vie; moevie; eupe; siglino; falcon perception; sensenova vision; vl jepa	tips v2; ovie
+siglip	family	SigLIP	vision-encoders	google		
+siglip-1	model	SigLIP	siglip	google	siglip; siglip so400m	
+siglip-2	model	SigLIP 2	siglip	google	siglip 2; siglip 2 so400m	
+timeseries-tabular-models	family	Time-series, tabular and weather foundation models			timesfm; timestral; chronos 2; chronos bolt; timer s1; granite timeseries; tirex; tabpfn; tabfm; tabicl; weathernext	moirai; toto 2.0
+bio-science-models	family	Biology, neuroscience and chemistry models			brain2qwerty; nv jepa dna; tribe v2 meta	zuna; skala; tribe v2
+esm	family	ESM protein language models	bio-science-models	['meta', 'evolutionaryscale']	esm c	
+esm-2	model	ESM-2	esm	meta	meta esm 2; fair esm 2; esm 2 15b; esm 2 3b; esm 2 650m	esm 2
+esm3	model	ESM3	esm	evolutionaryscale	evolutionaryscale esm3; esm3	
+evo	family	Evo	bio-science-models	arc-institute		
+evo-2	model	Evo 2	evo	['arc-institute', 'nvidia']	arc evo 2; arc institute evo 2; evo 2 40b; evo 2 7b	evo 2
+classic-vision-backbones	family	Classic vision backbones				
+detection-segmentation	family	Object detection and segmentation models				
+gans-early-generators	family	GANs and early image generators				
+game-rl-agents	family	Game-playing and reinforcement-learning agents				
+arcee-trinity	family	Arcee Trinity	us-ai-startup-llms	arcee	arcee trinity; trinity large thinking; trinity large; trinity mini; trinity nano; arcee afm 4.5b; afm 4.5b	
+yandexgpt	family	YandexGPT / AliceAI	national-llms-other	yandex	yandexgpt; yandex gpt; aliceai foundation; alice ai foundation	
+jais	family	Jais	national-llms-other	['g42-inception', 'mbzuai', 'cerebras']	jais	
+jais-13b	model	Jais-13B	jais	['g42-inception', 'mbzuai', 'cerebras']	jais 13b	
+sea-lion	family	SEA-LION	national-llms-other	aisingapore	nemotron sea lion; sea lion v4; aisingapore sea lion	sea lion
+kanana	family	Kanana	korean-sovereign-llms	kakao	kakao kanana; kanana 2; kanana 1.5	kanana
+llm-jp	family	LLM-jp	japanese-llms	nii	llm jp; llm jp 4; llm jp 4.1; elyza thinking	
+plamo	family	PLaMo	japanese-llms	pfn	plamo; plamo 3; plamo 3.0 prime; plamo 2	

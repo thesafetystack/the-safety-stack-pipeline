@@ -1,0 +1,399 @@
+{
+ "type": "object",
+ "required": [
+  "doc_kind",
+  "models",
+  "variant_models",
+  "extra_models",
+  "flags"
+ ],
+ "properties": {
+  "doc_kind": {
+   "enum": [
+    "paper",
+    "blogpost",
+    "commentary",
+    "model_card",
+    "system_card",
+    "technical_report",
+    "eval_report",
+    "news",
+    "policy",
+    "other"
+   ],
+   "type": "string"
+  },
+  "models": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "node_id",
+     "roles",
+     "evidence",
+     "note",
+     "refined_name"
+    ],
+    "properties": {
+     "node_id": {
+      "type": "string"
+     },
+     "roles": {
+      "type": "object",
+      "description": "role -> strength 1..4 (rubric §2); every key present, null for a zero-valued role (the rubric's 'omit')",
+      "properties": {
+       "mentioned": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "cited_work": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "discussed": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "usage_experience": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "built_on": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "instrument": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "modified": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "evaluated_behavioral": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "analyzed_internals": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "introduced": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       }
+      },
+      "required": [
+       "mentioned",
+       "cited_work",
+       "discussed",
+       "usage_experience",
+       "built_on",
+       "instrument",
+       "modified",
+       "evaluated_behavioral",
+       "analyzed_internals",
+       "introduced"
+      ],
+      "additionalProperties": false
+     },
+     "evidence": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "roles",
+          "quote"
+         ],
+         "properties": {
+          "roles": {
+           "type": "array",
+           "items": {
+            "type": "string"
+           }
+          },
+          "quote": {
+           "type": "string"
+          }
+         },
+         "additionalProperties": false
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "note": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "refined_name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "additionalProperties": false
+   }
+  },
+  "variant_models": {
+   "anyOf": [
+    {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "base_node_id",
+       "names_as_written",
+       "quote",
+       "roles"
+      ],
+      "properties": {
+       "base_node_id": {
+        "type": "string"
+       },
+       "names_as_written": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "quote": {
+        "type": "string"
+       },
+       "roles": {
+        "type": "object",
+        "description": "role -> strength 1..4 (rubric §2); every key present, null for a zero-valued role (the rubric's 'omit')",
+        "properties": {
+         "mentioned": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "cited_work": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "discussed": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "usage_experience": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "built_on": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "instrument": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "modified": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "evaluated_behavioral": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "analyzed_internals": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "introduced": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "mentioned",
+         "cited_work",
+         "discussed",
+         "usage_experience",
+         "built_on",
+         "instrument",
+         "modified",
+         "evaluated_behavioral",
+         "analyzed_internals",
+         "introduced"
+        ],
+        "additionalProperties": false
+       }
+      },
+      "additionalProperties": false
+     }
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "extra_models": {
+   "anyOf": [
+    {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "name_as_written",
+       "quote",
+       "roles"
+      ],
+      "properties": {
+       "name_as_written": {
+        "type": "string"
+       },
+       "quote": {
+        "type": "string"
+       },
+       "roles": {
+        "type": "object",
+        "description": "role -> strength 1..4 (rubric §2); every key present, null for a zero-valued role (the rubric's 'omit')",
+        "properties": {
+         "mentioned": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "cited_work": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "discussed": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "usage_experience": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "built_on": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "instrument": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "modified": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "evaluated_behavioral": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "analyzed_internals": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         },
+         "introduced": {
+          "type": [
+           "integer",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "mentioned",
+         "cited_work",
+         "discussed",
+         "usage_experience",
+         "built_on",
+         "instrument",
+         "modified",
+         "evaluated_behavioral",
+         "analyzed_internals",
+         "introduced"
+        ],
+        "additionalProperties": false
+       }
+      },
+      "additionalProperties": false
+     }
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "flags": {
+   "anyOf": [
+    {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    {
+     "type": "null"
+    }
+   ]
+  }
+ },
+ "additionalProperties": false
+}

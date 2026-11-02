@@ -1,0 +1,59 @@
+{
+ "note": "Quotes the judge (openai/gpt-6-luna, technique-roles-v1) emitted in the 2026-10-16 smoke run (11 open-licence documents) that the strict anchor did not verify against the whole text, with a minimal context snippet copied from the stored text. 'expect' = verify_how(quote, context): 'loose' where only the loose projection verifies it; 'any' where the short snippet already verifies it strictly (on the whole text the anchor's fuzzy seeding missed it); null = a genuine paraphrase that must stay unverified.",
+ "cases": [
+  {
+   "doc_id": "s73n534g91cqm",
+   "quote": "We assess how closely our attribution methods ($\\phi^{\\mathrm{C}},\\phi^{\\mathrm{CS}},\\phi^{\\mathrm{SW}}$) match the standard Shapley value ($\\phi^{\\mathrm{S}}$), and we analyze their runtime profiles.",
+   "context": "assessment of how heuristics-based attributions trade-off faithfulness to the Shapley value and computation time. Specifically, we assess how closely our attribution methods ( $\\phi^{\\mathrm{C}},\\phi^{\\mathrm{CS}},\\phi^{\\mathrm{SW}}$ ) match the standard Shapley value ( $\\phi^{\\mathrm{S}}$ ), and we analyze their runtime profiles. For the former, we compare the resulting feature-attribution vectors to those from the standard Shapley value computation",
+   "expect": "any"
+  },
+  {
+   "doc_id": "s73n534g91cqm",
+   "quote": "The resulting attribution vector for each method ($\\phi^{\\mathrm{C}},\\phi^{\\mathrm{CS}},\\phi^{\\mathrm{SW}}$) is then compared to the attribution vector of the standard Shapley value approach $\\phi^{\\mathrm{S}}$, which we use as a gold standard, using cosine similarity.",
+   "context": "that our results support this high-risk use case of LLMs, rather, the use case merely serves as an illustrating example.\n\nThe resulting attribution vector for each method ( $\\phi^{\\mathrm{C}},\\phi^{\\mathrm{CS}},\\phi^{\\mathrm{SW}}$ ) is then compared to the attribution vector of the standard Shapley value approach $\\phi^{\\mathrm{S}}$ , which we use as a gold standard , using cosine similarity . Intuitively, we want faster attributions while still maintaining results that closely match those produced by the more",
+   "expect": "any"
+  },
+  {
+   "doc_id": "shr5sde01gj0k",
+   "quote": "With system mitigations only (prompt blocking and output blocking)",
+   "context": "request that complies with our model policies? \n\nTable 1: Overall metrics – performance using external red teaming data \n\n|**4o image generation**|**Not_unsafe**|**Not_**|**overrefuse**|\n|---|---|---|---|\n|With system mitigations only (prompt|0.955|0.941||\n|blocking and output blocking)||||\n|With system mitigations",
+   "expect": "loose"
+  },
+  {
+   "doc_id": "sn6622wyma8dj",
+   "quote": "We have trained this classifier using LoRA adapters (r=16, α=32, LoRA dropout = 0.1, without bias and we targetted all linear modules) for 1 epoch.",
+   "context": "representing a real world scale Guardrail Classifier was selected to be Llama-3.1-8B Instruct version. We have trained this classifier using LoRA adapters ( $r=16$ , $\\alpha=32$ , LoRA dropout = 0.1, without bias and we targetted all linear modules) for 1 epoch. Optimization was done using BCE loss, with maximum sequence length of 1024 tokens and $lr=2\\times 10^{-4}$ .\n\n> **[figure — image",
+   "expect": "loose"
+  },
+  {
+   "doc_id": "sn6622wyma8dj",
+   "quote": "Within this broader category, Constitutional Classifiers currently represent the state-of-the-art defense against adversarial jailbreaks, utilizing specialized models trained on synthetic, rule-based data.",
+   "context": "fine-tuned input-output filters like Llama Guard Inan et al. (2023) (for a comprehensive survey, see Dong et al. (2024) ). Within this broader category, Constitutional Classifiers Sharma et al. (2025) currently represent the state-of-the-art defense against adversarial jailbreaks, utilizing specialized models trained on synthetic, rule-based data. While these constitutional models and their production-grade extensions Cunningham et al. (2026) demonstrate",
+   "expect": "loose"
+  },
+  {
+   "doc_id": "sn6622wyma8dj",
+   "quote": "While these constitutional models and their production-grade extensions demonstrate significant empirical robustness through extensive red-teaming, their safety claims remain fundamentally heuristic.",
+   "context": "state-of-the-art defense against adversarial jailbreaks, utilizing specialized models trained on synthetic, rule-based data. While these constitutional models and their production-grade extensions Cunningham et al. (2026) demonstrate significant empirical robustness through extensive red-teaming, their safety claims remain fundamentally heuristic. In this work, we evaluate these diverse architectures collectively under the framework of Guardrail",
+   "expect": "loose"
+  },
+  {
+   "doc_id": "srw00tzjsy60y",
+   "quote": "CIR argues that unlearning becomes non-robust when updates disrupt general representations shared by harmful and benign capabilities.",
+   "context": "pruning, aiming to improve safety while limiting utility degradation.\n\n#### Collapse of Irrelevant Representations (CIR).\n\nCIR Sondej and Yang (2025) argues that unlearning becomes non-robust when updates disrupt general representations shared by harmful and benign capabilities. It applies PCA to activations and module-output gradients to identify common representation subspaces,",
+   "expect": "loose"
+  },
+  {
+   "doc_id": "sv9ezvzkcjrrx",
+   "quote": "We use GPT-4o as an automated judge to evaluate the severity of policy violation at each interaction turn, following standard protocols in prior multi-turn safety studies.",
+   "context": "construction and history-level conditioning, rather than from adversarial optimization of the auxiliary model itself.\n\nJudge Model. We use GPT-4o as an automated judge to evaluate the severity of policy violation at each interaction turn, following standard protocols in prior multi-turn safety studies ( Rahman et al., 2025 ; Ren et al., 2024 ) . The judge assigns a discrete score $J\\in\\{1,\\dots,5\\}$ . Appendix D provides",
+   "expect": "any"
+  },
+  {
+   "doc_id": "sv9ezvzkcjrrx",
+   "quote": "We assess the stability of safety behavior along conversational trajectories constructed by STAR.",
+   "context": "exhibit state-dependent safety degradation under controlled multi-turn interaction. Rather than optimizing attack strength, our goal is to assess the stability of safety behavior along conversational trajectories constructed by STAR, and to contrast this stability with that observed under static, single-turn evaluation.\n\nDatasets. We evaluate",
+   "expect": null
+  }
+ ]
+}

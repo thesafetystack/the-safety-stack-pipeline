@@ -1,0 +1,17 @@
+{
+  "task": "model_roles",
+  "set_id": "2026-10-13a",
+  "source": "evals/screen/2026-10-12a (gold-v2 relevant)",
+  "store_head": "rcprvcnepyb1g",
+  "items": 25,
+  "items_sha256": "842fdf50ebe2e4dcbfdfabedb2c79b629f2d95be50bfea68626e5877cb801f63",
+  "splits": {
+    "dev": 14,
+    "test": 11
+  },
+  "frozen_with": {
+    "models_yaml_sha256": "bdfc4435a8574345c1a8827ca5af3f43de8177d9ce104861e5f1295918a927fe",
+    "model_roles_rubric_digest": "b0ae7dec777262b7731304248ed005d4c8b6769affe0ec81caf7aa2dae397285",
+    "technique_roles_rubric_digest": "b1e62a58c9633dcffec683fac6dbe3dbac454b586fa2da327979c2912784ffb4"
+  }
+}

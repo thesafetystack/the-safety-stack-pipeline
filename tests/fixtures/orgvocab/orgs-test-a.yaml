@@ -1,0 +1,14 @@
+# A toy organisation vocabulary for tests/test_annotate_affiliation_orgs.py (stack.orgvocab's file shape).
+version: '0.0.1'
+meta:
+  schema_version: '0.1'
+  updated: '2026-10-27'
+  types: {university: u, company: c, institute: i, government: g, nonprofit: n, hospital: h, other: o}
+  countries: {US: [United States, USA], GB: [United Kingdom, UK]}
+  generic_words: [university, of, department, computer, science, lab, the, and]
+  non_org: ['^independent( researcher)?$']
+orgs:
+  - {id: example-university, name: Example University, type: university, country: US, aliases: [Example University]}
+  - {id: example-corp, name: Example Corp, type: company, country: US, aliases: [Example Corp]}
+  - {id: example-corp-research, name: Example Corp Research, type: company, country: US, parent: example-corp,
+     aliases: [Example Corp Research]}

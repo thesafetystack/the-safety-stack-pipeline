@@ -1,0 +1,212 @@
+# Fixtures for 06d-internlm-step-spark-baichuan.yaml
+# The mention-authoring pass is done (2026-07-31); this file is now live under
+# `vocab_tool.py check -f`. 130/136 of the generated fixtures pass; the 6 that
+# do not are structurally unsatisfiable under most-specific-match-wins (a
+# super-node cannot win a span its own child also matches) and are listed at
+# the bottom of this file.
+
+# --- InternLM family root (L5558-5563) ---
+- {text: internlm, node: internlm}
+- {text: intern lm, node: internlm}
+- {text: shusheng, node: internlm}
+- {text: 书生, node: internlm}
+- {text: shanghai ai lab, node: internlm}
+- {text: shanghai ai laboratory, node: internlm}
+- {text: pjlab, node: internlm}
+- {text: internlm2, node: internlm2}  # retargeted: generation node wins by most-specific-wins
+- {text: internlm3, node: internlm3-8b}  # retargeted: only InternLM3 model is the 8B; it wins the span
+- {text: intern-s1, node: intern-s1}  # retargeted: model node wins by most-specific-wins
+- {text: InternLM, node: internlm}
+
+# --- InternLM (2023) (L5565-5575) ---
+- {text: internlm-7b, node: internlm-7b}
+- {text: internlm-20b, node: internlm-20b}
+- {text: internlm-chat-7b, node: internlm-7b}
+- {text: internlm 7b, node: internlm-7b}
+- {text: InternLM (2023), node: internlm}  # "(" not a separator; degrades to family by design
+- {text: InternLM-7B, node: internlm-7b}
+- {text: InternLM-20B, node: internlm-20b}
+
+# --- InternLM2 / InternLM2.5 (L5577-5587) ---
+- {text: internlm2, node: internlm2}
+- {text: internlm 2, node: internlm2}
+- {text: internlm2-7b, node: internlm2-7b}
+- {text: internlm2-20b, node: internlm2-20b}
+- {text: internlm2-chat-7b, node: internlm2-7b}
+- {text: internlm2.5, node: internlm2.5}
+- {text: internlm2.5-7b, node: internlm2.5-7b}
+- {text: internlm2_5-7b-chat, node: internlm2.5-7b}
+- {text: InternLM2, node: internlm2}
+- {text: InternLM2-7B, node: internlm2-7b}
+- {text: InternLM2-20B, node: internlm2-20b}
+- {text: InternLM2.5, node: internlm2.5}
+- {text: InternLM2.5-7B, node: internlm2.5-7b}
+- {text: InternLM2.5-1.8B, node: internlm2.5-1.8b}
+- {text: InternLM2.5-20B, node: internlm2.5-20b}
+
+# --- InternLM3-8B (L5589-5599) ---
+- {text: internlm3, node: internlm3-8b}
+- {text: internlm 3, node: internlm3-8b}
+- {text: internlm3-8b, node: internlm3-8b}
+- {text: internlm3-8b-instruct, node: internlm3-8b}
+- {text: InternLM3-8B, node: internlm3-8b}
+
+# --- Intern-S1 / Intern-S1-Pro (L5601-5611) ---
+- {text: intern-s1, node: intern-s1}
+- {text: intern s1, node: intern-s1}
+- {text: interns1, node: intern-s1}
+- {text: intern-s1-pro, node: intern-s1-pro}
+- {text: intern s1 pro, node: intern-s1-pro}
+- {text: Intern-S1 line, node: intern-s1-line}
+- {text: Intern-S1, node: intern-s1}
+- {text: Intern-S1-Pro, node: intern-s1-pro}
+
+# --- Step (StepFun) family root (L5615-5620) ---
+- {text: stepfun, node: stepfun}
+- {text: step fun, node: stepfun}
+- {text: 阶跃星辰, node: stepfun}
+- {text: jieyue xingchen, node: stepfun}
+- {text: step series, node: stepfun}
+- {text: stepfun-ai, node: stepfun}
+- {text: Step (StepFun), node: stepfun}
+
+# --- Step-1 / Step-2 (L5622-5632) ---
+- {text: step-1, node: step-1}
+- {text: step 1, node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: step-1-256k, node: step-1}
+- {text: step-2, node: step-2}
+- {text: step 2, node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: step-2-16k, node: step-2}
+- {text: stepfun step-2, node: step-2}
+- {text: Step-1, node: step-1}
+- {text: Step-2, node: step-2}
+
+# --- Step-3 (L5634-5644) ---
+- {text: step-3, node: step-3}
+- {text: step 3, node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: step3, node: step-3}
+- {text: stepfun step-3, node: step-3}
+- {text: stepfun-ai/step3, node: step-3}
+- {text: Step-3, node: step-3}
+
+# --- Step 3.7 Flash (L5646-5656) ---
+- {text: step 3.7 flash, node: step-3.7-flash}
+- {text: step-3.7-flash, node: step-3.7-flash}
+- {text: step3.7, node: step-3.7-flash}
+- {text: step 3.7, node: step-3.7-flash}
+- {text: Step 3.7 Flash, node: step-3.7-flash}
+
+# --- Spark / iFlytek family root (L5660-5665) ---
+- {text: iflytek spark, node: iflytek-spark}
+- {text: spark, node: none}  # weak pattern dropped 2026-08-01 (worst collision string; cost 1 doc)
+- {text: sparkdesk, node: sparkdesk}  # retargeted: group owns the concatenated form; family keeps "spark desk"
+- {text: xinghuo, node: iflytek-spark}
+- {text: 讯飞星火, node: iflytek-spark}
+- {text: xunfei xinghuo, node: iflytek-spark}
+- {text: starfire, node: iflytek-spark}
+- {text: spark desk, node: iflytek-spark}
+- {text: Spark (iFlytek), node: none}  # display name; bare "spark" dropped 2026-08-01, vendor is not a pattern
+
+# --- SparkDesk V1-V4 (L5667-5677) ---
+- {text: sparkdesk, node: sparkdesk}
+- {text: spark v3.5, node: sparkdesk-v3.5}
+- {text: spark v4.0, node: sparkdesk-v4}
+- {text: spark 4.0, node: sparkdesk-v4}
+- {text: xinghuo 4.0, node: sparkdesk-v4}
+- {text: spark max, node: sparkdesk}
+- {text: spark pro, node: sparkdesk}
+- {text: spark lite, node: sparkdesk}
+- {text: SparkDesk V1.0, node: sparkdesk-v1}
+- {text: SparkDesk V2.0, node: sparkdesk-v2}
+- {text: SparkDesk V3.0, node: sparkdesk-v3}
+- {text: SparkDesk V3.5, node: sparkdesk-v3.5}
+- {text: SparkDesk V4.0, node: sparkdesk-v4}
+
+# --- Spark X1 (L5679-5689) ---
+- {text: spark x1, node: spark-x1}
+- {text: iflytek x1, node: spark-x1}
+- {text: xinghuo x1, node: spark-x1}
+- {text: x1 (iflytek), node: none}  # bare "x1" dropped 2026-08-01; "iflytek" alone is not a pattern
+- {text: spark deep reasoning x1, node: spark-x1}
+- {text: Spark X1, node: spark-x1}
+
+# --- Spark X1.5 (L5691-5701) ---
+- {text: spark x1.5, node: spark-x1.5}
+- {text: xinghuo x1.5, node: spark-x1.5}
+- {text: iflytek x1.5, node: spark-x1.5}
+- {text: x1.5, node: spark-x1.5}
+- {text: Spark X1.5, node: spark-x1.5}
+
+# --- Baichuan family root (L5705-5710) ---
+- {text: baichuan, node: baichuan}
+- {text: baichuan ai, node: baichuan}
+- {text: 百川智能, node: baichuan}
+- {text: baichuan-inc, node: baichuan}
+- {text: baichuan intelligence, node: baichuan}
+- {text: Baichuan, node: baichuan}
+
+# --- Baichuan-7B / Baichuan-13B (L5712-5722) ---
+- {text: baichuan-7b, node: baichuan-7b}
+- {text: baichuan-13b, node: baichuan-13b}
+- {text: baichuan 7b, node: baichuan-7b}
+- {text: baichuan 13b, node: baichuan-13b}
+- {text: baichuan-13b-chat, node: baichuan-13b}
+- {text: Baichuan 1, node: baichuan-1}
+- {text: Baichuan-7B, node: baichuan-7b}
+- {text: Baichuan-13B, node: baichuan-13b}
+
+# --- Baichuan 2 (L5724-5734) ---
+- {text: baichuan 2, node: baichuan2}
+- {text: baichuan2, node: baichuan2}
+- {text: baichuan2-7b, node: baichuan2-7b}
+- {text: baichuan2-13b, node: baichuan2-13b}
+- {text: baichuan2-13b-chat, node: baichuan2-13b}
+- {text: Baichuan 2, node: baichuan2}
+- {text: Baichuan2-7B, node: baichuan2-7b}
+- {text: Baichuan2-13B, node: baichuan2-13b}
+
+# --- Baichuan 3 / Baichuan 4 (L5736-5746) ---
+- {text: baichuan 3, node: baichuan-3}
+- {text: baichuan3, node: baichuan-3}
+- {text: baichuan 4, node: baichuan-4}
+- {text: baichuan4, node: baichuan-4}
+- {text: baichuan-turbo, node: baichuan-4}
+- {text: Baichuan 3, node: baichuan-3}
+- {text: Baichuan 4, node: baichuan-4}
+
+# --- Negative fixtures: traps closed by the mention pass ---------------------
+# Only strings that must produce NO match at all can be asserted here: weak
+# patterns still emit (weak-flagged) matches, so procedural "Step 2: ..." and
+# "a spark of insight" cannot be negative-fixtured -- they are weak-only hits
+# by design (bare `step`/`spark`/`step N` are never strong).
+# bare "intern" is not a pattern (common word); "internlm" is the strong form
+- {text: our interns built the pipeline, node: none}
+- {text: the internal step size, node: none}
+- {text: a summer intern project, node: none}
+# InternVL is a related-but-distinct family (same lab), deliberately unmatched
+- {text: InternVL 2.5, node: internvl2.5}  # v0.7: was node none; InternVL has its own family since v0.7 (still never InternLM)
+# bare "step" is not a pattern at all
+- {text: two-step verification, node: none}
+- {text: step function approximation, node: none}
+- {text: in three steps we tokenize, node: none}
+# "step fun" does not bleed into "step function" (boundary guard)
+- {text: a step functional analysis, node: none}
+# bare "spark" is weak, but its neighbours must not fire
+- {text: sparkling water, node: none}
+- {text: sparse attention, node: none}
+
+# --- Known-unsatisfiable fixtures (6, all in the list above) -----------------
+# Each expects a super-node to win a span that one of its own descendants also
+# matches; resolution is most-specific-wins, so the descendant always shadows
+# the ancestor. Kept as documentation of the MD's name-variant lists.
+#   {internlm2 -> internlm}      shadowed by group internlm2
+#   {internlm3 -> internlm}      shadowed by model internlm3-8b
+#   {intern-s1 -> internlm}      shadowed by model intern-s1
+#   {internlm -> internlm-2023}  conflicts with {internlm -> internlm}; bare
+#                                "internlm" is kept on the family, the 2023
+#                                generation group is structure-only
+#   {InternLM (2023) -> internlm-2023}  "(" is not a separator, so no pattern
+#                                can span "InternLM (2023)"
+#   {sparkdesk -> iflytek-spark} conflicts with {sparkdesk -> sparkdesk}; the
+#                                family carries "spark desk" (which also covers
+#                                "sparkdesk"), the group carries "sparkdesk"

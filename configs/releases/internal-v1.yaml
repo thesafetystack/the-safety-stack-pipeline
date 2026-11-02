@@ -1,0 +1,32 @@
+# Release config internal-v1 (docs/DESIGN.md §3.2, D21, D647): the internal export. Read by
+# `stack export --in <corpus.build> --out DIR` (its default config; the only local export, D695); resolved
+# and embedded in DIR/release.json. Semantics: stack/fold/release.py's module docstring.
+#
+# What public-v1 withholds ships here: the text of every licence class, abstracts, uncapped excerpts,
+# run_ids, evidence_ids, the screen reasoning, the text_usability note and annotations.other[]. The
+# protective drops stay: masked, retired and sensitivity-tagged rows, and shadow (anchor rows dropped,
+# shadow-supplied text withheld). The bundle is a local directory, never pushed (audience: internal).
+name: internal-v1
+audience: internal
+# Screen ok and verdict relevant (borderline excluded); any SQL predicate over the input row works here.
+filter: screen_relevant
+# One snapshot per row: the current one; its text BLOB is the current text.
+snapshots: current
+# The current texts, as files blobs/<sha256> beside corpus.parquet. place: inline puts them into
+# content.snapshots[].text.inline instead (a current text no kept snapshot carries stays in blobs/);
+# provider_records: true (needs inband kept) adds the in-band provider_record bodies (D522: not content).
+content: {select: text, place: blobs, max_total_bytes: 4294967296, missing: fail, provider_records: false}
+licence_rules:
+  open:         {rows: keep, text: ship,     abstract: keep, excerpt_cap_chars: null}
+  public_web:   {rows: keep, text: ship,     abstract: keep, excerpt_cap_chars: null}
+  restricted:   {rows: keep, text: ship,     abstract: keep, excerpt_cap_chars: null}
+  api_tos:      {rows: keep, text: ship,     abstract: keep, excerpt_cap_chars: null}
+  api_abstract: {rows: keep, text: ship,     abstract: keep, excerpt_cap_chars: null}
+  shadow:       {rows: drop, text: withhold, abstract: drop, excerpt_cap_chars: 0}
+# A supplying member that is missing from identity.members or has a NULL license_class.
+unknown_class: restricted
+other: keep
+# inband's bodies are already content.snapshots' (kind inband); the two members_digest change-detection
+# hashes mean nothing outside the store (D647).
+column_drops: [inband, identity.members_digest, content.members_digest]
+row_drops: [masked, retired, sensitivity]

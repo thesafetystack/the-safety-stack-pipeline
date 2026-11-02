@@ -1,0 +1,306 @@
+{
+  "set_id": "sr2025-recall",
+  "task": "triage",
+  "kind": "recall-only (every item is an SR 2025 inclusion)",
+  "created_at": "2026-10-12T17:29:12+00:00",
+  "source": {
+    "url": "https://raw.githubusercontent.com/arb-consulting/shallow-review-2025/main/main-pipeline/data/2025-12-16-draft-post-review/papers.csv",
+    "fetched_at": "2026-10-12T16:32:05+00:00",
+    "sha256": "29575445527441853e69fec6412af1ef07fdf87a150ad70e76114cde591408fc",
+    "bytes": 344474,
+    "rows": 826,
+    "columns": [
+      "agenda_name",
+      "agenda_section",
+      "agenda_sub_section",
+      "agenda_full_name",
+      "link_url",
+      "link_text",
+      "title",
+      "authors",
+      "author_organizations",
+      "published_year",
+      "date"
+    ],
+    "path": "source/papers.csv"
+  },
+  "link_kinds": {
+    "rows": {
+      "arxiv": 486,
+      "lesswrong": 142,
+      "org_site": 64,
+      "lab": 58,
+      "other": 26,
+      "openreview": 19,
+      "alignmentforum": 17,
+      "journal": 13,
+      "none": 1
+    },
+    "unique_links": {
+      "arxiv": 440,
+      "lesswrong": 136,
+      "org_site": 63,
+      "lab": 51,
+      "other": 24,
+      "openreview": 18,
+      "alignmentforum": 15,
+      "journal": 12,
+      "none": 1
+    },
+    "unique_total": 760
+  },
+  "source_store": "v4/store-dev",
+  "documents_chain": "documents",
+  "documents_head": "rw19n7b9hx95r.documents",
+  "git_commit": "99f5205394a4ff135b81bbaf1cf359a1933d9ce9",
+  "git_dirty": true,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "39d30f3485b597591c23c39fe0e2406d806c3f1fb7ce2268b6e00e46a56d9f83"
+  },
+  "basis_builder": {
+    "ref": "workflows.triage.ask:document_text",
+    "source_sha256": "173365fbf1f8908dfe54aaa25f79c04a86bb7f294f8b321170cbdb36a7054c12",
+    "caps": {
+      "MAX_ABSTRACT_CHARS": 6000,
+      "MAX_EXCERPT_CHARS": 3000,
+      "MAX_AUTHORS": 12
+    }
+  },
+  "sr_builder": {
+    "module": "stack.evals.sr",
+    "source_sha256": "e4598b7fb2007b72c74b91a93f16e48ddbd199044cc8285cae1f3290d3dde343"
+  },
+  "seed": "track-e2-sr2025",
+  "order": "sha256(seed + kind + ':' + key) hex, ascending",
+  "sampling": {
+    "quotas": {
+      "arxiv": 95,
+      "forum": 30,
+      "other": 25
+    },
+    "group_kinds": {
+      "arxiv": [
+        "arxiv"
+      ],
+      "forum": [
+        "lesswrong",
+        "alignmentforum"
+      ],
+      "other": [
+        "openreview",
+        "journal",
+        "lab",
+        "org_site",
+        "other"
+      ]
+    },
+    "min_per_kind": {
+      "alignmentforum": 3,
+      "openreview": 3,
+      "journal": 3,
+      "lab": 3,
+      "org_site": 3
+    },
+    "replacement": "a drop draws the next candidate of the same kind (minimum phase) or group"
+  },
+  "resolution": {
+    "alignmentforum": {
+      "attempted": 3,
+      "origin:external": 3,
+      "resolved": 3
+    },
+    "arxiv": {
+      "attempted": 96,
+      "dropped:title_mismatch": 1,
+      "origin:external": 94,
+      "origin:store": 1,
+      "relinked:arxiv_link_text": 3,
+      "resolved": 95
+    },
+    "journal": {
+      "attempted": 12,
+      "dropped:arxiv_title_not_found": 5,
+      "origin:external": 7,
+      "resolved": 7
+    },
+    "lab": {
+      "attempted": 44,
+      "dropped:arxiv_title_not_found": 3,
+      "dropped:openalex_not_found": 17,
+      "dropped:store_title_only": 21,
+      "origin:external": 3,
+      "resolved": 3
+    },
+    "lesswrong": {
+      "attempted": 27,
+      "origin:external": 27,
+      "resolved": 27
+    },
+    "openreview": {
+      "attempted": 14,
+      "dropped:arxiv_title_not_found": 4,
+      "dropped:openalex_not_found": 4,
+      "origin:external": 6,
+      "resolved": 6
+    },
+    "org_site": {
+      "attempted": 55,
+      "dropped:arxiv_title_not_found": 31,
+      "dropped:openalex_not_found": 18,
+      "origin:external": 6,
+      "resolved": 6
+    },
+    "other": {
+      "attempted": 22,
+      "dropped:arxiv_title_not_found": 19,
+      "origin:external": 3,
+      "resolved": 3
+    }
+  },
+  "record_channels": {
+    "arxiv": {
+      "channel": "arxiv",
+      "license_class": "open"
+    },
+    "lesswrong": {
+      "channel": "lesswrong",
+      "license_class": "open"
+    },
+    "alignmentforum": {
+      "channel": "lesswrong",
+      "license_class": "open"
+    },
+    "openalex": {
+      "channel": "openalex",
+      "license_class": "open"
+    }
+  },
+  "license_rule": "store rows: basis_of(row, 'fields').license_class (the anchor member's, which collect.base sets to its channel's channels.yaml license_class); external rows: the license_class of the channel whose record they replicate",
+  "openalex_budget_exhausted": true,
+  "title_check": {
+    "rule": "each resolved record's title against SR's link_text (its title column only when the link_text is a scraping artefact or under 12 folded chars; the title column was scraped from the possibly wrong URL): folded equality, containment, difflib ratio >= 0.9, or content-word overlap >= 0.6 of the shorter title; a mismatch is re-resolved by SR's title through the arXiv title search (resolver arxiv_link_text) or dropped (title_mismatch) and replaced from its stratum",
+    "unchecked_in_sample": 0,
+    "mismatches": [
+      {
+        "link": "arxiv:2412.02345",
+        "url": "https://arxiv.org/abs/2412.02345",
+        "sr_titles": [
+          "Beyond the Binary: Capturing Diverse Preferences With Reward Regularization"
+        ],
+        "resolved_title": "On the Realization of quantum gates coming from the Tracy-Singh product",
+        "resolved_doc": "ext:arxiv:2412.02345",
+        "outcome": "relinked",
+        "arxiv_id": "2412.03822",
+        "new_title": "Beyond the Binary: Capturing Diverse Preferences With Reward Regularization"
+      },
+      {
+        "link": "arxiv:2510.24797",
+        "url": "https://arxiv.org/abs/2510.24797",
+        "sr_titles": [
+          "Self-Correction in Thought-Attractors: A Nudge Towards Alignment"
+        ],
+        "resolved_title": "Large Language Models Report Subjective Experience Under Self-Referential Processing",
+        "resolved_doc": "ext:arxiv:2510.24797",
+        "outcome": "dropped:title_mismatch"
+      },
+      {
+        "link": "arxiv:2507.06789",
+        "url": "https://arxiv.org/abs/2507.06789",
+        "sr_titles": [
+          "The Curious Case of Factuality Finetuning: Models' Internal Beliefs Can Improve Factuality"
+        ],
+        "resolved_title": "Sharp uniform approximation for spectral Barron functions by deep neural networks",
+        "resolved_doc": "ext:arxiv:2507.06789",
+        "outcome": "relinked",
+        "arxiv_id": "2507.08371",
+        "new_title": "The Curious Case of Factuality Finetuning: Models' Internal Beliefs Can Improve Factuality"
+      },
+      {
+        "link": "arxiv:2509.03405",
+        "url": "https://arxiv.org/abs/2509.03405",
+        "sr_titles": [
+          "Reasoning Introduces New Poisoning Attacks Yet Makes Them More Complicated"
+        ],
+        "resolved_title": "LMEnt: A Suite for Analyzing Knowledge in Language Models from Pretraining Data to Representations",
+        "resolved_doc": "ext:arxiv:2509.03405",
+        "outcome": "relinked",
+        "arxiv_id": "2509.05739",
+        "new_title": "Reasoning Introduces New Poisoning Attacks Yet Makes Them More Complicated"
+      }
+    ]
+  },
+  "overlap": {
+    "store_items": 1,
+    "external_vs_store_record": [
+      {
+        "link": "arxiv:2503.13621",
+        "doc_id": "sedgadwfsa59e",
+        "record_equal": true
+      }
+    ]
+  },
+  "net_calls": {
+    "export.arxiv.org": 82,
+    "www.lesswrong.com": 60,
+    "api.openalex.org": 55,
+    "api.openalex.org:retry": 4
+  },
+  "items_sha256": "953ac38573606298e0104238f06dfe3adc6ad95b25d84486491f4d7f2fa26dcd",
+  "counts": {
+    "total": 150,
+    "split": {
+      "test": 75,
+      "dev": 75
+    },
+    "kind": {
+      "arxiv": 95,
+      "lab": 3,
+      "lesswrong": 27,
+      "openreview": 6,
+      "journal": 7,
+      "alignmentforum": 3,
+      "org_site": 6,
+      "other": 3
+    },
+    "kind_split": {
+      "alignmentforum|dev": 2,
+      "alignmentforum|test": 1,
+      "arxiv|dev": 47,
+      "arxiv|test": 48,
+      "journal|dev": 4,
+      "journal|test": 3,
+      "lab|dev": 1,
+      "lab|test": 2,
+      "lesswrong|dev": 14,
+      "lesswrong|test": 13,
+      "openreview|dev": 3,
+      "openreview|test": 3,
+      "org_site|dev": 3,
+      "org_site|test": 3,
+      "other|dev": 1,
+      "other|test": 2
+    },
+    "origin": {
+      "external": 149,
+      "store": 1
+    },
+    "license_class": {
+      "open": 149,
+      "restricted": 1
+    },
+    "sr_section": {
+      "Black-box safety (understand and control current model behaviour)": 43,
+      "White-box safety (i.e. Interpretability)": 43,
+      "Evals": 26,
+      "Theory": 17,
+      "Multi-agent first": 10,
+      "Labs (giant companies)": 6,
+      "Make AI solve it": 3,
+      "Safety by construction": 2
+    },
+    "excerpt_origin": {
+      "lw_search_body": 30
+    }
+  }
+}

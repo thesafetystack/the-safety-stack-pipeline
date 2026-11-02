@@ -1,0 +1,21 @@
+## llm-based-safety-classifier — Guard models [kind: monitoring; parent: none; group node: no]
+Definition: Scores "unsafe" content with a dedicated safety LLM.
+Also called: safeguard model. Named instances: Llama Guard, ShieldGemma.
+Pointers (not evidence; verify in the document):
+- [prepass; 3 Method] "Llama Guard" — "We filter outputs with Llama Guard 3." (stance hint: used)
+- [lexical] "Llama Guard"
+
+## dp-training — Differentially private training [kind: intervention; parent: none; group node: no; provisional]
+Definition: Trains under a stated differential-privacy guarantee.
+Also called: DP training. Named instances: DP-SGD.
+Pointers: none.
+
+## runtime-monitoring — Agent runtime monitoring [kind: none; parent: none; group node: yes]
+Definition: Group node for runtime monitors of agent actions.
+Children: chain-of-thought-monitoring, anomaly-detection
+Pointers (not evidence; verify in the document):
+- [prepass; front] "runtime monitors" (stance hint: considered)
+
+## dangerous-capability-evaluation.cbrn — CBRN / high-risk-domain evaluation [kind: assessment; parent: dangerous-capability-evaluation; group node: no]
+Definition: Evaluates chemical, biological, radiological and nuclear uplift.
+Pointers: none.

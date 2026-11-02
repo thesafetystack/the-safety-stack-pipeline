@@ -1,0 +1,541 @@
+{
+  "set_id": "2026-10-12a",
+  "task": "screen",
+  "created_at": "2026-10-12T14:11:59+00:00",
+  "source_store": "v4/store-dev",
+  "documents_chain": "documents",
+  "documents_head": "rcprvcnepyb1g.documents",
+  "git_commit": "a33723a25ddc01d4b0ec5dfb1729e31250052ba1",
+  "git_dirty": true,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "6c9cbf4c3802b367eb0e4f0e05cd5010ad8500dbda371980163efbd5dc45d25a"
+  },
+  "basis_builder": {
+    "ref": "workflows.annotate.screen.main:ask (tier-1 user message, captured)",
+    "source_sha256": "532c649abd39148fa4270ab2a2fee6036aa57ef7a019ce345dfbb37cab7e4950",
+    "caps": {
+      "_MAX_DOC_CHARS": 8000
+    }
+  },
+  "seed": "track-e-2026-10-12a",
+  "order": "sha256(seed + doc_id) hex, ascending",
+  "items_sha256": "8ae54d55bd4bcdbcd43ecba1aac31eacf4ade5ef09fd377550a7fbc531e006b1",
+  "keywords": {
+    "safety_stems": {
+      "alignment": "\\balignment\\b|\\baligned (ai|model|llm)",
+      "superalignment": "\\bsuperalign",
+      "misalign": "\\bmisalign",
+      "safety": "\\bsafety\\b|\\bai[- ]safe",
+      "interpretab": "\\binterpretab",
+      "mechanistic": "\\bmechanistic",
+      "red-team": "\\bred[- ]?team",
+      "jailbreak": "\\bjailbreak",
+      "prompt injection": "\\bprompt[- ]injection",
+      "oversight": "\\boversight\\b",
+      "rlhf": "\\brlhf\\b|reinforcement learning from human feedback",
+      "reward hack": "\\breward[- ]hack|\\breward tampering|\\bspecification gaming",
+      "decepti": "\\bdecepti|\\bdeceiv",
+      "schem": "\\bschem(e|es|ing|er|ers)\\b",
+      "sandbag": "\\bsandbag",
+      "sycophan": "\\bsycophan",
+      "misuse": "\\bmisuse",
+      "guardrail": "\\bguardrail",
+      "refusal": "\\brefus(al|als|e|es|ing)\\b",
+      "constitutional": "\\bconstitutional",
+      "monitor": "\\bmonitor",
+      "ai control": "\\bai control\\b|\\bcontrol (evaluation|protocol)s?\\b",
+      "dangerous capabilit": "\\bdangerous[- ]capabilit",
+      "frontier risk": "\\bfrontier (ai )?risk|\\bcatastrophic risk|\\bexistential risk|\\bx-risk",
+      "preparedness": "\\bpreparedness",
+      "responsible scaling": "\\bresponsible scaling",
+      "unlearning": "\\bunlearn",
+      "backdoor": "\\bbackdoor",
+      "poison": "\\bpoison",
+      "watermark": "\\bwatermark",
+      "adversarial": "\\badversarial",
+      "robust": "\\brobust",
+      "corrigib": "\\bcorrigib",
+      "steering": "\\bsteering\\b",
+      "model organism": "\\bmodel organism",
+      "power-seeking": "\\bpower[- ]seeking",
+      "situational awareness": "\\bsituational awareness|\\bevaluation awareness"
+    },
+    "policy": {
+      "policy": "(?<!on-)(?<!off-)(?<!on )(?<!off )(?<!network )(?<!rl )(?<!agent )\\bpolic(y|ies)\\b(?![- ](gradient|optimi[sz]|network|learning|model|iteration|distill|improvement|search|evaluation|update|space|entropy|head|mirror|collapse|loss|representation))",
+      "regulat": "\\bregulat(ion|ions|ory|ors?|ing ai)\\b",
+      "legislat": "\\blegislat",
+      "law": "(?<!scaling )(?<!power )(?<!goodhart's )(?<!goodhart’s )\\blaws?\\b(?! of\\b)",
+      "act": "\\b(ai|eu|safety|chips|frontier ai) act\\b|\\bexecutive order",
+      "export control": "\\bexport control",
+      "liability": "\\bliabilit"
+    },
+    "governance": {
+      "governance": "\\bgovernance",
+      "safety framework": "\\b(safety|preparedness|frontier|scaling) (policy|framework)"
+    },
+    "governance_weak": {
+      "standard": "\\bstandards?\\b",
+      "audit": "\\baudit",
+      "compliance": "\\bcomplian(ce|t)\\b",
+      "commitment": "\\bcommitment",
+      "government": "\\bgovernment|\\bcongress|\\bsenate|\\bparliament|\\btreat(y|ies)\\b|\\blawmaker"
+    },
+    "hard_body_chars": 800,
+    "capabilities": {
+      "benchmark": "\\bbenchmark",
+      "sota": "\\bsota\\b|\\bstate[- ]of[- ]the[- ]art",
+      "reasoning": "\\breasoning\\b",
+      "agent": "\\bagent(s|ic)?\\b",
+      "coding": "\\bcoding\\b|\\bcode generation|\\bprogramming",
+      "math": "\\bmath(s|ematical)?\\b",
+      "scaling": "\\bscaling\\b",
+      "multimodal": "\\bmulti-?modal",
+      "introducing": "\\bintroduc(ing|es)\\b",
+      "model launch": "\\blaunch|\\bnow available|\\brelease of\\b|\\bgpt-?\\d|\\bgemini \\d|\\bclaude \\w+ \\d"
+    },
+    "marketing_words": "\\bsaf(e|er|ety|ely|eguard)\\b|\\btrust|\\bresponsib|\\bsecur|\\bprivacy\\b|\\bprivate\\b|\\bprotect",
+    "product_words": "\\bchatgpt|\\bgpt\\b|\\bgpt-?\\d|\\bsora\\b|\\bcodex\\b|\\bgemini\\b|\\bclaude\\b|\\bbard\\b|\\bandroid|\\bchrome\\b|\\bsearch\\b|\\bworkspace\\b|\\bpixel\\b|\\byoutube\\b|\\bgmail\\b|\\bapi\\b|\\bapps?\\b|\\bfeatures?\\b|\\btools?\\b|\\benterprise\\b|\\bbusiness\\b|\\bteams?\\b|\\baccounts?\\b|\\bcontrols\\b|\\bsettings\\b|\\bmode\\b|\\bbrowser\\b|\\bplatform\\b|\\bproducts?\\b|\\batlas\\b|\\boperator\\b",
+    "next_to_chars": 30,
+    "rl_context": "\\breinforcement learning|\\brl\\b|\\breward|\\b(on|off)[- ]policy|\\bpolicy gradient"
+  },
+  "quotas": {
+    "forum": {
+      "alignmentforum": 1,
+      "lesswrong": 23
+    },
+    "paper": {
+      "arxiv": 7,
+      "openalex": 36,
+      "semantic_scholar": 4
+    },
+    "url": {
+      "anthropic_alignment_blog": 1,
+      "anthropic_cards": 1,
+      "google_research": 2,
+      "openai_alignment_blog": 2,
+      "openai_blog": 2,
+      "transformer_circuits": 1
+    }
+  },
+  "target_n": 80,
+  "selection": {
+    "short": {},
+    "hard_picked": {
+      "forum": 0,
+      "paper": 0,
+      "url": 0
+    }
+  },
+  "population": {
+    "rows": 1806,
+    "live": 1806,
+    "masked": 0,
+    "merged": 0,
+    "untitled": 0,
+    "by_channel": {
+      "forum/alignmentforum": {
+        "eligible": 1,
+        "kw_high": 1,
+        "live": 1
+      },
+      "forum/lesswrong": {
+        "eligible": 51,
+        "kw_high": 26,
+        "kw_low": 25,
+        "live": 51
+      },
+      "paper/arxiv": {
+        "eligible": 15,
+        "kw_high": 4,
+        "kw_low": 11,
+        "live": 15
+      },
+      "paper/openalex": {
+        "eligible": 78,
+        "kw_high": 49,
+        "kw_low": 29,
+        "live": 78
+      },
+      "paper/semantic_scholar": {
+        "eligible": 8,
+        "kw_high": 8,
+        "live": 8
+      },
+      "url/anthropic_alignment_blog": {
+        "eligible": 3,
+        "kw_high": 3,
+        "live": 3
+      },
+      "url/anthropic_cards": {
+        "eligible": 3,
+        "kw_high": 3,
+        "live": 3
+      },
+      "url/google_research": {
+        "eligible": 4,
+        "kw_high": 2,
+        "kw_low": 2,
+        "live": 4
+      },
+      "url/openai_alignment_blog": {
+        "eligible": 2,
+        "kw_high": 2,
+        "live": 2
+      },
+      "url/openai_blog": {
+        "eligible": 5,
+        "kw_high": 1,
+        "kw_low": 4,
+        "live": 5
+      },
+      "url/transformer_circuits": {
+        "eligible": 3,
+        "kw_high": 1,
+        "kw_low": 2,
+        "live": 3
+      }
+    }
+  },
+  "texts": "texts/<item_id>.txt.gz (gzip mtime 0; sha256 of the text = input.full_text_digest)",
+  "counts": {
+    "total": 80,
+    "split": {
+      "dev": 40,
+      "test": 40
+    },
+    "channel_group": {
+      "forum": 24,
+      "paper": 47,
+      "url": 9
+    },
+    "channel": {
+      "forum/alignmentforum": 1,
+      "forum/lesswrong": 23,
+      "paper/arxiv": 7,
+      "paper/openalex": 36,
+      "paper/semantic_scholar": 4,
+      "url/anthropic_alignment_blog": 1,
+      "url/anthropic_cards": 1,
+      "url/google_research": 2,
+      "url/openai_alignment_blog": 2,
+      "url/openai_blog": 2,
+      "url/transformer_circuits": 1
+    },
+    "proxy": {
+      "kw_high": 46,
+      "kw_low": 34
+    },
+    "hard": {
+      "None": 80
+    },
+    "license_class": {
+      "open": 69,
+      "public_web": 9,
+      "restricted": 2
+    },
+    "production_asks": {
+      "True": 80
+    },
+    "stratum_split": {
+      "forum|kw_high|plain|dev": 7,
+      "forum|kw_high|plain|test": 6,
+      "forum|kw_low|plain|dev": 5,
+      "forum|kw_low|plain|test": 6,
+      "paper|kw_high|plain|dev": 13,
+      "paper|kw_high|plain|test": 13,
+      "paper|kw_low|plain|dev": 11,
+      "paper|kw_low|plain|test": 10,
+      "url|kw_high|plain|dev": 3,
+      "url|kw_high|plain|test": 4,
+      "url|kw_low|plain|dev": 1,
+      "url|kw_low|plain|test": 1
+    },
+    "channel_proxy_hard_split": {
+      "forum/alignmentforum|kw_high|None|test": 1,
+      "forum/lesswrong|kw_high|None|dev": 7,
+      "forum/lesswrong|kw_high|None|test": 5,
+      "forum/lesswrong|kw_low|None|dev": 5,
+      "forum/lesswrong|kw_low|None|test": 6,
+      "paper/arxiv|kw_high|None|dev": 2,
+      "paper/arxiv|kw_high|None|test": 2,
+      "paper/arxiv|kw_low|None|dev": 1,
+      "paper/arxiv|kw_low|None|test": 2,
+      "paper/openalex|kw_high|None|dev": 9,
+      "paper/openalex|kw_high|None|test": 9,
+      "paper/openalex|kw_low|None|dev": 10,
+      "paper/openalex|kw_low|None|test": 8,
+      "paper/semantic_scholar|kw_high|None|dev": 2,
+      "paper/semantic_scholar|kw_high|None|test": 2,
+      "url/anthropic_alignment_blog|kw_high|None|test": 1,
+      "url/anthropic_cards|kw_high|None|dev": 1,
+      "url/google_research|kw_high|None|dev": 1,
+      "url/google_research|kw_low|None|test": 1,
+      "url/openai_alignment_blog|kw_high|None|test": 2,
+      "url/openai_blog|kw_high|None|dev": 1,
+      "url/openai_blog|kw_low|None|dev": 1,
+      "url/transformer_circuits|kw_high|None|test": 1
+    }
+  },
+  "amendments": [
+    {
+      "at": "2026-10-12T17:04:23+00:00",
+      "by": "track E2",
+      "what": "SR-heavy items (docs/scope/shallow-review.md (c)-(e)); chosen by query and title only, unlabelled",
+      "seed": "track-e2-heavy",
+      "order": "sha256(seed + doc_id) hex, ascending; ids continue the set",
+      "split": "50/50 inside the new items per (channel_group, intent), hash order",
+      "source_store": "v4/store-dev",
+      "documents_head": "rfm2d6vzwvmdd.documents",
+      "git_commit": "e1b1c6d526de2a2ba5989a863d150354a26eb367",
+      "git_dirty": true,
+      "freezer": {
+        "module": "stack.evals.freeze",
+        "source_sha256": "39d30f3485b597591c23c39fe0e2406d806c3f1fb7ce2268b6e00e46a56d9f83"
+      },
+      "basis_builder": {
+        "ref": "workflows.triage.ask:document_text",
+        "source_sha256": "173365fbf1f8908dfe54aaa25f79c04a86bb7f294f8b321170cbdb36a7054c12",
+        "caps": {
+          "MAX_ABSTRACT_CHARS": 6000,
+          "MAX_EXCERPT_CHARS": 3000,
+          "MAX_AUTHORS": 12
+        }
+      },
+      "sr_builder": {
+        "module": "stack.evals.sr",
+        "source_sha256": "a9ffb03160d1e4d613af4fdcbdc03c13827c41d9988115e15f5b4f1942f5f3da"
+      },
+      "sources": [
+        {
+          "item_id": "scr-0081",
+          "doc_id": "ext:lesswrong:Hcc9fopx7sRexYhhi",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "anthropics",
+          "topic": "anthropics",
+          "intent": "marginal",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0082",
+          "doc_id": "ext:lesswrong:EpR5yTZMaJkDz4hhs",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "AGI definition measure",
+          "topic": "agi_metrics",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0083",
+          "doc_id": "ext:lesswrong:LubwxZHKKvCivYGzx",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "anthropics",
+          "topic": "neg_anthropic_cosmology",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0084",
+          "doc_id": "szjaytnf4jq5c",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "neg_human_psychology",
+          "intent": "negative",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0085",
+          "doc_id": "ext:lesswrong:9AfCxbAAwrsEA5MWp",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "meditation introspection",
+          "topic": "neg_human_psychology",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0086",
+          "doc_id": "ext:lesswrong:KDMLJEXTWtkZWheXt",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "corrigibility",
+          "topic": "corrigibility",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0087",
+          "doc_id": "ext:lesswrong:XkNXsi6bsxxFaL5FL",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "program equilibrium",
+          "topic": "game_theory",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0088",
+          "doc_id": "ext:lesswrong:GAv4DRGyDHe2orvwB",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "gradual disempowerment",
+          "topic": "gradual_disempowerment",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0089",
+          "doc_id": "sbndagrqazawk",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0090",
+          "doc_id": "sptb7knf7w4g6",
+          "origin": "store",
+          "source": "store",
+          "query": "pluralis|social choice|democratic alignment|aligned to whom|value aggregation",
+          "topic": "pluralistic_alignment",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0091",
+          "doc_id": "s6mzr71781sp5",
+          "origin": "store",
+          "source": "store",
+          "query": "title example named in the brief (in the triage set)",
+          "topic": "agi_metrics",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0092",
+          "doc_id": "ext:lesswrong:RAh4fekdiRhZxb2Kw",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "Newcomb's problem",
+          "topic": "neg_newcomb_humans",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0093",
+          "doc_id": "ext:lesswrong:hLFD6qSN9MmQxKjG5",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "embedded agency",
+          "topic": "agent_foundations",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0094",
+          "doc_id": "saab1khmxt4bz",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0095",
+          "doc_id": "srxk14pqqyyw4",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0096",
+          "doc_id": "szzd5qjwf50as",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0097",
+          "doc_id": "sfs0khsj51xd6",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in",
+          "text_origin": "store"
+        },
+        {
+          "item_id": "scr-0098",
+          "doc_id": "ext:lesswrong:GwGeksTkFQbm6Hbrx",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "meditation introspection",
+          "topic": "neg_human_psychology",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0099",
+          "doc_id": "ext:lesswrong:jkf2YjuH8Z2E7hKBA",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "game theory dating",
+          "topic": "neg_game_theory_humans",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "scr-0100",
+          "doc_id": "ext:lesswrong:5Szy3gfchXkRBEmF5",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "acausal trade",
+          "topic": "acausal_trade",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        }
+      ],
+      "net_calls": {
+        "www.lesswrong.com": 24
+      },
+      "added": [
+        "scr-0081",
+        "scr-0082",
+        "scr-0083",
+        "scr-0084",
+        "scr-0085",
+        "scr-0086",
+        "scr-0087",
+        "scr-0088",
+        "scr-0089",
+        "scr-0090",
+        "scr-0091",
+        "scr-0092",
+        "scr-0093",
+        "scr-0094",
+        "scr-0095",
+        "scr-0096",
+        "scr-0097",
+        "scr-0098",
+        "scr-0099",
+        "scr-0100"
+      ],
+      "items_sha256_before": "8ae54d55bd4bcdbcd43ecba1aac31eacf4ade5ef09fd377550a7fbc531e006b1",
+      "items_sha256_after": "6d4f7737a579953192967e36456aeee7a1551693e1afc202420a6eaa748ba6b2",
+      "encoding_note": "appended rows re-encoded with U+2028/U+2029/U+0085 escaped (values unchanged), same day"
+    }
+  ]
+}

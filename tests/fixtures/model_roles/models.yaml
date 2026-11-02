@@ -1,0 +1,536 @@
+# A frozen subset of configs/models.yaml (v0.5, 2026-10-16): the nodes the model_roles prompt golden test
+# (tests/test_annotate_model_roles.py) scans with, and their ancestors. Frozen so that a vocabulary edit does
+# not move the golden prompts; do not edit (a new golden needs a new fixture).
+version: '0.5'
+meta:
+  schema_version: '0.3'
+  updated: '2026-10-13'
+  makers:
+    amazon: Amazon
+    anthropic: Anthropic
+    deepgram: Deepgram
+    google: Google
+    meta: Meta
+    microsoft: Microsoft
+    openai: OpenAI
+    stanford: Stanford University
+    uw-madison: University of Wisconsin–Madison
+nodes:
+  alpaca:
+    kind: family
+    name: Alpaca
+    gloss: Family of LLaMA-derived instruction-tuned research models (2023). Not the
+      animal
+    maker: stanford
+    notes: Stanford CRFM. LLaMA-derivative instruction finetunes that ignited the
+      spring 2023 open finetune wave. FastChat-T5 (same wave) omitted as too niche
+      per MD.
+  alpaca-7b:
+    kind: model
+    name: Stanford Alpaca
+    parent: alpaca
+    maker: stanford
+    based_on: llama-1-7b
+    lifecycle:
+      released: '2023-03-13'
+    links:
+      announcement: https://crfm.stanford.edu/2023/03/13/alpaca.html
+    params:
+      kind: official
+      total_m: 7000
+      source: official blog (LLaMA-7B finetune)
+    modalities:
+      in:
+      - text
+      out:
+      - text
+    mentions:
+    - stanford alpaca
+    - alpaca 7b
+    weak_mentions:
+    - alpaca
+    confidence: verified
+    checked: '2026-07-30'
+    notes: 52k self-instruct demonstrations from text-davinci-003; under $600 total
+      cost. Non-commercial; weights released as diffs, demo taken down. Bare "alpaca"
+      weak — also names datasets/formats (alpaca format) and the animal. alpaca-lora
+      (popular community reproduction) resolves here.
+  claude:
+    kind: family
+    name: Claude
+    gloss: Family of Anthropic's Claude LLMs, from Claude 1 (2023) to the 2026 Opus
+      5 era
+    maker: anthropic
+    mentions:
+    - claude
+    notes: 'Anthropic''s only model family. Naming order flipped at Claude 4 (May
+      2025): version-first claude-3-5-sonnet -> line-first claude-opus-4-5; matchers
+      must handle both eras. Since Opus 4.6 (Feb 2026) first-party API IDs carry no
+      date suffixes. Texts use cross-line generation names: "Claude 3" (Haiku/Sonnet/Opus,
+      Mar 2024), "Claude 3.5", "Claude 4" (Opus 4 + Sonnet 4), "the 4.5/4.6 family",
+      and colloquial "Claude 5" (the Fable 5 / Mythos 5 / Sonnet 5 / Opus 5 generation
+      of mid-2026 — Anthropic never shipped a model literally named "Claude 5"). Parameters
+      never disclosed for any production Claude. Deployment surfaces that are NOT
+      models: Claude Code, Claude for Enterprise, Claude Gov, Claude in Slack ("Claude
+      Tag"). "-latest" aliases, "-fast" speed-mode endpoints, and "[1m]" long-context
+      markers are name variants of their versions, not separate models.'
+  claude-opus:
+    kind: group
+    level: line
+    name: Claude Opus
+    gloss: Line of Claude's flagship most-capable models, 3 Opus (2024) through Opus
+      5 (2026). Not a musical opus
+    parent: claude
+    mentions:
+    - claude opus
+    weak_mentions:
+    - opus
+    notes: 'Flagship/most-capable tier from Mar 2024 until the Mythos-class tier appeared
+      above it in 2026. Line page: https://www.anthropic.com/claude/opus. Bare "opus"
+      (collision: music) resolves by date — 2024: 3 Opus; mid-2025+: the 4.x series,
+      then Opus 5. Gap: no Opus 3.5/3.7 was ever released (a planned "Claude 3.5 Opus"
+      was announced in June 2024 but never shipped — see non-models.md).'
+  claude-opus-4.7:
+    kind: model
+    name: Claude Opus 4.7
+    parent: claude-opus-4.x
+    maker: anthropic
+    lifecycle:
+      released: '2026-04-16'
+    links:
+      announcement: https://www.anthropic.com/news/claude-opus-4-7
+    params:
+      kind: undisclosed
+      source: never published.
+    modalities:
+      in:
+      - text
+      - image
+      out:
+      - text
+    mentions:
+    - claude opus 4.7
+    - claude 4.7 opus
+    - opus 4.7
+    confidence: verified
+    checked: '2026-07-29'
+    notes: '1M context, 128K output, $5/$25 per MTok. Breaking API changes: extended-thinking
+      budget_tokens and sampling params (temperature/top_p/top_k) removed (400); new
+      tokenizer (~1–1.35x more tokens vs Opus 4.6); thinking text omitted by default
+      ("summarized" display opt-in); introduced xhigh effort, task budgets (beta),
+      and high-resolution vision (2576px long edge). A claude-opus-4-7-fast fast-mode
+      ID was removed (now errors) — not a separate model.'
+    uncertainties:
+    - minor release-date discrepancy (Apr 16 vs 17) across sources, likely timezone
+  claude-opus-4.x:
+    kind: group
+    level: series
+    name: Claude Opus 4.x
+    gloss: Release series of six flagship models, Opus 4 through 4.8 (2025–2026),
+      not one model
+    parent: claude-opus
+    mentions:
+    - claude opus 4.x
+    - claude opus 4 series
+    - opus 4 series
+    mentions_verbatim:
+    - opus 4.x
+    notes: Densest release cadence in Claude history — six versions May 2025 -> May
+      2026 (4, 4.1, 4.5, 4.6, 4.7, 4.8; 4.2–4.4 and 4.9 skipped). Bare "Opus 4" is
+      the May-2025 model, not this series. Opus 4.5/4.6/4.7/4.8 share one combined
+      API rate-limit bucket (Opus 5 is separate).
+  deepgram-nova:
+    kind: family
+    name: Deepgram Nova
+    gloss: Family of closed streaming-first speech-to-text (ASR) models, Nova-1 onward
+      (2023–present). Not Amazon Nova
+    maker: deepgram
+    mentions:
+    - deepgram nova
+    - deepgram
+    weak_mentions:
+    - nova 1
+    notes: 'Commercial streaming-first ASR models; brief per task. Docs: developers.deepgram.com/docs/models-languages-overview.
+      Original Nova / Nova-1 (2023-04, memory) folded into the family rather than
+      a full entry. Bare "nova" carried no node as of 2026-08-01 (dropped, see comment
+      above); "nova 1"/"nova 2" collide with Amazon Nova generations, hence weak on
+      the respective nodes. Section scope caveat: non-text generative section is a
+      trim candidate — converted in full, filtering happens at load time.'
+  gemini:
+    kind: family
+    name: Gemini
+    gloss: Family of natively-multimodal flagship chat/agentic LLMs (2023–present).
+      Also the consumer app name
+    maker: google
+    mentions:
+    - gemini
+    - gemini exp
+    weak_mentions:
+    - gemini pro
+    - gemini flash
+    - gemini flash lite
+    - flash lite
+    notes: 'Google DeepMind''s flagship natively-multimodal family since December
+      2023. "Gemini" is also the consumer product/app name (Bard renamed Gemini Feb
+      2024), so bare "Gemini" is ambiguous between product and model. Naming: tier
+      names (Ultra/Pro/Flash/Flash-Lite/Nano) crossed with generation numbers; Vertex/AI
+      Studio IDs are gemini-<gen>-<tier> with -preview/-exp/dated suffixes. Cross-generation
+      tier strings without a version ("gemini pro", "gemini flash", "flash lite")
+      are weak family-level patterns — they colloquially mean the current Pro/Flash
+      tier of the text''s date. Traps: "Gemini Nano" (on-device tier) is unrelated
+      to "Nano Banana" (image models); there is no plain "Gemini 3.1 Flash" text model;
+      "Gemini Spark" (May 2026) is a 24/7 agent product on 3.5 Flash, not a model;
+      robotics models (gemini-robotics-er-1.6-preview) out of scope; "Gemini 4" teased
+      in press, unreleased as of 2026-07-29.'
+  gpt:
+    kind: family
+    name: GPT
+    gloss: Family of OpenAI's GPT text/multimodal LLMs, GPT-1 (2018) through the GPT-5
+      era
+    maker: openai
+    mentions:
+    - generative pre trained transformer
+    weak_mentions:
+    - gpt
+    - chat gpt
+    notes: 'OpenAI''s main text/multimodal LLM family. Bare "GPT-4"/"GPT-5" in text
+      usually means the flagship version of that generation; "GPT" alone is generic
+      (and in 2018–2019 papers meant GPT-1). "ChatGPT" is a product, not a model:
+      at launch (2022-11-30) it ran a GPT-3.5-class model; later mentions may refer
+      to gpt-3.5-turbo, GPT-4, GPT-4o, or GPT-5.x depending on date. As of 2026-08-01
+      bare "chatgpt" surfaces here as a weak, deliberately VERSION-LESS family mention
+      (it was previously unmatched); "chatgpt-<version>" compounds carry patterns
+      on the respective models and out-span it. Azure OpenAI reuses OpenAI IDs except
+      gpt-35-turbo (no dot); region/deployment suffixes are not separate models.'
+  gpt-4:
+    kind: model
+    name: GPT-4
+    parent: gpt-4-2023
+    maker: openai
+    lifecycle:
+      released: '2023-03-14'
+      deprecated: '2026-04-22'
+      retired: '2026-10-23'
+    links:
+      paper: https://arxiv.org/abs/2303.08774
+    params:
+      kind: estimate
+      total_m: 1760000
+      source: widely-circulated SemiAnalysis/industry leak (2023, ~8x220B MoE experts);
+        never confirmed by OpenAI.
+    modalities:
+      in:
+      - text
+      - image
+      out:
+      - text
+    mentions:
+    - gpt 4
+    - gpt 4v
+    - gpt 4 vision
+    - chat gpt 4
+    confidence: verified
+    checked: '2026-07-29'
+    notes: '8K context (32K variant). Image input ("GPT-4V") shipped Sept 2023. Passed
+      simulated bar exam top-10% claim. System card included in the technical report.
+      Retired from ChatGPT April 2025. API lifecycle (deprecations page, checked 2026-07-29):
+      gpt-4-0314 shut down 2024-06-13; gpt-4-32k shut down 2025-06-06 (replacement
+      gpt-4o); gpt-4 / gpt-4-0613 deprecated 2026-04-22, shutdown 2026-10-23 (scheduled),
+      replacement gpt-5.6-sol.'
+    uncertainties:
+    - parameter estimate is leak-based; MoE architecture never officially confirmed.
+  gpt-4-2023:
+    kind: group
+    level: generation
+    name: GPT-4 (2023 generation)
+    gloss: The 2023 flagship generation — GPT-4 and GPT-4 Turbo only; excludes GPT-4o
+      and GPT-4.1
+    parent: gpt
+    notes: 'The 2023 flagship generation — members are GPT-4 and GPT-4 Turbo only;
+      GPT-4o, GPT-4.1, and GPT-4.5 are separate siblings under the family (audit §1:
+      "GPT-4.x" would wrongly capture them). No patterns: bare "gpt-4" resolves to
+      the model. "GPT-4" in text may loosely cover Turbo/4o-era ChatGPT as well.'
+  gpt-4.5:
+    kind: model
+    name: GPT-4.5
+    parent: gpt
+    maker: openai
+    lifecycle:
+      preview: '2025-02-27'
+      deprecated: '2025-04-14'
+      retired: '2025-07-14'
+    links:
+      announcement: https://openai.com/index/introducing-gpt-4-5/
+    params:
+      kind: undisclosed
+      source: OpenAI called it its "largest model", likely several trillion total
+        (MoE); no credible numeric public estimate.
+    modalities:
+      in:
+      - text
+      - image
+      out:
+      - text
+    mentions:
+    - gpt 4.5
+    - chat gpt 4.5
+    weak_mentions:
+    - orion
+    confidence: verified
+    checked: '2026-07-29'
+    notes: 'Codename "Orion". Scaled pre-training, non-reasoning; noted for "EQ"/writing.
+      Research preview only (API gpt-4.5-preview): deprecation announced 2025-04-14,
+      removed 2025-07-14 in favor of GPT-4.1 — one of the fastest flagship deprecations.
+      Sits directly under the family (outside the 2023 generation; audit fix #6).'
+    uncertainties:
+    - parameter scale is inference from "largest model" statements only.
+  gpt-4o:
+    kind: model
+    name: GPT-4o
+    parent: gpt-4o-series
+    maker: openai
+    lifecycle:
+      released: '2024-05-13'
+    links:
+      announcement: https://openai.com/index/hello-gpt-4o/
+    params:
+      kind: estimate
+      total_m: 200000
+      source: estimate from a Microsoft research paper (MEDEC, Dec 2024); unconfirmed
+        by OpenAI.
+    modalities:
+      in:
+      - text
+      - image
+      - audio
+      out:
+      - text
+      - audio
+    mentions:
+    - gpt 4o
+    - chat gpt 4o
+    - 4o
+    confidence: verified
+    checked: '2026-07-29'
+    notes: 'First natively multimodal flagship; free-tier ChatGPT default from launch;
+      128K context. Image output demoed; shipped later as GPT Image. The April 2025
+      sycophancy incident (rolled-back chatgpt-4o-latest update) is a notable behavioral
+      episode. Retirement from ChatGPT announced 2026 (https://openai.com/index/retiring-gpt-4o-and-older-models/);
+      its removal in Aug 2025 caused user backlash and brief reinstatement. API lifecycle:
+      chatgpt-4o-latest shut down 2026-02-17 (replacement gpt-5.1-chat-latest); the
+      original 2024-05-13 snapshot deprecated in the 2026-04-22 legacy batch, shutdown
+      2026-10-23; the 2024-08-06 snapshot NOT listed as deprecated as of 2026-07-29
+      (a report claiming otherwise was rejected). GPT-4o system card exists on openai.com;
+      URL not captured.'
+    uncertainties:
+    - parameter estimate unofficial.
+  gpt-4o-series:
+    kind: group
+    level: series
+    name: GPT-4o (series)
+    gloss: Release series pairing GPT-4o with GPT-4o mini, natively multimodal ("omni"),
+      2024
+    parent: gpt
+    notes: 'Really a size ladder {GPT-4o, GPT-4o mini} (audit §1 row 2), not a version
+      series. "o" = omni, natively multimodal generation. Also spawned realtime/audio/
+      transcribe API variants (under the Realtime & audio family). No patterns: bare
+      "gpt-4o" resolves to the model.'
+  gpt-5.1:
+    kind: model
+    name: GPT-5.1
+    parent: gpt-5.1-gen
+    maker: openai
+    lifecycle:
+      released: '2025-11-12'
+    links:
+      announcement: https://openai.com/index/gpt-5-1/
+      model_card: https://developers.openai.com/api/docs/models/gpt-5.1
+    params:
+      kind: undisclosed
+    modalities:
+      in:
+      - text
+      - image
+      out:
+      - text
+    mentions:
+    - gpt 5.1
+    - chat gpt 5.1
+    confidence: verified
+    checked: '2026-07-29'
+    notes: '"Warmer, more conversational" update with adaptive thinking time and 8
+      personality presets (ChatGPT Instant+Thinking 2025-11-12; API 2025-11-13; GPT-5.1
+      Pro 2025-11-19, replacing GPT-5 Pro). In API: gpt-5.1 = Thinking model, gpt-5.1-chat-latest
+      = Instant. Covers ChatGPT variants Instant/Thinking/Pro as modes of this version
+      (folded; resolve here as extensions). Developer post: https://openai.com/index/gpt-5-1-for-developers/
+      ; system-card addendum: https://openai.com/index/gpt-5-system-card-addendum-gpt-5-1/
+      .'
+    uncertainties:
+    - whether Instant and Thinking are distinct trained models or configurations is
+      not public.
+  gpt-5.1-gen:
+    kind: group
+    level: generation
+    name: GPT-5.1 (generation)
+    gloss: 'Generation released Nov–Dec 2025: GPT-5.1 plus Codex, Codex-Mini, and
+      Codex-Max variants'
+    parent: gpt-5.x
+    notes: 'Nov–Dec 2025 wave: GPT-5.1 and the Codex trio (Codex, Codex-Mini, Codex-Max).
+      No patterns: bare "gpt-5.1" belongs to the model.'
+  gpt-5.x:
+    kind: group
+    level: line
+    name: GPT-5.x
+    gloss: Line of unified reasoning+chat GPT-5 generations, 5.0 through 5.6 (2025–2026).
+      Not one model
+    parent: gpt
+    mentions:
+    - gpt 5 series
+    - gpt 5.x
+    notes: Unified reasoning+chat generation, Aug 2025 onward, with unusually fast
+      point releases (5.1 Nov 2025, 5.2 Dec 2025, 5.3 Feb–Mar 2026, 5.4 Mar 2026,
+      5.5 Apr 2026, 5.6 Jul 2026) driven by competition with Google Gemini and Anthropic.
+      ChatGPT surfaces "Instant/Thinking/Pro" modes per version; the API generally
+      exposes the Thinking model as gpt-5.x and Instant as gpt-5.x-chat-latest. All
+      parameters undisclosed, no credible public estimates. Bare "gpt-5" resolves
+      to the Aug-2025 model ("GPT-5 era" generation-reading appears in 2026 texts).
+  llama:
+    kind: family
+    name: Llama
+    gloss: Family of open-weight Llama text/multimodal LLMs, LLaMA 1 (2023) through
+      Llama 4 (2025)
+    maker: meta
+    mentions:
+    - llama
+    notes: Meta's open-weight LLM family, 2023–2025. Capitalization "LLaMA" applies
+      to generation 1 only; "Llama" thereafter. Safety companion models (Llama Guard
+      1–3, Prompt Guard, Code Shield) deliberately have no entries. Superseded in
+      Meta's roadmap by the proprietary Muse series (April 2026). Bare "Llama N" without
+      a size refers to the generation series nodes.
+  llama-3.1:
+    kind: group
+    level: series
+    name: Llama 3.1
+    gloss: Release series of open-weight Llama 3.1 text models with 128k context,
+      8B-405B (2024)
+    parent: llama
+    maker: meta
+    mentions:
+    - llama 3.1
+    notes: Released 2024-07-23; 128k context, multilingual, tool-use focus.
+  llama-3.1-70b:
+    kind: model
+    parent: llama-3.1
+    maker: meta
+    lifecycle:
+      released: '2024-07-23'
+    links:
+      announcement: https://ai.meta.com/blog/meta-llama-3-1/
+    modalities:
+      in:
+      - text
+      out:
+      - text
+    confidence: verified
+    checked: '2026-07-30'
+    name: Llama 3.1 70B
+    params:
+      kind: official
+      total_m: 70600
+      source: Wikipedia (70.6B)
+    mentions:
+    - llama 3.1 70b
+    notes: Widely deployed workhorse; backbone for many derivatives (e.g. NVIDIA Nemotron
+      70B).
+  llava:
+    kind: family
+    name: LLaVA
+    gloss: Family of visual-instruction-tuned open vision-language models, the standard
+      open VLM baseline (2023 onward)
+    maker:
+    - uw-madison
+    - microsoft
+    mentions:
+    - llava
+    notes: '"Visual Instruction Tuning" (Liu, Li, Wu, Lee). The reference open VLM
+      architecture — a CLIP vision encoder projected into a chat LLM — and the backbone
+      or baseline of most open multimodal-safety work. Bare "llava" deliberately resolves
+      at family level: unversioned size strings ("llava-7b", "llava-13b") are genuinely
+      ambiguous between v1 and v1.5.'
+  llava-1.5:
+    kind: group
+    level: series
+    name: LLaVA-1.5
+    gloss: Release series of the 7B and 13B LLaVA-1.5 vision-language models (2023).
+      Not one model
+    parent: llava
+    mentions:
+    - llava 1.5
+    - llava v1.5
+    notes: The most-cited LLaVA generation and the one our corpus names (HF liuhaotian/llava-v1.5-7b).
+      Both the "1.5" and the "v1.5" surface forms need patterns — the compiler's separator
+      class does not cross the "v".
+  llava-1.5-7b:
+    kind: model
+    name: LLaVA-1.5 7B
+    gloss: 7B open-weights vision-language chat model, the most common open VLM research
+      baseline (2023)
+    parent: llava-1.5
+    maker:
+    - uw-madison
+    - microsoft
+    based_on: vicuna-7b
+    lifecycle:
+      released: 2023-10
+    links:
+      paper: https://arxiv.org/abs/2310.03744
+      model_card: https://huggingface.co/liuhaotian/llava-v1.5-7b
+    params:
+      kind: official
+      total_m: 7000
+      source: official release naming (Vicuna-7B v1.5 backbone + CLIP ViT-L-336px)
+    modalities:
+      in:
+      - text
+      - image
+      out:
+      - text
+    mentions:
+    - llava 1.5 7b
+    - llava v1.5 7b
+    confidence: verified
+    checked: '2026-08-02'
+    notes: '"Improved Baselines with Visual Instruction Tuning" — MLP projector, academic
+      data mixture, 336px CLIP. The exact form seen in our corpus.'
+    uncertainties:
+    - day-level release date unconfirmed (arXiv 2310.03744, October 2023)
+  nova:
+    kind: family
+    name: Amazon Nova
+    gloss: Family of Amazon's frontier multimodal LLMs, launched December 2024. Distinct
+      from Deepgram Nova
+    maker: amazon
+    mentions:
+    - amazon nova
+    notes: Amazon's frontier-model family, launched at re:Invent 2024. Bare "nova"
+      carries no pattern as of 2026-08-01 (dropped, see comment above; it was a cross-family
+      collision with Deepgram Nova, section 8, and swamped by the personal name "Nova").
+      Nova Canvas (image gen) and Nova Reel (video gen) excluded as non-LLM. July
+      2026 press reports Amazon moving Nova Premier and some variants to maintenance
+      status while betting on a new frontier model for re:Invent 2026 (single source,
+      flag).
+  nova-1:
+    kind: group
+    level: generation
+    name: Nova 1
+    gloss: 'Generation launched at re:Invent 2024: Micro, Lite, Pro, later Premier
+      and Sonic'
+    parent: nova
+    mentions:
+    - amazon nova 1
+    - amazon nova 1.0
+    weak_mentions:
+    - nova 1
+    - nova 1.0
+    notes: re:Invent 2024 generation (Micro/Lite/Pro, later Premier and Sonic); price-performance
+      positioning; materialized from the MD's phantom "Nova 1" path level.

@@ -1,0 +1,11 @@
+slug	name	v08_name	kind	parent	origin	definition	scope_change	aliases_synonym	aliases_instance	aliases_legacy	absorbed	ml_methods	risk_note	source_papers	note	status
+rlhf	RLHF		intervention		v0.8	Aligns a model to preferences supplied by humans, with any optimiser.		reinforcement learning from human feedback				rl,reward-modeling	misaligned behaviour			final
+constitutional-ai	Constitutional AI (CAI)		intervention	policy-alignment	v0.8	Trains with AI feedback judged against a written constitution.				Constitutional-AI feedback	Direct Principle Feedback [too-specific instance]					final
+machine-unlearning	Machine unlearning		intervention		v0.8	Removes targeted knowledge or capabilities from a trained model.		unlearning methods	RMU | NPO			fine-tuning				final
+llm-based-safety-classifier	Guard models	LLM-based safety classifier	monitoring		v0.8	"Scores ""unsafe"" content with a dedicated safety LLM."		safeguard model	Llama Guard | ShieldGemma	LLM-based safety classifier		classifier-training			"renamed display name (""Guard models"")"	final
+chain-of-thought-monitoring	Chain-of-thought monitoring		monitoring	runtime-monitoring	v0.8	Reads a model's reasoning trace to flag unsafe intent.		CoT monitoring								final
+dangerous-capability-evaluation	Dangerous-capability evaluation		assessment		v0.8	Measures capabilities that could enable severe harm.										final
+dangerous-capability-evaluation.cbrn	CBRN / high-risk-domain evaluation		assessment	dangerous-capability-evaluation	new-2026-10	Evaluates chemical, biological, radiological and nuclear uplift.										final
+keyword-blocklist-filter	Keyword / blocklist filter		intervention		v0.8	Blocks inputs or outputs that contain listed terms.										final
+dp-training	Differentially private training		intervention		v0.8	Trains under a stated differential-privacy guarantee.		DP training	DP-SGD	Differential-privacy training (DP-SGD)				Abadi et al. 2016		provisional
+anomaly-detection	Activation-space anomaly detection (MAD / OOD)		monitoring	runtime-monitoring	new-2026-10	Flags inputs whose activations are out of distribution.										final

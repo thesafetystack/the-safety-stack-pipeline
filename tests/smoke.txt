@@ -1,0 +1,56 @@
+# Dev-tier smoke set (A11, D490): one line per whole test file or node id, run by
+# `tools/devtest.py --smoke` (and by default with the touched paths' tests) under -m "not slow and not tools".
+# pytest errors on a node id that no longer exists, and tests/test_devtest.py checks every line, so the list
+# cannot rot silently. Keep it near one minute serial; add a node id rather than a whole heavy file.
+
+# identity keys, ids, digests, canon, quotes, union-find
+tests/test_urls.py
+tests/test_ids.py
+tests/test_hashes.py
+tests/test_canon.py
+tests/test_scholarly_records.py
+tests/test_anchor.py
+tests/test_gather_union_scale.py
+# collector loop verdicts, sampling, in-band mint
+tests/test_collect_robustness.py
+tests/test_collect_sampling.py
+tests/test_collect_inband.py
+# fetch ladders, arXiv sweep, sniff/classify, convert ladder, text quality
+tests/test_fetch_http.py
+tests/test_fetch_arxiv.py
+tests/test_fetch_convert_contract.py
+tests/test_fetch_oa.py
+tests/test_convert.py
+tests/test_text_quality.py
+# LLM client, retries, batch driver, the production screen pin, overrides rules, progress
+tests/test_llm.py
+tests/test_llm_truncation.py
+tests/test_llm_batch.py
+tests/test_screen_v12.py
+tests/test_overrides.py
+tests/test_progress.py
+# S3 names / Remote / resolve_store; the runner end to end on echo_test, publish rule
+tests/test_store_remote.py
+tests/test_stage_runner.py
+# main paths, one node each
+tests/test_store_parquet.py::test_family_round_trip
+tests/test_store_parquet.py::test_s_check_refuses_its_fixture
+tests/test_store_parquet.py::test_header_must_match_file_name
+tests/test_store_chain.py::test_names_and_references
+tests/test_store_chain.py::test_two_writers
+tests/test_store_chain.py::test_name_order
+tests/test_store_index.py::test_liveness_from_markers
+tests/test_checks_fixtures.py::test_clean_store_is_green
+tests/test_acquire_core.py::test_attempts_backoff_cap
+tests/test_acquire_core.py::test_one_fetch_per_paper_identifier
+tests/test_acquire_core.py::test_newest_first_order
+tests/test_acquire_convert.py::test_convert_max_rows_is_independent_of_the_fetch_cap
+tests/test_gather_identity.py::test_doi_shared_in_a_group_merges
+tests/test_gather_identity.py::test_merge_override_retires_the_absorbed_id
+tests/test_triage_rules.py::test_scope_table_over_synthetic_rows
+tests/test_llm_ledger.py::test_cap_refuses_before_the_request
+tests/test_llm_ledger.py::test_every_attempt_is_reserved_and_reconciled
+tests/test_batch_stages.py::test_screen_two_tiers_in_two_passes_give_the_sync_rows
+tests/test_cli_contact.py
+# the dev tier's own map and selection
+tests/test_devtest.py

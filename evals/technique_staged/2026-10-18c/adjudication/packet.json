@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "disputes2.py": {
+      "sha256": "fa9112d944cb7996e91f907aba4976e4610300f6e9f7f5d2f0cedad869de856b",
+      "staged_sha256": "16f2ba0df65a760e6b4ee4d62fea34a7282a0f11f73ec9ad10666f894854debe"
+    },
+    "parse_adj2.py": {
+      "sha256": "3045bd20dd53e87375b8ca04434407ec956e5302e0bde1570d608d4e7e55e128",
+      "staged_sha256": "3045bd20dd53e87375b8ca04434407ec956e5302e0bde1570d608d4e7e55e128"
+    },
+    "verify_apply2.py": {
+      "sha256": "9ad0366824ea4e2efd6ce31bd18d41a5f62aedab513841a869d4f1e8486df32f",
+      "staged_sha256": "9ad0366824ea4e2efd6ce31bd18d41a5f62aedab513841a869d4f1e8486df32f"
+    }
+  },
+  "round2_prompt": "prompts/VERIFY-ADJ.md of 2026-10-18b with each batch's items for {{ITEMS}}"
+}

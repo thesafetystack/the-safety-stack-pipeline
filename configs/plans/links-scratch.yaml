@@ -1,0 +1,104 @@
+# links-scratch: the link-collection scratch store v4/store-links-scratch/ (round 4, track U+L; gitignored).
+# dev-v2-m4's shape (prompts, gate, fold, versions) for the newsletter feeds and the manual sources:
+#   * collectors: collect.feeds (zvi_substack, import_ai, paradigm3_news; since 2026-09-12) and collect.manual
+#     (overrides/manual_sources.yaml) only, no window collectors; the paper lookups over the documents head;
+#     no affiliation stage. collect.links (track L2, D222-D225) after collect.manual: the newsletters' and flagged
+#     manual sources' links, chosen by the link-select-v1 selector, as links_* rows the lookups and gather see in the
+#     same build. collect.x-lookup (hydrating the links_social tweets) is not in this plan yet (X API spend).
+#   * gate: the source rules newsletter_posts, manual_accept and selected_links (stack/rules.py, track L) before dev-v2-m4's
+#     lab/org/Zvi rules, then the question, then the url sql clause.
+#   * acquire.wants: dev-v2-m4's plus the feed, manual and link channels.
+plan: links-scratch
+schema_version: 2
+series: links-scratch                     # default series of every line's in/out (configs/plans/README.md)
+prompts:
+  triage.safety-relevance-v3: {name: safety-relevance-v3, model: openai/gpt-6-luna}
+  annotate.screen: {name: screen-v11, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-5.6-terra}
+  collect.links: {name: link-select-v1, model: openai/gpt-6-luna}
+gate:
+  screen:
+    - {rule: newsletter_posts}
+    - {rule: manual_accept}
+    - {rule: selected_links}
+    - {rule: frontier_lab_posts}
+    - {rule: safety_org_posts}
+    - {rule: zvi_posts}
+    - {question: safety_relevance, prompt: triage.safety-relevance-v3, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  convert: {config: pymupdf4llm-v1}
+  wants:                                   # keyed by channel id of configs/channels.yaml (D11)
+    zvi_substack: [post]                   # feed items carry the body in-band (role post): no fetch
+    import_ai: [post]
+    paradigm3_news: [page]                 # listing-only feed: acquire fetches the page
+    manual_url: [page]
+    manual_paper: [full_text]
+    manual_forum: [post]
+    # manual_social: none; a tweet's text comes from collect.x-lookup (track X), not acquire
+    links_url: [page]                      # link targets collect.links selected (track L2)
+    links_paper: [full_text]
+    links_forum: [post]
+    # links_social: none, as manual_social
+    arxiv: [full_text]
+    openalex: [full_text, xml]
+    semantic_scholar: [full_text]
+    europepmc: [full_text, xml]
+    lesswrong: [post]
+    alignmentforum: [post]
+    anthropic_alignment_blog: [page]
+    openai_blog: [page]
+    openai_alignment_blog: [page]
+    transformer_circuits: [page]
+    google_research: [page]
+    mistral_blog: [page]
+    deepmind_blog: [page]
+    miri_blog: [page]
+    metr_blog: [page]
+    transluce_blog: [page]
+    goodfire_blog: [page]
+    uk_aisi_blog: [page]
+    redwood_blog: [page]
+    apollo_blog: [page]
+    arc_blog: [page]
+    epoch_blog: [page]
+    forethought_blog: [page]
+    far_ai_blog: [page]
+    timaeus_blog: [page]
+    clr_blog: [page]
+    softmax_blog: [page]
+    meaning_alignment_blog: [page]
+    cooperative_ai_blog: [page]
+    anthropic_cards: [page]
+    openai_cards: [page]
+    deepmind_cards: [page]
+    meta_cards: [page]
+    xai_cards: [page]
+    deepseek_cards: [page]
+    qwen_cards: [page]
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: true
+recovery: {dead_run_charge: false}
+stages:
+  - {stage: collect.feeds, out: {kind: part}, prior: [sources, coverage], options: {since: "2026-09-12"}}
+  - {stage: collect.manual, out: {kind: part}, prior: [sources, coverage], miss_cap: 1}   # a revoked entry is retracted at once
+  - {stage: collect.links, out: {kind: part}, prior: [sources, coverage], miss_cap: 1, budget: {max_usd: 0.3},
+     options: {since: "2026-09-12"}}                                      # miss_cap 1: an unselected target is retracted
+  - {stage: collect.openalex-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3,
+     options: {max_records: 200}}
+  - {stage: collect.s2-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3,
+     options: {max_records: 50}}
+  - {stage: gather}
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 0.2}, options: {max_rows: 300}}   # L3 run caps (round 4)
+  - {stage: acquire, out: {kind: part}, budget: {max_minutes: 20}, repeat: {until: scope_complete, max_runs: 3},
+     options: {max_rows: 250}}                  # L3: 250 rows a run; max_runs 3 (pass 2 ended incomplete at 1)
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 0.2}, options: {max_rows: 150}}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents]

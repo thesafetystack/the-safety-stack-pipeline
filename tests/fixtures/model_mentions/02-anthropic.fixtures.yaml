@@ -1,0 +1,404 @@
+# Fixtures for _build/02-anthropic.yaml — every name-variant string from the MD
+# entries (verbatim, annotations stripped) plus canonical display names.
+# Skipped: -fast endpoint aliases (excluded things), "eu.anthropic.…"/"apac.anthropic.…"/
+# "global.anthropic.…" ellipsis fragments (not full strings in the MD), and the display
+# name "Claude (numbered line)" (structural group; texts never name it).
+# Bare "claude" (listed as a Claude 1 variant) maps to the family per the audit's
+# typical-reading table; bare "mythos" (listed on Preview and Mythos 5) maps to the line.
+
+# family
+- { text: "Claude", node: claude }
+- { text: "claude", node: claude }
+- { text: "anthropic claude", node: claude }
+- { text: "claude ai", node: claude }
+- { text: "claude.ai", node: claude }
+
+# numbered line + Claude 2.x series
+- { text: "claude 1", node: claude-1 }
+- { text: "claude 2", node: claude-2 }
+- { text: "claude v1", node: claude-1 }
+- { text: "claude-v2", node: claude-2 }
+- { text: "claude 2.x", node: claude-2.x }
+- { text: "Claude 2.x", node: claude-2.x }
+
+# Haiku line + series
+- { text: "Claude Haiku", node: claude-haiku }
+- { text: "haiku", node: claude-haiku }
+- { text: "claude haiku", node: claude-haiku }
+- { text: "Claude Haiku 3.x", node: claude-haiku-3.x }
+
+# Sonnet line + series
+- { text: "Claude Sonnet", node: claude-sonnet }
+- { text: "sonnet", node: claude-sonnet }
+- { text: "claude sonnet", node: claude-sonnet }
+- { text: "Claude Sonnet 3.x", node: claude-sonnet-3.x }
+- { text: "Claude Sonnet 4.x", node: claude-sonnet-4.x }
+- { text: "sonnet 4.x", node: claude-sonnet-4.x }
+- { text: "sonnet 4", node: claude-sonnet-4 }
+
+# Opus line + series
+- { text: "Claude Opus", node: claude-opus }
+- { text: "opus", node: claude-opus }
+- { text: "claude opus", node: claude-opus }
+- { text: "Claude Opus 4.x", node: claude-opus-4.x }
+- { text: "opus 4.x", node: claude-opus-4.x }
+- { text: "claude opus 4 series", node: claude-opus-4.x }
+- { text: "opus 4", node: claude-opus-4 }
+
+# Mythos line
+- { text: "Claude Mythos", node: claude-mythos }
+- { text: "mythos", node: claude-mythos }
+- { text: "claude mythos", node: claude-mythos }
+- { text: "mythos-class", node: claude-mythos }
+
+# Claude 1
+- { text: "Claude 1", node: claude-1 }
+- { text: "claude-1", node: claude-1 }
+- { text: "claude-v1", node: claude-1 }
+- { text: "claude-1.0", node: claude-1 }
+- { text: "claude-1.1", node: claude-1 }
+- { text: "claude-1.2", node: claude-1 }
+- { text: "claude-1.3", node: claude-1 }
+- { text: "claude-v1.3", node: claude-1 }
+- { text: "claude-v1-100k", node: claude-1 }
+- { text: "claude-1.3-100k", node: claude-1 }
+- { text: "anthropic.claude-v1", node: claude-1 }
+- { text: "anthropic/claude-1", node: claude-1 }
+- { text: "anthropic/claude-1.2", node: claude-1 }
+
+# Claude Instant
+- { text: "Claude Instant", node: claude-instant }
+- { text: "claude instant", node: claude-instant }
+- { text: "claude-instant", node: claude-instant }
+- { text: "claude-instant-1", node: claude-instant }
+- { text: "claude-instant-v1", node: claude-instant }
+- { text: "claude-instant-1.0", node: claude-instant }
+- { text: "claude-instant-1.1", node: claude-instant }
+- { text: "claude-instant-1.2", node: claude-instant }
+- { text: "claude-instant-v1-100k", node: claude-instant }
+- { text: "claude-instant-1.1-100k", node: claude-instant }
+- { text: "anthropic.claude-instant-v1", node: claude-instant }
+- { text: "anthropic/claude-instant-1", node: claude-instant }
+- { text: "anthropic/claude-instant-1.2", node: claude-instant }
+
+# Claude 2
+- { text: "Claude 2", node: claude-2 }
+- { text: "claude-2", node: claude-2 }
+- { text: "claude-2.0", node: claude-2 }
+- { text: "claude2", node: claude-2 }
+- { text: "anthropic.claude-v2", node: claude-2 }
+- { text: "anthropic/claude-2", node: claude-2 }
+- { text: "anthropic/claude-2.0", node: claude-2 }
+
+# Claude 2.1
+- { text: "Claude 2.1", node: claude-2.1 }
+- { text: "claude 2.1", node: claude-2.1 }
+- { text: "claude-2.1", node: claude-2.1 }
+- { text: "claude-2-1", node: claude-2.1 }
+- { text: "anthropic.claude-v2:1", node: claude-2.1 }
+- { text: "anthropic/claude-2.1", node: claude-2.1 }
+
+# Claude 3 Haiku
+- { text: "Claude 3 Haiku", node: claude-3-haiku }
+- { text: "claude 3 haiku", node: claude-3-haiku }
+- { text: "claude-3-haiku", node: claude-3-haiku }
+- { text: "claude-3-haiku-20240307", node: claude-3-haiku }
+- { text: "haiku 3", node: claude-3-haiku }
+- { text: "claude haiku 3", node: claude-3-haiku }
+- { text: "anthropic.claude-3-haiku-20240307-v1:0", node: claude-3-haiku }
+- { text: "us.anthropic.claude-3-haiku-20240307-v1:0", node: claude-3-haiku }
+- { text: "claude-3-haiku@20240307", node: claude-3-haiku }
+- { text: "anthropic/claude-3-haiku", node: claude-3-haiku }
+- { text: "anthropic/claude-3-haiku-20240307", node: claude-3-haiku }
+
+# Claude 3.5 Haiku
+- { text: "Claude 3.5 Haiku", node: claude-3.5-haiku }
+- { text: "claude 3.5 haiku", node: claude-3.5-haiku }
+- { text: "claude-3-5-haiku", node: claude-3.5-haiku }
+- { text: "claude-3-5-haiku-20241022", node: claude-3.5-haiku }
+- { text: "claude-3-5-haiku-latest", node: claude-3.5-haiku }
+- { text: "claude-3.5-haiku", node: claude-3.5-haiku }
+- { text: "haiku 3.5", node: claude-3.5-haiku }
+- { text: "anthropic.claude-3-5-haiku-20241022-v1:0", node: claude-3.5-haiku }
+- { text: "us.anthropic.claude-3-5-haiku-20241022-v1:0", node: claude-3.5-haiku }
+- { text: "claude-3-5-haiku@20241022", node: claude-3.5-haiku }
+- { text: "anthropic/claude-3.5-haiku", node: claude-3.5-haiku }
+
+# Claude Haiku 4.5
+- { text: "Claude Haiku 4.5", node: claude-haiku-4.5 }
+- { text: "claude haiku 4.5", node: claude-haiku-4.5 }
+- { text: "claude-haiku-4-5", node: claude-haiku-4.5 }
+- { text: "claude-haiku-4-5-20251001", node: claude-haiku-4.5 }
+- { text: "claude-haiku-4.5", node: claude-haiku-4.5 }
+- { text: "claude 4.5 haiku", node: claude-haiku-4.5 }
+- { text: "haiku 4.5", node: claude-haiku-4.5 }
+- { text: "anthropic.claude-haiku-4-5-20251001-v1:0", node: claude-haiku-4.5 }
+- { text: "us.anthropic.claude-haiku-4-5-20251001-v1:0", node: claude-haiku-4.5 }
+- { text: "claude-haiku-4-5@20251001", node: claude-haiku-4.5 }
+- { text: "anthropic/claude-haiku-4.5", node: claude-haiku-4.5 }
+
+# Claude 3 Sonnet
+- { text: "Claude 3 Sonnet", node: claude-3-sonnet }
+- { text: "claude 3 sonnet", node: claude-3-sonnet }
+- { text: "claude-3-sonnet", node: claude-3-sonnet }
+- { text: "claude-3-sonnet-20240229", node: claude-3-sonnet }
+- { text: "sonnet 3", node: claude-3-sonnet }
+- { text: "claude-3.0-sonnet", node: claude-3-sonnet }
+- { text: "anthropic.claude-3-sonnet-20240229-v1:0", node: claude-3-sonnet }
+- { text: "us.anthropic.claude-3-sonnet-20240229-v1:0", node: claude-3-sonnet }
+- { text: "claude-3-sonnet@20240229", node: claude-3-sonnet }
+- { text: "anthropic/claude-3-sonnet", node: claude-3-sonnet }
+
+# Claude 3.5 Sonnet
+- { text: "Claude 3.5 Sonnet", node: claude-3.5-sonnet }
+- { text: "claude 3.5 sonnet", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet", node: claude-3.5-sonnet }
+- { text: "claude-3.5-sonnet", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet-20240620", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet-20241022", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet-latest", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet-v2", node: claude-3.5-sonnet }
+- { text: "sonnet 3.5", node: claude-3.5-sonnet }
+- { text: "3.5 sonnet", node: claude-sonnet }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "claude 3.6", node: claude-3.5-sonnet }
+- { text: "sonnet 3.6", node: claude-3.5-sonnet }
+- { text: "claude 3.5 sonnet (new)", node: claude-3.5-sonnet }
+- { text: "anthropic.claude-3-5-sonnet-20240620-v1:0", node: claude-3.5-sonnet }
+- { text: "anthropic.claude-3-5-sonnet-20241022-v2:0", node: claude-3.5-sonnet }
+- { text: "us.anthropic.claude-3-5-sonnet-20241022-v2:0", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet@20240620", node: claude-3.5-sonnet }
+- { text: "claude-3-5-sonnet-v2@20241022", node: claude-3.5-sonnet }
+- { text: "anthropic/claude-3.5-sonnet", node: claude-3.5-sonnet }
+- { text: "anthropic/claude-3.5-sonnet-20240620", node: claude-3.5-sonnet }
+
+# Claude 3.7 Sonnet
+- { text: "Claude 3.7 Sonnet", node: claude-3.7-sonnet }
+- { text: "claude 3.7 sonnet", node: claude-3.7-sonnet }
+- { text: "claude-3-7-sonnet", node: claude-3.7-sonnet }
+- { text: "claude-3.7-sonnet", node: claude-3.7-sonnet }
+- { text: "claude-3-7-sonnet-20250219", node: claude-3.7-sonnet }
+- { text: "claude-3-7-sonnet-latest", node: claude-3.7-sonnet }
+- { text: "sonnet 3.7", node: claude-3.7-sonnet }
+- { text: "3.7 sonnet", node: claude-sonnet }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "anthropic.claude-3-7-sonnet-20250219-v1:0", node: claude-3.7-sonnet }
+- { text: "us.anthropic.claude-3-7-sonnet-20250219-v1:0", node: claude-3.7-sonnet }
+- { text: "claude-3-7-sonnet@20250219", node: claude-3.7-sonnet }
+- { text: "anthropic/claude-3.7-sonnet", node: claude-3.7-sonnet }
+- { text: "anthropic/claude-3.7-sonnet:thinking", node: claude-3.7-sonnet }
+
+# Claude Sonnet 4
+- { text: "Claude Sonnet 4", node: claude-sonnet-4 }
+- { text: "claude sonnet 4", node: claude-sonnet-4 }
+- { text: "claude-sonnet-4", node: claude-sonnet-4 }
+- { text: "claude-sonnet-4-0", node: claude-sonnet-4 }
+- { text: "claude-sonnet-4-20250514", node: claude-sonnet-4 }
+- { text: "claude 4 sonnet", node: claude-sonnet-4 }
+- { text: "claude-4-sonnet", node: claude-sonnet-4 }
+- { text: "anthropic.claude-sonnet-4-20250514-v1:0", node: claude-sonnet-4 }
+- { text: "us.anthropic.claude-sonnet-4-20250514-v1:0", node: claude-sonnet-4 }
+- { text: "claude-sonnet-4@20250514", node: claude-sonnet-4 }
+- { text: "anthropic/claude-sonnet-4", node: claude-sonnet-4 }
+
+# Claude Sonnet 4.5
+- { text: "Claude Sonnet 4.5", node: claude-sonnet-4.5 }
+- { text: "claude sonnet 4.5", node: claude-sonnet-4.5 }
+- { text: "claude-sonnet-4-5", node: claude-sonnet-4.5 }
+- { text: "claude-sonnet-4-5-20250929", node: claude-sonnet-4.5 }
+- { text: "claude-sonnet-4.5", node: claude-sonnet-4.5 }
+- { text: "sonnet 4.5", node: claude-sonnet-4.5 }
+- { text: "claude 4.5 sonnet", node: claude-sonnet-4.5 }
+- { text: "anthropic.claude-sonnet-4-5-20250929-v1:0", node: claude-sonnet-4.5 }
+- { text: "us.anthropic.claude-sonnet-4-5-20250929-v1:0", node: claude-sonnet-4.5 }
+- { text: "claude-sonnet-4-5@20250929", node: claude-sonnet-4.5 }
+- { text: "anthropic/claude-sonnet-4.5", node: claude-sonnet-4.5 }
+
+# Claude Sonnet 4.6
+- { text: "Claude Sonnet 4.6", node: claude-sonnet-4.6 }
+- { text: "claude sonnet 4.6", node: claude-sonnet-4.6 }
+- { text: "claude-sonnet-4-6", node: claude-sonnet-4.6 }
+- { text: "claude-sonnet-4.6", node: claude-sonnet-4.6 }
+- { text: "sonnet 4.6", node: claude-sonnet-4.6 }
+- { text: "anthropic.claude-sonnet-4-6", node: claude-sonnet-4.6 }
+- { text: "anthropic/claude-sonnet-4.6", node: claude-sonnet-4.6 }
+
+# Claude Sonnet 5
+- { text: "Claude Sonnet 5", node: claude-sonnet-5 }
+- { text: "claude sonnet 5", node: claude-sonnet-5 }
+- { text: "claude-sonnet-5", node: claude-sonnet-5 }
+- { text: "sonnet 5", node: claude-sonnet-5 }
+- { text: "claude 5 sonnet", node: claude-sonnet-5 }
+- { text: "anthropic.claude-sonnet-5", node: claude-sonnet-5 }
+- { text: "anthropic/claude-sonnet-5", node: claude-sonnet-5 }
+
+# Claude 3 Opus
+- { text: "Claude 3 Opus", node: claude-3-opus }
+- { text: "claude 3 opus", node: claude-3-opus }
+- { text: "claude-3-opus", node: claude-3-opus }
+- { text: "claude-3-opus-20240229", node: claude-3-opus }
+- { text: "claude-3-opus-latest", node: claude-3-opus }
+- { text: "opus 3", node: claude-3-opus }
+- { text: "anthropic.claude-3-opus-20240229-v1:0", node: claude-3-opus }
+- { text: "us.anthropic.claude-3-opus-20240229-v1:0", node: claude-3-opus }
+- { text: "claude-3-opus@20240229", node: claude-3-opus }
+- { text: "anthropic/claude-3-opus", node: claude-3-opus }
+
+# Claude Opus 4
+- { text: "Claude Opus 4", node: claude-opus-4 }
+- { text: "claude opus 4", node: claude-opus-4 }
+- { text: "claude-opus-4", node: claude-opus-4 }
+- { text: "claude-opus-4-0", node: claude-opus-4 }
+- { text: "claude-opus-4-20250514", node: claude-opus-4 }
+- { text: "claude 4 opus", node: claude-opus-4 }
+- { text: "claude-4-opus", node: claude-opus-4 }
+- { text: "anthropic.claude-opus-4-20250514-v1:0", node: claude-opus-4 }
+- { text: "us.anthropic.claude-opus-4-20250514-v1:0", node: claude-opus-4 }
+- { text: "claude-opus-4@20250514", node: claude-opus-4 }
+- { text: "anthropic/claude-opus-4", node: claude-opus-4 }
+
+# Claude Opus 4.1
+- { text: "Claude Opus 4.1", node: claude-opus-4.1 }
+- { text: "claude opus 4.1", node: claude-opus-4.1 }
+- { text: "claude-opus-4-1", node: claude-opus-4.1 }
+- { text: "claude-opus-4-1-20250805", node: claude-opus-4.1 }
+- { text: "claude-opus-4.1", node: claude-opus-4.1 }
+- { text: "opus 4.1", node: claude-opus-4.1 }
+- { text: "anthropic.claude-opus-4-1-20250805-v1:0", node: claude-opus-4.1 }
+- { text: "us.anthropic.claude-opus-4-1-20250805-v1:0", node: claude-opus-4.1 }
+- { text: "claude-opus-4-1@20250805", node: claude-opus-4.1 }
+- { text: "anthropic/claude-opus-4.1", node: claude-opus-4.1 }
+
+# Claude Opus 4.5
+- { text: "Claude Opus 4.5", node: claude-opus-4.5 }
+- { text: "claude opus 4.5", node: claude-opus-4.5 }
+- { text: "claude-opus-4-5", node: claude-opus-4.5 }
+- { text: "claude-opus-4-5-20251101", node: claude-opus-4.5 }
+- { text: "claude-opus-4.5", node: claude-opus-4.5 }
+- { text: "opus 4.5", node: claude-opus-4.5 }
+- { text: "anthropic.claude-opus-4-5-20251101-v1:0", node: claude-opus-4.5 }
+- { text: "us.anthropic.claude-opus-4-5-20251101-v1:0", node: claude-opus-4.5 }
+- { text: "claude-opus-4-5@20251101", node: claude-opus-4.5 }
+- { text: "anthropic/claude-opus-4.5", node: claude-opus-4.5 }
+
+# Claude Opus 4.6 (claude-opus-4-6-fast skipped: retired speed-mode alias)
+- { text: "Claude Opus 4.6", node: claude-opus-4.6 }
+- { text: "claude opus 4.6", node: claude-opus-4.6 }
+- { text: "claude-opus-4-6", node: claude-opus-4.6 }
+- { text: "claude-opus-4.6", node: claude-opus-4.6 }
+- { text: "opus 4.6", node: claude-opus-4.6 }
+- { text: "anthropic.claude-opus-4-6", node: claude-opus-4.6 }
+- { text: "anthropic/claude-opus-4.6", node: claude-opus-4.6 }
+
+# Claude Opus 4.7 (claude-opus-4-7-fast skipped: removed speed-mode alias)
+- { text: "Claude Opus 4.7", node: claude-opus-4.7 }
+- { text: "claude opus 4.7", node: claude-opus-4.7 }
+- { text: "claude-opus-4-7", node: claude-opus-4.7 }
+- { text: "claude-opus-4.7", node: claude-opus-4.7 }
+- { text: "opus 4.7", node: claude-opus-4.7 }
+- { text: "anthropic.claude-opus-4-7", node: claude-opus-4.7 }
+- { text: "anthropic/claude-opus-4.7", node: claude-opus-4.7 }
+
+# Claude Opus 4.8
+- { text: "Claude Opus 4.8", node: claude-opus-4.8 }
+- { text: "claude opus 4.8", node: claude-opus-4.8 }
+- { text: "claude-opus-4-8", node: claude-opus-4.8 }
+- { text: "claude-opus-4.8", node: claude-opus-4.8 }
+- { text: "opus 4.8", node: claude-opus-4.8 }
+- { text: "anthropic.claude-opus-4-8", node: claude-opus-4.8 }
+- { text: "anthropic/claude-opus-4.8", node: claude-opus-4.8 }
+
+# Claude Opus 5
+- { text: "Claude Opus 5", node: claude-opus-5 }
+- { text: "claude opus 5", node: claude-opus-5 }
+- { text: "claude-opus-5", node: claude-opus-5 }
+- { text: "opus 5", node: claude-opus-5 }
+- { text: "claude 5 opus", node: claude-opus-5 }
+- { text: "anthropic.claude-opus-5", node: claude-opus-5 }
+- { text: "anthropic/claude-opus-5", node: claude-opus-5 }
+
+# Claude Mythos Preview
+- { text: "Claude Mythos Preview", node: claude-mythos-preview }
+- { text: "claude mythos preview", node: claude-mythos-preview }
+- { text: "claude-mythos-preview", node: claude-mythos-preview }
+- { text: "mythos preview", node: claude-mythos-preview }
+- { text: "project glasswing model", node: claude-mythos-preview }
+
+# Claude Fable 5
+- { text: "Claude Fable 5", node: claude-fable-5 }
+- { text: "claude fable 5", node: claude-fable-5 }
+- { text: "claude-fable-5", node: claude-fable-5 }
+- { text: "fable 5", node: claude-fable-5 }
+- { text: "fable", node: claude-fable-5 }
+- { text: "claude fable", node: claude-fable-5 }
+- { text: "Claude Fable", node: claude-fable-5 }
+# "mythos-class model" retargeted from claude-fable-5 to the Mythos line: the MD lists it
+# as a Fable 5 variant, but its own line note calls "Mythos-class" a *tier adjective*
+# covering both Fable 5 and Mythos 5, and the singular/plural split ("model" vs "models")
+# made the Fable-5 reading arbitrary. The tier phrase now resolves to the tier node.
+- { text: "mythos-class model", node: claude-mythos }
+- { text: "anthropic.claude-fable-5", node: claude-fable-5 }
+- { text: "anthropic/claude-fable-5", node: claude-fable-5 }
+
+# Claude Mythos 5
+- { text: "Claude Mythos 5", node: claude-mythos-5 }
+- { text: "claude mythos 5", node: claude-mythos-5 }
+- { text: "claude-mythos-5", node: claude-mythos-5 }
+- { text: "mythos 5", node: claude-mythos-5 }
+- { text: "glasswing mythos", node: claude-mythos-5 }
+
+# ---------------------------------------------------------------------------------
+# Refinement pass (Opus mentions review): real-world forms + regression guards.
+# ---------------------------------------------------------------------------------
+
+# Tier-first display names for the version-first-era models (Anthropic's own legacy
+# model tables, AWS Bedrock console, retrospective prose). Before this pass these
+# resolved to the LINE node (or, for Haiku 3.5, to the WRONG MODEL: "Claude Haiku 3"
+# out-lengthened "Haiku 3.5"), because the model lacked the family-qualified form.
+- { text: "Claude Opus 3", node: claude-3-opus }
+- { text: "Claude Sonnet 3", node: claude-3-sonnet }
+- { text: "Claude Sonnet 3.5", node: claude-3.5-sonnet }
+- { text: "Claude Sonnet 3.7", node: claude-3.7-sonnet }
+- { text: "Claude Haiku 3.5", node: claude-3.5-haiku }
+- { text: "claude-haiku-3.5 is the cheap legacy option", node: claude-3.5-haiku }
+- { text: "3.5 Haiku", node: claude-haiku }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+
+# Community "3.6" nickname, both orders
+- { text: "Claude 3.6 Sonnet (the October snapshot)", node: claude-3.5-sonnet }
+- { text: "3.6 Sonnet", node: claude-sonnet }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+# guard: "claude sonnet 3" must not shadow the 3.6 nickname down to Claude 3 Sonnet
+- { text: "Claude Sonnet 3.6 was the October snapshot", node: claude-3.5-sonnet }
+
+# Version-first flips in the tier-first era (AWS console ordering, colloquial habit)
+- { text: "Claude 4.1 Opus", node: claude-opus-4.1 }
+- { text: "Claude 4.5 Opus tops the leaderboard", node: claude-opus-4.5 }
+- { text: "Claude 4.6 Opus", node: claude-opus-4.6 }
+- { text: "Claude 4.6 Sonnet", node: claude-sonnet-4.6 }
+- { text: "Claude 4.7 Opus", node: claude-opus-4.7 }
+- { text: "Claude 4.8 Opus", node: claude-opus-4.8 }
+
+# Series ("N.x") reading — short form; previously "the Opus 4 series" resolved to the
+# Opus 4 *model*.
+- { text: "the Opus 4 series shares a rate-limit bucket", node: claude-opus-4.x }
+- { text: "the Opus 4.x line", node: claude-opus-4.x }
+- { text: "all claude-opus-4.x models", node: claude-opus-4.x }
+- { text: "Anthropic's mythos-class models", node: claude-mythos }
+
+# False-positive guards: "<tier><sep>Nx" multiplier prose must NOT hit the N.x series
+# node (bare-tier ".x" patterns are verbatim now, so the literal dot is required).
+# Each of these fails if the series pattern regains separator flexibility.
+- { text: "Sonnet: 3x cheaper than Opus", node: claude-sonnet }
+- { text: "Haiku 3x faster than Opus", node: claude-haiku }
+- { text: "Opus 4x the throughput", node: claude-opus }
+
+# Colloquial / markup / request-mode surface forms
+- { text: "opus4.7 with xhigh effort", node: claude-opus-4.7 }
+- { text: "sonnet4.5 in the API", node: claude-sonnet-4.5 }
+- { text: "claude opus 4.5 thinking", node: claude-opus-4.5 }
+- { text: "claude-opus-4-5-thinking", node: claude-opus-4.5 }
+- { text: "claude-sonnet-4-5[1m] long context", node: claude-sonnet-4.5 }
+- { text: "**Claude Opus 4.6** was the vibe-working release", node: claude-opus-4.6 }
+- { text: "CLAUDE OPUS 4.8 beats GPT-5", node: claude-opus-4.8 }
+- { text: "Claude's Opus 4.7 rollout", node: claude-opus-4.7 }
+- { text: "| Claude Opus 4.5 | 80.9% |", node: claude-opus-4.5 }
+- { text: "Fable 5's refusal behavior", node: claude-fable-5 }
+- { text: "Claude Opus 4.6-fast was retired", node: claude-opus-4.6 }
+- { text: "we compared Claude Sonnet 4.6 with Claude Opus 4.7", node: claude-sonnet-4.6 }

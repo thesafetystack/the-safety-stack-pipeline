@@ -1,0 +1,770 @@
+{
+ "protocol": "technique_staged effort-high confirmation on the held-out test set (the test-set confirmation)",
+ "frozen_at": "2026-10-28, before any test label was read",
+ "set": "technique_staged/2026-10-28a",
+ "items_sha256": "2fb98ac7240c12f0e85611fa4b54eb9805c74ad92fe7b7bc072f6c271c9c8a1b",
+ "judge_set": "evals/judge-2026-10-25j/technique_staged",
+ "judge_items_sha256": "be22d905f7d8cf835c0f9ce41e279b93f91da69ff31abaa28a551dd36ace6cec",
+ "production_sha256": "d23ad45cc741c8b01a9b32c3b08072a1fca5374a53f85b642e510d83a3f95aac",
+ "arms": {
+  "PROD": {
+   "role": "primary baseline",
+   "source": "evals/judge-2026-10-25j/technique_staged/production.jsonl (build ws1qpn8myzxah rows, 1 replicate)",
+   "pin": {
+    "name": "technique-staged-v5-a1.1",
+    "role": "extract_staged_openai",
+    "mode": "single",
+    "glean": true,
+    "doc_cap": 900000,
+    "max_tokens": 64000,
+    "taxonomy": "taxonomy/techniques-1.0.0.yaml"
+   }
+  },
+  "HALL": {
+   "role": "candidate",
+   "source": "stack eval technique_staged on set 2026-10-28a, --repeat 2",
+   "max_usd": 9.0,
+   "pin": {
+    "name": "technique-staged-v5-a1.1",
+    "role": "extract_staged_openai_high",
+    "mode": "single",
+    "glean": true,
+    "doc_cap": 900000,
+    "max_tokens": 64000,
+    "taxonomy": "taxonomy/techniques-1.0.0.yaml"
+   }
+  },
+  "BASEF": {
+   "role": "secondary (not in the decision rule): a fresh default-effort replicate under the same harness as HALL",
+   "source": "stack eval technique_staged on set 2026-10-28a, --repeat 1",
+   "max_usd": 4.5,
+   "pin": {
+    "name": "technique-staged-v5-a1.1",
+    "role": "extract_staged_openai",
+    "mode": "single",
+    "glean": true,
+    "doc_cap": 900000,
+    "max_tokens": 64000,
+    "taxonomy": "taxonomy/techniques-1.0.0.yaml"
+   }
+  }
+ },
+ "rule": {
+  "reference": "ref-t (adjudicated, PROTOCOL.md)",
+  "metric": "slug presence micro F1, group nodes out, HALL replicates pooled",
+  "confirm_iff": {
+   "delta_f1_min": 0.02,
+   "delta_precision_min": -0.03,
+   "hall_median_latency_s_max_exclusive": 180
+  }
+ },
+ "bootstrap": {
+  "unit": "document",
+  "strata": "judge-set stratum (doc_type)",
+  "resamples": 2000,
+  "seed": 20261028,
+  "interval": "95% percentile, paired"
+ },
+ "items": [
+  {
+   "item_id": "jtec-0001",
+   "doc_id": "s8fxvz4dybzqy",
+   "text_sha256": "bcb4677b2c9c8b1da0a88c511590e917eae50623b5ff607f20cadc04eb3e0a62",
+   "chars": 14192,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0002",
+   "doc_id": "smtyyy47ccg12",
+   "text_sha256": "caf9b525a875530d3cabe2b2c364215439f0a0253375115e1bc4611d59364c36",
+   "chars": 389419,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0003",
+   "doc_id": "sgywr5qq61r14",
+   "text_sha256": "bdb874a1f66727f6dac050efbde168db61c2ea91440992988e09ff366adff8a4",
+   "chars": 52979,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0004",
+   "doc_id": "snrqjjbs9a5cg",
+   "text_sha256": "67ee1ec4481889d470b0a430f577e0b78091f5d5bba59c56e1f92087b2f19d2f",
+   "chars": 56404,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0005",
+   "doc_id": "s49xfkhb3mx28",
+   "text_sha256": "25d918543d33254cf65a05b6e1ab4599bbe219e8e0d950055fb777bcf271f508",
+   "chars": 53590,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0006",
+   "doc_id": "sccm2esar8bfg",
+   "text_sha256": "5ca844588c4b4b913606923855e6cdc9de77a092b57246780b8a29115b28ffdb",
+   "chars": 177493,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0007",
+   "doc_id": "ss2k42xecr02q",
+   "text_sha256": "b6c527ee5e8fa9bb09ad7e54a2a328bf5a5621512045f194af0817bd80ec7446",
+   "chars": 5344,
+   "stratum": "lab_blog"
+  },
+  {
+   "item_id": "jtec-0008",
+   "doc_id": "sp3qh4naebsf2",
+   "text_sha256": "b926bcedb311dbd430bc66846531b0b4d33dcce411f980b60db204fe1dfdaf7c",
+   "chars": 90112,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0009",
+   "doc_id": "sdtqw4f8xc8qt",
+   "text_sha256": "9738232a7424bdd10be4b2265e704cf3eee0bc0c93ccf3bc9f99e0be1756930a",
+   "chars": 23869,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0010",
+   "doc_id": "s1cycksgpahrx",
+   "text_sha256": "885823e1a27187bfd5f577ba61aaeca214293c5dc35525c118c38eedf52c59ab",
+   "chars": 141803,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0011",
+   "doc_id": "sjk4a68hqjbmr",
+   "text_sha256": "b0ee790ddb3a7ef7c6cd33912eff3bf4f3f18e787575ba41c6637ebb28440c79",
+   "chars": 2917,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0012",
+   "doc_id": "s0krmtwtrp5kr",
+   "text_sha256": "72d2f268d1caa3f8bc8899ce6dbfcafe2825e5e248e6c87ed1063c74d1baa79f",
+   "chars": 7806,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0013",
+   "doc_id": "szxcggq9va5np",
+   "text_sha256": "1178ca61696babdb484658ede61ec62e43571d549e404a98368539e3dda53068",
+   "chars": 55662,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0014",
+   "doc_id": "sgd9yhdch8hkq",
+   "text_sha256": "f070bb16adad5e2db4b475ab93fc147b1c105f3b4c59e784d95d76c438ae930e",
+   "chars": 50034,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0015",
+   "doc_id": "s13p5fqedxqtq",
+   "text_sha256": "65ffbeb452442b94b4a4650f63b5ea0dfab23c06bcf7c6a518276e97b8cadcdf",
+   "chars": 3380,
+   "stratum": "lab_blog"
+  },
+  {
+   "item_id": "jtec-0016",
+   "doc_id": "smfy8hgast6xs",
+   "text_sha256": "e57d5cc8f8d4d1bd7b2b1645ffed666de7a4c0b49536de9e342b97f584bd4013",
+   "chars": 107777,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0017",
+   "doc_id": "szcq3pqaft7ty",
+   "text_sha256": "42b4eda5168ffc25246a700245a3f004165cc9a5552394f12bea5e8f2f500942",
+   "chars": 46274,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0018",
+   "doc_id": "saj2d740xqgfq",
+   "text_sha256": "fcb75a83ff5d6859897edc9f9b95649797f0548676ef75d3842b7126538d3b21",
+   "chars": 70301,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0019",
+   "doc_id": "ssbxw679xavh4",
+   "text_sha256": "b7ab37539c41b1ea5baf22c639e6d0758d320b21144e9c0269506aa233357c80",
+   "chars": 53075,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0020",
+   "doc_id": "sty9yp26h5bxj",
+   "text_sha256": "4fdd0a83d65c14f7296fc9dd7e33491a9f8b2c7faa1174a105a443a6207edf79",
+   "chars": 17042,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0021",
+   "doc_id": "sw2zkn6r22qqd",
+   "text_sha256": "c885b5ef1f9d556d2e9dbdd4e3a7d8786a68f1d3fe77bdbbe9b0c654aea960be",
+   "chars": 67554,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0022",
+   "doc_id": "smqesz1bjmq2q",
+   "text_sha256": "e8811345d08d3e52a05eb543eb5dd5753d626d9f14ec84932b5db3726f88ac24",
+   "chars": 76329,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0023",
+   "doc_id": "s6sc1nd92k1c2",
+   "text_sha256": "954c1f5a01632f32f32c3bbd6ea75bb8a105bf86330ce34c6ae8053eb5dcfff7",
+   "chars": 930,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0024",
+   "doc_id": "s4jg1arckje7y",
+   "text_sha256": "3b71a7a0955e40289926ff700c21ea85715b5365a1c9aa3c98d33bf109f45d8e",
+   "chars": 41058,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0025",
+   "doc_id": "sdsrjxspa80rf",
+   "text_sha256": "ce776419982e3fe71937cb874d152ca220e3a273881885d22bde25e5a1911436",
+   "chars": 22474,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0026",
+   "doc_id": "svd6z91x020tv",
+   "text_sha256": "92e72e6c3e96ee0961974af13854fbcdcf9cd76dfee584bde0dcf5d4b411f46e",
+   "chars": 119899,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0027",
+   "doc_id": "s5aj6t399wh3d",
+   "text_sha256": "f0650cfa6d92724935cb526d8ff487fc533fb4b9691f8275550bef7cf2be884a",
+   "chars": 70600,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0028",
+   "doc_id": "s4axznrqgwsag",
+   "text_sha256": "c9492ead3976bc6225e326ec59855f4079b2fc257a75efdd701d2ca83b363f87",
+   "chars": 60704,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0029",
+   "doc_id": "sar5fbjh6npbg",
+   "text_sha256": "db0de127d706050d9774c0eac90277311f63428e67156b2d252bfa8ddb10c4bb",
+   "chars": 94158,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0030",
+   "doc_id": "s2z5dvhwpxzrh",
+   "text_sha256": "efeb84ca9db0ea2d9ea7aeb7fd06543003138bb40409cfe9da498dcaa3f4c162",
+   "chars": 3769,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0031",
+   "doc_id": "svd9ex1hcbyec",
+   "text_sha256": "29537e8a293e7aa9b11786595813817a5a1c89a1ec0aee207317f3ec7039af06",
+   "chars": 45295,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0032",
+   "doc_id": "s6p6md376gxwk",
+   "text_sha256": "40527368e2b2862926afa934beed281bdd6033cedaf5bb55a85a0e1cc39b2746",
+   "chars": 67552,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0033",
+   "doc_id": "s6aqwmqqjeg4f",
+   "text_sha256": "68bc61554870dd770f1b463a4848ad7016347ce580d2dbd6b030ebb8161b2b30",
+   "chars": 121472,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0034",
+   "doc_id": "sg4tqabqb9g52",
+   "text_sha256": "f5bc705ea5c8e7a996ea892a5b7a1b78b0610f22ac29b7eceb949e4b70a2c12f",
+   "chars": 126967,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0035",
+   "doc_id": "sky0n6hp23c00",
+   "text_sha256": "fb47a43dea24d34329072ca1dad229691a98b556b801ebe644e0769fd8d52962",
+   "chars": 76857,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0036",
+   "doc_id": "sjwee6w1p6y1r",
+   "text_sha256": "de6ca96d8c02fbbec2f21b06a4b3bf7c359957b435fc7fbb7f4fbc05e5d4b99f",
+   "chars": 146158,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0037",
+   "doc_id": "sbbnvtskgxx5h",
+   "text_sha256": "37f7d8d8369b93223864f7091da9e56783ba68a58064adf038b8432765a7fb30",
+   "chars": 1826,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0038",
+   "doc_id": "ssh2zpezpcswm",
+   "text_sha256": "124fced99e59ca92e894db4fd917dac06de81f936bf1c2e328aa46f37a5b11c7",
+   "chars": 54057,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0039",
+   "doc_id": "sgtkanc8cp7k5",
+   "text_sha256": "4a62a45b9c17a7408073df28f34c865c8b879b92311dc3705fc0e0f55432ffd2",
+   "chars": 14329,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0040",
+   "doc_id": "sxp9ys9w4r2xk",
+   "text_sha256": "ad3c0a9d609d867d93aefbff3fc1df062ec18ed90f88899d4da35f6104844048",
+   "chars": 7817,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0041",
+   "doc_id": "s788x5dpk1qr7",
+   "text_sha256": "e44f2db42ba0e0850f5e3239aa6ac23ad35a1a10fa4452873e0832ffa1341804",
+   "chars": 101452,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0042",
+   "doc_id": "s97681g1v8a8k",
+   "text_sha256": "e3b021da8e4984daccdd13f548feb93271d3cb3d341b557fee142cd7de91c437",
+   "chars": 86115,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0043",
+   "doc_id": "sjnqfm2jjkvxr",
+   "text_sha256": "0d36e6d4409bab8fee7c9abf95bb62a61933716192df469ac3455561a8af076c",
+   "chars": 71282,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0044",
+   "doc_id": "s5vzw7mm1ptrh",
+   "text_sha256": "635b4272b5e8ba8149ea3b4814ecb4e2fa2b20d3a389e9db30cbd35c44e3f906",
+   "chars": 109923,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0045",
+   "doc_id": "s6x463949k2k9",
+   "text_sha256": "e03dd1db2eb7c11bfa7fcba07d21b9e387feb21d4e2423442b2a3496c2697d67",
+   "chars": 1799,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0046",
+   "doc_id": "smec8r2d2cmk5",
+   "text_sha256": "c0e250d409f9516f78761c7d504ebc2bbcd4076ed436fab6894929ad2f0e0434",
+   "chars": 83066,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0047",
+   "doc_id": "s5vyredyqtsvs",
+   "text_sha256": "4560729ef6d4246429a6af617241bd6321397da35379606de37a55543b378c86",
+   "chars": 7404,
+   "stratum": "lab_blog"
+  },
+  {
+   "item_id": "jtec-0048",
+   "doc_id": "s2zb50nfm3nxj",
+   "text_sha256": "01dc9572fd656ceea9a6877ae35a1c09e4302dadac377e7f38640a251ce3183c",
+   "chars": 77654,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0049",
+   "doc_id": "stq59webp58cp",
+   "text_sha256": "62a050750e840fba95f287331a58bf4899e6d7e25ad01310836bd99026395f65",
+   "chars": 3221,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0050",
+   "doc_id": "saxmzqpscnggc",
+   "text_sha256": "6c881bfc8fb956e3b1238e9f6c99ff30ac34421c63e73cc7dfd6a658372b3e99",
+   "chars": 43279,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0051",
+   "doc_id": "sacmme4c6wt35",
+   "text_sha256": "6810bec93763be3f169a6960684885f16454881736f6e7bce3894c8b513dba0c",
+   "chars": 132804,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0052",
+   "doc_id": "s7abqxm4w33zj",
+   "text_sha256": "a99fe282eb656e39b36ff28b22a982e81e0722678deed6d1ab9c3044aefb9fd6",
+   "chars": 16497,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0053",
+   "doc_id": "scyd2qvtyt6ag",
+   "text_sha256": "33be4c7679765ac8622635fb4227d3f29da420963fc4afd0367f43e1906f038f",
+   "chars": 4841,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0054",
+   "doc_id": "swjxpch76qdjr",
+   "text_sha256": "569660d2b10174ce00eabaf2b4b6477999a4b64b342eecd2b652f53c8972f66d",
+   "chars": 1522,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0055",
+   "doc_id": "stvexj8675k5f",
+   "text_sha256": "35d6c68204bcbdf7d1eb7779efd6abc30c4a5bd43d772404f2e2f6aee471fd80",
+   "chars": 256285,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0056",
+   "doc_id": "s8w8dj5f0g15z",
+   "text_sha256": "c7b35d12381794316e44d0c916a738cbc5f6d6bdd32f42ea2d38c1be79364706",
+   "chars": 25249,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0057",
+   "doc_id": "spvzabjrtsqjm",
+   "text_sha256": "04868267edd429bcb7c3bdbb0c3640b97edce49f6a7e78d98c862b174684de6d",
+   "chars": 85220,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0058",
+   "doc_id": "s0thc0evejd81",
+   "text_sha256": "2cf03c23be4bae1322c1f8b46d60de0492b414ddc127a024059dba6d6435036c",
+   "chars": 97330,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0059",
+   "doc_id": "sa07e50w2vh6x",
+   "text_sha256": "667a4fc35aaf5f6f07d20a0a67b17795b71fee1f668b79f61d1d1289fbaae152",
+   "chars": 72809,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0060",
+   "doc_id": "s8gvvnzq73f7p",
+   "text_sha256": "0abc9a0d410ecb5cd6dae1a8a385406cbc08bb4ae37157ca3e8ce4c19e8ca073",
+   "chars": 71702,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0061",
+   "doc_id": "sdkdrgts9tzep",
+   "text_sha256": "b1fbc7854ba1612d8dc679b181fbea43e3949b9de53d6878529e7bfcc18aba30",
+   "chars": 11864,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0062",
+   "doc_id": "s5bv11882zcna",
+   "text_sha256": "641c0419340fcef1896a8035ce9338b719b49863c5935626129ad5606005481e",
+   "chars": 3230,
+   "stratum": "lab_blog"
+  },
+  {
+   "item_id": "jtec-0063",
+   "doc_id": "stwjkeeprchfv",
+   "text_sha256": "09d0313e7efe07a745abf7287b6512f69b9b152364b6ebca7f9179268b38bf13",
+   "chars": 85712,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0064",
+   "doc_id": "sd0vwvajny0xn",
+   "text_sha256": "a05c25c3513400c28c8f5e8f377b2928468b903462233d06e25596e6e6a3ac11",
+   "chars": 52330,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0065",
+   "doc_id": "shmh9s89rp7jv",
+   "text_sha256": "d8c153051eb703f014837bd7f6da20af78a17f3fbe83c9cd9e327eea142e686b",
+   "chars": 126464,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0066",
+   "doc_id": "swsgetnd1eqty",
+   "text_sha256": "b355d014578d3743eed023643d03cc0a25f7b965a4e9c9954cf578c7d28071e3",
+   "chars": 136188,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0067",
+   "doc_id": "sxq81jp8e4rwa",
+   "text_sha256": "96d4e413ccb93288a3290592dd7a6e7929807c1604d6bb1e5b0f8880ba957b36",
+   "chars": 58978,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0068",
+   "doc_id": "sfzfy5qhc47x2",
+   "text_sha256": "c4c352644a9869e3c25ff804a850d3356d0de6981150df6b3845b3b4c771dcfc",
+   "chars": 72847,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0069",
+   "doc_id": "s015a1emgdrcb",
+   "text_sha256": "17df5d9604b057b10d592706573eaf9fb888c67d4eb78baac9671ba1e00af216",
+   "chars": 7306,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0070",
+   "doc_id": "s33pr9ca1ywrq",
+   "text_sha256": "7027499f2081e87c7ed03235ed85d8bc8e4cdbaefd61b44953aee469c1ae309f",
+   "chars": 64994,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0071",
+   "doc_id": "sjgr0fqgset73",
+   "text_sha256": "ef12d18737dc372f875726e26613263b1f3bc3cf68f2eb407cb7a630d12cbf57",
+   "chars": 100581,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0072",
+   "doc_id": "shtc924586vzs",
+   "text_sha256": "7b5326dda4dcfda4149a0eaa9b2fa7bc33d203694bf003700291fbfb0e4e5226",
+   "chars": 67019,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0073",
+   "doc_id": "s515x5av78szv",
+   "text_sha256": "b385778a2acac2e67cf7290f2feb78e14baaecc5acfe1db89bb825a9fea904e3",
+   "chars": 152883,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0074",
+   "doc_id": "scz2nw0mnehjd",
+   "text_sha256": "7e4823e5f26ed841504fc03a24dbd0c94ceb608fb91beb9f9624b4ea0e021143",
+   "chars": 1033,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0075",
+   "doc_id": "stncmd9cbmt9v",
+   "text_sha256": "bb313041d7df9057893e3cf78f0af3c46a8728b349b8f1493063cebe613c3ec0",
+   "chars": 90314,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0076",
+   "doc_id": "smns3px18qxrt",
+   "text_sha256": "a7e54ac77ed4499e9e6a9815e45d604195207acb41cb98e0a6c9b797d8f2acb6",
+   "chars": 57011,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0077",
+   "doc_id": "s4qp181ga3s98",
+   "text_sha256": "7018b80b8d4e0e8512aaed79682450a786d9c24329022adec91cbb8d051204b0",
+   "chars": 2451,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0078",
+   "doc_id": "s3k9pjhg6790z",
+   "text_sha256": "c057882daac60bf9deda76175736bf20b4cddb4db91e07889869492f951db033",
+   "chars": 57223,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0079",
+   "doc_id": "sya4r2mwqvzy2",
+   "text_sha256": "785b9d64f25d2e15d6ea2435585f21bc47e358853360c89ac4e7197d16f8c415",
+   "chars": 33146,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0080",
+   "doc_id": "sncnc2eekg6e3",
+   "text_sha256": "ab13749c585d2dadb0276a16c301b1548332e310fe1781c8d10ec9b3d1d00e0c",
+   "chars": 11334,
+   "stratum": "lab_blog"
+  },
+  {
+   "item_id": "jtec-0081",
+   "doc_id": "sc706wvw57950",
+   "text_sha256": "d7c337d53153dc93654c94895d02743ad7b209410016c1178aff0d94642da6d7",
+   "chars": 124860,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0082",
+   "doc_id": "s1k4m8jf4g8k0",
+   "text_sha256": "0b9baac85c7bfcece9f2c3001b670133edc76ab80e72f87062529503b3b1f505",
+   "chars": 268110,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0083",
+   "doc_id": "se2n7gjk4e07s",
+   "text_sha256": "7f918d0444820e77dd56aa9e63d49bb42c532e1363f904156d49e1adbb8fbe32",
+   "chars": 16214,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0084",
+   "doc_id": "s3fegp3fawqjt",
+   "text_sha256": "1fe2f15974cfe1a954f0b838446d2c5583e1adff84bdb3e2e63d84ff0c469aa4",
+   "chars": 30057,
+   "stratum": "paper"
+  },
+  {
+   "item_id": "jtec-0085",
+   "doc_id": "sbekzgf1j1mtp",
+   "text_sha256": "073c601082b5d0f284121ecf8fe46e7d294a9fd87478f4f633c846f617a338b9",
+   "chars": 9128,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0086",
+   "doc_id": "sfj23m3ny01b6",
+   "text_sha256": "713b2abb45cc77104c233c18a094803a6f337cec4510a12484458b5a6c2b589a",
+   "chars": 20998,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0087",
+   "doc_id": "sbtmsfw3kt3tj",
+   "text_sha256": "7d0ff4e1fed343b1b0458141d4e556714b490d32bb3168c327a324c066f91a41",
+   "chars": 1277,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0088",
+   "doc_id": "s6x49ptysf09e",
+   "text_sha256": "2d05721d7b84bdea89ee67338463012a770b48284bc31205924d0f73fdf612bd",
+   "chars": 47601,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0089",
+   "doc_id": "sc6g9p2q0jdk9",
+   "text_sha256": "b25cdd3b3615b4cad139c512d9d952be72bf4724871dfca24005bd13ecf226d2",
+   "chars": 57387,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0090",
+   "doc_id": "s7rwfpfr5t3de",
+   "text_sha256": "67218eea3318bdeea7b13a49ebff24d1de0593f0a433b98897c0df2355877951",
+   "chars": 40736,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0091",
+   "doc_id": "spspgm4d8mnsf",
+   "text_sha256": "eb701203c25f6dd78df19388421f0f226ed95ecd3c206cd4051aba64f5695920",
+   "chars": 99516,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0092",
+   "doc_id": "srs78dt6t39nx",
+   "text_sha256": "ee1b9560943614bdde0b40724f4028ebdb3b39803b9b1a7f46c3a8921b2323bc",
+   "chars": 58765,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0093",
+   "doc_id": "sqzwywj8jg4tx",
+   "text_sha256": "3e16a45084930f63714ec6093287434a7dafe926647548ccbcd36e9196a7196b",
+   "chars": 21375,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0094",
+   "doc_id": "swk5e5k0p45v4",
+   "text_sha256": "b3e426ab94173c6ef6c90d9c29c644b883fa153453bb5161b6406d4a77d33f07",
+   "chars": 2017,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0095",
+   "doc_id": "s6pykbbcjz4ca",
+   "text_sha256": "d43c30ad69f941d7bff939c3b3fd4c958ec5012ecdf1255f4f2faff127d89b73",
+   "chars": 5664,
+   "stratum": "forum_post"
+  },
+  {
+   "item_id": "jtec-0096",
+   "doc_id": "sgw64nxvymyzr",
+   "text_sha256": "6380cd4a61d00daa0026dc8a4afe433b879fa157fd51aed59e3a47d3bf0192a9",
+   "chars": 126357,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0097",
+   "doc_id": "sze7ztd7yba79",
+   "text_sha256": "db8f865c1e17ed0dba2b47e6e53c1be6733f712b791c2d17229654246f456583",
+   "chars": 84882,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0098",
+   "doc_id": "saz7sb4zsxzkm",
+   "text_sha256": "d15ab2837b97c7e0c84a34bb9c4a76df3dba77edb0eb36cdbb9407f297c6e1e4",
+   "chars": 166941,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0099",
+   "doc_id": "sdvjda3mcfx2r",
+   "text_sha256": "cec67d1ff124a247059dce139601ac91941289e0c23a6a167afa31475dc18d4e",
+   "chars": 173280,
+   "stratum": "preprint"
+  },
+  {
+   "item_id": "jtec-0100",
+   "doc_id": "samn7ne888ybn",
+   "text_sha256": "636d131a83916fcda47a8e82605f7b3c65f2f39c0c9b5d0d3862be53cd7f66d9",
+   "chars": 551,
+   "stratum": "forum_post"
+  }
+ ]
+}

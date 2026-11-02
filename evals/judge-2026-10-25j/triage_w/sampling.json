@@ -1,0 +1,211 @@
+{
+ "allocation": {
+  "borderline": 30,
+  "not_relevant|c0.95-0.98": 40,
+  "not_relevant|c0.99": 30,
+  "not_relevant|c<=0.94": 70,
+  "relevant": 30
+ },
+ "confidence_cut_points": {
+  "low_max": 0.94,
+  "mid_max": 0.98
+ },
+ "design": "disproportionate stratified sampling: strata = production verdict, not_relevant split by production confidence (<= 0.94 / 0.95-0.98 / 0.99); fixed allocation; systematic sampling within stratum over units sorted by (basis, anchor channel, year bucket, unit key); design weight N_h / n_h over the eligible frame",
+ "eligible": 149390,
+ "eligible_by_stratum": {
+  "borderline": 5408,
+  "not_relevant|c0.95-0.98": 49805,
+  "not_relevant|c0.99": 67879,
+  "not_relevant|c<=0.94": 17631,
+  "relevant": 8667
+ },
+ "excluded": {
+  "in_2026-10-25j_set:doc_id": 148,
+  "in_2026-10-25j_set:title": 3,
+  "in_existing_eval:doc_id": 75,
+  "in_existing_eval:title": 28
+ },
+ "existing_eval_files": [
+  "evals/affiliation/2026-10-12a/items.jsonl",
+  "evals/affiliation/2026-10-12b-bylines/items.jsonl",
+  "evals/model_roles/2026-10-13a/items.jsonl",
+  "evals/model_roles/2026-10-16a/items.jsonl",
+  "evals/model_roles/2026-10-17a/items.jsonl",
+  "evals/model_roles/2026-10-23a/items.jsonl",
+  "evals/screen/2026-10-12a/items.jsonl",
+  "evals/screen/2026-10-13-holdout/items.jsonl",
+  "evals/screen/2026-10-13-t2pool/items.jsonl",
+  "evals/screen/2026-10-21-p4gate/items.jsonl",
+  "evals/technique_roles/2026-10-13a/items.jsonl",
+  "evals/technique_staged/2026-10-17a/items.jsonl",
+  "evals/technique_staged/2026-10-17b/items.jsonl",
+  "evals/technique_staged/2026-10-18a/items.jsonl",
+  "evals/technique_staged/2026-10-18b/items.jsonl",
+  "evals/technique_staged/2026-10-18c/items.jsonl",
+  "evals/technique_staged/2026-10-23a/items.jsonl",
+  "evals/triage/2026-10-12a/items.jsonl",
+  "evals/triage/2026-10-21-p4gate/items.jsonl",
+  "evals/triage/sr2025-recall/items.jsonl"
+ ],
+ "family_sets_excluded": [
+  "evals/judge-2026-10-25j/triage",
+  "evals/judge-2026-10-25j/screen",
+  "evals/judge-2026-10-25j/affiliation",
+  "evals/judge-2026-10-25j/model_roles",
+  "evals/judge-2026-10-25j/technique_staged"
+ ],
+ "frame_rows": 149672,
+ "inputs": {
+  "documents": {
+   "file": "documents/batch-import/20261023T193856Z_rn8kz09s6s99b.full.parquet",
+   "sha256": "4fc06a0e2f8439e562adcc5cb1129816c1fc7e05e02474dcdce05bc5a1d5301e"
+  },
+  "triage_evidence": {
+   "file": "triage_evidence/batch-import/20261023T193111Z_r587czwyt9gc9.full.parquet",
+   "sha256": "3814fd7f594c4e7e0e7c44e015ade0a9a369c3ea7bc47b58e3664d031c0d08a9"
+  }
+ },
+ "n": 200,
+ "not_in_population": {
+  "state_retired": 28
+ },
+ "not_relevant_confidence_distribution": {
+  "0.78": {
+   "cum_share": 0.0,
+   "n": 5
+  },
+  "0.79": {
+   "cum_share": 0.0001,
+   "n": 3
+  },
+  "0.80": {
+   "cum_share": 0.0001,
+   "n": 2
+  },
+  "0.81": {
+   "cum_share": 0.0001,
+   "n": 1
+  },
+  "0.82": {
+   "cum_share": 0.0006,
+   "n": 67
+  },
+  "0.83": {
+   "cum_share": 0.0011,
+   "n": 71
+  },
+  "0.84": {
+   "cum_share": 0.0032,
+   "n": 287
+  },
+  "0.85": {
+   "cum_share": 0.0035,
+   "n": 34
+  },
+  "0.86": {
+   "cum_share": 0.0056,
+   "n": 291
+  },
+  "0.87": {
+   "cum_share": 0.01,
+   "n": 591
+  },
+  "0.88": {
+   "cum_share": 0.0178,
+   "n": 1055
+  },
+  "0.89": {
+   "cum_share": 0.0197,
+   "n": 262
+  },
+  "0.90": {
+   "cum_share": 0.0269,
+   "n": 970
+  },
+  "0.91": {
+   "cum_share": 0.0576,
+   "n": 4162
+  },
+  "0.92": {
+   "cum_share": 0.0657,
+   "n": 1102
+  },
+  "0.93": {
+   "cum_share": 0.0765,
+   "n": 1460
+  },
+  "0.94": {
+   "cum_share": 0.1304,
+   "n": 7303
+  },
+  "0.95": {
+   "cum_share": 0.1454,
+   "n": 2027
+  },
+  "0.96": {
+   "cum_share": 0.2013,
+   "n": 7581
+  },
+  "0.97": {
+   "cum_share": 0.2982,
+   "n": 13133
+  },
+  "0.98": {
+   "cum_share": 0.4985,
+   "n": 27130
+  },
+  "0.99": {
+   "cum_share": 1.0,
+   "n": 67946
+  }
+ },
+ "pooled_frame_by_stratum": {
+  "borderline": 5428,
+  "not_relevant|c0.95-0.98": 49843,
+  "not_relevant|c0.99": 67924,
+  "not_relevant|c<=0.94": 17640,
+  "relevant": 8706
+ },
+ "population": 149644,
+ "population_by_stratum": {
+  "borderline": 5435,
+  "not_relevant|c0.95-0.98": 49871,
+  "not_relevant|c0.99": 67946,
+  "not_relevant|c<=0.94": 17666,
+  "relevant": 8726
+ },
+ "population_by_verdict": {
+  "borderline": 5435,
+  "not_relevant": 135483,
+  "relevant": 8726
+ },
+ "sample_by_stratum_and_basis": {
+  "borderline|fields": 21,
+  "borderline|title": 9,
+  "not_relevant|c0.95-0.98|fields": 35,
+  "not_relevant|c0.95-0.98|title": 5,
+  "not_relevant|c0.99|fields": 28,
+  "not_relevant|c0.99|title": 2,
+  "not_relevant|c<=0.94|fields": 57,
+  "not_relevant|c<=0.94|title": 13,
+  "relevant|fields": 21,
+  "relevant|title": 9
+ },
+ "sample_sha256": "a05eb7a50236a4870967abe03b6248b16b327ed981fe866e93849b3f7527a10c",
+ "seed": 20261025,
+ "set": "triage_w",
+ "systematic_start": {
+  "borderline": 119.116449,
+  "not_relevant|c0.95-0.98": 34.109278,
+  "not_relevant|c0.99": 511.551302,
+  "not_relevant|c<=0.94": 10.779163,
+  "relevant": 239.986623
+ },
+ "weights": {
+  "borderline": 180.2667,
+  "not_relevant|c0.95-0.98": 1245.125,
+  "not_relevant|c0.99": 2262.6333,
+  "not_relevant|c<=0.94": 251.8714,
+  "relevant": 288.9
+ }
+}

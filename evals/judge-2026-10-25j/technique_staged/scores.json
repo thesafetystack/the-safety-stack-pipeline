@@ -1,0 +1,624 @@
+{
+ "scores": {
+  "(slug, role) >= 1": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.6584,
+      0.7229
+     ],
+     "precision": [
+      0.8135,
+      0.8786
+     ],
+     "recall": [
+      0.5409,
+      0.6253
+     ]
+    },
+    "f1": 0.692,
+    "fn": 703,
+    "fp": 180,
+    "jaccard": 0.5291,
+    "n_items": 100,
+    "precision": 0.8464,
+    "recall": 0.5853,
+    "tp": 992
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.7426,
+      0.8004
+     ],
+     "precision": [
+      0.6503,
+      0.7305
+     ],
+     "recall": [
+      0.8377,
+      0.9056
+     ]
+    },
+    "f1": 0.772,
+    "fn": 118,
+    "fp": 361,
+    "jaccard": 0.6287,
+    "n_items": 100,
+    "precision": 0.692,
+    "recall": 0.873,
+    "tp": 811
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.6667,
+      0.7329
+     ],
+     "precision": [
+      0.6625,
+      0.7455
+     ],
+     "recall": [
+      0.658,
+      0.7348
+     ]
+    },
+    "consensus_units": 992,
+    "f1": 0.7018,
+    "fn": 299,
+    "fp": 290,
+    "jaccard": 0.5406,
+    "n_items": 100,
+    "precision": 0.705,
+    "precision_vs_union": 0.8688,
+    "production_units": 983,
+    "recall": 0.6986,
+    "recall_on_consensus": 0.6986,
+    "tp": 693
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.6567,
+      0.7309
+     ],
+     "precision": [
+      0.706,
+      0.7922
+     ],
+     "recall": [
+      0.6038,
+      0.6897
+     ]
+    },
+    "f1": 0.6972,
+    "fn": 398,
+    "fp": 244,
+    "jaccard": 0.5351,
+    "majority_units": 1137,
+    "n_items": 100,
+    "precision": 0.7518,
+    "precision_vs_union": 0.884,
+    "production_units": 983,
+    "recall": 0.65,
+    "recall_on_majority": 0.65,
+    "tp": 739
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.6278,
+      0.6979
+     ],
+     "precision": [
+      0.6863,
+      0.769
+     ],
+     "recall": [
+      0.5638,
+      0.6547
+     ]
+    },
+    "f1": 0.6654,
+    "fn": 455,
+    "fp": 266,
+    "jaccard": 0.4986,
+    "n_items": 100,
+    "precision": 0.7294,
+    "recall": 0.6118,
+    "tp": 717
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.5813,
+      0.652
+     ],
+     "precision": [
+      0.8132,
+      0.8742
+     ],
+     "recall": [
+      0.4458,
+      0.5304
+     ]
+    },
+    "f1": 0.6199,
+    "fn": 865,
+    "fp": 153,
+    "jaccard": 0.4491,
+    "n_items": 100,
+    "precision": 0.8444,
+    "recall": 0.4897,
+    "tp": 830
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.6477,
+      0.7268
+     ],
+     "precision": [
+      0.616,
+      0.7172
+     ],
+     "recall": [
+      0.657,
+      0.7581
+     ]
+    },
+    "f1": 0.6872,
+    "fn": 272,
+    "fp": 326,
+    "jaccard": 0.5235,
+    "n_items": 100,
+    "precision": 0.6684,
+    "recall": 0.7072,
+    "tp": 657
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.5564,
+      0.6394
+     ],
+     "precision": [
+      0.4196,
+      0.5058
+     ],
+     "recall": [
+      0.8102,
+      0.8805
+     ]
+    },
+    "f1": 0.6006,
+    "fn": 141,
+    "fp": 907,
+    "jaccard": 0.4292,
+    "n_items": 100,
+    "precision": 0.4649,
+    "recall": 0.8482,
+    "tp": 788
+   }
+  },
+  "(slug, role) >= 2": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.6261,
+      0.7062
+     ],
+     "precision": [
+      0.8108,
+      0.8917
+     ],
+     "recall": [
+      0.4992,
+      0.5975
+     ]
+    },
+    "f1": 0.6683,
+    "fn": 567,
+    "fp": 120,
+    "jaccard": 0.5018,
+    "n_items": 100,
+    "precision": 0.8522,
+    "recall": 0.5496,
+    "tp": 692
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.7764,
+      0.8313
+     ],
+     "precision": [
+      0.7173,
+      0.7918
+     ],
+     "recall": [
+      0.8207,
+      0.8987
+     ]
+    },
+    "f1": 0.8045,
+    "fn": 99,
+    "fp": 199,
+    "jaccard": 0.6729,
+    "n_items": 100,
+    "precision": 0.7549,
+    "recall": 0.861,
+    "tp": 613
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.6462,
+      0.7245
+     ],
+     "precision": [
+      0.6012,
+      0.7003
+     ],
+     "recall": [
+      0.6758,
+      0.771
+     ]
+    },
+    "consensus_units": 692,
+    "f1": 0.6877,
+    "fn": 190,
+    "fp": 266,
+    "jaccard": 0.524,
+    "n_items": 100,
+    "precision": 0.6536,
+    "precision_vs_union": 0.8307,
+    "production_units": 768,
+    "recall": 0.7254,
+    "recall_on_consensus": 0.7254,
+    "tp": 502
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.6381,
+      0.7232
+     ],
+     "precision": [
+      0.6481,
+      0.7405
+     ],
+     "recall": [
+      0.6145,
+      0.724
+     ]
+    },
+    "f1": 0.6833,
+    "fn": 263,
+    "fp": 233,
+    "jaccard": 0.5189,
+    "majority_units": 798,
+    "n_items": 100,
+    "precision": 0.6966,
+    "precision_vs_union": 0.8581,
+    "production_units": 768,
+    "recall": 0.6704,
+    "recall_on_majority": 0.6704,
+    "tp": 535
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.6171,
+      0.7013
+     ],
+     "precision": [
+      0.6308,
+      0.7247
+     ],
+     "recall": [
+      0.5856,
+      0.6975
+     ]
+    },
+    "f1": 0.662,
+    "fn": 289,
+    "fp": 245,
+    "jaccard": 0.4948,
+    "n_items": 100,
+    "precision": 0.681,
+    "recall": 0.6441,
+    "tp": 523
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.5675,
+      0.6469
+     ],
+     "precision": [
+      0.7643,
+      0.8412
+     ],
+     "recall": [
+      0.4429,
+      0.537
+     ]
+    },
+    "f1": 0.6088,
+    "fn": 642,
+    "fp": 151,
+    "jaccard": 0.4376,
+    "n_items": 100,
+    "precision": 0.8034,
+    "recall": 0.4901,
+    "tp": 617
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.6281,
+      0.7129
+     ],
+     "precision": [
+      0.5982,
+      0.6945
+     ],
+     "recall": [
+      0.6402,
+      0.7574
+     ]
+    },
+    "f1": 0.673,
+    "fn": 214,
+    "fp": 270,
+    "jaccard": 0.5071,
+    "n_items": 100,
+    "precision": 0.6484,
+    "recall": 0.6994,
+    "tp": 498
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.5561,
+      0.6381
+     ],
+     "precision": [
+      0.4254,
+      0.5103
+     ],
+     "recall": [
+      0.7809,
+      0.8741
+     ]
+    },
+    "f1": 0.5997,
+    "fn": 121,
+    "fp": 668,
+    "jaccard": 0.4283,
+    "n_items": 100,
+    "precision": 0.4694,
+    "recall": 0.8301,
+    "tp": 591
+   }
+  },
+  "invalid_slugs_dropped": {},
+  "note": "taxonomy 1.0.0; group nodes left out (gold-v3 strict units)",
+  "slug presence": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.6864,
+      0.7609
+     ],
+     "precision": [
+      0.8289,
+      0.9082
+     ],
+     "recall": [
+      0.5725,
+      0.6684
+     ]
+    },
+    "f1": 0.7262,
+    "fn": 192,
+    "fp": 47,
+    "jaccard": 0.5701,
+    "n_items": 100,
+    "precision": 0.8709,
+    "recall": 0.6228,
+    "tp": 317
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.7941,
+      0.8589
+     ],
+     "precision": [
+      0.7076,
+      0.7972
+     ],
+     "recall": [
+      0.878,
+      0.9492
+     ]
+    },
+    "f1": 0.8283,
+    "fn": 25,
+    "fp": 89,
+    "jaccard": 0.7069,
+    "n_items": 100,
+    "precision": 0.7555,
+    "recall": 0.9167,
+    "tp": 275
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.7322,
+      0.8
+     ],
+     "precision": [
+      0.7148,
+      0.8106
+     ],
+     "recall": [
+      0.7313,
+      0.8108
+     ]
+    },
+    "consensus_units": 317,
+    "f1": 0.768,
+    "fn": 72,
+    "fp": 76,
+    "jaccard": 0.6234,
+    "n_items": 100,
+    "precision": 0.7632,
+    "precision_vs_union": 0.9003,
+    "production_units": 321,
+    "recall": 0.7729,
+    "recall_on_consensus": 0.7729,
+    "tp": 245
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.7162,
+      0.7904
+     ],
+     "precision": [
+      0.7459,
+      0.839
+     ],
+     "recall": [
+      0.6731,
+      0.767
+     ]
+    },
+    "f1": 0.7556,
+    "fn": 99,
+    "fp": 66,
+    "jaccard": 0.6071,
+    "majority_units": 354,
+    "n_items": 100,
+    "precision": 0.7944,
+    "precision_vs_union": 0.9097,
+    "production_units": 321,
+    "recall": 0.7203,
+    "recall_on_majority": 0.7203,
+    "tp": 255
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.6905,
+      0.7685
+     ],
+     "precision": [
+      0.7308,
+      0.8276
+     ],
+     "recall": [
+      0.6384,
+      0.738
+     ]
+    },
+    "f1": 0.7328,
+    "fn": 113,
+    "fp": 70,
+    "jaccard": 0.5783,
+    "n_items": 100,
+    "precision": 0.7819,
+    "recall": 0.6896,
+    "tp": 251
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.6422,
+      0.7185
+     ],
+     "precision": [
+      0.8447,
+      0.9192
+     ],
+     "recall": [
+      0.5057,
+      0.603
+     ]
+    },
+    "f1": 0.6819,
+    "fn": 226,
+    "fp": 38,
+    "jaccard": 0.5174,
+    "n_items": 100,
+    "precision": 0.8816,
+    "recall": 0.556,
+    "tp": 283
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.7019,
+      0.7872
+     ],
+     "precision": [
+      0.6639,
+      0.774
+     ],
+     "recall": [
+      0.72,
+      0.8204
+     ]
+    },
+    "f1": 0.744,
+    "fn": 69,
+    "fp": 90,
+    "jaccard": 0.5923,
+    "n_items": 100,
+    "precision": 0.7196,
+    "recall": 0.77,
+    "tp": 231
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.6027,
+      0.6887
+     ],
+     "precision": [
+      0.4656,
+      0.5618
+     ],
+     "recall": [
+      0.8328,
+      0.9097
+     ]
+    },
+    "f1": 0.6477,
+    "fn": 38,
+    "fp": 247,
+    "jaccard": 0.479,
+    "n_items": 100,
+    "precision": 0.5147,
+    "recall": 0.8733,
+    "tp": 262
+   }
+  }
+ },
+ "set": "technique_staged",
+ "status": {
+  "opus": {
+   "technique_staged:valid": 100
+  },
+  "sol": {
+   "technique_staged:valid": 100
+  },
+  "sonnet": {
+   "technique_staged:valid": 100
+  }
+ }
+}

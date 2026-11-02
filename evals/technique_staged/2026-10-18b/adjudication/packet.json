@@ -1,0 +1,43 @@
+{
+  "guide": {
+    "file": "GOLD-GUIDE.md",
+    "sha256": "6e0d5f5aded8c9e0a07dc2b779bdcc8b7f816b1e305f0b4a04f5aceebfbfb6e2"
+  },
+  "rulings": {
+    "file": "RULINGS.md",
+    "sha256": "d08458edd77b70aaa364a8d61fa6b2942f9a8f3116d591ab5815c39d938e56be"
+  },
+  "rubric": {
+    "file": "rubric-v0.4.0.md",
+    "sha256": "858092e8ed156baaf7ca3e87aa0550bbc81021889d795030e4375d5237d666e8"
+  },
+  "menu": {
+    "file": "menu-v0.9-234.md",
+    "sha256": "80563422aa11faac3d684117dc3bee4473d9a7216af7ff940884a79825a19393",
+    "is": "MENU_HEADER + menu_text(taxonomy/taxonomy-v0.9-234.yaml)"
+  },
+  "prompts": {
+    "L1": "7ae3d8c94ab322dc2eccd88ff565b2725d4ec7f2a742dad36579b113fdd2f6dd",
+    "L2": "dcc1fd8999786234fb80888fa6c57cb0ce3ddb96020b6f8a583d48ae2620f087",
+    "RECONCILE": "2957831df4efd72235e4b848cf3ff0ad52d40b0b3975c3d1e8d77d99c2338c26",
+    "VERIFY-ADJ": "9254dc375bdbb964f12a4748c5f90cc4bdbfd81dab0639837b1233d5e85e1577"
+  },
+  "labelling_scripts": {
+    "merge.py": {
+      "sha256": "497abc9384f47f89b17f12e7dc8c02fc5fb4e82fafb381e2aa23f1230bb72306",
+      "staged_sha256": "497abc9384f47f89b17f12e7dc8c02fc5fb4e82fafb381e2aa23f1230bb72306"
+    },
+    "verify_sample.py": {
+      "sha256": "3e82cccc7176657574c6917ab12348f880e2209fc9710f568cfc5217c0f34544",
+      "staged_sha256": "3e82cccc7176657574c6917ab12348f880e2209fc9710f568cfc5217c0f34544"
+    },
+    "disputes.py": {
+      "sha256": "c26f632833c2dc65edd341735f86b8838ac92af8b695adc028349bee6cc96f10",
+      "staged_sha256": "95907604b077a08a1f085be33d4d2fd2a4d82c064f31dd36acb341fb422769f6"
+    },
+    "verify_apply.py": {
+      "sha256": "80bf40e42914c991792748464e2efcb66397fa00cf2e63c77517465cd0bf92f7",
+      "staged_sha256": "80bf40e42914c991792748464e2efcb66397fa00cf2e63c77517465cd0bf92f7"
+    }
+  }
+}

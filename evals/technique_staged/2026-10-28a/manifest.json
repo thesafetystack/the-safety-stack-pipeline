@@ -1,0 +1,63 @@
+{
+  "task": "technique_staged",
+  "set_id": "2026-10-28a",
+  "items": 100,
+  "source": "the 100 items of evals/judge-2026-10-25j/technique_staged (the judge-eval round: a self-weighting sample of build ws1qpn8myzxah's luna technique rows); texts = store blobs of the judge items' text_sha256",
+  "source_items_sha256": "be22d905f7d8cf835c0f9ce41e279b93f91da69ff31abaa28a551dd36ace6cec",
+  "gold": null,
+  "input_only": true,
+  "items_sha256": "2fb98ac7240c12f0e85611fa4b54eb9805c74ad92fe7b7bc072f6c271c9c8a1b",
+  "splits": {
+    "test": 100
+  },
+  "strata": {
+    "group": {
+      "forum_post": 32,
+      "lab_blog": 5,
+      "paper": 14,
+      "preprint": 49
+    },
+    "band": {
+      "20-60k": 26,
+      "60-100k": 24,
+      "<20k": 29,
+      ">100k": 21
+    }
+  },
+  "license_class": {
+    "open": 94,
+    "public_web": 5,
+    "restricted": 1
+  },
+  "frozen_with": {
+    "taxonomy_path": "taxonomy/techniques-1.0.0.yaml",
+    "taxonomy_sha256": "9957124474b6ab2e3328ee0231132449110e67b52f4eb0f17e1a0c5860a64d8b",
+    "taxonomy_version": "1.0.0",
+    "rubric": "rubric-v0.9-c",
+    "rubric_digest": "fce34ffd0a3e06272e26ec167e45f512bf7a7573dbc8494ccb677ec8a84bd325",
+    "prompt_set": "technique-staged-v5-a1.1",
+    "prompt_digests": {
+      "single": {
+        "single": "4d2fb93c7f03fadba4ce41a19b5700c0eb513ecbc67209720c72311b76201d74"
+      },
+      "sweep": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "sweep": "3a9d1d8067fa2355032ed5d9abc6c3a4e964df411ef994deb008eabc4a72fc91"
+      },
+      "staged": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "select": "377dba6e877d223ade4fcb2e33159bb6362e951474a6eb0aea1e2f9a0d8d6d42",
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      },
+      "lexical": {
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      }
+    },
+    "segmenter_version": "seg-v1",
+    "lexical_version": "lex-v2"
+  },
+  "truncated_items": [
+    "jtec-0002"
+  ],
+  "doc_char_cap": 300000
+}

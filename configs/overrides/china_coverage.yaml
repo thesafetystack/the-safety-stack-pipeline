@@ -1,0 +1,790 @@
+# china_coverage.yaml - hand-added sources of the Chinese-coverage review (approved 2026-10-30, D740).
+#
+# Input to `stack overrides add` (a mapping of targets, as lineage_origins.yaml; docs/howto/overrides.md); no stage reads
+# it from here. The import is an operator step at build time:
+#   stack overrides add configs/overrides/china_coverage.yaml --out data/overrides/<series>/ --dry-run   # writes nothing
+#   stack overrides add configs/overrides/china_coverage.yaml --out data/overrides/<series>/ --comment china-coverage
+# Independent of manual_sources.yaml and lineage_origins.yaml (no shared override id, no shared URL). Needs the plan
+# lines those files need (`collect.manual` with `miss_cap: 1`, gate `{rule: manual_accept}`, acquire wants
+# `manual_url: [page]`, `manual_paper: [full_text]`; batch-2026-10a has them). Validated by
+# tests/test_overrides_china_coverage.py.
+#
+# Flags: the ms-cn-doc- entries are `accept` (triage fetches them without asking; the screen still judges them); the
+# ms-cn-cdb- entries carry no flag (D754): triage and the screen judge them like any collected paper.
+#   ms-cn-cdb-<arXiv id>   the papers of the Concordia AI Chinese Technical AI Safety Database (public Google Sheet,
+#                          2025-07 export, 464 arXiv papers 2023-05 to 2025-05) absent from the 2026-10-27 release:
+#                          92 not in the store (the entry adds them), 15 in it but triage-skipped or screened
+#                          irrelevant (the arXiv URL joins that document; without a flag their decisions stand).
+#                          About 43 of the 92 were judged out of scope by title (watermarking, deepfakes,
+#                          hallucination). Title and date from the arXiv API (2026-10-29).
+#   ms-cn-doc-<slug>       the Chinese frameworks, standards, statements and reports of the review's checklist plus
+#                          one of the same series (Concordia Spring 2024): English or bilingual versions where they
+#                          exist, else the Chinese original (Chinese documents may enter the release). URLs checked
+#                          2026-10-30 (HTTP 200/206). tc260.org.cn answers scripted clients with its homepage, so its
+#                          two PDFs are pinned Wayback captures of the original bytes
+#                          (`web.archive.org/web/<timestamp>id_/<url>`): collect.manual keeps that form as the fetch
+#                          URL and acquire mints the capture (via wayback); the key is the live URL's. Four
+#                          WeChat articles (mp.weixin.qq.com: the AIIA safety commitments 2024 and their 2025
+#                          framework, CAICT's AI Safety Benchmark 2024 and 2.0) were dropped on 2026-10-30: Tencent
+#                          answers this pipeline's client with an interactive captcha page whatever the request
+#                          headers, so a fetch yields that page, never the article. A later entry with another copy
+#                          (a pinned Wayback capture holding the article) or a hand-made text may add them back.
+#                          A date with only a month known is written as the month's first day.
+#   added_by: china-coverage (configs/releases/dataset/overrides-public.yaml maps it to its public author and method).
+manual_sources:
+# ---- ms-cn-doc-: frameworks, standards, statements, reports
+- override_id: ms-cn-doc-tc260-framework-1
+  url: https://web.archive.org/web/20250708033232id_/https://www.tc260.org.cn/upload/2024-09-09/1725849192841090989.pdf
+  title: "AI Safety Governance Framework (V1.0)"
+  published_at: 2024-09-09
+  flags: [accept]
+  note: "TC260 (National Technical Committee 260 on Cybersecurity), AI Safety Governance Framework 1.0, September 2024; official English PDF (the archived copy: tc260.org.cn answers scripted clients with an anti-bot page; the Chinese PDF is upload/2024-09-09/1725849142029046390.pdf). Frontier risks incl. bio/cyber misuse and loss of control. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-tc260-framework-2
+  url: https://www.cac.gov.cn/2025-09/15/c_1759653448369123.htm
+  title: "人工智能安全治理框架 2.0版 (AI Safety Governance Framework 2.0)"
+  published_at: 2025-09-15
+  flags: [accept]
+  note: "TC260 and CNCERT/CC, AI Safety Governance Framework 2.0, released 2025-09-15 (Cybersecurity Week, Kunming); the CAC announcement page, whose appendix is reported to be the bilingual Chinese-English text (the attachment link is not in the server-rendered page). Adds derivative and catastrophic risks, circuit breakers / safety stop switches. Language: zh, bilingual appendix."
+  added_by: china-coverage
+- override_id: ms-cn-doc-tc260-003-genai-basic-requirements
+  url: https://cset.georgetown.edu/wp-content/uploads/t0588_generative_AI_safety_EN.pdf
+  title: "Basic Safety Requirements for Generative Artificial Intelligence Services (TC260-003, CSET translation)"
+  published_at: 2024-02-29
+  flags: [accept]
+  note: "TC260-003 生成式人工智能服务安全基本要求（技术文件）, TC260, 2024-02-29; CSET's English translation (the Chinese original: tc260.org.cn upload/2024-03-01/1709282398070082466.pdf, archived). Later the national standard GB/T 45654-2025. Corpus, model and safety-measure requirements and the safety assessment for generative AI services. Language: en (translation)."
+  added_by: china-coverage
+- override_id: ms-cn-doc-tc260-ai-safety-standards-system
+  url: https://web.archive.org/web/20250516072703id_/https://www.tc260.org.cn/upload/2025-01-24/1737709785951070331.pdf
+  title: "人工智能安全标准体系（V1.0）（征求意见稿） (AI Safety Standards System V1.0, draft for comment)"
+  published_at: 2025-01-24
+  flags: [accept]
+  note: "TC260, January 2025 draft standards roadmap (archived copy); includes loss-of-control and AI-enabled cyberattack risk standards. No English version found. Language: zh."
+  added_by: china-coverage
+- override_id: ms-cn-doc-gbt-46347-2025
+  url: https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=120779016BBA61E4408DCECE3EAD92ED
+  title: "人工智能 风险管理能力评估 (GB/T 46347-2025, AI risk management capability assessment)"
+  published_at: 2025-10-01
+  flags: [accept]
+  note: "SAMR/SAC national standard GB/T 46347-2025 (October 2025; published_at the month); the standards portal's record page. Appendix B lists CBRN-weapon misuse (per Concordia 2026 the first explicit mention of AI-enabled CBRN risk in a Chinese national standard). Language: zh."
+  added_by: china-coverage
+- override_id: ms-cn-doc-shlab-concordia-frmf-v1
+  url: https://concordia-ai.com/wp-content/uploads/2025/07/Frontier-AI-Risk-Management-Framework-v1.0-en.pdf
+  title: "Frontier AI Risk Management Framework (v1.0)"
+  published_at: 2025-07-01
+  flags: [accept]
+  note: "Shanghai AI Laboratory and Concordia AI, July 2025 (WAIC); the first Chinese frontier-AI safety framework with thresholds; English PDF (Chinese: ...-v1.0-cn.pdf). Later v1.5 (Feb 2026) and 2.0 (Jul 2026). Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-shlab-ai45-balance
+  url: http://www.shlab.org.cn/news/5443947
+  title: "探索人工智能45°平衡律 (Exploring the AI-45° balance law)"
+  published_at: 2024-07-04
+  flags: [accept]
+  note: "Shanghai AI Laboratory news item, Zhou Bowen's WAIC 2024 keynote: capability and safety should advance together (the AI-45° law; see also arXiv 2412.14186). Language: zh."
+  added_by: china-coverage
+- override_id: ms-cn-doc-caict-ai-risk-governance-report-2024
+  url: https://www.caict.ac.cn/kxyj/qwfb/ztbg/202412/P020241225616766856414.pdf
+  title: "人工智能风险治理报告——构建面向产业的人工智能安全治理实践方案（2024年） (AI Risk Governance Report 2024)"
+  published_at: 2024-12-25
+  flags: [accept]
+  note: "CAICT AI Research Institute, December 2024 report; title from the PDF cover. Language: zh."
+  added_by: china-coverage
+- override_id: ms-cn-doc-idais-beijing
+  url: https://idais.ai/dialogue/idais-beijing/
+  title: "IDAIS-Beijing consensus statement on AI red lines (人工智能红线共识声明)"
+  published_at: 2024-03-10
+  flags: [accept]
+  note: "International Dialogues on AI Safety, Beijing, March 2024 (hosted by BAAI): red lines incl. autonomous replication, power seeking, WMD uplift, deception; Chinese signatories incl. Andrew Yao, Ya-Qin Zhang, Fu Ying, Xue Lan, Zeng Yi. Language: en, zh."
+  added_by: china-coverage
+- override_id: ms-cn-doc-idais-shanghai
+  url: https://idais.ai/dialogue/idais-shanghai/
+  title: "Consensus Statement on Ensuring Alignment and Human Control of Advanced AI Systems to Safeguard Human Flourishing"
+  published_at: 2025-07-01
+  flags: [accept]
+  note: "IDAIS Shanghai Consensus, July 2025 (published_at the month); Chinese signatories incl. Andrew Yao, Ya-Qin Zhang, Xue Lan, Xu Wei, Xudong Pan, Lu Chaochao. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-cnaisda-initiative-2025
+  url: https://cnaisi.cn/filedownload/153149
+  title: "Initiative on Promoting International Cooperation on AI Safety and Inclusive Development"
+  published_at: 2025-02-10
+  flags: [accept]
+  note: "China AI Safety and Development Association (CnAISDA), February 2025 (Paris AI Action Summit): consensus on risk red lines and early-warning thresholds. PDF. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-seoul-frontier-safety-commitments
+  url: https://www.gov.uk/government/publications/frontier-ai-safety-commitments-ai-seoul-summit-2024/frontier-ai-safety-commitments-ai-seoul-summit-2024
+  title: "Frontier AI Safety Commitments, AI Seoul Summit 2024"
+  published_at: 2024-05-21
+  flags: [accept]
+  note: "Not Chinese-authored; listed for Zhipu AI, the first Chinese signatory (MiniMax and 01.AI joined 2025). The store has this URL (url key); the entry's flag lands on that document. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-concordia-soais-2023
+  url: https://concordia-ai.com/wp-content/uploads/2023/10/State-of-AI-Safety-in-China.pdf
+  title: "State of AI Safety in China"
+  published_at: 2023-10-01
+  flags: [accept]
+  note: "Concordia AI, October 2023 (161 pp.): the first comprehensive map of China's AI safety landscape. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-concordia-soais-2024-spring
+  url: https://concordia-ai.com/wp-content/uploads/2024/05/State-of-AI-Safety-in-China-Spring-2024-Report-public.pdf
+  title: "State of AI Safety in China (Spring 2024)"
+  published_at: 2024-05-01
+  flags: [accept]
+  note: "Concordia AI, May 2024 (114 pp.), with a notable-technical-papers section. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-concordia-soais-2025
+  url: https://aisafetychina.substack.com/api/v1/file/0d3dfced-8d32-48ec-8d5c-6630a76c19cf.pdf
+  title: "State of AI Safety in China (2025)"
+  published_at: 2025-07-01
+  flags: [accept]
+  note: "Concordia AI, July 2025 (99 pp.; landing page concordia-ai.com/research/state-of-ai-safety-in-china-2025/): 31 key research groups, technical safety research chapter, TC260 standards. Language: en."
+  added_by: china-coverage
+- override_id: ms-cn-doc-concordia-soais-2026
+  url: https://concordia-ai.com/wp-content/uploads/2026/07/State-of-AI-Safety-in-China-2026.pdf
+  title: "State of AI Safety in China (2026)"
+  published_at: 2026-07-01
+  flags: [accept]
+  note: "Concordia AI, July 2026 (127 pp.): 900+ paper database, 28 key groups, agent safety about 27 % of output. Language: en."
+  added_by: china-coverage
+# ---- ms-cn-cdb-: Concordia-database papers absent from the release
+- override_id: ms-cn-cdb-2307.01426
+  url: https://arxiv.org/abs/2307.01426
+  title: "DeepfakeBench: A Comprehensive Benchmark of Deepfake Detection"
+  published_at: 2023-07-04
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Chinese University of Hong Kong, Shenzhen, University at Buffalo. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2307.09042
+  url: https://arxiv.org/abs/2307.09042
+  title: "Emotional Intelligence of Large Language Models"
+  published_at: 2023-07-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Tsinghua University, Renmin University of China. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2308.03313
+  url: https://arxiv.org/abs/2308.03313
+  title: "Quantifying the Impact of Large Language Models on Collective Opinion Dynamics"
+  published_at: 2023-08-07
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University, Clemson University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2308.07902
+  url: https://arxiv.org/abs/2308.07902
+  title: "Through the Lens of Core Competency: Survey on Evaluation of Large Language Models"
+  published_at: 2023-08-15
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Harbin Institute of Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2309.07045
+  url: https://arxiv.org/abs/2309.07045
+  title: "SafetyBench: Evaluating the Safety of Large Language Models"
+  published_at: 2023-09-13
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Tsinghua University, China Mobile, Peking University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2309.12657
+  url: https://arxiv.org/abs/2309.12657
+  title: "Exploiting Modality-Specific Features For Multi-Modal Manipulation Detection And Grounding"
+  published_at: 2023-09-22
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions University of Science and Technology of China. Release 2026-10-27: absent (in the store, skipped at triage)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2310.05130
+  url: https://arxiv.org/abs/2310.05130
+  title: "Fast-DetectGPT: Efficient Zero-Shot Detection of Machine-Generated Text via Conditional Probability Curvature"
+  published_at: 2023-10-08
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Westlake University, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2310.05818
+  url: https://arxiv.org/abs/2310.05818
+  title: "SC-Safety: A Multi-round Open-ended Question Adversarial Safety Benchmark for Large Language Models in Chinese"
+  published_at: 2023-10-09
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions CLUE Team. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2310.10477
+  url: https://arxiv.org/abs/2310.10477
+  title: "Gaining Wisdom from Setbacks: Aligning Large Language Models via Mistake Analysis"
+  published_at: 2023-10-16
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Huawei, Hong Kong University of Science and Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2310.11227
+  url: https://arxiv.org/abs/2310.11227
+  title: "RealBehavior: A Framework for Faithfully Characterizing Foundation Models' Human-like Behavior Mechanisms"
+  published_at: 2023-10-17
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Fudan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2310.11237
+  url: https://arxiv.org/abs/2310.11237
+  title: "Watermarking LLMs with Weight Quantization"
+  published_at: 2023-10-17
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Fudan University, Shanghai AI Laboratory. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2311.02105
+  url: https://arxiv.org/abs/2311.02105
+  title: "Making Harmful Behaviors Unlearnable for Large Language Models"
+  published_at: 2023-11-02
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Fudan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2311.05232
+  url: https://arxiv.org/abs/2311.05232
+  title: "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions"
+  published_at: 2023-11-09
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Harbin Institute of Technology, Huawei. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2311.13110
+  url: https://arxiv.org/abs/2311.13110
+  title: "White-Box Transformers via Sparse Rate Reduction: Compression Is All There Is?"
+  published_at: 2023-11-22
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions University of Hong Kong, University of California, Berkeley. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2312.07000
+  url: https://arxiv.org/abs/2312.07000
+  title: "Alignment for Honesty"
+  published_at: 2023-12-12
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Shanghai Jiao Tong University, Shanghai Artificial Intelligence Laboratory, Fudan University, Carnegie Mellon University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2312.07913
+  url: https://arxiv.org/abs/2312.07913
+  title: "A Survey of Text Watermarking in the Era of Large Language Models"
+  published_at: 2023-12-13
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions University of Illinois Chicago, Hong Kong University of Science and Technology (Guangzhou). Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2401.01523
+  url: https://arxiv.org/abs/2401.01523
+  title: "GOAT-Bench: Safety Insights to Large Multimodal Models through Meme-Based Social Abuse"
+  published_at: 2024-01-03
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Hong Kong Baptist University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2401.04620
+  url: https://arxiv.org/abs/2401.04620
+  title: "Agent Alignment in Evolving Social Norms"
+  published_at: 2024-01-09
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Fudan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2401.05778
+  url: https://arxiv.org/abs/2401.05778
+  title: "Risk Taxonomy, Mitigation, and Assessment Benchmarks of Large Language Model Systems"
+  published_at: 2024-01-11
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Zhongguancun Laboratory, Tsinghua University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2401.15071
+  url: https://arxiv.org/abs/2401.15071
+  title: "From GPT-4 to Gemini and Beyond: Assessing the Landscape of MLLMs on Generalizability, Trustworthiness and Causality through Four Modalities"
+  published_at: 2024-01-26
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Shanghai AI Laboratory. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.01909
+  url: https://arxiv.org/abs/2402.01909
+  title: "On Catastrophic Inheritance of Large Foundation Models"
+  published_at: 2024-02-02
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Carnegie Mellon University, Microsoft Research Asia. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.04247
+  url: https://arxiv.org/abs/2402.04247
+  title: "Risks of AI Scientists: Prioritizing Safeguarding Over Autonomy"
+  published_at: 2024-02-06
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Yale University, National Institutes of Health, Shanghai Jiao Tong University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.05044
+  url: https://arxiv.org/abs/2402.05044
+  title: "SALAD-Bench: A Hierarchical and Comprehensive Safety Benchmark for Large Language Models"
+  published_at: 2024-02-07
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Shanghai Artificial Intelligence Laboratory, , Chinese University of Hong Kong. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.07744
+  url: https://arxiv.org/abs/2402.07744
+  title: "Towards Unified Alignment Between Agents, Humans, and Environment"
+  published_at: 2024-02-12
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Tsinghua University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.09283
+  url: https://arxiv.org/abs/2402.09283
+  title: "Attacks, Defenses and Evaluations for LLM Conversation Safety: A Survey"
+  published_at: 2024-02-14
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Survey or Position Paper; institutions Shanghai Artificial Intelligence Laboratory. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.11905
+  url: https://arxiv.org/abs/2402.11905
+  title: "Learning to Edit: Aligning LLMs with Knowledge Editing"
+  published_at: 2024-02-19
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Huawei, Hong Kong University of Science and Technology, Hong Kong University of Science and Technology (Guangzhou). Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.13055
+  url: https://arxiv.org/abs/2402.13055
+  title: "Identifying Semantic Induction Heads to Understand In-Context Learning"
+  published_at: 2024-02-20
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions Shanghai AI Laboratory, Fudan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.16444
+  url: https://arxiv.org/abs/2402.16444
+  title: "ShieldLM: Empowering LLMs as Aligned, Customizable and Explainable Safety Detectors"
+  published_at: 2024-02-26
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Tsinghua University, Peking University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.18496
+  url: https://arxiv.org/abs/2402.18496
+  title: "Language Models Represent Beliefs of Self and Others"
+  published_at: 2024-02-28
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions Peking University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2402.19200
+  url: https://arxiv.org/abs/2402.19200
+  title: "PRSA: Prompt Stealing Attacks against Real-World Prompt Services"
+  published_at: 2024-02-29
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Zhejiang University, Stony Brook University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2403.00896
+  url: https://arxiv.org/abs/2403.00896
+  title: "DiaHalu: A Dialogue-level Hallucination Evaluation Benchmark for Large Language Models"
+  published_at: 2024-03-01
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions East China Normal University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2403.08251
+  url: https://arxiv.org/abs/2403.08251
+  title: "Emergence of Social Norms in Generative Agent Societies: Principles and Architecture"
+  published_at: 2024-03-13
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Shanghai AI Laboratory, Northwestern Polytechnical University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2403.08542
+  url: https://arxiv.org/abs/2403.08542
+  title: "AIGCs Confuse AI Too: Investigating and Explaining Synthetic Image-induced Hallucinations in Large Vision-Language Models"
+  published_at: 2024-03-13
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Beijing Jiaotong University, Peng Cheng Laboratory. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2403.14077
+  url: https://arxiv.org/abs/2403.14077
+  title: "Can ChatGPT Detect DeepFakes? A Study of Using Multimodal Large Language Models for Media Forensics"
+  published_at: 2024-03-21
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions University at Buffalo, Chinese University of Hong Kong, Shenzhen. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2404.00216
+  url: https://arxiv.org/abs/2404.00216
+  title: "Is Factuality Enhancement a Free Lunch For LLMs? Better Factuality Can Lead to Worse Context-Faithfulness"
+  published_at: 2024-03-30
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Chinese Academy of Sciences, University of California, LA. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2404.02446
+  url: https://arxiv.org/abs/2404.02446
+  title: "Masked Completion via Structured Diffusion with White-Box Transformers"
+  published_at: 2024-04-03
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions University of Hong Kong, University of California, Berkeley. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2404.12699
+  url: https://arxiv.org/abs/2404.12699
+  title: "SOPHON: Non-Fine-Tunable Learning to Restrain Task Transferability For Pre-trained Models"
+  published_at: 2024-04-19
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University, Ant Group. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2404.16824
+  url: https://arxiv.org/abs/2404.16824
+  title: "V2A-Mark: Versatile Deep Visual-Audio Watermarking for Manipulation Localization and Copyright Protection"
+  published_at: 2024-04-25
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Peking University. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2404.17867
+  url: https://arxiv.org/abs/2404.17867
+  title: "Are Watermarks Bugs for Deepfake Detectors? Rethinking Proactive Forensics"
+  published_at: 2024-04-27
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Hunan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.03644
+  url: https://arxiv.org/abs/2405.03644
+  title: "When LLMs Meet Cybersecurity: A Systematic Literature Review"
+  published_at: 2024-05-06
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Chinese Academy of Sciences. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.04133
+  url: https://arxiv.org/abs/2405.04133
+  title: "Exposing AI-generated Videos: A Benchmark Dataset and a Local-and-Global Temporal Defect Based Detection Method"
+  published_at: 2024-05-07
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions City University of, Hong Kong, Sichuan University, Carnegie Mellon University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.04825
+  url: https://arxiv.org/abs/2405.04825
+  title: "Explanation as a Watermark: Towards Harmless and Multi-bit Model Ownership Verification via Watermarking Feature Attribution"
+  published_at: 2024-05-08
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.10051
+  url: https://arxiv.org/abs/2405.10051
+  title: "MarkLLM: An Open-Source Toolkit for LLM Watermarking"
+  published_at: 2024-05-16
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Tsinghua University, University of Illinois at Chicago, Shanghai Jiao Tong University , The University of Sydney, UC Santa Barbara, Chinese University of Hong Kong, The Hong Kong University of Science and Technology, The Hong Kong University of Science and Technology (Guangzhou). Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.12689
+  url: https://arxiv.org/abs/2405.12689
+  title: "Spotting AI's Touch: Identifying LLM-Paraphrased Spans in Text"
+  published_at: 2024-05-21
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University, Westlake University, Jilin University, Tencent AI Lab. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.14488
+  url: https://arxiv.org/abs/2405.14488
+  title: "MoGU: A Framework for Enhancing Safety of Open-Sourced LLMs While Preserving Their Usability"
+  published_at: 2024-05-23
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Harbin Institute of Technology, Du Xiaoman Financial. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.15343
+  url: https://arxiv.org/abs/2405.15343
+  title: "Distinguish Any Fake Videos: Unleashing the Power of Large-scale Data and Motion Features"
+  published_at: 2024-05-24
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang Lab , Chinese University of Hong Kong, Zhejiang Univeristy, Ningbo Univeristy. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2405.19707
+  url: https://arxiv.org/abs/2405.19707
+  title: "DeMamba: AI-Generated Video Detection on Million-Scale GenVideo Benchmark"
+  published_at: 2024-05-30
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Ant Group, Nanjing University, Shanghai Jiao Tong University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2406.01179
+  url: https://arxiv.org/abs/2406.01179
+  title: "Are AI-Generated Text Detectors Robust to Adversarial Perturbations?"
+  published_at: 2024-06-03
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions University of Science and Technology of China, ByteDance Research, Peking University. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2406.04214
+  url: https://arxiv.org/abs/2406.04214
+  title: "ValueBench: Towards Comprehensively Evaluating Value Orientations and Understanding of Large Language Models"
+  published_at: 2024-06-06
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Peking University, PKU-Wuhan Institute for Artificial Intelligence. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2406.12718
+  url: https://arxiv.org/abs/2406.12718
+  title: "Mitigating Object Hallucinations in Large Vision-Language Models with Assembly of Global and Local Attention"
+  published_at: 2024-06-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Xi’an Jiaotong University , Zhejiang University of Technology, Nanyang Technological University, Lenovo Research, University of Massachusetts Boston, National Engineering Laboratory for Big Data Analytics. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2406.18259
+  url: https://arxiv.org/abs/2406.18259
+  title: "Detecting Machine-Generated Texts: Not Just \"AI vs Humans\" and Explainability is Complicated"
+  published_at: 2024-06-26
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Shanghai Jiao Tong University, University of Aberdeen, University of Kent. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2406.19568
+  url: https://arxiv.org/abs/2406.19568
+  title: "How Far are AI-generated Videos from Simulating the 3D Visual World: A Learned 3D Evaluation Approach"
+  published_at: 2024-06-27
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions The University of Hong Kong , Chinese University of Hong Kong. Release 2026-10-27: absent (in the store, skipped at triage)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2406.20087
+  url: https://arxiv.org/abs/2406.20087
+  title: "ProgressGym: Alignment with a Millennium of Moral Progress"
+  published_at: 2024-06-28
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Peking University, Cornell University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2407.01067
+  url: https://arxiv.org/abs/2407.01067
+  title: "Human-like object concept representations emerge naturally in multimodal large language models"
+  published_at: 2024-07-01
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions Chinese Academy of Sciences, South China University of Technology. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2407.05580
+  url: https://arxiv.org/abs/2407.05580
+  title: "$\\mathrm{E^{2}CFD}$: Towards Effective and Efficient Cost Function Design for Safe Reinforcement Learning via Large Language Model"
+  published_at: 2024-07-08
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Wuhan University, South China University of Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2407.15912
+  url: https://arxiv.org/abs/2407.15912
+  title: "The Shadow of Fraud: The Emerging Danger of AI-powered Social Engineering and its Possible Cure"
+  published_at: 2024-07-22
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Shanghai AI Laboratory, Macau University of Science and Technology, Eversec Technology Company Ltd., Chinese Academy of Sciences. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2407.20836
+  url: https://arxiv.org/abs/2407.20836
+  title: "Vulnerabilities in AI-generated Image Detection: The Challenge of Adversarial Attacks"
+  published_at: 2024-07-30
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions University of Science and Technology of China, Hefei University of Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2408.04449
+  url: https://arxiv.org/abs/2408.04449
+  title: "EARBench: Towards Evaluating Physical Risk Awareness for Task Planning of Foundation Model-based Embodied AI Agents"
+  published_at: 2024-08-08
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Chinese University of Hong Kong, Shenzhen, Tencent AI Lab, Tencent Robotics X, Nanjing University of Posts and Telecommunications. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.01787
+  url: https://arxiv.org/abs/2409.01787
+  title: "LLM-GAN: Construct Generative Adversarial Network Through Large Language Models For Explainable Fake News Detection"
+  published_at: 2024-09-03
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Fudan University, Alibaba Group. Release 2026-10-27: absent (in the store, skipped at triage)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.03274
+  url: https://arxiv.org/abs/2409.03274
+  title: "Recent Advances in Attack and Defense Approaches of Large Language Models"
+  published_at: 2024-09-05
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Chinese Academy of Sciences, Megvii, StepFun, Xidian University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.05112
+  url: https://arxiv.org/abs/2409.05112
+  title: "WaterSeeker: Pioneering Efficient Detection of Watermarked Segments in Large Documents"
+  published_at: 2024-09-08
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions University of Illinois Chicago, Chinese University of Hong Kong, Tsinghua University, The University of Sydney, Zhipu AI. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.11283
+  url: https://arxiv.org/abs/2409.11283
+  title: "Zero-resource Hallucination Detection for Text Generation via Graph-based Contextual Knowledge Triples Modeling"
+  published_at: 2024-09-17
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions National University of Defense Technology, Zhejiang University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.15762
+  url: https://arxiv.org/abs/2409.15762
+  title: "XTRUST: On the Multilingual Trustworthiness of Large Language Models"
+  published_at: 2024-09-24
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Jilin University, The Hong Kong University of Science and Technology (Guangzhou), China Engineering Research Center of Knowledge-Driven Human-Machine Intelligence, MOE. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.17167
+  url: https://arxiv.org/abs/2409.17167
+  title: "StressPrompt: Does Stress Impact Large Language Models and Human Performance Similarly?"
+  published_at: 2024-09-14
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Chinese Academy of Sciences, Beijing Institute of AI Safety and Governance. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2409.19708
+  url: https://arxiv.org/abs/2409.19708
+  title: "A Certified Robust Watermark For Large Language Models"
+  published_at: 2024-09-29
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2410.15631
+  url: https://arxiv.org/abs/2410.15631
+  title: "Security of Language Models for Code: A Systematic Literature Review"
+  published_at: 2024-10-21
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Nanjing University, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2410.18785
+  url: https://arxiv.org/abs/2410.18785
+  title: "Should We Really Edit Language Models? On the Evaluation of Edited Language Models"
+  published_at: 2024-10-24
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Hong Kong University of Science and Technology Guangzhou, Hong Kong Baptist University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2411.07597
+  url: https://arxiv.org/abs/2411.07597
+  title: "A Survey on Adversarial Machine Learning for Code Data: Realistic Threats, Countermeasures, and Interpretations"
+  published_at: 2024-11-12
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Xi’an Jiaotong university. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2411.11478
+  url: https://arxiv.org/abs/2411.11478
+  title: "SoK: On the Role and Future of AIGC Watermarking in the Era of Gen-AI"
+  published_at: 2024-11-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University, Hangzhou High-Tech Zone (Binjiang) Institute of Blockchain and Data Security, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.01615
+  url: https://arxiv.org/abs/2412.01615
+  title: "OmniGuard: Hybrid Manipulation Localization via Augmented Versatile Deep Image Watermarking"
+  published_at: 2024-12-02
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Peking University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.02104
+  url: https://arxiv.org/abs/2412.02104
+  title: "Explainable and Interpretable Multimodal Large Language Models: A Comprehensive Survey"
+  published_at: 2024-12-03
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions Hong Kong University of Science and Technology, Hong Kong University of Science and Technology (Guangzhou), Shanghai AI Laboratory, Renmin University of China, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.04300
+  url: https://arxiv.org/abs/2412.04300
+  title: "T2I-FactualBench: Benchmarking the Factuality of Text-to-Image Models with Knowledge-Intensive Concepts"
+  published_at: 2024-12-05
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Zhejiang University, Alibaba Group, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.06727
+  url: https://arxiv.org/abs/2412.06727
+  title: "Take Fake as Real: Realistic-like Robust Black-box Adversarial Attack to Evade AIGC Detection"
+  published_at: 2024-12-09
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Wuhan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.11934
+  url: https://arxiv.org/abs/2412.11934
+  title: "Stepwise Reasoning Error Disruption Attack of LLMs"
+  published_at: 2024-12-16
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions University of Science and Technology of China, City University of Hong Kong. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.13178
+  url: https://arxiv.org/abs/2412.13178
+  title: "SafeAgentBench: A Benchmark for Safe Task Planning of Embodied LLM Agents"
+  published_at: 2024-12-17
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Shanghai Jiao Tong University, Shanghai AI Lab, University of Georgia. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.14056
+  url: https://arxiv.org/abs/2412.14056
+  title: "A Review of Multimodal Explainable Artificial Intelligence: Past, Present and Future"
+  published_at: 2024-12-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions Xi’an Jiaotong University, Coventry University, University of Massachusetts Boston. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2412.18551
+  url: https://arxiv.org/abs/2412.18551
+  title: "Libra-Leaderboard: Towards Responsible AI through a Balanced Leaderboard of Safety and Capability"
+  published_at: 2024-12-24
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Shanghai Jiao Tong University, Peking University, Mohamed bin Zayed University of Artificial Intelligence, LibrAI, Tsinghua University, Concordia AI. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2501.01593
+  url: https://arxiv.org/abs/2501.01593
+  title: "BLAST: A Stealthy Backdoor Leverage Attack against Cooperative Multi-Agent Deep Reinforcement Learning based Systems"
+  published_at: 2025-01-03
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Northwestern Polytechnical University. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2501.12547
+  url: https://arxiv.org/abs/2501.12547
+  title: "Revealing emergent human-like conceptual representations from language prediction"
+  published_at: 2025-01-21
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (interpretability); institutions Fudan University, Shanghai Key Laboratory of Intelligent Information Processing, Shanghai Collaborative Innovation Center of Intelligent Visual, Computing. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2501.12612
+  url: https://arxiv.org/abs/2501.12612
+  title: "T2ISafety: Benchmark for Assessing Fairness, Toxicity, and Privacy in Image Generation"
+  published_at: 2025-01-22
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Shanghai AI Laboratory, Beihang University, Harbin Institute of Technology, Chinese University of Hong Kong (Shenzhen), University of Hong Kong. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.00840
+  url: https://arxiv.org/abs/2502.00840
+  title: "Activation Approximations Can Incur Safety Vulnerabilities Even in Aligned LLMs: Comprehensive Analysis and Defense"
+  published_at: 2025-02-02
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Zhejiang University, Sun Yat-Sen University, University of Waterloo. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.06418
+  url: https://arxiv.org/abs/2502.06418
+  title: "Robust Watermarks Leak: Channel-Aware Feature Extraction Enables Adversarial Watermark Manipulation"
+  published_at: 2025-02-10
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Zhejiang University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.07663
+  url: https://arxiv.org/abs/2502.07663
+  title: "Human Decision-making is Susceptible to AI-driven Manipulation"
+  published_at: 2025-02-11
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Tsinghua University, University of Hong Kong, University of Michigan, University of International Relations, University of Washington, Northwest Minzu University, Ant Group. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.12497
+  url: https://arxiv.org/abs/2502.12497
+  title: "Demystifying LLM Supply Chain Vulnerabilities in the Wild: Distribution, Root Cause, and Real-World Impact"
+  published_at: 2025-02-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Huazhong University of Science and Technology, 360 AI Security Lab. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.12566
+  url: https://arxiv.org/abs/2502.12566
+  title: "Exploring the Impact of Personality Traits on LLM Bias and Toxicity"
+  published_at: 2025-02-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Chinese Academy of Sciences, University of Macau, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.12734
+  url: https://arxiv.org/abs/2502.12734
+  title: "Iron Sharpens Iron: Defending Against Attacks in Machine-Generated Text Detection with Adversarial Training"
+  published_at: 2025-02-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Xi’an Jiaotong University, Queen Mary University of London. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.15902
+  url: https://arxiv.org/abs/2502.15902
+  title: "IPAD: Inverse Prompt for AI Detection - A Robust and Interpretable LLM-Generated Text Detector"
+  published_at: 2025-02-21
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Hong Kong University of Science and Technology, University of Hong Kong, Max Panck Institute, University of Michigan. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2502.16971
+  url: https://arxiv.org/abs/2502.16971
+  title: "LongSafety: Evaluating Long-Context Safety of Large Language Models"
+  published_at: 2025-02-24
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Tsinghua University, Zhipu AI. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2503.02368
+  url: https://arxiv.org/abs/2503.02368
+  title: "Evolutionary Guided Decoding: Iterative Value Refinement for LLMs"
+  published_at: 2025-03-04
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Shanghai AI Laboratory, Soochow University, Zhejiang University, Fudan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2503.08708
+  url: https://arxiv.org/abs/2503.08708
+  title: "TH-Bench: Evaluating Evading Attacks via Humanizing AI Text on Machine-Generated Text Detectors"
+  published_at: 2025-03-10
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Hong Kong University of Science and Technolog (Guangzhou). Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2503.13962
+  url: https://arxiv.org/abs/2503.13962
+  title: "Survey of Adversarial Robustness in Multimodal Large Language Models"
+  published_at: 2025-03-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Southeast University, Purple Mountain Laboratories, City University of Hong Kong. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2503.14504
+  url: https://arxiv.org/abs/2503.14504
+  title: "Aligning Multimodal LLM with Human Preference: A Survey"
+  published_at: 2025-03-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Chinese Academy of Sciences, Nanjing University, University of Science and Technology of China, Nanyang Technological University, Tsinghua University, Xiamen University, Hong Kong University of Science and Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2503.15092
+  url: https://arxiv.org/abs/2503.15092
+  title: "Towards Understanding the Safety Boundaries of DeepSeek Models: Evaluation and Findings"
+  published_at: 2025-03-19
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Beihang University, 360 AI Security Lab, Chinese Academy of Sciences, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.00429
+  url: https://arxiv.org/abs/2504.00429
+  title: "Unleashing the Power of Pre-trained Encoders for Universal Adversarial Attack Detection"
+  published_at: 2025-04-01
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Wuhan Institute of Technology, City University of Macau, Torrens University Australia. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.03128
+  url: https://arxiv.org/abs/2504.03128
+  title: "FontGuard: A Robust Font Watermarking Approach Leveraging Deep Font Knowledge"
+  published_at: 2025-04-04
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions University of Macau. Release 2026-10-27: absent (in the store, screened irrelevant)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.08863
+  url: https://arxiv.org/abs/2504.08863
+  title: "An Evaluation of Cultural Value Alignment in LLM"
+  published_at: 2025-04-11
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Alignment; institutions Tsinghua University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.13707
+  url: https://arxiv.org/abs/2504.13707
+  title: "OpenDeception: Learning Deception and Trust in Human-AI Interaction via Multi-Agent Simulation"
+  published_at: 2025-04-18
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Fudan University, Shanghai Innovation Institute. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.14554
+  url: https://arxiv.org/abs/2504.14554
+  title: "REDEditing: Relationship-Driven Precise Backdoor Poisoning on Text-to-Image Diffusion Models"
+  published_at: 2025-04-20
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Shanghai University, Beijing University of Posts and Telecommunications, National University of Singapore, Nanyang Technological University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.16727
+  url: https://arxiv.org/abs/2504.16727
+  title: "Unveiling the Lack of LVLM Robustness to Fundamental Visual Variations: Why and Path Forward"
+  published_at: 2025-04-23
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Hong Kong University of Science and Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2504.19567
+  url: https://arxiv.org/abs/2504.19567
+  title: "GenPTW: Latent Image Watermarking for Provenance Tracing and Tamper Localization"
+  published_at: 2025-04-28
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Fudan University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.12667
+  url: https://arxiv.org/abs/2505.12667
+  title: "Safe-Sora: Safe Text-to-Video Generation via Graphical Watermarking"
+  published_at: 2025-05-19
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Guangdong Laboratory of Artificial Intelligence and Digital Economy, South China University of Technology, Tsinghua University, Chinese Academy of Sciences, Singapore Management University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.12981
+  url: https://arxiv.org/abs/2505.12981
+  title: "From Assistants to Adversaries: Exploring the Security Risks of Mobile LLM Agents"
+  published_at: 2025-05-19
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Huazhong University of Science and Technology. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.16211
+  url: https://arxiv.org/abs/2505.16211
+  title: "AudioTrust: Benchmarking the Multifaceted Trustworthiness of Audio Large Language Models"
+  published_at: 2025-05-22
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Zhejiang University, Tsinghua University, Shanghai Jiao Tong University, Huazhong University of Science and Technology, Beijing Jiaotong University, Hong Kong Polytechnic University, Chinese Academy of Sciences, HKUST (Guangzhou), CUHK (Shenzhen). Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.17455
+  url: https://arxiv.org/abs/2505.17455
+  title: "Towards Evaluating Proactive Risk Awareness of Multimodal Language Models"
+  published_at: 2025-05-23
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Chinese University of Hong Kong (Shenzhen), Renmin University, Johns Hopkins University. Release 2026-10-27: absent (in the store, not screened)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.17735
+  url: https://arxiv.org/abs/2505.17735
+  title: "SafeAgent: Safeguarding LLM Agents via an Automated Risk Simulator"
+  published_at: 2025-05-23
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Robustness; institutions Huazhong University of Science and Technology, Shanghai Jiao Tong University, Duke University, Lehigh University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.18746
+  url: https://arxiv.org/abs/2505.18746
+  title: "$C^3$-Bench: The Things Real Disturbing LLM based Agent in Multi-Tasking"
+  published_at: 2025-05-24
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Monitoring (evaluations); institutions Tencent AI Lab. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage
+- override_id: ms-cn-cdb-2505.21620
+  url: https://arxiv.org/abs/2505.21620
+  title: "VideoMarkBench: Benchmarking Robustness of Video Watermarking"
+  published_at: 2025-05-27
+  note: "Concordia AI Chinese Technical AI Safety Database (2025-07 export), direction Systemic Safety; institutions Ant Group, Duke University. Release 2026-10-27: absent (not in the store)."
+  added_by: china-coverage

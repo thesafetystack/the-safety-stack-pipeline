@@ -1,0 +1,51 @@
+# Taxonomy files of the taxonomies data repository (repository-code in its CITATION.cff: thesafetystack/the-safety-stack;
+# layout taxonomies/<name>/<name>-<version>.yaml, one annotated tag per file, named as the file without .yaml), which
+# this repository carries as a git subtree at data-repo/ (the single source of these bytes). Each entry: the
+# pipeline path, a relative symlink to data-repo/<source>; the data-repository tag; the file's path there; its
+# sha256 (the full-file digest the pins and work keys carry). tests/test_vendored_taxonomies.py checks every path
+# here is that symlink, its bytes match the sha256 and its `version` field the tag. The pipeline paths stay because
+# plans, stored run records (plan_pin.taxonomy) and eval records name them.
+# To take a new version: `git subtree pull --prefix=data-repo <data repo> main --squash`, then a new symlink
+# (or, for configs/models.yaml, which model_roles reads by name, stack.modelvocab, a re-pointed one) and its entry;
+# keep a superseded path while a pin, an eval set, a stored run or a test names it. Each released version also has
+# a per-version path (taxonomy/models-<version>.yaml beside configs/models.yaml), which the dataset release resolves
+# by the sha256 a stored run pinned (stack/fold/dataset.py, D758), so rows judged under an earlier version export. A subtree pull that changes the
+# bytes of a file listed here fails the sha256 check: a released file does not change. A `tag` names the data
+# repository's annotated tag of that file; techniques-1.1.0, models-1.1.0 and orgs-0.2.0 (D738) are tagged when the
+# data repository branch is pushed. orgs-0.2.2 (D778) was written into the subtree here first: the data repository
+# takes the same bytes (and its tag) before this branch's subtree is pulled again.
+source_repository: thesafetystack/the-safety-stack
+subtree: data-repo
+files:
+  taxonomy/techniques-1.1.0.yaml:
+    tag: techniques-1.1.0
+    source: taxonomies/techniques/techniques-1.1.0.yaml
+    sha256: 1bf1c50b08b816b9dfcaca35ae56eb8c3834e990451fa0d17e050e9e00954cc1
+  taxonomy/techniques-1.0.0.yaml:
+    tag: techniques-1.0.0
+    source: taxonomies/techniques/techniques-1.0.0.yaml
+    sha256: 9957124474b6ab2e3328ee0231132449110e67b52f4eb0f17e1a0c5860a64d8b
+  taxonomy/taxonomy-v0.9.1.yaml:
+    tag: techniques-0.9.1
+    source: taxonomies/techniques/techniques-0.9.1.yaml
+    sha256: 09fa7705b7ba6a750eb158fb3808b0d25f4d84764522a055f8abd7b1fe1827db
+  configs/models.yaml:
+    tag: models-1.1.0
+    source: taxonomies/models/models-1.1.0.yaml
+    sha256: bd731a85743c86d9c0fe2a909ecf35c5713edb353ecc5d4b3056d968194ec911
+  taxonomy/models-1.1.0.yaml:
+    tag: models-1.1.0
+    source: taxonomies/models/models-1.1.0.yaml
+    sha256: bd731a85743c86d9c0fe2a909ecf35c5713edb353ecc5d4b3056d968194ec911
+  taxonomy/models-1.0.0.yaml:
+    tag: models-1.0.0
+    source: taxonomies/models/models-1.0.0.yaml
+    sha256: d7f1bae80e5b1dd9a978cecad8d78cba7be7adebd0fa5bdc99692b731aa4acb5
+  taxonomy/orgs-0.2.2.yaml:
+    tag: orgs-0.2.2
+    source: taxonomies/orgs/orgs-0.2.2.yaml
+    sha256: 0ce69dab6be13ed988b6932223dca256422d0d832cc4dc7fa13b194800072ed0
+  taxonomy/orgs-0.2.0.yaml:
+    tag: orgs-0.2.0
+    source: taxonomies/orgs/orgs-0.2.0.yaml
+    sha256: 839d07ad6f9c4157604860743fb7af47935288e7c8ad26b12e759731d49bc997

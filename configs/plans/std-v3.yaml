@@ -1,0 +1,99 @@
+# std-v3: the full-run plan (round 5, T-RUN; docs/DECISIONS.md D242-D277 (RUN) and this file's D-entry). The first
+# backfill from 2025-10-01 and the weekly runs after it use this one plan; each build continues from the head of each
+# of its series' directories (data/<family>/std-v3/), whichever build or run wrote it (configs/plans/README.md).
+# Differences from std-v2 (the 2026-10-13 decisions, round 5 measurements; "default taken" where marked in DECISIONS):
+# - collectors from 2025-10-01 (later 2024-11-30: change `from` on the six search lines; only the gap is swept, D272);
+#   OpenAlex/S2 `max_records` raised (cursor paging, no 5,000 truncation), LessWrong tags in 30-day sub-windows, the
+#   arXiv keyword family over umbrella + the 20 SR groups; cuts C2/C3/C6/C9 are in channels.yaml 1.11.0 (D270), the
+#   backfill cuts (publisher and self-publication works out of the OpenAlex/S2 keyword groups, AI-term filter on 24
+#   OpenAlex groups, three S2 groups off) in 1.12.0 (D304-D306, docs/design/collection-yield.md §10);
+#   C8 not adopted (D277); authors are concrete people, never accidental name matches (T-ARX, D285): the arXiv name sweep is off (`families: [kw, cat]`, its code kept) and `collect.openalex`
+#   sweeps the roster's resolved OpenAlex author ids (`author_ids: true`, all work types, not arXiv-only); a roster
+#   name without an id is not searched by name;
+# - convert pymupdf4llm-v1 (the backfill converter) with structured text first (JATS, arXiv
+#   LaTeXML HTML, PDF fallback; D276) and `expect_pin` (D250): the run needs a venv synced with
+#   `uv sync --group convert-pdf` (pymupdf4llm 1.28.0, pymupdf 1.28.0, trafilatura 2.2.0, fetchpdf @5bef000, lxml 6.1.1);
+# - workers as measured in round 5 (D271): triage/screen/affiliation 16, fetch 8 hosts, convert 4;
+# - a stage that hits its budget, row or time cap leaves an `incomplete` build that the next build resumes (D265):
+#   run `stack build std-v3 --passes N`; each run's spend is in its run record (T-STORE D328).
+# Store: an S3 store, `--store s3://<bucket>/<prefix>` (docs/howto/container-lifecycle.md, docs/howto/s3-store.md).
+plan: std-v3
+schema_version: 2
+series: std-v3                     # default series of every line's in/out (configs/plans/README.md)
+prompts:
+  triage.safety-relevance-v3: {name: safety-relevance-v3, model: openai/gpt-6-luna}
+  annotate.screen: {name: screen-v12, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-6-luna}
+  annotate.affiliation: {name: affiliation-v1, role: extract_main}
+gate:
+  screen:
+    - {rule: frontier_lab_posts}
+    - {rule: safety_org_posts}
+    - {rule: zvi_posts}
+    - {question: safety_relevance, prompt: triage.safety-relevance-v3, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  # pin 625b4004… = pymupdf4llm-v1 + structured {jats, arxiv_html} with the tool versions above (D250, D276)
+  convert: {config: pymupdf4llm-v1, expect_pin: 625b4004ba867f61}
+  wants: {arxiv: [full_text, html], openalex: [full_text, xml], semantic_scholar: [full_text], lesswrong: [post],
+          # `blogs` and `repos` are design names that match no channel (blog posts arrive under their own channel
+          # ids below; no collector writes `repos`): inert, kept so the plan digest does not change (review R3-8a)
+          blogs: [page], x: [post],
+          repos: [readme],
+          alignmentforum: [post],
+          anthropic_alignment_blog: [page], openai_blog: [page], openai_alignment_blog: [page],
+          transformer_circuits: [page], google_research: [page], mistral_blog: [page], deepmind_blog: [page],
+          anthropic_cards: [page], openai_cards: [page], deepmind_cards: [page], meta_cards: [page],
+          xai_cards: [page], deepseek_cards: [page], qwen_cards: [page], miri_blog: [page], metr_blog: [page],
+          transluce_blog: [page], goodfire_blog: [page], uk_aisi_blog: [page], redwood_blog: [page],
+          apollo_blog: [page], arc_blog: [page], epoch_blog: [page], forethought_blog: [page], far_ai_blog: [page],
+          timaeus_blog: [page], clr_blog: [page], softmax_blog: [page], meaning_alignment_blog: [page],
+          cooperative_ai_blog: [page]}
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability, doc_class, affiliation]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: false
+recovery: {dead_run_charge: false}
+stages:
+  # Collectors from 2025-10-01 (B7a's lines, D272). OpenAlex keyed through the metered path (D259): per-run cap $3.
+  # The keyword and category families only: the author (name) family is off (T-ARX; authors come by OpenAlex id).
+  - {stage: collect.arxiv_sweep, out: {kind: part}, prior: [sources, coverage], options: {from: "2025-10-01", families: [kw, cat],
+     keyword_groups: [umbrella, decision-theory-af, decision-theory, acausal, anthropics, infra-bayes,
+       natural-abstractions, tiling, program-equilibrium, game-theory-ai, gradual-disempowerment,
+       alignment-targets, social-choice-ai, model-psychology, introspection, agi-metrics,
+       heuristic-arguments, brain-like-agi, scientist-ai, steerability, shard-theory]}}
+  - {stage: collect.openalex, out: {kind: part}, prior: [sources, coverage], options: {from: "2025-10-01", max_records: 100000, max_usd: 3.00,
+     author_ids: true}}
+  - {stage: collect.semantic_scholar, out: {kind: part}, prior: [sources, coverage], options: {from: "2025-10-01", max_records: 100000}}
+  - {stage: collect.forums, out: {kind: part}, prior: [sources, coverage], options: {from: "2025-10-01", max_records: 20000}}
+  - {stage: collect.af_graphql, out: {kind: part}, prior: [sources, coverage], options: {from: "2025-10-01"}}
+  - {stage: collect.lw_graphql, out: {kind: part}, prior: [sources, coverage], options: {from: "2025-10-01", subwindow_days: 30,
+     tags: [ai, decision-theory, anthropics, acausal-trade, agent-foundations, embedded-agency, logical-induction,
+            updateless-decision-theory, functional-decision-theory, natural-abstraction, infra-bayesianism,
+            game-theory, logical-uncertainty]}}
+  - {stage: collect.blogs, out: {kind: part}, prior: [sources, coverage]}          # whole feed histories (C10: no floor)
+  - {stage: collect.cards, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.openalex-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3,
+     options: {max_usd: 1.00}}
+  # Enrichment, retried next build: without an S2 key it stops at its first 429'd batch, and that shortfall must not
+  # keep every build `incomplete` (R6 item 1; `require_complete: false` on the line). A failed run still fails the build.
+  - {stage: collect.s2-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3, require_complete: false}
+  - {stage: collect.card-dates-lookup, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: gather}
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 20}, options: {workers: 16}}
+  # 90 min of fetch per acquire run, then up to 90 min of convert on its own clock (D483), up to 4 runs per build
+  # (up to 12 h); what is left resumes in the next build/pass (D265).
+  - {stage: acquire, out: {kind: part}, budget: {max_minutes: 90}, repeat: {until: scope_complete, max_runs: 4},
+     options: {fetch_workers: 8, convert_workers: 4, structured: {jats: true, arxiv_html: true}}}
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 40},
+     options: {screen_usd_per_1k: 3.0, workers: 16}}
+  # structured texts are current with role xml/html (D276), so the byline filter takes all three paper roles
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], options: {workers: 16},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role IN ('full_text', 'xml', 'html')"}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents, screen, screen_evidence]

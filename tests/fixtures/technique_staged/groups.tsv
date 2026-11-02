@@ -1,0 +1,3 @@
+slug	name	family	definition	children	aliases
+policy-alignment	Safety-policy-guided alignment	constitutional-ai-feedback	Derives training signals from an explicit safety policy.	constitutional-ai,rlhf	policy-guided alignment | Policy alignment (old name) (legacy)
+runtime-monitoring	Agent runtime monitoring	agentic-control	Group node for runtime monitors of agent actions.	chain-of-thought-monitoring,anomaly-detection	

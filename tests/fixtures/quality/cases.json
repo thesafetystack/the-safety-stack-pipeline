@@ -1,0 +1,65 @@
+{
+ "abs-landing-page": {
+  "role": "full_text",
+  "media_type": "text/html",
+  "raw_bytes": 41870,
+  "note": "a preprint server's abstract landing page stored as a paper body: landing-page labels, no body section; fails abstract_only"
+ },
+ "press-article": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "a complete article laid out as an Article-in-Press PDF (banner on the first page), references at the end; ok, and in_press"
+ },
+ "press-references": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "the reference section of the same kind of PDF alone; fails references_only, and in_press"
+ },
+ "press-running-headers": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "a body whose journal name, DOI and Article-in-Press line repeat on every page; flags repeated_lines, and in_press"
+ },
+ "indonesian-paper": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "a paper written in Indonesian; flags non_english"
+ },
+ "japanese-abstract": {
+  "role": "abstract",
+  "media_type": "text/plain",
+  "note": "an in-band abstract mostly in Japanese with English terms; flags non_latin, not non_english"
+ },
+ "latex-residue-page": {
+  "role": "page",
+  "media_type": "text/html",
+  "note": "a web page whose rendered formulas came through as raw LaTeX source; flags latex_residue"
+ },
+ "toc-dot-leaders": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "a PDF table of contents with dot leaders: the glyph-run pattern matches, the glyph_runs metric stays 0"
+ },
+ "figure-text": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "PDF text around a figure whose axis ticks and legend came out as a picture-text block; flags figure_text"
+ },
+ "short-blog-post": {
+  "role": "page",
+  "media_type": "text/html",
+  "raw_bytes": 331520,
+  "note": "a short but complete blog post from a heavy HTML page, text-to-raw ratio just above the flag; ok"
+ },
+ "abstract-only-page": {
+  "role": "page",
+  "media_type": "text/html",
+  "raw_bytes": 318406,
+  "note": "a research page that is only an abstract and a link, from a heavy HTML page; flags low_text_ratio, not too_short"
+ },
+ "replacement-chars-pdf": {
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "note": "PDF text whose figure block came out as U+FFFD replacement characters; fails replacement (quality_garbled)"
+ }
+}

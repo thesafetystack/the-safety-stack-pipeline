@@ -1,0 +1,41 @@
+# TEST-ONLY plan of the two-pass build test (tests/test_passes_build.py): the real stages over an empty store,
+# every transport faked (the arXiv Atom API at the collector harness seam, the model through
+# stack.annotate.stage.TRANSPORT_HOOK, the arXiv acquire lane as a FakeLane). dev-v2-m4's prompt pins and gate
+# shape (one question, fetch_on [relevant, borderline], the url rule) without the source rules; one collector.
+plan: synth-passes
+schema_version: 2
+series: main
+prompts:
+  triage.safety-relevance-v3: {name: safety-relevance-v3, model: openai/gpt-6-luna}
+  annotate.screen: {name: screen-v11, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-5.6-terra}
+  annotate.affiliation: {name: affiliation-v1, role: extract_main}
+gate:
+  screen:
+    - {question: safety_relevance, prompt: triage.safety-relevance-v3, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  convert: {config: pymupdf4llm-v1}
+  wants:
+    arxiv: [full_text]
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability, affiliation]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: false
+recovery: {dead_run_charge: false}
+stages:
+  - {stage: collect.arxiv_sweep, out: {kind: part}, prior: [sources, coverage], options: {families: [author], max_records: 10}}
+  - {stage: gather}
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 1}}
+  # allow_degraded_convert: the suite runs in any venv (the convert pin guard, R4-1)
+  - {stage: acquire, out: {kind: part}, repeat: {until: scope_complete, max_runs: 2}, options: {allow_degraded_convert: true}}
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 1}}
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], budget: {max_usd: 1},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role = 'full_text'"}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents]

@@ -1,0 +1,133 @@
+# ann-scratch: the T-ANN real-run plan (round 5, D235-D238). A copy of configs/plans/dev-v2-m4.yaml at bdbb94e,
+# renamed, plus annotate.model_roles (model mentions and their roles in one stage since D591; annotate.model_mentions
+# merged into it) and annotate.technique_roles (the taxonomy-menu judge, basis text) and their pins, scoped to the
+# screened-in rows by a scope read of stack_relevance (D235).
+# Gate, acquire, collectors and caps are dev-v2-m4's as of that commit (its header gives their decisions). dev-v2-m4
+# moved on after the copy (screen-v12 with doc_class, B6 worker counts, screen_usd_per_1k); this plan did not: screen
+# is screen-v11 with tier 2 on gpt-5.6-terra, and no line sets a worker count.
+plan: ann-scratch
+schema_version: 2
+series: ann-scratch                     # default series of every line's in/out (configs/plans/README.md)
+prompts:
+  triage.safety-relevance-v3: {name: safety-relevance-v3, model: openai/gpt-6-luna}
+  annotate.screen: {name: screen-v11, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-5.6-terra}
+  annotate.affiliation: {name: affiliation-v1, role: extract_main}
+  annotate.model_roles: {name: model-roles-v2, role: extract_main, model: openai/gpt-6-luna}
+  annotate.technique_roles: {name: technique-roles-v2, role: extract_main, model: openai/gpt-6-luna}
+  # techpipe (D602): annotate.technique_staged, INACTIVE (commented out with `#ts# `; the pin and the stage line below
+  # go together, and fold.build's annotations_folded would need technique_staged). Validated uncommented by
+  # tests/test_annotate_technique_staged.py. The production choice (D640): single mode, the inventory-first prompt
+  # set v3, the 234-entry taxonomy v0.9.1.
+  #ts# annotate.technique_staged: {name: technique-staged-v3, role: extract_staged, mode: single, model: openai/gpt-6-luna,
+  #ts#                             taxonomy: taxonomy/taxonomy-v0.9.1.yaml}
+gate:
+  screen:
+    # M2-M3: sql-only `abstract IS NOT NULL OR inband_text_sha256 IS NOT NULL OR channel_group = 'url'` (D37).
+    # M4: std-v2's shape; the question for rows with a basis, the url rule for rows without one.
+    # S5: source rules first (stack/rules.py; a rule-fetched row is not asked the question).
+    - {rule: frontier_lab_posts}
+    - {rule: safety_org_posts}
+    - {rule: zvi_posts}
+    - {question: safety_relevance, prompt: triage.safety-relevance-v3, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  convert: {config: pymupdf4llm-v1}        # D39: dev plans pin tier 2. docling-v2 qualified as opt-in (T3.5b, D119:
+                                           # median 123 s per PDF on CPU, needs RLIMIT_DATA 48 GB; RUNLOG 2026-10-12)
+  wants:                                   # keyed by channel id of configs/channels.yaml (D11);
+    arxiv: [full_text]                     # blogs/repos are design names, no channels
+    openalex: [full_text, xml]
+    semantic_scholar: [full_text]
+    europepmc: [full_text, xml]
+    lesswrong: [post]
+    alignmentforum: [post]
+    blogs: [page]
+    repos: [readme]
+    anthropic_alignment_blog: [page]       # every url channel of kind scrape/watch (not card_dates)
+    openai_blog: [page]
+    openai_alignment_blog: [page]
+    transformer_circuits: [page]
+    google_research: [page]
+    mistral_blog: [page]
+    deepmind_blog: [page]
+    miri_blog: [page]                  # source rule safety_org_posts (S5): their pages are wanted
+    metr_blog: [page]
+    transluce_blog: [page]
+    goodfire_blog: [page]
+    uk_aisi_blog: [page]
+    redwood_blog: [page]
+    apollo_blog: [page]
+    arc_blog: [page]
+    epoch_blog: [page]
+    forethought_blog: [page]
+    far_ai_blog: [page]
+    timaeus_blog: [page]
+    clr_blog: [page]
+    softmax_blog: [page]
+    meaning_alignment_blog: [page]
+    cooperative_ai_blog: [page]
+    anthropic_cards: [page]
+    openai_cards: [page]
+    deepmind_cards: [page]
+    meta_cards: [page]
+    xai_cards: [page]
+    deepseek_cards: [page]
+    qwen_cards: [page]
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability, affiliation,
+                                            model_roles, model_regexp_matches, technique_roles]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: true
+recovery: {dead_run_charge: false}
+stages:
+  # Collector stage names = v3 directories, chains sources.<suffix>/coverage.<suffix> (D92). Real windows per
+  # PLAN T2.2-T2.6; option names are the collectors' (D72), v3 env overrides win when set.
+  - {stage: collect.arxiv_sweep, out: {kind: part}, prior: [sources, coverage], options: {window_days: 21, fraction: 0.1}}
+  - {stage: collect.openalex, out: {kind: part}, prior: [sources, coverage],
+     options: {window_days: 3, window_end_days_ago: 14, max_records: 300,
+              queries: [group:umbrella, group:jailbreak]}}
+  - {stage: collect.semantic_scholar, out: {kind: part}, prior: [sources, coverage], options: {max_pages: 1}}
+  - {stage: collect.forums, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 200}}
+  - {stage: collect.af_graphql, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 200}}
+  - {stage: collect.lw_graphql, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 500,
+     tags: [ai, decision-theory, anthropics, acausal-trade, agent-foundations, embedded-agency, logical-induction,
+            updateless-decision-theory, functional-decision-theory, natural-abstraction, infra-bayesianism,
+            game-theory, logical-uncertainty]}}
+  - {stage: collect.blogs, out: {kind: part}, prior: [sources, coverage], options: {max_channels: 5}}
+  - {stage: collect.cards, out: {kind: part}, prior: [sources, coverage], options: {max_urls: 20}}
+  - {stage: collect.openalex-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3,
+     options: {max_records: 200}}
+  - {stage: collect.s2-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3,
+     options: {max_records: 50}}
+  - {stage: collect.card-dates-lookup, out: {kind: part}, prior: [sources, coverage]}   # reads the documents head (T2.6)
+  - {stage: gather}
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 1.5}, options: {max_rows: 200}}
+  - {stage: acquire, out: {kind: part}, budget: {max_minutes: 20}, repeat: {until: scope_complete, max_runs: 2},
+     options: {max_rows: 50}}
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 3}, options: {max_rows: 50}}
+  # affiliation reads bylines: papers with a full text only (v3 scope paper/preprint; journal/conference are
+  # doc_type values collectors emit outside enums.yaml); D182 (C)
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], budget: {max_usd: 1.5},
+     options: {max_rows: 20},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role = 'full_text'"}
+  # T-ANN (D235, D591, D593): model mentions (the LLM-free matcher) and their roles (one judge call per document,
+  # also on an empty or weak-only menu) on the screened-in rows; stack_relevance is a scope read (in the filter, not
+  # in the basis).
+  - {stage: annotate.model_roles, prior: [model_roles, model_roles_evidence], reads: [stack_relevance],
+     filter: "ann_verdict(annotations, 'stack_relevance') = 'relevant'", budget: {max_usd: 0.5},
+     options: {max_rows: 30}}
+  # technique roles against the whole taxonomy (v0.8) as the menu; basis text, scoped like model_roles.
+  - {stage: annotate.technique_roles, prior: [technique_roles, technique_roles_evidence], reads: [stack_relevance],
+     filter: "ann_verdict(annotations, 'stack_relevance') = 'relevant'", budget: {max_usd: 0.6},
+     options: {max_rows: 30}}
+  # techpipe (D602, D640): the technique annotation on taxonomy v0.9.1, INACTIVE (see its pin above).
+  #ts# - {stage: annotate.technique_staged, prior: [technique_staged, technique_staged_evidence], reads: [stack_relevance],
+  #ts#    filter: "ann_verdict(annotations, 'stack_relevance') = 'relevant'", budget: {max_usd: 0.5},
+  #ts#    options: {max_rows: 10}}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents]

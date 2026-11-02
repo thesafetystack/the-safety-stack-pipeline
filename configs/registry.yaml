@@ -1,0 +1,392 @@
+# registry.yaml — subject-model registry + orgs, and the active-taxonomy pin (10-design §8).
+# Aliases are ORDERED first-match regexes (strata-style); canon_model/canon_org walk them
+# top-to-bottom and the first match wins (§9.3). Validated against registry.schema.json.
+version: "1.2.1"   # 1.2.1 (2026-11-02): comments only (no paths into removed trees); no value moves.
+                   # 1.2.0: +5 orgs (scale-ai, lawzero, shanghai-ai-lab, mila, vector) and
+                   #   alias gaps closed on microsoft (bare) + meta-ai ("Meta FAIR"), each
+                   #   measured against a 200-paper eval. 1.1.0: orgs 4 -> 32 (v1 orgs.yaml
+                   #   port). Additive throughout — no existing slug/alias changes meaning (§8.1).
+
+# The registry pins the active taxonomy version; runtime workflows read exactly this file (§8).
+taxonomy:
+  active: "0.6"
+  file: taxonomy-v0.6.yaml    # THE taxonomy: 292 techniques, 15 facets (ported 2026-07-23 from
+                               # taxonomy/taxonomy-v0.6.yaml). The shape example taxonomy-sample.yaml
+                               # is in v3's configs/.
+  # NOT the technique_roles menu: annotate.technique_roles reads taxonomy/taxonomy-v0.8.yaml
+  # (repo root, 292 techniques, 17 families) through its own loader, the module constant
+  # TAXONOMY_PATH in workflows/annotate/technique_roles/main.py (D268): v0.8 fails this pin's
+  # TaxonomyConfig (`aliases`), so this pin stays 0.6 for the code that reads it (channels).
+
+models:
+  - slug: claude-4-opus
+    name: Claude 4 Opus
+    org: anthropic
+    family: claude
+    released: "2026-03-11"
+    generation: 4
+    attributes: { context_window: 1000000, modality: [text, vision] }
+    aliases:
+      - "(?i)\\bclaude[- ]?4([.\\- ]?opus| opus)\\b"   # match specific opus before the generic claude-4 catch
+      - "(?i)\\bclaude-opus-4[0-9-]*\\b"
+
+  - slug: gpt-5.2
+    name: GPT-5.2
+    org: openai
+    family: gpt
+    released: "2026-02-04"
+    generation: 6
+    aliases:
+      - "(?i)\\bgpt[- ]?5\\.2\\b"
+      - "(?i)\\bopenai/gpt-5\\.2\\b"
+
+  - slug: gemini-2.5-pro
+    name: Gemini 2.5 Pro
+    org: deepmind
+    family: gemini
+    released: "2025-06-17"
+    generation: 3
+    aliases:
+      - "(?i)\\bgemini[- ]?2\\.5[- ]?pro\\b"
+      - "(?i)\\bgoogle/gemini-2\\.5-pro\\b"
+
+  - slug: claude-haiku-4.5
+    name: Claude Haiku 4.5
+    org: anthropic
+    family: claude
+    released: "2025-10-15"
+    generation: 4
+    aliases:
+      - "(?i)\\bclaude[- ]?haiku[- ]?4\\.5\\b"
+      - "(?i)\\banthropic/claude-haiku-4\\.5\\b"
+
+# ORDER IS PRECEDENCE. canon_org/canon_model walk the FLATTENED (entry, alias) list top to
+# bottom and the first match wins, so a more specific entry MUST sit above the entry it would
+# otherwise be swallowed by. Two such pairs exist and are covered by tests/test_canon.py:
+#   microsoft-research  above  microsoft     ("Microsoft Research" is not bare Microsoft)
+#   us-aisi             above  uk-aisi       ("US AI Safety Institute" contains "AI Safety
+#                                              Institute" — v1's orgs.yaml had these the wrong
+#                                              way round and silently tagged US AISI as UK)
+# Aliases are matched against AFFILIATION SURFACES (byline legends, institution names), never
+# against document body text — which is what makes short bare aliases like `conjecture` and
+# `miri` safe here and unsafe anywhere else.
+#
+# Whole-word `\b` anchors are load-bearing, not decoration (v1's scars): `metr` must not hit
+# "metric"/"parametric", `cohere` must not hit "coherence", `far ai` must not hit "FAIR", and
+# bare `xai` is omitted entirely because it collides with "explainable AI (XAI)". Likewise bare
+# `meta` is omitted (meta-analysis, meta-learning) and bare `moonshot` (generic project usage).
+#
+# `domains:` (email-domain corroboration, canon.org_for_domain) lists only DISTINCTIVE domains
+# that map unambiguously to one org; broad shared domains (google.com, microsoft.com, *.edu)
+# are deliberately absent so the tier stays corroboration, never a source of misattribution.
+orgs:
+  # ── frontier labs ───────────────────────────────────────────────────────────
+  - slug: anthropic
+    name: Anthropic
+    kind: lab
+    domains: [anthropic.com]
+    openalex_ids: [I4387930290]   # curated by hand; never auto-adopted (orgs.yaml lesson)
+    aliases:
+      - "(?i)\\banthropic\\b"
+
+  - slug: openai
+    name: OpenAI
+    kind: lab
+    domains: [openai.com]
+    openalex_ids: [I4210161460]
+    aliases:
+      - "(?i)\\bopenai\\b"
+
+  - slug: deepmind
+    name: Google DeepMind
+    kind: lab
+    domains: [deepmind.com]         # google.com omitted — ambiguous with Google Research
+    openalex_ids: [I4210090411]
+    aliases:
+      - "(?i)\\bgoogle deepmind\\b"
+      - "(?i)\\bdeepmind\\b"
+
+  - slug: meta-ai
+    name: Meta AI (FAIR)
+    kind: lab
+    openalex_ids: [I4210114444, I4210111288]   # Meta US + UK
+    aliases:
+      - "(?i)\\bmeta ai\\b"
+      - "(?i)\\bmeta fair\\b"       # 11 hits in a 200-paper eval that matched nothing before
+      - "(?i)\\bfacebook ai research\\b"
+      - "(?i)\\bfundamental ai research\\b"
+      - "(?i)\\bmeta genai\\b"
+      - "(?i)\\bmeta superintelligence labs\\b"
+
+  - slug: xai
+    name: xAI
+    kind: lab
+    domains: [x.ai]
+    openalex_ids: [I4401726768]
+    aliases:
+      - "(?i)\\bx\\.ai\\b"          # bare "xai" omitted — collides with "explainable AI (XAI)"
+
+  - slug: deepseek
+    name: DeepSeek
+    kind: lab
+    domains: [deepseek.com]
+    openalex_ids: [I4405257960]
+    aliases:
+      - "(?i)\\bdeepseek[- ]?ai\\b"
+      - "(?i)\\bdeepseek\\b"
+
+  - slug: alibaba
+    name: Alibaba
+    kind: lab
+    domains: [alibaba-inc.com]
+    openalex_ids: [I45928872, I4210095624]     # Alibaba Group CN + US
+    aliases:
+      - "(?i)\\balibaba (?:group|cloud)\\b"
+      - "(?i)\\balibaba\\b"
+      - "(?i)\\bdamo academy\\b"
+      - "(?i)\\btongyi lab\\b"
+      - "(?i)\\bqwen(?: team)?\\b"
+
+  # ── other companies (research arms, infra, non-frontier developers) ─────────
+  - slug: microsoft-research           # MUST precede `microsoft` (see header)
+    name: Microsoft Research
+    kind: company
+    openalex_ids: [I4210164937, I4210113369, I4210124949]   # MSR UK + Asia + India
+    aliases:
+      - "(?i)\\bmicrosoft research\\b"
+
+  - slug: google-research
+    name: Google Research
+    kind: company
+    openalex_ids: [I1291425158]        # "Google (United States)" — no separate Research entity
+    aliases:
+      - "(?i)\\bgoogle research\\b"
+      - "(?i)\\bgoogle brain\\b"
+
+  - slug: microsoft
+    name: Microsoft
+    kind: company
+    domains: [microsoft.com]
+    openalex_ids: [I1290206253]
+    aliases:
+      - "(?i)\\bmicrosoft corporation\\b"
+      - "(?i)\\bmicrosoft ai\\b"
+      # Bare "Microsoft" — 29 hits in a 200-paper eval that matched nothing. SAFE only because
+      # `microsoft-research` is a separate entry ABOVE this one, so "Microsoft Research" is
+      # claimed there first (v1's "never upgrade a bare parent to a research division" rule,
+      # enforced by ordering; tests/test_canon.py pins it).
+      - "(?i)\\bmicrosoft\\b"
+
+  - slug: mistral
+    name: Mistral AI
+    kind: company
+    domains: [mistral.ai]
+    openalex_ids: [I4390039361]
+    aliases:
+      - "(?i)\\bmistral[ .]ai\\b"
+
+  - slug: cohere
+    name: Cohere
+    kind: company
+    domains: [cohere.com, cohere.ai]
+    openalex_ids: [I4401726847]
+    aliases:
+      - "(?i)\\bcohere for ai\\b"
+      - "(?i)\\bcohere\\b"           # whole-word: won't hit "coherence"
+
+  - slug: nvidia
+    name: NVIDIA
+    kind: company
+    domains: [nvidia.com]
+    openalex_ids: [I4210127875, I1304085615]   # NVIDIA US + UK
+    aliases:
+      - "(?i)\\bnvidia\\b"
+
+  - slug: amazon
+    name: Amazon
+    kind: company
+    domains: [amazon.com]
+    # NOT I4210098009 "Amazon Research Foundation" — that is Brazil's Amazônia agency
+    openalex_ids: [I1311688040, I4210089985]   # Amazon US + DE
+    aliases:
+      - "(?i)\\bamazon agi(?: labs)?\\b"
+      - "(?i)\\bamazon\\b"
+      - "(?i)\\baws\\b"
+
+  - slug: moonshot
+    name: Moonshot AI
+    kind: company
+    openalex_ids: [I4405260227]
+    aliases:
+      - "(?i)\\bmoonshot[ .]ai\\b"   # bare "moonshot" omitted — generic project usage
+
+  - slug: bytedance
+    name: ByteDance
+    kind: company
+    openalex_ids: [I4405256866]
+    aliases:
+      - "(?i)\\bbytedance (?:research|seed)\\b"
+      - "(?i)\\bbyte ?dance\\b"
+
+  - slug: tencent
+    name: Tencent
+    kind: company
+    openalex_ids: [I2250653659]
+    aliases:
+      - "(?i)\\btencent (?:ai lab|hunyuan)\\b"
+      - "(?i)\\btencent\\b"
+
+  - slug: baidu
+    name: Baidu
+    kind: company
+    openalex_ids: [I98301712]
+    aliases:
+      - "(?i)\\bbaidu research\\b"
+      - "(?i)\\bbaidu\\b"            # "ernie" omitted — model name, collides with a given name
+
+  - slug: scale-ai
+    name: Scale AI
+    kind: company
+    domains: [scale.com]
+    aliases:
+      # The `(?<!-)` guard is load-bearing: without it "large-scale AI" — ubiquitous in this
+      # corpus — matches, because \b fires between the hyphen and "scale".
+      - "(?i)(?<!-)\\bscale[ .]ai\\b"
+
+  # ── dedicated AI-safety orgs (nonprofits / institutes) ──────────────────────
+  - slug: redwood
+    name: Redwood Research
+    kind: nonprofit
+    domains: [redwoodresearch.org]
+    aliases:
+      - "(?i)\\bredwood research\\b"
+
+  - slug: metr
+    name: METR
+    kind: nonprofit
+    domains: [metr.org]
+    aliases:
+      - "(?i)\\bmetr\\b"            # whole-word: won't hit "metric"/"parametric"
+      - "(?i)\\bmodel evaluation and threat research\\b"
+
+  - slug: arc
+    name: Alignment Research Center
+    kind: nonprofit
+    aliases:
+      - "(?i)\\balignment research center\\b"
+
+  - slug: apollo
+    name: Apollo Research
+    kind: nonprofit
+    domains: [apolloresearch.ai]
+    aliases:
+      - "(?i)\\bapollo research\\b"
+
+  - slug: transluce
+    name: Transluce
+    kind: nonprofit
+    domains: [transluce.org]
+    aliases:
+      - "(?i)\\btransluce\\b"
+
+  - slug: miri
+    name: MIRI
+    kind: nonprofit
+    domains: [intelligence.org]
+    # NO openalex_ids on purpose: OpenAlex's I283854653 ("Machine Intelligence Research
+    # Institute") is polluted — its works are random healthcare/agriculture papers, not MIRI
+    # output. Do not add it.
+    aliases:
+      - "(?i)\\bmachine intelligence research institute\\b"
+      - "(?i)\\bmiri\\b"
+
+  - slug: cais
+    name: Center for AI Safety
+    kind: nonprofit
+    domains: [safe.ai]
+    aliases:
+      - "(?i)\\bcenter for ai safety\\b"
+
+  - slug: far-ai
+    name: FAR AI
+    kind: nonprofit
+    domains: [far.ai]
+    aliases:
+      - "(?i)\\bfar[ .]ai\\b"       # whole-word: won't hit "FAIR"
+
+  - slug: us-aisi                    # MUST precede `uk-aisi` (see header)
+    name: US AI Safety Institute
+    kind: institute
+    aliases:
+      - "(?i)\\bu\\.?s\\.? ai safety institute\\b"
+      - "(?i)\\bus aisi\\b"
+
+  - slug: uk-aisi
+    name: UK AI Safety Institute
+    kind: institute
+    aliases:
+      - "(?i)\\buk aisi\\b"
+      - "(?i)\\bai s(?:afety|ecurity) institute\\b"
+
+  - slug: conjecture
+    name: Conjecture
+    kind: nonprofit
+    aliases:
+      - "(?i)\\bconjecture\\b"      # safe ONLY because aliases match affiliation surfaces,
+                                    # never body text (where "the Collatz conjecture" abounds)
+
+  - slug: eleutherai
+    name: EleutherAI
+    kind: nonprofit
+    domains: [eleuther.ai]
+    aliases:
+      - "(?i)\\beleuther ?ai\\b"
+
+  - slug: chai
+    name: CHAI (UC Berkeley)
+    kind: nonprofit
+    aliases:
+      - "(?i)\\b(?:center for )?human-compatible ai\\b"
+
+  - slug: govai
+    name: Centre for the Governance of AI (GovAI)
+    kind: nonprofit
+    domains: [governance.ai]
+    openalex_ids: [I4387155932]
+    aliases:
+      - "(?i)\\bgovernance of ai\\b"
+      - "(?i)\\bgovai\\b"
+
+  - slug: lawzero
+    name: LawZero
+    kind: nonprofit
+    aliases:
+      - "(?i)\\blaw ?zero\\b"
+
+  # ── AI-focused research institutes ───────────────────────────────────────────
+  # A DEPARTURE from v1's rule, taken deliberately. v1 excluded universities wholesale ("they'd
+  # re-admit academic noise") — that still holds for Stanford/Oxford/CMU and they stay untracked.
+  # These three are different: named AI-specific institutes that publish frontier safety work
+  # under their own banner, and they were the most frequent unmatched surfaces in the eval after
+  # the plain universities. If this proves to re-admit noise, deleting these three entries is the
+  # whole rollback.
+  - slug: shanghai-ai-lab
+    name: Shanghai AI Laboratory
+    kind: institute
+    aliases:
+      - "(?i)\\bshanghai ai lab(oratory)?\\b"
+
+  - slug: mila
+    name: Mila (Quebec AI Institute)
+    kind: institute
+    aliases:
+      # `(?<!de )` excludes "Centre Universitaire de Mila", a real Algerian university that
+      # appears in THIS corpus — the exact near-miss class v1's prompt warned about.
+      - "(?i)(?<!de )\\bmila\\b"
+      - "(?i)\\bmontreal institute for learning algorithms\\b"
+
+  - slug: vector
+    name: Vector Institute
+    kind: institute
+    aliases:
+      - "(?i)\\bvector institute\\b"

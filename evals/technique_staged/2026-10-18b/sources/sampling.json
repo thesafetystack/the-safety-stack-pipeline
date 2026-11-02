@@ -1,0 +1,73 @@
+{
+  "seed": 20261018,
+  "bands": [
+    "<20k",
+    "20-60k",
+    "60-100k",
+    ">100k"
+  ],
+  "quotas": {
+    "paper": [
+      8,
+      15,
+      14,
+      15
+    ],
+    "forum": [
+      14,
+      10,
+      5,
+      3
+    ],
+    "blog": [
+      14,
+      3,
+      0,
+      1
+    ],
+    "card": [
+      3,
+      2,
+      0,
+      3
+    ],
+    "report": [
+      2,
+      3,
+      2,
+      3
+    ]
+  },
+  "doc_type_groups": {
+    "preprint": "paper",
+    "paper": "paper",
+    "forum_post": "forum",
+    "lab_blog": "blog",
+    "system_card": "card",
+    "model_card": "card",
+    "eval_report": "report",
+    "framework_policy": "report",
+    "critique": "report",
+    "other": "report"
+  },
+  "pool": {
+    "rows": 11752,
+    "sha256": "599b41ae4e2f9451cf147250f32415cec56513d73729176bf969b44dabbc82eb",
+    "bytes": 4238417,
+    "copied": false,
+    "reproduced_from_store": true
+  },
+  "selected": {
+    "rows": 120,
+    "sha256": "50b24fe1c07b16fb64013950c04567eebe98e5ef63850f5907a878c67b6cded0",
+    "reproduced_by_select_py": true
+  },
+  "store_heads": {
+    "corpus": "20261017T175503Z_rz3vvhk92wt9r",
+    "stack_relevance": "20261017T175521Z_rah6b8pyfs0e9",
+    "text_usability": "20261017T175521Z_rah6b8pyfs0e9",
+    "doc_class": "20261017T175521Z_rah6b8pyfs0e9"
+  },
+  "exclusion": "the documents of evals/technique_staged/2026-10-17a (items.jsonl doc_id) and their same_raw_doc_ids",
+  "procedure": "scripts/sampling/pool.py (candidate pool) then scripts/sampling/select.py (stratified sample); both take paths as arguments"
+}

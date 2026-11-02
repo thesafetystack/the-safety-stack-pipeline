@@ -1,0 +1,10 @@
+# Dataset release, public variant (stack/fold/dataset.py; release id = the export's UTC date). `stack export --in <corpus.build>
+# --config dataset-public --out DIR`. Abstracts withheld, quotes and surfaces capped at 300 characters, no texts.
+name: dataset-public
+format: dataset
+variant: public
+hf_repo: thesafetystack/the-safety-stack
+# The judge eval set whose stored labels the export scores against this build for the card's quality table (D728).
+judge_eval: evals/judge-2026-10-25j
+# One neutral line about the maintainers' internal variant in the public card and FORMAT; set to null to drop it.
+internal_variant_note: "An internal variant with abstracts and full texts exists for the maintainers and is not distributed."

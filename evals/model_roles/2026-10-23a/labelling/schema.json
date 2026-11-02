@@ -1,0 +1,511 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "gold-v3/model_roles/label.schema.json",
+ "title": "Gold v3 model-roles label (one document)",
+ "description": "Maps onto the 2026-10-17a gold label: mentions, mentions_out_of_vocab, models[] (node_id, roles, quote, note) as they are; extra_models -> expected_extras (name + aliases) and off_menu_models (node_id, name); a refined row grades refined_node_id.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "item_id",
+  "labeller",
+  "doc_kind",
+  "mentions",
+  "mentions_out_of_vocab",
+  "models",
+  "variant_models",
+  "extra_models",
+  "rationale"
+ ],
+ "properties": {
+  "item_id": {
+   "type": "string",
+   "pattern": "^g3-[0-9]{4}$"
+  },
+  "labeller": {
+   "type": "string",
+   "minLength": 1
+  },
+  "doc_kind": {
+   "enum": [
+    "paper",
+    "blogpost",
+    "commentary",
+    "model_card",
+    "system_card",
+    "technical_report",
+    "eval_report",
+    "news",
+    "policy",
+    "other"
+   ]
+  },
+  "mentions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "node_id",
+     "surface"
+    ],
+    "properties": {
+     "node_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "surface": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "mentions_out_of_vocab": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "name"
+    ],
+    "properties": {
+     "name": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "models": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "node_id",
+     "roles",
+     "quote",
+     "confidence",
+     "flag",
+     "refined_name",
+     "refined_node_id",
+     "note"
+    ],
+    "properties": {
+     "node_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "mentioned",
+       "cited_work",
+       "discussed",
+       "usage_experience",
+       "built_on",
+       "instrument",
+       "modified",
+       "evaluated_behavioral",
+       "analyzed_internals",
+       "introduced"
+      ],
+      "properties": {
+       "mentioned": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "cited_work": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "discussed": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "usage_experience": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "built_on": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "instrument": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "modified": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "evaluated_behavioral": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "analyzed_internals": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "introduced": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       }
+      },
+      "description": "All 10 roles of rubric 0.6.0, integers 0-4; mentioned >= every other role."
+     },
+     "quote": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Verbatim span of docs/<item_id>/text.txt; required (non-null) when any role >= 1."
+     },
+     "confidence": {
+      "enum": [
+       "high",
+       "med",
+       "low",
+       null
+      ]
+     },
+     "flag": {
+      "anyOf": [
+       {
+        "enum": [
+         "matcher_fp",
+         "bib_only",
+         "not_found"
+        ]
+       },
+       {
+        "type": "string",
+        "pattern": "^subsumed:.+"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "refined_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "refined_node_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "variant_models": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "base_node_id",
+     "names_as_written",
+     "roles",
+     "quote",
+     "confidence",
+     "note"
+    ],
+    "properties": {
+     "base_node_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "names_as_written": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+       "type": "string",
+       "minLength": 1
+      }
+     },
+     "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "mentioned",
+       "cited_work",
+       "discussed",
+       "usage_experience",
+       "built_on",
+       "instrument",
+       "modified",
+       "evaluated_behavioral",
+       "analyzed_internals",
+       "introduced"
+      ],
+      "properties": {
+       "mentioned": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "cited_work": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "discussed": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "usage_experience": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "built_on": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "instrument": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "modified": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "evaluated_behavioral": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "analyzed_internals": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "introduced": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       }
+      },
+      "description": "All 10 roles of rubric 0.6.0, integers 0-4; mentioned >= every other role."
+     },
+     "quote": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Verbatim span of docs/<item_id>/text.txt; required (non-null) when any role >= 1."
+     },
+     "confidence": {
+      "enum": [
+       "high",
+       "med",
+       "low"
+      ]
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "extra_models": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "name_as_written",
+     "aliases",
+     "node_id",
+     "roles",
+     "quote",
+     "confidence",
+     "note"
+    ],
+    "properties": {
+     "name_as_written": {
+      "type": "string",
+      "minLength": 1
+     },
+     "aliases": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "node_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "mentioned",
+       "cited_work",
+       "discussed",
+       "usage_experience",
+       "built_on",
+       "instrument",
+       "modified",
+       "evaluated_behavioral",
+       "analyzed_internals",
+       "introduced"
+      ],
+      "properties": {
+       "mentioned": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "cited_work": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "discussed": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "usage_experience": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "built_on": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "instrument": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "modified": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "evaluated_behavioral": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "analyzed_internals": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       },
+       "introduced": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+       }
+      },
+      "description": "All 10 roles of rubric 0.6.0, integers 0-4; mentioned >= every other role."
+     },
+     "quote": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Verbatim span of docs/<item_id>/text.txt; required (non-null) when any role >= 1."
+     },
+     "confidence": {
+      "enum": [
+       "high",
+       "med",
+       "low"
+      ]
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "rationale": {
+   "type": "string"
+  }
+ }
+}

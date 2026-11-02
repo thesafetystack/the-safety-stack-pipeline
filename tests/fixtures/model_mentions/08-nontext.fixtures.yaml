@@ -1,0 +1,515 @@
+# Fixtures for 08-nontext.yaml — every name-variant string from the MD section (verbatim)
+# plus each node's canonical display name. Mention-less structural groups
+# (SD 1.x/2.x/3.x, SD 3.5, SDXL) have no display-name fixtures by design.
+
+# Stable Diffusion family
+- {text: "stable diffusion", node: stable-diffusion}
+- {text: "sd", node: none}  # v0.9: was stable-diffusion (weak bare 'sd' removed, near-zero corpus precision)
+- {text: "stablediffusion", node: stable-diffusion}
+- {text: "stable-diffusion", node: stable-diffusion}
+# Stable Diffusion 1.4
+- {text: "Stable Diffusion 1.4", node: stable-diffusion-1.4}
+- {text: "stable diffusion 1.4", node: stable-diffusion-1.4}
+- {text: "sd 1.4", node: stable-diffusion-1.4}
+- {text: "sd1.4", node: stable-diffusion-1.4}
+- {text: "sd-v1-4", node: stable-diffusion-1.4}
+- {text: "compvis/stable-diffusion-v1-4", node: stable-diffusion-1.4}
+- {text: "stable diffusion v1", node: stable-diffusion-1.x}  # v0.9: was stable-diffusion-1.4 (series alias moved to the SD 1.x group)
+- {text: "sd v1", node: stable-diffusion-1.x}  # v0.9: was stable-diffusion-1.4 (series alias moved to the SD 1.x group)
+# Stable Diffusion 1.5
+- {text: "Stable Diffusion 1.5", node: stable-diffusion-1.5}
+- {text: "stable diffusion 1.5", node: stable-diffusion-1.5}
+- {text: "sd 1.5", node: stable-diffusion-1.5}
+- {text: "sd1.5", node: stable-diffusion-1.5}
+- {text: "sd-1-5", node: stable-diffusion-1.5}
+- {text: "runwayml/stable-diffusion-v1-5", node: stable-diffusion-1.5}
+- {text: "stable-diffusion-v1-5", node: stable-diffusion-1.5}
+- {text: "sd v1.5", node: stable-diffusion-1.5}
+- {text: "sd15", node: stable-diffusion-1.5}
+- {text: "grabbed an sd15 checkpoint off civitai", node: stable-diffusion-1.5}
+- {text: "control_v11p_sd15_canny", node: stable-diffusion-1.5}
+# Stable Diffusion 2.0
+- {text: "Stable Diffusion 2.0", node: stable-diffusion-2.0}
+- {text: "stable diffusion 2", node: stable-diffusion-2.0}
+- {text: "sd 2.0", node: stable-diffusion-2.0}
+- {text: "sd2", node: stable-diffusion-2.0}
+- {text: "sd 2", node: stable-diffusion-2.0}
+- {text: "stabilityai/stable-diffusion-2", node: stable-diffusion-2.0}
+- {text: "stable diffusion v2", node: stable-diffusion-2.0}
+# Stable Diffusion 2.1
+- {text: "Stable Diffusion 2.1", node: stable-diffusion-2.1}
+- {text: "stable diffusion 2.1", node: stable-diffusion-2.1}
+- {text: "sd 2.1", node: stable-diffusion-2.1}
+- {text: "sd2.1", node: stable-diffusion-2.1}
+- {text: "stabilityai/stable-diffusion-2-1", node: stable-diffusion-2.1}
+- {text: "sd21", node: stable-diffusion-2.1}
+- {text: "still on sd21 here", node: stable-diffusion-2.1}
+# SDXL 1.0
+- {text: "SDXL 1.0", node: sdxl-1.0}
+- {text: "sdxl", node: sdxl-1.0}
+- {text: "sd xl", node: sdxl-1.0}
+- {text: "sdxl 1.0", node: sdxl-1.0}
+- {text: "sdxl base", node: sdxl-1.0}
+- {text: "stable diffusion xl", node: sdxl-1.0}
+- {text: "stabilityai/stable-diffusion-xl-base-1.0", node: sdxl-1.0}
+- {text: "sdxl-base-1.0", node: sdxl-1.0}
+- {text: "sdxl refiner", node: sdxl-1.0}
+- {text: "rendered with sdxl", node: sdxl-1.0}
+- {text: "sd_xl_base_1.0.safetensors", node: sdxl-1.0}
+# SDXL Turbo
+- {text: "SDXL Turbo", node: sdxl-turbo}
+- {text: "sdxl turbo", node: sdxl-turbo}
+- {text: "sdxl-turbo", node: sdxl-turbo}
+- {text: "stabilityai/sdxl-turbo", node: sdxl-turbo}
+- {text: "sd turbo", node: sdxl-turbo}
+# Stable Diffusion 3 Medium
+- {text: "Stable Diffusion 3 Medium", node: stable-diffusion-3-medium}
+- {text: "stable diffusion 3", node: stable-diffusion-3-medium}
+- {text: "sd3", node: stable-diffusion-3-medium}
+- {text: "sd 3", node: stable-diffusion-3-medium}
+- {text: "sd3 medium", node: stable-diffusion-3-medium}
+- {text: "sd3-medium", node: stable-diffusion-3-medium}
+- {text: "stable diffusion 3 medium", node: stable-diffusion-3-medium}
+- {text: "stabilityai/stable-diffusion-3-medium", node: stable-diffusion-3-medium}
+# Stable Diffusion 3.5 Large
+- {text: "Stable Diffusion 3.5 Large", node: stable-diffusion-3.5-large}
+- {text: "stable diffusion 3.5", node: stable-diffusion-3.5-large}
+- {text: "sd3.5", node: stable-diffusion-3.5-large}
+- {text: "sd 3.5", node: stable-diffusion-3.5-large}
+- {text: "sd3.5 large", node: stable-diffusion-3.5-large}
+- {text: "sd3.5-large", node: stable-diffusion-3.5-large}
+- {text: "stabilityai/stable-diffusion-3.5-large", node: stable-diffusion-3.5-large}
+- {text: "stable diffusion 3.5 large", node: stable-diffusion-3.5-large}
+- {text: "SD3.5L", node: stable-diffusion-3.5-large}
+# Stable Diffusion 3.5 Large Turbo
+- {text: "Stable Diffusion 3.5 Large Turbo", node: stable-diffusion-3.5-large-turbo}
+- {text: "sd3.5 large turbo", node: stable-diffusion-3.5-large-turbo}
+- {text: "sd 3.5 turbo", node: stable-diffusion-3.5-large-turbo}
+- {text: "stabilityai/stable-diffusion-3.5-large-turbo", node: stable-diffusion-3.5-large-turbo}
+# Stable Diffusion 3.5 Medium
+- {text: "Stable Diffusion 3.5 Medium", node: stable-diffusion-3.5-medium}
+- {text: "sd3.5 medium", node: stable-diffusion-3.5-medium}
+- {text: "sd 3.5 medium", node: stable-diffusion-3.5-medium}
+- {text: "stabilityai/stable-diffusion-3.5-medium", node: stable-diffusion-3.5-medium}
+- {text: "SD3.5M", node: stable-diffusion-3.5-medium}
+
+# Stable Video Diffusion
+- {text: "stable video", node: stable-video-diffusion}
+- {text: "Stable Video Diffusion (SVD / SVD-XT)", node: svd}
+- {text: "svd", node: none}  # v0.9: was svd (weak bare 'svd' removed, near-zero corpus precision)
+- {text: "svd-xt", node: svd}
+- {text: "stable video diffusion", node: svd}
+- {text: "stable-video-diffusion", node: svd}
+- {text: "img2vid", node: svd}
+- {text: "stabilityai/stable-video-diffusion-img2vid-xt", node: svd}
+
+# Stable Audio
+- {text: "stable audio", node: stable-audio}
+- {text: "stableaudio", node: stable-audio}
+- {text: "Stable Audio 1.0", node: stable-audio-1.0}
+- {text: "stable audio 1.0", node: stable-audio-1.0}
+- {text: "stable audio 1", node: stable-audio-1.0}
+- {text: "Stable Audio Open", node: stable-audio-open}
+- {text: "stable audio open", node: stable-audio-open}
+- {text: "stable-audio-open", node: stable-audio-open}
+- {text: "stabilityai/stable-audio-open-1.0", node: stable-audio-open}
+- {text: "Stable Audio 2.0", node: stable-audio-2.0}
+- {text: "stable audio 2.0", node: stable-audio-2.0}
+- {text: "stable audio 2", node: stable-audio-2.0}
+- {text: "stableaudio 2", node: stable-audio-2.0}
+- {text: "Stable Audio 2.5", node: stable-audio-2.5}
+- {text: "stable audio 2.5", node: stable-audio-2.5}
+- {text: "stableaudio 2.5", node: stable-audio-2.5}
+- {text: "Stable Audio 3.0", node: stable-audio-3.0}
+- {text: "stable audio 3", node: stable-audio-3.0}
+- {text: "stable audio 3.0", node: stable-audio-3.0}
+- {text: "stableaudio 3", node: stable-audio-3.0}
+
+# FLUX family and FLUX.1 group
+- {text: "flux", node: flux}
+- {text: "bfl flux", node: flux}
+- {text: "black forest labs flux", node: flux}
+- {text: "flux.1", node: flux.1}
+- {text: "flux1", node: flux.1}
+# FLUX.1 [pro]
+- {text: "FLUX.1 [pro]", node: flux.1-pro}
+- {text: "flux.1 pro", node: flux.1-pro}
+- {text: "flux 1 pro", node: flux.1-pro}
+- {text: "flux pro", node: flux.1-pro}
+- {text: "flux-pro", node: flux.1-pro}
+# FLUX.1 [dev]
+- {text: "FLUX.1 [dev]", node: flux.1-dev}
+- {text: "flux.1 dev", node: flux.1-dev}
+- {text: "flux dev", node: flux.1-dev}
+- {text: "flux 1 dev", node: flux.1-dev}
+- {text: "flux.1-dev", node: flux.1-dev}
+- {text: "black-forest-labs/FLUX.1-dev", node: flux.1-dev}
+- {text: "flux1-dev", node: flux.1-dev}
+# FLUX.1 [schnell]
+- {text: "FLUX.1 [schnell]", node: flux.1-schnell}
+- {text: "flux.1 schnell", node: flux.1-schnell}
+- {text: "flux schnell", node: flux.1-schnell}
+- {text: "flux 1 schnell", node: flux.1-schnell}
+- {text: "black-forest-labs/FLUX.1-schnell", node: flux.1-schnell}
+- {text: "flux1-schnell", node: flux.1-schnell}
+# FLUX 1.1 [pro]
+- {text: "FLUX 1.1 [pro]", node: flux-1.1-pro}
+- {text: "flux 1.1 pro", node: flux-1.1-pro}
+- {text: "flux1.1 [pro]", node: flux-1.1-pro}
+- {text: "flux 1.1", node: flux-1.1-pro}
+- {text: "flux1.1-pro", node: flux-1.1-pro}
+- {text: "flux 1.1 pro ultra", node: flux-1.1-pro}
+- {text: "blueberry", node: flux-1.1-pro}
+# FLUX.1 Kontext
+- {text: "FLUX.1 Kontext", node: flux.1-kontext}
+- {text: "flux.1 kontext", node: flux.1-kontext}
+- {text: "flux kontext", node: flux.1-kontext}
+- {text: "kontext", node: flux.1-kontext}
+- {text: "flux.1 kontext pro", node: flux.1-kontext}
+- {text: "flux.1 kontext max", node: flux.1-kontext}
+- {text: "flux.1 kontext dev", node: flux.1-kontext}
+- {text: "black-forest-labs/FLUX.1-Kontext-dev", node: flux.1-kontext}
+- {text: "flux kontext [dev]", node: flux.1-kontext}
+# FLUX.2
+- {text: "flux.2", node: flux.2}
+- {text: "FLUX.2 [pro]", node: flux.2-pro}
+- {text: "flux.2 pro", node: flux.2-pro}
+- {text: "flux 2 pro", node: flux.2-pro}
+- {text: "flux2 pro", node: flux.2-pro}
+- {text: "flux.2 flex", node: flux.2-pro}
+- {text: "flux 2 flex", node: flux.2-pro}
+- {text: "FLUX.2 [dev]", node: flux.2-dev}
+- {text: "flux.2 dev", node: flux.2-dev}
+- {text: "flux 2 dev", node: flux.2-dev}
+- {text: "flux2 dev", node: flux.2-dev}
+- {text: "flux.2-dev", node: flux.2-dev}
+- {text: "FLUX.2 [klein]", node: flux.2-klein}
+- {text: "flux.2 klein", node: flux.2-klein}
+- {text: "flux 2 klein", node: flux.2-klein}
+- {text: "flux2 klein", node: flux.2-klein}
+- {text: "FLUX.2 Klein 4B", node: flux.2-klein-4b}
+- {text: "klein 4b", node: flux.2-klein-4b}
+- {text: "FLUX.2 Klein 9B", node: flux.2-klein-9b}
+- {text: "klein 9b", node: flux.2-klein-9b}
+# FLUX 3
+- {text: "FLUX 3", node: flux-3}
+- {text: "flux 3", node: flux-3}
+- {text: "flux3", node: flux-3}
+- {text: "flux 3 video", node: flux-3}
+- {text: "flux 3 image", node: flux-3}
+- {text: "flux 3 dev", node: flux-3}
+- {text: "flux-mimic", node: flux-3}
+
+# Midjourney
+- {text: "midjourney", node: midjourney}
+- {text: "mj", node: midjourney}
+- {text: "Midjourney V4", node: midjourney-v4}
+- {text: "midjourney v4", node: midjourney-v4}
+- {text: "mj v4", node: midjourney-v4}
+- {text: "midjourney 4", node: midjourney-v4}
+- {text: "--v 4", node: midjourney-v4}
+- {text: "Midjourney V5", node: midjourney-v5}
+- {text: "midjourney v5", node: midjourney-v5}
+- {text: "mj v5", node: midjourney-v5}
+- {text: "midjourney 5", node: midjourney-v5}
+- {text: "--v 5", node: midjourney-v5}
+- {text: "midjourney v5.1", node: midjourney-v5.1}  # v0.7: was node midjourney-v5; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "midjourney v5.2", node: midjourney-v5.2}  # v0.7: was node midjourney-v5; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "Midjourney V6", node: midjourney-v6}
+- {text: "midjourney v6", node: midjourney-v6}
+- {text: "mj v6", node: midjourney-v6}
+- {text: "MJv6", node: midjourney-v6}
+- {text: "midjourney 6", node: midjourney-v6}
+- {text: "--v 6", node: midjourney-v6}
+- {text: "midjourney v6.1", node: midjourney-v6.1}  # v0.7: was node midjourney-v6; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "--v 6.1", node: midjourney-v6}
+- {text: "MJ v6.1 vs Flux dev", node: midjourney-v6.1}  # v0.7: was node midjourney-v6; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "MJ v6.1 vs Flux dev", node: flux.1-dev}
+- {text: "Midjourney V7", node: midjourney-v7}
+- {text: "midjourney v7", node: midjourney-v7}
+- {text: "mj v7", node: midjourney-v7}
+- {text: "Midjourney 7 is here", node: midjourney-v7}
+- {text: "--v 7", node: midjourney-v7}
+- {text: "Midjourney V8", node: midjourney-v8}
+- {text: "midjourney v8", node: midjourney-v8}
+- {text: "mj v8", node: midjourney-v8}
+- {text: "midjourney 8", node: midjourney-v8}
+- {text: "--v 8", node: midjourney-v8}
+- {text: "midjourney v8.1", node: midjourney-v8.1}  # v0.7: was node midjourney-v8; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "midjourney v8.2", node: midjourney-v8.2}  # v0.7: was node midjourney-v8; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "Midjourney V1 Video", node: midjourney-v1-video}
+- {text: "midjourney video", node: midjourney-v1-video}
+- {text: "midjourney v1 video", node: midjourney-v1-video}
+- {text: "mj video", node: midjourney-v1-video}
+- {text: "v1 video model", node: midjourney-v1-video}
+
+# Runway Gen
+- {text: "Runway Gen", node: runway-gen}
+- {text: "runway", node: runway-gen}
+- {text: "runway gen", node: runway-gen}
+- {text: "runway ml", node: runway-gen}
+- {text: "runwayml", node: runway-gen}
+- {text: "Runway Gen-1", node: runway-gen-1}
+- {text: "gen-1", node: runway-gen-1}
+- {text: "gen 1", node: runway-gen-1}
+- {text: "runway gen-1", node: runway-gen-1}
+- {text: "runway gen1", node: runway-gen-1}
+- {text: "Runway Gen-2", node: runway-gen-2}
+- {text: "gen-2", node: runway-gen-2}
+- {text: "gen 2", node: runway-gen-2}
+- {text: "runway gen-2", node: runway-gen-2}
+- {text: "runway gen2", node: runway-gen-2}
+- {text: "Runway Gen-3 Alpha", node: runway-gen-3-alpha}
+- {text: "gen-3", node: runway-gen-3-alpha}
+- {text: "gen 3", node: runway-gen-3-alpha}
+- {text: "gen-3 alpha", node: runway-gen-3-alpha}
+- {text: "runway gen-3", node: runway-gen-3-alpha}
+- {text: "gen-3 alpha turbo", node: runway-gen-3-alpha}
+- {text: "gen3 alpha turbo", node: runway-gen-3-alpha}
+- {text: "Runway Gen-4", node: runway-gen-4}
+- {text: "gen-4", node: runway-gen-4}
+- {text: "gen 4", node: runway-gen-4}
+- {text: "runway gen-4", node: runway-gen-4}
+- {text: "runway gen4", node: runway-gen-4}
+- {text: "gen-4 turbo", node: runway-gen-4}
+- {text: "Runway Gen-4.5", node: runway-gen-4.5}
+- {text: "gen-4.5", node: runway-gen-4.5}
+- {text: "gen 4.5", node: runway-gen-4.5}
+- {text: "runway gen-4.5", node: runway-gen-4.5}
+- {text: "runway gen4.5", node: runway-gen-4.5}
+
+# Pika
+- {text: "Pika", node: pika}
+- {text: "pika", node: pika}
+- {text: "pika labs", node: pika}
+- {text: "pika art", node: pika}
+- {text: "Pika 1.0", node: pika}  # v0.9: was pika-1.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 1.0", node: pika}  # v0.9: was pika-1.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 1", node: pika}  # v0.9: was pika-1.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika v1", node: pika}  # v0.9: was pika-1.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "Pika 2.0", node: pika}  # v0.9: was pika-2.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 2.0", node: pika}  # v0.9: was pika-2.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 2", node: pika}  # v0.9: was pika-2.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 2.1", node: pika}  # v0.9: was pika-2.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "pikaswaps", node: pika}  # v0.9: was pika-2.0 (version node folded into pika, D598 commercial media version folds)
+- {text: "Pika 2.2", node: pika}  # v0.9: was pika-2.2 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 2.2", node: pika}  # v0.9: was pika-2.2 (version node folded into pika, D598 commercial media version folds)
+- {text: "pikaframes", node: pika}  # v0.9: was pika-2.2 (version node folded into pika, D598 commercial media version folds)
+- {text: "Pika 2.5", node: pika}  # v0.9: was pika-2.5 (version node folded into pika, D598 commercial media version folds)
+- {text: "pika 2.5", node: pika}  # v0.9: was pika-2.5 (version node folded into pika, D598 commercial media version folds)
+
+# Luma Dream Machine / Ray
+- {text: "Luma Ray", node: luma-ray}
+- {text: "luma", node: none}  # v0.9: was luma-ray (company aliases and weak ray removed from luma-ray)
+- {text: "luma ai", node: none}  # v0.9: was luma-ray (company aliases and weak ray removed from luma-ray)
+- {text: "luma labs", node: none}  # v0.9: was luma-ray (company aliases and weak ray removed from luma-ray)
+- {text: "dream machine", node: luma-ray}
+- {text: "ray", node: none}  # v0.9: was luma-ray (company aliases and weak ray removed from luma-ray)
+- {text: "Luma Dream Machine (Ray1)", node: luma-ray1}
+- {text: "luma dream machine", node: luma-ray1}
+- {text: "ray1", node: luma-ray1}
+- {text: "ray 1", node: luma-ray1}
+- {text: "luma video", node: luma-ray1}
+- {text: "Luma Ray2", node: luma-ray2}
+- {text: "ray2", node: luma-ray2}
+- {text: "ray 2", node: luma-ray2}
+- {text: "luma ray2", node: luma-ray2}
+- {text: "dream machine ray2", node: luma-ray2}
+- {text: "Luma Ray3", node: luma-ray3}
+- {text: "ray3", node: luma-ray3}
+- {text: "ray 3", node: luma-ray3}
+- {text: "luma ray3", node: luma-ray3}
+- {text: "ray3 modify", node: luma-ray3}
+- {text: "ray3.14", node: luma-ray3.14}  # v0.7: was node luma-ray3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "ray 3.14", node: luma-ray3.14}  # v0.7: was node luma-ray3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "ray3.2", node: luma-ray3.2}  # v0.7: was node luma-ray3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+# Kling
+- {text: "Kling", node: kling}
+- {text: "kling", node: kling}
+- {text: "kling ai", node: kling}
+- {text: "kuaishou kling", node: kling}
+- {text: "keling", node: kling}
+- {text: "可灵", node: kling}
+- {text: "Kling 1.0", node: kling-1.0}
+- {text: "kling 1.0", node: kling-1.0}
+- {text: "kling v1", node: kling-1.0}
+- {text: "kling1.0", node: kling-1.0}
+- {text: "Kling 1.6", node: kling-1.6}
+- {text: "kling 1.6", node: kling-1.6}
+- {text: "kling1.6", node: kling-1.6}
+- {text: "kling 1.5", node: kling-1.6}
+- {text: "kling v1.6", node: kling-1.6}
+- {text: "kwaivgi/kling-v1.6-standard", node: kling-1.6}
+- {text: "Kling 2.0", node: kling-2.0}
+- {text: "kling 2.0", node: kling-2.0}
+- {text: "kling2.0", node: kling-2.0}
+- {text: "kling 2.1", node: kling-2.1}  # v0.7: was node kling-2.0; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "kling 2.1 master", node: kling-2.1}  # v0.7: was node kling-2.0; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "kling-v2-master", node: kling-2.0}
+- {text: "kling v2.1 master", node: kling-2.1}  # v0.7: was node kling-2.0; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "Kling 2.5 Turbo", node: kling-2.5-turbo}
+- {text: "kling 2.5 turbo", node: kling-2.5-turbo}
+- {text: "kling 2.5", node: kling-2.5-turbo}
+- {text: "kling2.5-turbo", node: kling-2.5-turbo}
+- {text: "kling-v2-5-turbo-pro on fal", node: kling-2.5-turbo}
+- {text: "Kling 2.6", node: kling-2.6}
+- {text: "kling 2.6", node: kling-2.6}
+- {text: "kling video 2.6", node: kling-2.6}
+- {text: "kling2.6", node: kling-2.6}
+- {text: "kling 2.6 pro", node: kling-2.6}
+- {text: "kling v2.6", node: kling-2.6}
+- {text: "Kling 3.0", node: kling-3.0}
+- {text: "kling 3.0", node: kling-3.0}
+- {text: "kling3", node: kling-3.0}
+- {text: "kling video 3.0", node: kling-3.0}
+- {text: "kling video 3.0 omni", node: kling-3.0}
+- {text: "kling image 3.0", node: kling-3.0}
+- {text: "kling image 3.0 omni", node: kling-3.0}
+- {text: "kling v3", node: kling-3.0}
+
+# Hailuo
+- {text: "Hailuo", node: hailuo}
+- {text: "hailuo", node: hailuo}
+- {text: "hailuo ai", node: hailuo}
+- {text: "minimax hailuo", node: hailuo}
+- {text: "minimax video", node: hailuo}
+- {text: "海螺", node: hailuo}
+- {text: "Hailuo video-01", node: hailuo-video-01}
+- {text: "video-01", node: hailuo-video-01}
+- {text: "minimax video-01", node: hailuo-video-01}
+- {text: "hailuo video 01", node: hailuo-video-01}
+- {text: "hailuo ai video", node: hailuo-video-01}
+- {text: "MiniMax T2V-01-Director", node: hailuo-video-01}
+- {text: "I2V-01-live", node: hailuo-video-01}
+- {text: "Hailuo 02", node: hailuo-02}
+- {text: "hailuo 02", node: hailuo-02}
+- {text: "hailuo-02", node: hailuo-02}
+- {text: "minimax hailuo 02", node: hailuo-02}
+- {text: "hailuo 2.0", node: hailuo-02}
+- {text: "Hailuo 2.3", node: hailuo-2.3}
+- {text: "hailuo 2.3", node: hailuo-2.3}
+- {text: "hailuo-2.3", node: hailuo-2.3}
+- {text: "minimax hailuo 2.3", node: hailuo-2.3}
+- {text: "hailuo 2.3 pro", node: hailuo-2.3}
+- {text: "hailuo 2.3 fast", node: hailuo-2.3}
+
+# Suno
+- {text: "Suno", node: suno}
+- {text: "suno", node: suno}
+- {text: "suno ai", node: suno}
+- {text: "suno.com", node: suno}
+- {text: "Suno v3", node: suno}  # v0.9: was suno-v3 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v3", node: suno}  # v0.9: was suno-v3 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno 3", node: suno}  # v0.9: was suno-v3 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v3.5", node: suno}  # v0.7: was node suno-v3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5); v0.9: was suno-v3.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "Suno v4", node: suno}  # v0.9: was suno-v4 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v4", node: suno}  # v0.9: was suno-v4 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno 4", node: suno}  # v0.9: was suno-v4 (version node folded into suno, D598 commercial media version folds)
+- {text: "Suno v4.5", node: suno}  # v0.9: was suno-v4.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v4.5", node: suno}  # v0.9: was suno-v4.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno 4.5", node: suno}  # v0.9: was suno-v4.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v4.5+", node: suno}  # v0.9: was suno-v4.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v4.5 plus", node: suno}  # v0.9: was suno-v4.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "Suno v5", node: suno}  # v0.9: was suno-v5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v5", node: suno}  # v0.9: was suno-v5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno 5", node: suno}  # v0.9: was suno-v5 (version node folded into suno, D598 commercial media version folds)
+- {text: "Suno v5.5", node: suno}  # v0.9: was suno-v5.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno v5.5", node: suno}  # v0.9: was suno-v5.5 (version node folded into suno, D598 commercial media version folds)
+- {text: "suno 5.5", node: suno}  # v0.9: was suno-v5.5 (version node folded into suno, D598 commercial media version folds)
+
+# Udio
+- {text: "Udio", node: udio}
+- {text: "udio", node: udio}
+- {text: "Udio v1", node: udio}  # v0.9: was udio-v1 (version node folded into udio, D598 commercial media version folds)
+- {text: "udio v1", node: udio}  # v0.9: was udio-v1 (version node folded into udio, D598 commercial media version folds)
+- {text: "udio v1.5", node: udio}  # v0.9: was udio-v1 (version node folded into udio, D598 commercial media version folds)
+- {text: "udio-130", node: udio}  # v0.9: was udio-v1 (version node folded into udio, D598 commercial media version folds)
+- {text: "udio-32", node: udio}  # v0.9: was udio-v1 (version node folded into udio, D598 commercial media version folds)
+
+# ElevenLabs
+- {text: "ElevenLabs", node: elevenlabs}
+- {text: "elevenlabs", node: elevenlabs}
+- {text: "eleven labs", node: elevenlabs}
+- {text: "11labs", node: elevenlabs}
+- {text: "eleven", node: none}  # v0.9: was elevenlabs (weak bare 'eleven' removed, near-zero corpus precision)
+- {text: "Eleven Multilingual v2", node: eleven-multilingual-v2}
+- {text: "eleven multilingual v2", node: eleven-multilingual-v2}
+- {text: "multilingual v2", node: eleven-multilingual-v2}
+- {text: "eleven_multilingual_v2", node: eleven-multilingual-v2}
+- {text: "Eleven Flash v2.5", node: eleven-flash-v2.5}
+- {text: "eleven flash v2.5", node: eleven-flash-v2.5}
+- {text: "flash v2.5", node: eleven-flash-v2.5}
+- {text: "eleven_flash_v2_5", node: eleven-flash-v2.5}
+- {text: "eleven turbo v2.5", node: eleven-flash-v2.5}
+- {text: "eleven_turbo_v2_5", node: eleven-flash-v2.5}
+- {text: "Eleven v3", node: eleven-v3}
+- {text: "eleven v3", node: eleven-v3}
+- {text: "elevenlabs v3", node: eleven-v3}
+- {text: "eleven labs v3", node: eleven-v3}
+- {text: "Eleven Labs v3 alpha", node: eleven-v3}
+- {text: "eleven_v3", node: eleven-v3}
+
+# MusicGen
+- {text: "MusicGen", node: musicgen}
+- {text: "musicgen", node: musicgen}
+- {text: "music gen", node: musicgen}
+- {text: "audiocraft musicgen", node: musicgen}
+- {text: "MusicGen Small", node: musicgen-small}
+- {text: "musicgen-small", node: musicgen-small}
+- {text: "facebook/musicgen-small", node: musicgen-small}
+- {text: "MusicGen Medium", node: musicgen-medium}
+- {text: "musicgen-medium", node: musicgen-medium}
+- {text: "MusicGen Large", node: musicgen-large}
+- {text: "musicgen-large", node: musicgen-large}
+- {text: "MusicGen Melody", node: musicgen-melody}
+- {text: "musicgen-melody", node: musicgen-melody}
+
+# Bark
+- {text: "Bark", node: suno-bark}
+- {text: "bark", node: suno-bark}
+- {text: "suno bark", node: suno-bark}
+- {text: "suno-ai/bark", node: suno-bark}
+- {text: "bark-small", node: suno-bark}
+
+# AssemblyAI Universal
+- {text: "AssemblyAI Universal", node: assemblyai-universal}
+- {text: "assemblyai universal", node: assemblyai-universal}
+- {text: "universal", node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: "Universal-1", node: assemblyai-universal}  # v0.9: was assemblyai-universal-1 (version node folded into assemblyai-universal, D598 commercial media version folds)
+- {text: "universal-1", node: assemblyai-universal}  # v0.9: was assemblyai-universal-1 (version node folded into assemblyai-universal, D598 commercial media version folds)
+- {text: "assemblyai universal-1", node: assemblyai-universal}  # v0.9: was assemblyai-universal-1 (version node folded into assemblyai-universal, D598 commercial media version folds)
+- {text: "Universal-2", node: assemblyai-universal}  # v0.9: was assemblyai-universal-2 (version node folded into assemblyai-universal, D598 commercial media version folds)
+- {text: "universal-2", node: assemblyai-universal}  # v0.9: was assemblyai-universal-2 (version node folded into assemblyai-universal, D598 commercial media version folds)
+- {text: "assemblyai universal-2", node: assemblyai-universal}  # v0.9: was assemblyai-universal-2 (version node folded into assemblyai-universal, D598 commercial media version folds)
+
+# Deepgram Nova
+- {text: "Deepgram Nova", node: deepgram-nova}
+- {text: "deepgram nova", node: deepgram-nova}
+- {text: "deepgram", node: deepgram-nova}
+- {text: "nova", node: none}  # weak pattern dropped 2026-08-01 (0 of 962 sampled docs mention Deepgram)
+- {text: "nova-1", node: none}  # v0.9: was deepgram-nova (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- {text: "Nova-2", node: none}  # v0.9: was deepgram-nova-2 (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- {text: "nova-2", node: none}  # v0.9: was deepgram-nova-2 (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- {text: "deepgram nova-2", node: deepgram-nova}  # v0.9: was deepgram-nova-2 (version node folded into deepgram-nova, D598 commercial media version folds)
+- {text: "nova2", node: none}  # v0.9: was deepgram-nova-2 (bare nova 1/nova 2 removed on both lineages (Amazon vs Deepgram))
+- {text: "Nova-3", node: deepgram-nova}  # v0.9: was deepgram-nova-3 (version node folded into deepgram-nova, D598 commercial media version folds)
+- {text: "nova-3", node: deepgram-nova}  # v0.9: was deepgram-nova-3 (version node folded into deepgram-nova, D598 commercial media version folds)
+- {text: "deepgram nova-3", node: deepgram-nova}  # v0.9: was deepgram-nova-3 (version node folded into deepgram-nova, D598 commercial media version folds)
+- {text: "nova3", node: deepgram-nova}  # v0.9: was deepgram-nova-3 (version node folded into deepgram-nova, D598 commercial media version folds)
+- {text: "nova-3-medical", node: deepgram-nova}  # v0.9: was deepgram-nova-3 (version node folded into deepgram-nova, D598 commercial media version folds)
+
+# NVIDIA speech stubs
+- {text: "Parakeet", node: parakeet}
+- {text: "parakeet", node: parakeet}
+- {text: "parakeet-tdt", node: parakeet}
+- {text: "nvidia parakeet", node: parakeet}
+- {text: "Parakeet-TDT 0.6B", node: parakeet-tdt-0.6b}
+- {text: "parakeet-tdt-0.6b-v2", node: parakeet-tdt-0.6b}
+- {text: "Canary", node: none}  # v0.9: was canary (weak bare 'canary' removed, near-zero corpus precision)
+- {text: "canary", node: none}  # v0.9: was canary (weak bare 'canary' removed, near-zero corpus precision)
+- {text: "nvidia canary", node: canary}
+- {text: "Canary-1B", node: canary-1b}
+- {text: "canary-1b", node: canary-1b}
+- {text: "Canary-Qwen-2.5B", node: canary-qwen-2.5b}
+- {text: "canary-qwen-2.5b", node: canary-qwen-2.5b}

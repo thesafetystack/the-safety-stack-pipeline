@@ -1,0 +1,101 @@
+# dev-v2: the synthetic test worlds' plan, pinned by name by the test fixtures (tests/synth/world.py,
+# tests/fakes/annotate.py); not for real stores (dev-v2-m4 is the dev store's plan). Small windows, the production
+# model (openai/gpt-6-luna, D201), budget.max_usd <= 3 per stage, a sql:-only gate (D37). Same keys as std-v2; stage
+# `options` carry the collector limits (stage-specific; read by the collectors).
+plan: dev-v2
+schema_version: 2
+series: dev-v2                     # default series of every line's in/out (configs/plans/README.md)
+prompts:
+  triage.safety-relevance-v1: {name: safety-relevance-v1, model: openai/gpt-6-luna}
+  annotate.screen: {name: screen-v7, model: openai/gpt-6-luna}
+  annotate.affiliation: {name: affiliation-v1, model: openai/gpt-6-luna}
+gate:
+  screen:
+    # sql-only gate (D37), kept for the test worlds; the real plans (dev-v2-m4, std-v3) add the triage question
+    - {sql: "metadata.abstract IS NOT NULL OR inband_text_sha256 IS NOT NULL OR channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  convert: {config: pymupdf4llm-v1}        # D39: dev plans pin tier 2. docling-v2 qualified as opt-in (T3.5b, D119:
+                                           # median 123 s per PDF on CPU, needs RLIMIT_DATA 48 GB; RUNLOG 2026-10-12)
+  wants:                                   # keyed by channel id of configs/channels.yaml (D11);
+    arxiv: [full_text]                     # blogs/repos are design names, no channels
+    openalex: [full_text, xml]
+    semantic_scholar: [full_text]
+    europepmc: [full_text, xml]
+    lesswrong: [post]
+    alignmentforum: [post]
+    blogs: [page]
+    repos: [readme]
+    anthropic_alignment_blog: [page]       # every url channel of kind scrape/watch (not card_dates)
+    openai_blog: [page]
+    openai_alignment_blog: [page]
+    transformer_circuits: [page]
+    google_research: [page]
+    mistral_blog: [page]
+    deepmind_blog: [page]
+    miri_blog: [page]                  # SR safety/research-org blogs (A2.3a)
+    metr_blog: [page]
+    transluce_blog: [page]
+    goodfire_blog: [page]
+    uk_aisi_blog: [page]
+    redwood_blog: [page]
+    apollo_blog: [page]
+    arc_blog: [page]
+    epoch_blog: [page]
+    forethought_blog: [page]
+    far_ai_blog: [page]
+    timaeus_blog: [page]
+    clr_blog: [page]
+    softmax_blog: [page]
+    meaning_alignment_blog: [page]
+    cooperative_ai_blog: [page]
+    anthropic_cards: [page]
+    openai_cards: [page]
+    deepmind_cards: [page]
+    meta_cards: [page]
+    xai_cards: [page]
+    deepseek_cards: [page]
+    qwen_cards: [page]
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, affiliation]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: true
+recovery: {dead_run_charge: false}
+stages:
+  # Collector stage names = v3 directories, chains sources.<suffix>/coverage.<suffix> (D92). Real windows per
+  # PLAN T2.2-T2.6; option names are the collectors' (D72), v3 env overrides win when set.
+  - {stage: collect.arxiv_sweep, out: {kind: part}, prior: [sources, coverage], options: {window_days: 21, fraction: 0.1}}
+  - {stage: collect.openalex, out: {kind: part}, prior: [sources, coverage],
+     options: {window_days: 3, window_end_days_ago: 14, max_records: 300,
+              queries: [group:umbrella, group:jailbreak]}}
+  - {stage: collect.semantic_scholar, out: {kind: part}, prior: [sources, coverage], options: {max_pages: 1}}
+  - {stage: collect.forums, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 200}}
+  - {stage: collect.af_graphql, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 200}}
+  - {stage: collect.lw_graphql, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 500,
+     tags: [ai, decision-theory, anthropics, acausal-trade, agent-foundations, embedded-agency, logical-induction,
+            updateless-decision-theory, functional-decision-theory, natural-abstraction, infra-bayesianism,
+            game-theory, logical-uncertainty]}}
+  - {stage: collect.blogs, out: {kind: part}, prior: [sources, coverage], options: {max_channels: 5}}
+  - {stage: collect.cards, out: {kind: part}, prior: [sources, coverage], options: {max_urls: 20}}
+  - {stage: collect.openalex-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3,
+     options: {max_records: 200}}
+  - {stage: collect.s2-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3,
+     options: {max_records: 50}}
+  - {stage: collect.card-dates-lookup, out: {kind: part}, prior: [sources, coverage]}   # reads the documents head (T2.6)
+  - {stage: gather}
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 1}}
+  - {stage: acquire, out: {kind: part}, budget: {max_minutes: 20}, repeat: {until: scope_complete, max_runs: 2},
+     options: {max_rows: 50}}
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 3}, options: {max_rows: 50}}
+  # affiliation reads bylines: papers with a full text only (v3 scope paper/preprint; journal/conference are
+  # doc_type values collectors emit outside enums.yaml); D182 (C)
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], budget: {max_usd: 3},
+     options: {max_rows: 50},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role = 'full_text'"}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents]

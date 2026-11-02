@@ -1,0 +1,70 @@
+{
+  "set_id": "2026-10-21-p4gate",
+  "task": "screen",
+  "created_at": "2026-10-21T00:44:10+00:00",
+  "source_store": "read-only mirror of the production store",
+  "documents_in": "documents/batch-import",
+  "documents_head": "20261020T133733Z_r1sh6c9jm6de2.full.parquet",
+  "git_commit": "597946a25133fee19e175244dfe21c6a8b9d2716",
+  "git_dirty": false,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "eaddaf9c4c41e68a3cbaff00264d77c813545becad9864a26c3c87211526eb1a"
+  },
+  "basis_builder": {
+    "ref": "workflows.annotate.screen.main:ask (tier-1 user message, captured)",
+    "source_sha256": "2554cbcf4790c4c1def79c6be3b39ea3144d61fcf84b86fa2881228b6c28df69",
+    "caps": {
+      "_MAX_DOC_CHARS": 8000
+    }
+  },
+  "seed": "d1-p4gate-2026-10-21",
+  "order": "sha256(seed + doc_id) hex, ascending",
+  "items_sha256": "4c3bde048b7d877f9b90c10bd7cf99d467cf25ec08bbd509087dc9685779499f",
+  "n_items": 93,
+  "split": "test (all items: a gate set, not for prompt development)",
+  "counts": {
+    "total": 93,
+    "split": {
+      "test": 93
+    },
+    "channel_group": {
+      "paper": 91,
+      "url": 2
+    },
+    "channel": {
+      "paper/arxiv": 1,
+      "paper/openalex": 76,
+      "paper/semantic_scholar": 14,
+      "url/openai_blog": 2
+    },
+    "proxy": {
+      "kw_high": 60,
+      "kw_low": 33
+    },
+    "hard": {
+      "None": 93
+    },
+    "license_class": {
+      "open": 86,
+      "public_web": 2,
+      "restricted": 5
+    },
+    "production_asks": {
+      "True": 93
+    },
+    "stratum_split": {
+      "paper|kw_high|plain|test": 60,
+      "paper|kw_low|plain|test": 31,
+      "url|kw_low|plain|test": 2
+    },
+    "channel_proxy_hard_split": {
+      "paper/arxiv|kw_high|None|test": 1,
+      "paper/openalex|kw_high|None|test": 50,
+      "paper/openalex|kw_low|None|test": 26,
+      "paper/semantic_scholar|kw_high|None|test": 9,
+      "paper/semantic_scholar|kw_low|None|test": 5,
+      "url/openai_blog|kw_low|None|test": 2
+    }
+  }
+}

@@ -1,0 +1,644 @@
+# Fixtures for _build/03-google.yaml — every name-variant string from the MD entries
+# (verbatim) plus canonical display names. Target notes:
+# - Cross-generation tier strings ("gemini pro", "gemini flash", "gemini flash lite",
+#   "flash lite") map to the gemini family (weak patterns there by design).
+# - Bare "nano banana"/"nano-banana" map to the line group, not the first model.
+# - "gecko embedding" maps to the embeddings line (Gecko era spans 004 and 005).
+# - gemma-1.1-* checkpoint strings map to the gemma-1 group (1.1 refresh, sizes folded).
+# - Dropped strings (deliberately unmatched): "mixture-of-denoisers" (technique name,
+#   not a model string), "distilbert" (own node in the community/HF section),
+#   "computer use model" (too generic — would misattribute Anthropic/OpenAI computer-use
+#   mentions; documented in the gemini-2.5-computer-use node notes).
+
+# ---------------------------------------------------------------- Gemini family
+- { text: "Gemini", node: gemini }
+- { text: "gemini", node: gemini }
+- { text: "google gemini", node: gemini }
+- { text: "gemini ai", node: gemini }
+- { text: "deepmind gemini", node: gemini }
+- { text: "gemini pro", node: gemini }
+- { text: "gemini flash", node: gemini }
+- { text: "gemini flash lite", node: gemini }
+- { text: "flash lite", node: gemini }
+
+# Gemini 1.0
+- { text: "Gemini 1.0", node: gemini-1.0 }
+- { text: "gemini 1.0", node: gemini-1.0 }
+- { text: "gemini 1", node: gemini-1.0 }
+- { text: "gemini-1.0", node: gemini-1.0 }
+- { text: "Gemini 1.0 Ultra", node: gemini-1.0-ultra }
+- { text: "gemini ultra", node: gemini-1.0-ultra }
+- { text: "gemini 1.0 ultra", node: gemini-1.0-ultra }
+- { text: "gemini-1.0-ultra", node: gemini-1.0-ultra }
+- { text: "gemini-ultra", node: gemini-1.0-ultra }
+- { text: "ultra 1.0", node: gemini-1.0-ultra }
+- { text: "Gemini 1.0 Pro", node: gemini-1.0-pro }
+- { text: "gemini 1.0 pro", node: gemini-1.0-pro }
+- { text: "gemini-pro", node: gemini }
+- { text: "gemini-1.0-pro", node: gemini-1.0-pro }
+- { text: "gemini-1.0-pro-001", node: gemini-1.0-pro }
+- { text: "gemini-1.0-pro-002", node: gemini-1.0-pro }
+- { text: "gemini-pro-vision", node: gemini-1.0-pro }
+- { text: "gemini 1.0 pro vision", node: gemini-1.0-pro }
+- { text: "Gemini 1.0 Nano", node: gemini-1.0-nano }
+- { text: "gemini nano", node: gemini-1.0-nano }
+- { text: "gemini 1.0 nano", node: gemini-1.0-nano }
+- { text: "gemini-nano", node: gemini-1.0-nano }
+- { text: "nano-1", node: gemini-1.0-nano }
+- { text: "nano-2", node: gemini-1.0-nano }
+- { text: "gemini nano-1", node: gemini-1.0-nano }
+- { text: "gemini nano-2", node: gemini-1.0-nano }
+
+# Gemini 1.5
+- { text: "Gemini 1.5", node: gemini-1.5 }
+- { text: "gemini 1.5", node: gemini-1.5 }
+- { text: "gemini-1.5", node: gemini-1.5 }
+- { text: "gemini 1.5 family", node: gemini-1.5 }
+- { text: "Gemini 1.5 Pro", node: gemini-1.5-pro }
+- { text: "gemini 1.5 pro", node: gemini-1.5-pro }
+- { text: "gemini-1.5-pro", node: gemini-1.5-pro }
+- { text: "gemini-1.5-pro-001", node: gemini-1.5-pro }
+- { text: "gemini-1.5-pro-002", node: gemini-1.5-pro }
+- { text: "gemini-1.5-pro-latest", node: gemini-1.5-pro }
+- { text: "google/gemini-pro-1.5", node: gemini-1.5-pro }
+- { text: "1.5 pro", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 1.5 Flash", node: gemini-1.5-flash }
+- { text: "gemini 1.5 flash", node: gemini-1.5-flash }
+- { text: "gemini-1.5-flash", node: gemini-1.5-flash }
+- { text: "gemini-1.5-flash-001", node: gemini-1.5-flash }
+- { text: "gemini-1.5-flash-002", node: gemini-1.5-flash }
+- { text: "gemini-1.5-flash-latest", node: gemini-1.5-flash }
+- { text: "google/gemini-flash-1.5", node: gemini-1.5-flash }
+- { text: "1.5 flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 1.5 Flash-8B", node: gemini-1.5-flash-8b }
+- { text: "gemini 1.5 flash-8b", node: gemini-1.5-flash-8b }
+- { text: "gemini-1.5-flash-8b", node: gemini-1.5-flash-8b }
+- { text: "gemini-1.5-flash-8b-001", node: gemini-1.5-flash-8b }
+- { text: "flash 8b", node: gemini-1.5-flash-8b }
+- { text: "gemini flash 8b", node: gemini-1.5-flash-8b }
+- { text: "google/gemini-flash-1.5-8b", node: gemini-1.5-flash-8b }
+
+# Gemini 2.0
+- { text: "Gemini 2.0", node: gemini-2.0 }
+- { text: "gemini 2.0", node: gemini-2.0 }
+- { text: "gemini 2", node: gemini-2.0 }
+- { text: "gemini-2.0", node: gemini-2.0 }
+- { text: "Gemini 2.0 Flash", node: gemini-2.0-flash }
+- { text: "gemini 2.0 flash", node: gemini-2.0-flash }
+- { text: "gemini-2.0-flash", node: gemini-2.0-flash }
+- { text: "gemini-2.0-flash-001", node: gemini-2.0-flash }
+- { text: "gemini-2.0-flash-exp", node: gemini-2.0-flash }
+- { text: "gemini 2 flash", node: gemini-2.0-flash }
+- { text: "google/gemini-2.0-flash-001", node: gemini-2.0-flash }
+- { text: "gemini-2.0-flash-thinking-exp", node: gemini-2.0-flash-thinking }  # v0.7: was node gemini-2.0-flash; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "gemini 2.0 flash thinking", node: gemini-2.0-flash-thinking }  # v0.7: was node gemini-2.0-flash; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "gemini-2.0-flash-exp-image-generation", node: gemini-2.0-flash }
+- { text: "Gemini 2.0 Flash-Lite", node: gemini-2.0-flash-lite }
+- { text: "gemini 2.0 flash-lite", node: gemini-2.0-flash-lite }
+- { text: "gemini-2.0-flash-lite", node: gemini-2.0-flash-lite }
+- { text: "gemini-2.0-flash-lite-001", node: gemini-2.0-flash-lite }
+- { text: "Gemini 2.0 Pro (Experimental)", node: gemini-2.0-pro }
+- { text: "gemini 2.0 pro", node: gemini-2.0-pro }
+- { text: "gemini-2.0-pro-exp", node: gemini-2.0-pro }
+- { text: "gemini-2.0-pro-exp-02-05", node: gemini-2.0-pro }
+- { text: "gemini 2 pro", node: gemini-2.0-pro }
+
+# Gemini 2.5
+- { text: "Gemini 2.5", node: gemini-2.5 }
+- { text: "gemini 2.5", node: gemini-2.5 }
+- { text: "gemini-2.5", node: gemini-2.5 }
+- { text: "gemini 2.5 family", node: gemini-2.5 }
+- { text: "Gemini 2.5 Pro", node: gemini-2.5-pro }
+- { text: "gemini 2.5 pro", node: gemini-2.5-pro }
+- { text: "gemini-2.5-pro", node: gemini-2.5-pro }
+- { text: "gemini-2.5-pro-exp-03-25", node: gemini-2.5-pro }
+- { text: "gemini-2.5-pro-preview-05-06", node: gemini-2.5-pro }
+- { text: "gemini-2.5-pro-preview-06-05", node: gemini-2.5-pro }
+- { text: "google/gemini-2.5-pro", node: gemini-2.5-pro }
+- { text: "2.5 pro", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 2.5 Flash", node: gemini-2.5-flash }
+- { text: "gemini 2.5 flash", node: gemini-2.5-flash }
+- { text: "gemini-2.5-flash", node: gemini-2.5-flash }
+- { text: "gemini-2.5-flash-preview-04-17", node: gemini-2.5-flash }
+- { text: "gemini-2.5-flash-preview-09-2025", node: gemini-2.5-flash }
+- { text: "google/gemini-2.5-flash", node: gemini-2.5-flash }
+- { text: "2.5 flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 2.5 Flash-Lite", node: gemini-2.5-flash-lite }
+- { text: "gemini 2.5 flash-lite", node: gemini-2.5-flash-lite }
+- { text: "gemini-2.5-flash-lite", node: gemini-2.5-flash-lite }
+- { text: "gemini-2.5-flash-lite-preview-06-17", node: gemini-2.5-flash-lite }
+- { text: "gemini-2.5-flash-lite-preview-09-2025", node: gemini-2.5-flash-lite }
+- { text: "2.5 flash lite", node: gemini }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 2.5 Computer Use", node: gemini-2.5-computer-use }
+- { text: "gemini 2.5 computer use", node: gemini-2.5-computer-use }
+- { text: "gemini-2.5-computer-use", node: gemini-2.5-computer-use }
+- { text: "gemini-2.5-computer-use-preview-10-2025", node: gemini-2.5-computer-use }
+
+# Deep Think line
+- { text: "Gemini Deep Think", node: gemini-deep-think }
+- { text: "deep think", node: gemini-deep-think }
+- { text: "deepthink", node: gemini-deep-think }
+- { text: "gemini deep think", node: gemini-deep-think }
+- { text: "Gemini 2.5 Deep Think", node: gemini-2.5-deep-think }
+- { text: "gemini 2.5 deep think", node: gemini-2.5-deep-think }
+- { text: "2.5 deepthink", node: gemini-deep-think }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "deep think 2.5", node: gemini-2.5-deep-think }
+- { text: "Gemini 3 Deep Think", node: gemini-3-deep-think }
+- { text: "gemini 3 deep think", node: gemini-3-deep-think }
+- { text: "gemini 3 deepthink", node: gemini-3-deep-think }
+- { text: "deep think 3", node: gemini-3-deep-think }
+- { text: "Gemini 3.1 Deep Think", node: gemini-3.1-deep-think }
+- { text: "gemini 3.1 deep think", node: gemini-3.1-deep-think }
+- { text: "deep think upgrade", node: gemini-3.1-deep-think }
+- { text: "updated deep think", node: gemini-3.1-deep-think }
+
+# Gemini 3
+- { text: "Gemini 3", node: gemini-3 }
+- { text: "gemini 3", node: gemini-3 }
+- { text: "gemini 3.0", node: gemini-3 }
+- { text: "gemini-3", node: gemini-3 }
+- { text: "Gemini 3 Pro", node: gemini-3-pro }
+- { text: "gemini 3 pro", node: gemini-3-pro }
+- { text: "gemini-3-pro", node: gemini-3-pro }
+- { text: "gemini-3-pro-preview", node: gemini-3-pro }
+- { text: "google/gemini-3-pro", node: gemini-3-pro }
+- { text: "3 pro", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "gemini 3.0 pro", node: gemini-3-pro }
+- { text: "Gemini 3 Flash", node: gemini-3-flash }
+- { text: "gemini 3 flash", node: gemini-3-flash }
+- { text: "gemini-3-flash", node: gemini-3-flash }
+- { text: "gemini-3-flash-preview", node: gemini-3-flash }
+- { text: "3 flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+
+# Gemini 3.1
+- { text: "Gemini 3.1", node: gemini-3.1 }
+- { text: "gemini 3.1", node: gemini-3.1 }
+- { text: "gemini-3.1", node: gemini-3.1 }
+- { text: "Gemini 3.1 Pro", node: gemini-3.1-pro }
+- { text: "gemini 3.1 pro", node: gemini-3.1-pro }
+- { text: "gemini-3.1-pro", node: gemini-3.1-pro }
+- { text: "gemini-3.1-pro-preview", node: gemini-3.1-pro }
+- { text: "3.1 pro", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 3.1 Flash-Lite", node: gemini-3.1-flash-lite }
+- { text: "gemini 3.1 flash-lite", node: gemini-3.1-flash-lite }
+- { text: "gemini-3.1-flash-lite", node: gemini-3.1-flash-lite }
+- { text: "3.1 flash lite", node: gemini }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+
+# Gemini 3.5
+- { text: "Gemini 3.5", node: gemini-3.5 }
+- { text: "gemini 3.5", node: gemini-3.5 }
+- { text: "gemini-3.5", node: gemini-3.5 }
+- { text: "Gemini 3.5 Flash", node: gemini-3.5-flash }
+- { text: "gemini 3.5 flash", node: gemini-3.5-flash }
+- { text: "gemini-3.5-flash", node: gemini-3.5-flash }
+- { text: "3.5 flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 3.5 Flash-Lite", node: gemini-3.5-flash-lite }
+- { text: "gemini 3.5 flash-lite", node: gemini-3.5-flash-lite }
+- { text: "gemini-3.5-flash-lite", node: gemini-3.5-flash-lite }
+- { text: "3.5 flash lite", node: gemini }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "Gemini 3.5 Flash Cyber", node: gemini-3.5-flash-cyber }
+- { text: "gemini 3.5 flash cyber", node: gemini-3.5-flash-cyber }
+- { text: "flash cyber", node: gemini-3.5-flash-cyber }
+- { text: "gemini cyber", node: gemini-3.5-flash-cyber }
+
+# Gemini 3.6
+- { text: "Gemini 3.6", node: gemini-3.6 }
+- { text: "gemini 3.6", node: gemini-3.6 }
+- { text: "gemini-3.6", node: gemini-3.6 }
+- { text: "Gemini 3.6 Flash", node: gemini-3.6-flash }
+- { text: "gemini 3.6 flash", node: gemini-3.6-flash }
+- { text: "gemini-3.6-flash", node: gemini-3.6-flash }
+- { text: "3.6 flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+
+# Gemini Omni
+- { text: "Gemini Omni", node: gemini-omni }
+- { text: "gemini omni", node: gemini-omni }
+- { text: "omni", node: none }  # v0.9: was gemini-omni (weak bare 'omni' removed, near-zero corpus precision)
+- { text: "Gemini Omni Flash", node: gemini-omni-flash }
+- { text: "gemini omni flash", node: gemini-omni-flash }
+- { text: "gemini-omni-flash", node: gemini-omni-flash }
+- { text: "omni flash", node: gemini-omni-flash }
+
+# Nano Banana line
+- { text: "Nano Banana (Gemini image models)", node: nano-banana }
+- { text: "nano banana", node: nano-banana }
+- { text: "nanobanana", node: nano-banana }
+- { text: "nano-banana", node: nano-banana }
+- { text: "gemini image", node: nano-banana }
+- { text: "gemini flash image", node: nano-banana }
+- { text: "Nano Banana (Gemini 2.5 Flash Image)", node: nano-banana-1 }
+- { text: "gemini 2.5 flash image", node: nano-banana-1 }
+- { text: "gemini-2.5-flash-image", node: nano-banana-1 }
+- { text: "gemini-2.5-flash-image-preview", node: nano-banana-1 }
+- { text: "Nano Banana Pro (Gemini 3 Pro Image)", node: nano-banana-pro }
+- { text: "nano banana pro", node: nano-banana-pro }
+- { text: "gemini 3 pro image", node: nano-banana-pro }
+- { text: "gemini-3-pro-image", node: nano-banana-pro }
+- { text: "gemini-3-pro-image-preview", node: nano-banana-pro }
+- { text: "nanobanana pro", node: nano-banana-pro }
+- { text: "Nano Banana 2 (Gemini 3.1 Flash Image)", node: nano-banana-2 }
+- { text: "nano banana 2", node: nano-banana-2 }
+- { text: "gemini 3.1 flash image", node: nano-banana-2 }
+- { text: "gemini-3.1-flash-image", node: nano-banana-2 }
+- { text: "nb2", node: nano-banana-2 }
+- { text: "nanobanana 2", node: nano-banana-2 }
+- { text: "Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)", node: nano-banana-2-lite }
+- { text: "nano banana 2 lite", node: nano-banana-2-lite }
+- { text: "nano banana lite", node: nano-banana-2-lite }
+- { text: "gemini-3.1-flash-lite-image", node: nano-banana-2-lite }
+- { text: "gemini 3.1 flash lite image", node: nano-banana-2-lite }
+
+# Embeddings line
+- { text: "Gemini embeddings", node: gemini-embeddings }
+- { text: "gemini embedding", node: gemini-embeddings }
+- { text: "google text embedding", node: gemini-embeddings }
+- { text: "gecko embedding", node: gemini-embeddings }
+- { text: "text-embedding-004", node: text-embedding-004 }
+- { text: "text-embedding-005", node: text-embedding-005 }
+- { text: "text-embedding-preview-0409", node: text-embedding-004 }
+- { text: "text-multilingual-embedding-002", node: text-embedding-005 }
+- { text: "Gemini Embedding (gemini-embedding-001)", node: gemini-embedding-001 }
+- { text: "gemini-embedding-001", node: gemini-embedding-001 }
+- { text: "gemini-embedding-exp-03-07", node: gemini-embedding-001 }
+- { text: "gemini embedding 2", node: gemini-embedding-2 }
+- { text: "gemini-embedding-2", node: gemini-embedding-2 }
+
+# ---------------------------------------------------------------- Gemma
+- { text: "Gemma", node: gemma }
+- { text: "gemma", node: gemma }
+- { text: "google gemma", node: gemma }
+- { text: "gemma models", node: gemma }
+- { text: "RecurrentGemma", node: recurrentgemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "ShieldGemma", node: shieldgemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "ShieldGemma 2", node: shieldgemma-2-4b }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "DataGemma", node: datagemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "TxGemma", node: txgemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "MedGemma", node: medgemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "TranslateGemma", node: gemma }
+
+# Gemma 1
+- { text: "Gemma 1", node: gemma-1 }
+- { text: "gemma 1", node: gemma-1 }
+- { text: "Gemma 2B", node: gemma-1-2b }
+- { text: "Gemma 7B", node: gemma-1-7b }
+- { text: "gemma-2b", node: gemma-1-2b }
+- { text: "gemma-7b", node: gemma-1-7b }
+- { text: "gemma 2b", node: gemma-1-2b }
+- { text: "gemma 7b", node: gemma-1-7b }
+- { text: "gemma-1.1", node: gemma-1 }
+- { text: "gemma-1.1-2b-it", node: gemma-1 }
+- { text: "gemma-1.1-7b-it", node: gemma-1 }
+- { text: "google/gemma-7b", node: gemma-1-7b }
+
+# Gemma 2
+- { text: "Gemma 2", node: gemma-2 }
+- { text: "gemma 2", node: gemma-2 }
+- { text: "gemma-2", node: gemma-2 }
+- { text: "gemma2", node: gemma-2 }
+- { text: "Gemma 2 2B", node: gemma-2-2b }
+- { text: "Gemma 2 9B", node: gemma-2-9b }
+- { text: "Gemma 2 27B", node: gemma-2-27b }
+- { text: "gemma-2-2b", node: gemma-2-2b }
+- { text: "gemma-2-9b", node: gemma-2-9b }
+- { text: "gemma-2-27b", node: gemma-2-27b }
+- { text: "gemma-2-9b-it", node: gemma-2-9b }
+- { text: "gemma-2-27b-it", node: gemma-2-27b }
+- { text: "google/gemma-2-27b-it", node: gemma-2-27b }
+
+# Gemma 3 (+ 3n, 270M)
+- { text: "Gemma 3", node: gemma-3 }
+- { text: "gemma 3", node: gemma-3 }
+- { text: "gemma-3", node: gemma-3 }
+- { text: "gemma3", node: gemma-3 }
+- { text: "Gemma 3 1B", node: gemma-3-1b }
+- { text: "Gemma 3 4B", node: gemma-3-4b }
+- { text: "Gemma 3 12B", node: gemma-3-12b }
+- { text: "Gemma 3 27B", node: gemma-3-27b }
+- { text: "gemma-3-1b", node: gemma-3-1b }
+- { text: "gemma-3-4b", node: gemma-3-4b }
+- { text: "gemma-3-12b", node: gemma-3-12b }
+- { text: "gemma-3-27b", node: gemma-3-27b }
+- { text: "gemma-3-27b-it", node: gemma-3-27b }
+- { text: "google/gemma-3-27b-it", node: gemma-3-27b }
+- { text: "Gemma 3n", node: gemma-3n }
+- { text: "gemma 3n", node: gemma-3n }
+- { text: "gemma-3n", node: gemma-3n }
+- { text: "gemma3n", node: gemma-3n }
+- { text: "Gemma 3n E2B", node: gemma-3n-e2b }
+- { text: "Gemma 3n E4B", node: gemma-3n-e4b }
+- { text: "gemma-3n-e2b", node: gemma-3n-e2b }
+- { text: "gemma-3n-e4b", node: gemma-3n-e4b }
+- { text: "gemma-3n-e4b-it", node: gemma-3n-e4b }
+- { text: "Gemma 3 270M", node: gemma-3-270m }
+- { text: "gemma 3 270m", node: gemma-3-270m }
+- { text: "gemma-3-270m", node: gemma-3-270m }
+- { text: "gemma-3-270m-it", node: gemma-3-270m }
+- { text: "270m gemma", node: gemma-3-270m }
+
+# EmbeddingGemma
+- { text: "EmbeddingGemma", node: embeddinggemma }
+- { text: "embeddinggemma", node: embeddinggemma }
+- { text: "embedding gemma", node: embeddinggemma }
+- { text: "embeddinggemma-300m", node: embeddinggemma }
+
+# CodeGemma
+- { text: "CodeGemma", node: codegemma }
+- { text: "codegemma", node: codegemma }
+- { text: "code gemma", node: codegemma }
+- { text: "CodeGemma 2B", node: codegemma-2b }
+- { text: "CodeGemma 7B", node: codegemma-7b }
+- { text: "codegemma-2b", node: codegemma-2b }
+- { text: "codegemma-7b", node: codegemma-7b }
+- { text: "codegemma-7b-it", node: codegemma-7b }
+
+# PaliGemma + PaliGemma 2
+- { text: "PaliGemma", node: paligemma }
+- { text: "paligemma", node: paligemma }
+- { text: "pali gemma", node: paligemma }
+- { text: "paligemma-3b", node: paligemma }
+- { text: "paligemma-3b-pt-224", node: paligemma }
+- { text: "paligemma-3b-mix-448", node: paligemma }
+- { text: "PaliGemma 2", node: paligemma-2 }
+- { text: "paligemma 2", node: paligemma-2 }
+- { text: "paligemma2", node: paligemma-2 }
+- { text: "paligemma-2", node: paligemma-2 }
+- { text: "PaliGemma 2 3B", node: paligemma-2-3b }
+- { text: "PaliGemma 2 10B", node: paligemma-2-10b }
+- { text: "PaliGemma 2 28B", node: paligemma-2-28b }
+- { text: "paligemma2-3b", node: paligemma-2-3b }
+- { text: "paligemma2-10b", node: paligemma-2-10b }
+- { text: "paligemma2-28b", node: paligemma-2-28b }
+
+# Gemma 4
+- { text: "Gemma 4", node: gemma-4 }
+- { text: "gemma 4", node: gemma-4 }
+- { text: "gemma-4", node: gemma-4 }
+- { text: "gemma4", node: gemma-4 }
+- { text: "Gemma 4 E2B", node: gemma-4-e2b }
+- { text: "Gemma 4 E4B", node: gemma-4-e4b }
+- { text: "Gemma 4 12B", node: gemma-4-12b }
+- { text: "Gemma 4 26B A4B", node: gemma-4-26b-a4b }
+- { text: "Gemma 4 31B", node: gemma-4-31b }
+- { text: "gemma-4-e2b", node: gemma-4-e2b }
+- { text: "gemma-4-e4b", node: gemma-4-e4b }
+- { text: "gemma-4-12b", node: gemma-4-12b }
+- { text: "gemma 4 12b unified", node: gemma-4-12b }
+- { text: "gemma-4-26b-a4b", node: gemma-4-26b-a4b }
+- { text: "gemma-4-31b", node: gemma-4-31b }
+- { text: "gemma 4 27b", node: gemma-4-26b-a4b }
+
+# ---------------------------------------------------------------- PaLM
+- { text: "PaLM", node: palm }
+- { text: "palm", node: palm }
+- { text: "google palm", node: palm }
+- { text: "pathways language model", node: palm }
+- { text: "palm 540b", node: palm-1 }
+- { text: "palm-540b", node: palm-1 }
+- { text: "palm 62b", node: palm-1 }
+- { text: "palm 8b", node: palm-1 }
+- { text: "u-palm", node: u-palm }  # v0.7: was node palm-1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "flan-palm", node: flan-palm }  # v0.7: was node palm-1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "PaLM 2", node: palm-2 }
+- { text: "palm 2", node: palm-2 }
+- { text: "palm2", node: palm-2 }
+- { text: "palm-2", node: palm-2 }
+- { text: "gecko", node: gemini-embeddings }  # v0.9: was palm-2 (Gecko embedding aliases moved to the Google embeddings line)
+- { text: "otter", node: none }  # v0.9: was palm-2 (weak PaLM 2 size codenames removed (animal words))
+- { text: "bison", node: none }  # v0.9: was palm-2 (weak PaLM 2 size codenames removed (animal words))
+- { text: "unicorn", node: none }  # v0.9: was palm-2 (weak PaLM 2 size codenames removed (animal words))
+- { text: "text-bison", node: palm-2 }
+- { text: "text-bison@001", node: palm-2 }
+- { text: "chat-bison", node: palm-2 }
+- { text: "chat-bison@001", node: palm-2 }
+- { text: "text-unicorn", node: palm-2 }
+- { text: "textembedding-gecko", node: gemini-embeddings }  # v0.9: was palm-2 (Gecko embedding aliases moved to the Google embeddings line)
+
+# ---------------------------------------------------------------- historical
+- { text: "LaMDA", node: lamda-1 }
+- { text: "lamda", node: lamda-1 }
+- { text: "lambda", node: none }  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- { text: "lamda 2", node: lamda-2 }  # v0.7: was node lamda-1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "language model for dialogue applications", node: lamda-1 }
+- { text: "GLaM", node: glam-1 }
+- { text: "glam", node: glam-1 }
+- { text: "glam moe", node: glam-1 }
+- { text: "generalist language model", node: glam-1 }
+- { text: "Switch Transformer", node: switch-transformer-1 }
+- { text: "switch transformer", node: switch-transformer-1 }
+- { text: "switch-c", node: switch-transformer-1 }
+- { text: "switch-xxl", node: switch-transformer-1 }
+- { text: "switch-base", node: switch-transformer-1 }
+- { text: "google/switch-base-128", node: switch-transformer-1 }
+- { text: "Gopher", node: gopher-1 }
+- { text: "gopher", node: gopher-1 }
+- { text: "gopher 280b", node: gopher-1 }
+- { text: "deepmind gopher", node: gopher-1 }
+- { text: "Chinchilla", node: chinchilla-1 }
+- { text: "chinchilla", node: chinchilla-1 }
+- { text: "chinchilla 70b", node: chinchilla-1 }
+- { text: "chinchilla scaling", node: chinchilla-1 }
+- { text: "chinchilla-optimal", node: chinchilla-1 }
+- { text: "Flamingo", node: flamingo-1 }
+- { text: "flamingo", node: flamingo-1 }
+- { text: "flamingo 80b", node: flamingo-1 }
+- { text: "deepmind flamingo", node: flamingo-1 }
+- { text: "openflamingo", node: openflamingo-1 }  # v0.9: was flamingo-1 (OpenFlamingo has its own node, not DeepMind's Flamingo)
+
+# ---------------------------------------------------------------- T5
+- { text: "T5", node: t5 }
+- { text: "t5 family", node: t5 }
+- { text: "text-to-text transfer transformer", node: t5 }
+- { text: "t5-small", node: t5-2019 }
+- { text: "t5-base", node: t5-2019 }
+- { text: "t5-large", node: t5-2019 }
+- { text: "t5-3b", node: t5-2019 }
+- { text: "t5-11b", node: t5-2019 }
+- { text: "t5.1.1", node: t5-2019 }
+- { text: "t5-v1_1", node: t5-2019 }
+- { text: "google/t5-v1_1-xxl", node: t5-2019 }
+- { text: "mT5", node: mt5 }
+- { text: "mt5", node: mt5 }
+- { text: "mt5-small", node: mt5 }
+- { text: "mt5-base", node: mt5 }
+- { text: "mt5-large", node: mt5 }
+- { text: "mt5-xl", node: mt5 }
+- { text: "mt5-xxl", node: mt5 }
+- { text: "google/mt5-xxl", node: mt5 }
+- { text: "multilingual t5", node: mt5 }
+- { text: "Flan-T5", node: flan-t5 }
+- { text: "flan-t5", node: flan-t5 }
+- { text: "flan t5", node: flan-t5 }
+- { text: "flan-t5-small", node: flan-t5 }
+- { text: "flan-t5-base", node: flan-t5 }
+- { text: "flan-t5-large", node: flan-t5 }
+- { text: "flan-t5-xl", node: flan-t5-xl }  # v0.9: was flan-t5 (Flan-T5-XL split out, D598 fold policy (21 docs))
+- { text: "flan-t5-xxl", node: flan-t5 }
+- { text: "google/flan-t5-xxl", node: flan-t5 }
+- { text: "UL2", node: ul2 }
+- { text: "ul2", node: ul2 }
+- { text: "ul2 20b", node: ul2 }
+- { text: "ul2-20b", node: ul2 }
+- { text: "google/ul2", node: ul2 }
+- { text: "Flan-UL2", node: flan-ul2 }
+- { text: "flan-ul2", node: flan-ul2 }
+- { text: "flan ul2", node: flan-ul2 }
+- { text: "google/flan-ul2", node: flan-ul2 }
+
+# ---------------------------------------------------------------- encoders
+- { text: "BERT", node: bert }
+- { text: "bert", node: bert }
+- { text: "BERT Base", node: bert-base }
+- { text: "BERT Large", node: bert-large }
+- { text: "bert-base", node: bert-base }
+- { text: "bert-large", node: bert-large }
+- { text: "bert-base-uncased", node: bert-base }
+- { text: "bert-base-cased", node: bert-base }
+- { text: "bert-large-uncased", node: bert-large }
+- { text: "mbert", node: bert-base }
+- { text: "bert-base-multilingual-cased", node: bert-base }
+- { text: "ALBERT", node: none }  # v0.9: was albert-1 (weak bare 'albert' removed, near-zero corpus precision)
+- { text: "albert", node: none }  # v0.9: was albert-1 (weak bare 'albert' removed, near-zero corpus precision)
+- { text: "albert-base", node: albert-1 }
+- { text: "albert-base-v2", node: albert-1 }
+- { text: "albert-large-v2", node: albert-1 }
+- { text: "albert-xxlarge-v2", node: albert-1 }
+- { text: "a lite bert", node: albert-1 }
+- { text: "ELECTRA", node: electra-1 }
+- { text: "electra", node: electra-1 }
+- { text: "electra-small", node: electra-1 }
+- { text: "electra-base", node: electra-1 }
+- { text: "electra-large", node: electra-1 }
+- { text: "google/electra-base-discriminator", node: electra-1 }
+- { text: "XLNet", node: xlnet-1 }
+- { text: "xlnet", node: xlnet-1 }
+- { text: "xlnet-base", node: xlnet-1 }
+- { text: "xlnet-large", node: xlnet-1 }
+- { text: "xlnet-base-cased", node: xlnet-1 }
+- { text: "xlnet-large-cased", node: xlnet-1 }
+
+# ---------------------------------------------------------------- Imagen
+- { text: "Imagen", node: imagen }
+- { text: "imagen", node: imagen }
+- { text: "google imagen", node: imagen }
+- { text: "Imagen 1", node: imagen-1 }
+- { text: "imagen 1", node: imagen-1 }
+- { text: "Imagen 2", node: imagen-2 }
+- { text: "imagen 2", node: imagen-2 }
+- { text: "imagen2", node: imagen-2 }
+- { text: "imagegeneration@005", node: imagen-2 }
+- { text: "Imagen 3", node: imagen-3 }
+- { text: "imagen 3", node: imagen-3 }
+- { text: "imagen3", node: imagen-3 }
+- { text: "imagen-3.0-generate-001", node: imagen-3 }
+- { text: "imagen-3.0-generate-002", node: imagen-3 }
+- { text: "imagen-3.0-fast-generate-001", node: imagen-3 }
+- { text: "Imagen 4", node: imagen-4 }
+- { text: "imagen 4", node: imagen-4 }
+- { text: "imagen4", node: imagen-4 }
+- { text: "imagen-4.0-generate-001", node: imagen-4 }
+- { text: "imagen-4.0-ultra-generate-001", node: imagen-4 }
+- { text: "imagen 4 ultra", node: imagen-4 }
+- { text: "imagen 4 fast", node: imagen-4 }
+
+# ---------------------------------------------------------------- refinement pass
+# Real-world surface forms (2023–2026 news/blogs/papers/forums), benchmark-table
+# cells, Vertex/HF/OpenRouter id fragments, and trap regressions.
+
+# experimental-suffix era (gemini-exp-*): no node, resolves to the family
+- { text: "gemini exp", node: gemini }
+- { text: "gemini-exp-1206", node: gemini }
+- { text: "gemini-exp-1121 tops the leaderboard", node: gemini }
+# bare version-tier forms actually used in prose/tables
+- { text: "| 2.5 Pro | 86.4 |", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "we used gemini2.5 pro", node: gemini-2.5-pro }
+- { text: "2.0 flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "2.0 Flash is now GA", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "2.0 Flash-Lite", node: gemini }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "2.0 pro", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "gemini flash thinking", node: gemini-2.0-flash-thinking }  # v0.7: was node gemini-2.0-flash; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "Gemini Flash Thinking beat o1", node: gemini-2.0-flash-thinking }  # v0.7: was node gemini-2.0-flash; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+# 1.5 Flash-8B must out-length the bare "1.5 flash" pattern
+- { text: "1.5 flash 8b", node: gemini-1.5-flash-8b }
+- { text: "Gemini 1.5 Pro-002 vs 1.5 Flash-8B", node: gemini-1.5-flash-8b }
+- { text: "gemini-1.5-flash-8b-exp-0827", node: gemini-1.5-flash-8b }
+# Computer Use / Deep Think short forms
+- { text: "gemini computer use", node: gemini-2.5-computer-use }
+- { text: "Gemini computer use model", node: gemini-2.5-computer-use }
+- { text: "3 deep think", node: gemini-deep-think }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+- { text: "3.1 deep think beat the field", node: gemini-deep-think }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+# Nano Banana retronym; Gemini Nano vs Nano Banana are unrelated (trap)
+- { text: "nano banana 1", node: nano-banana-1 }
+- { text: "Gemini Nano vs Nano Banana", node: gemini-1.0-nano }
+- { text: "Gemini Nano vs Nano Banana", node: nano-banana }
+# naming trap: no plain-text "Gemini 3.1 Flash" model — resolves to the group
+- { text: "Gemini 3.1 Flash", node: gemini-3.1 }
+- { text: "gemini-3.1-flash-live-preview", node: gemini-3.1-flash-live }  # v0.7: was node gemini-3.1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "gemini-3.1-flash-tts-preview", node: gemini-3.1-flash-tts }  # v0.7: was node gemini-3.1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+# nonexistent/unreleased models degrade to the nearest existing node
+- { text: "Gemini 3.5 Pro is unreleased", node: gemini-3.5 }
+- { text: "Gemini 4 teased at launch", node: gemini }
+- { text: "Veo 4 rumors", node: veo }
+# multiplier prose must not eat the version ("3x cheaper" is not a mention)
+- { text: "3x cheaper than Gemini 3 Flash", node: gemini-3-flash }
+- { text: "the model is 3x faster than 2.5 Flash", node: none }  # digit-first fragment patterns banned 2026-07-31; degraded/no-match by design
+# endpoint/API variants fold into their base model
+- { text: "gemini-2.5-flash-preview-native-audio-dialog", node: gemini-2.5-flash }
+- { text: "gemini-2.0-flash-live-001", node: gemini-2.0-flash }
+# Gemma: specialized *Gemma lines with no nodes resolve to the family
+- { text: "T5Gemma", node: t5gemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "t5gemma-b-b-prefixlm", node: t5gemma }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "VaultGemma", node: vaultgemma-1b }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "vaultgemma-1b", node: vaultgemma-1b }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "SignGemma", node: gemma }
+- { text: "DolphinGemma", node: gemma }
+- { text: "MedGemma 27B", node: medgemma-1-27b }  # v0.7: was node gemma; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "Gemma 3 QAT models", node: gemma-3 }
+- { text: "gemma-2-9b-it-SimPO", node: gemma-2-9b }
+- { text: "gemma-3n-E2B-it-litert-lm", node: gemma-3n-e2b }
+# T5 checkpoint suite: XL/XXL are the most-cited sizes (T5-XXL text encoder)
+- { text: "T5-XXL text encoder", node: t5-2019 }
+- { text: "t5-xl", node: t5-2019 }
+- { text: "google/t5-v1_1-xl", node: t5-2019 }
+- { text: "| Flan-T5-XXL | 55.1 |", node: flan-t5 }
+- { text: "| mT5-XXL | 74.2 |", node: mt5 }
+# Switch Transformer checkpoint suite
+- { text: "switch-large-128", node: switch-transformer-1 }
+- { text: "google/switch-large-128", node: switch-transformer-1 }
+# benchmark-table cells for the historical/encoder nodes
+- { text: "| PaLM 2-L | 78.3 |", node: palm-2 }
+- { text: "| BERT_base | 79.0 |", node: bert-base }
+- { text: "| GLaM 64B/64E | 62.0 |", node: glam-1 }
+- { text: "| Gemini Nano-1 | 45 |", node: gemini-1.0-nano }
+- { text: "text-embedding-gecko@003", node: gemini-embeddings }  # v0.9: was palm-2 (Gecko embedding aliases moved to the Google embeddings line)
+- { text: "bert-base-uncased embeddings", node: bert-base }
+# Vertex Imagen endpoint ids (verbatim: "@" is not a separator class member)
+- { text: "imagegeneration@006", node: imagen-2 }
+
+# ---------------------------------------------------------------- Veo
+- { text: "Veo", node: veo }
+- { text: "veo", node: veo }
+- { text: "google veo", node: veo }
+- { text: "deepmind veo", node: veo }
+- { text: "Veo 1", node: veo-1 }
+- { text: "veo 1", node: veo-1 }
+- { text: "veo-1", node: veo-1 }
+- { text: "Veo 2", node: veo-2 }
+- { text: "veo 2", node: veo-2 }
+- { text: "veo2", node: veo-2 }
+- { text: "veo-2", node: veo-2 }
+- { text: "veo-2.0-generate-001", node: veo-2 }
+- { text: "Veo 3", node: veo-3 }
+- { text: "veo 3", node: veo-3 }
+- { text: "veo3", node: veo-3 }
+- { text: "veo-3", node: veo-3 }
+- { text: "veo-3.0-generate-001", node: veo-3 }
+- { text: "veo-3.0-fast-generate-001", node: veo-3-fast }  # v0.7: was node veo-3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "veo 3 fast", node: veo-3-fast }  # v0.7: was node veo-3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "Veo 3.1", node: veo-3.1 }
+- { text: "veo 3.1", node: veo-3.1 }
+- { text: "veo3.1", node: veo-3.1 }
+- { text: "veo-3.1", node: veo-3.1 }
+- { text: "veo-3.1-generate-preview", node: veo-3.1 }
+- { text: "veo-3.1-lite-generate-preview", node: veo-3.1-lite }  # v0.7: was node veo-3.1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "veo 3.1 lite", node: veo-3.1-lite }  # v0.7: was node veo-3.1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "veo 3.1 fast", node: veo-3.1-fast }  # v0.7: was node veo-3.1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)

@@ -1,0 +1,94 @@
+# std-v2: the standard plan (docs/DESIGN.md §3.5 as amended: D1, D16, D22, D31).
+# Dropped by D22 and refused by stack/plan.py: input_rule, versions.compact_after.
+# The gate is parsed as data here; stack/gate.py evaluates it (T2.9 sql:, M4 question:, S5 rule:).
+# Round 3 (track S, S4/S5; D209, 2026-10-12): triage pin safety-relevance-v3 on gpt-6-luna (was v1 on the
+# classify role; D203 (1)); question fetch_on [relevant, borderline] (was [relevant]; D184 (C)); the screen gate's
+# source rules frontier_lab_posts, safety_org_posts, zvi_posts (stack/rules.py) before the question clause.
+# acquire.wants gains every channel a rule fetches by (std-v2: alignmentforum, the lab and card channels and the
+# 16 safety-org blogs; dev-v2-m4: the 16 safety-org blogs), so a rule-fetched row has a wanted role.
+# Screen pin screen-v11 (v10's two questions + text usability, one call; records stack_relevance, sr_relevance,
+# text_usability folded) on gpt-6-luna, tier 2 gpt-5.6-terra on the whole text; tier 1 sees [12000, 2000] (D211).
+# Round 4 (track P, D230: the A2 collectors into std-v2; LessWrong left out of link collection only):
+# std-v2 runs dev-v2-m4's whole collector set (was OpenAlex + its lookup only) at production windows: no dev caps
+# (window_days, fraction, max_records, max_pages, max_channels, max_urls), so each window starts at the channel's
+# from_date / its coverage watermark and is bounded by channels.yaml's max_results_per_query. collect.lw_graphql
+# (AI tag + SR extension tags, D193) beside collect.forums' keyword sweep (D193 default accepted); collect.blogs with
+# the 16 safety-org blogs (D195); the SR concept groups on OpenAlex (all groups), S2, forums and the arXiv
+# keyword/category families (D196). acquire.wants gains semantic_scholar. Track F's proposed cuts
+# (docs/design/collection-yield.md §6) were pending and are not applied. No link-collection lines.
+plan: std-v2
+schema_version: 2
+series: std-v2                     # default series of every line's in/out (configs/plans/README.md)
+prompts:
+  triage.safety-relevance-v3: {name: safety-relevance-v3, model: openai/gpt-6-luna}
+  # screen-v12 (T-SCREEN, D255): v11 + doc_class record; tier 2 = luna on a [48000, 8000] excerpt (the name's default)
+  annotate.screen: {name: screen-v12, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-6-luna}
+  annotate.affiliation: {name: affiliation-v1, role: extract_main}
+gate:
+  screen:
+    - {rule: frontier_lab_posts}
+    - {rule: safety_org_posts}
+    - {rule: zvi_posts}
+    - {question: safety_relevance, prompt: triage.safety-relevance-v3, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  convert: {config: docling-v2}
+  wants: {arxiv: [full_text], openalex: [full_text, xml], semantic_scholar: [full_text], lesswrong: [post],
+          # `blogs` and `repos` are design names that match no channel (blog posts arrive under their own channel
+          # ids below; no collector writes `repos`): inert, kept so the plan digest does not change (review R3-8a)
+          blogs: [page], x: [post],
+          repos: [readme],
+          # S5: every channel a source rule fetches by (stack/rules.py), so a rule-fetched row has a wanted role
+          alignmentforum: [post],
+          anthropic_alignment_blog: [page], openai_blog: [page], openai_alignment_blog: [page],
+          transformer_circuits: [page], google_research: [page], mistral_blog: [page], deepmind_blog: [page],
+          anthropic_cards: [page], openai_cards: [page], deepmind_cards: [page], meta_cards: [page],
+          xai_cards: [page], deepseek_cards: [page], qwen_cards: [page], miri_blog: [page], metr_blog: [page],
+          transluce_blog: [page], goodfire_blog: [page], uk_aisi_blog: [page], redwood_blog: [page],
+          apollo_blog: [page], arc_blog: [page], epoch_blog: [page], forethought_blog: [page], far_ai_blog: [page],
+          timaeus_blog: [page], clr_blog: [page], softmax_blog: [page], meaning_alignment_blog: [page],
+          cooperative_ai_blog: [page]}
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability, doc_class, affiliation]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: false                        # true: files.corpus_everything
+recovery: {dead_run_charge: false}       # D1, D16
+stages:
+  # Collectors: dev-v2-m4's set and order without its dev caps (D230).
+  - {stage: collect.arxiv_sweep, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.openalex, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.semantic_scholar, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.forums, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.af_graphql, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.lw_graphql, out: {kind: part}, prior: [sources, coverage], options: {
+     tags: [ai, decision-theory, anthropics, acausal-trade, agent-foundations, embedded-agency, logical-induction,
+            updateless-decision-theory, functional-decision-theory, natural-abstraction, infra-bayesianism,
+            game-theory, logical-uncertainty]}}
+  - {stage: collect.blogs, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.cards, out: {kind: part}, prior: [sources, coverage]}
+  - {stage: collect.openalex-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3}
+  - {stage: collect.s2-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3}
+  - {stage: collect.card-dates-lookup, out: {kind: part}, prior: [sources, coverage]}   # reads the documents head (T2.6)
+  - {stage: gather}
+  # workers (B6): 16 LLM questions in flight; measured 229/min vs 14-16/min at 1, no 429 (RUNLOG (RUN) B6); not in the triage config_digest
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 20}, options: {workers: 16}}     # D22: prior triage_evidence
+  # fetch_workers (B6): lane calls of up to N hosts at once, one per host (pacing unchanged); gain = host mix (8 here: production has many hosts; store-dev: openai.com is 92%
+  # of due roles, +25%); convert_workers (B6): pymupdf4llm children, 0.6-0.75 GB RSS each, 35 PDFs 223 s at 1, 108 s at 4, 73 s at 8
+  - {stage: acquire, out: {kind: part}, budget: {max_minutes: 90}, repeat: {until: scope_complete, max_runs: 4},
+     options: {fetch_workers: 8, convert_workers: 4}}
+  - {stage: fold.corpus}
+  # screen_usd_per_1k: tier 1 + tier 2 at most $3 per 1,000 documents asked (2026-10-13; T-SCREEN, D255)
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 40},
+     options: {screen_usd_per_1k: 3.0, workers: 16}}
+  # affiliation reads bylines: papers with a full text only (v3 scope paper/preprint; journal/conference are
+  # doc_type values collectors emit outside enums.yaml); D182 (C)
+  # workers (B6): screen 6.4/min at 1, 38.5 at 8, 69.9 at 16; affiliation 10.1, 72.5, 133.8; no 429 at 16 (RUNLOG (RUN) B6)
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], options: {workers: 16},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role = 'full_text'"}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents, screen, screen_evidence]

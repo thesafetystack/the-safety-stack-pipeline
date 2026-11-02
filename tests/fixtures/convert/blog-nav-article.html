@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!-- Synthetic saved-shape blog page (T3.6-f3b): a site menu, a duplicated nav bar, the article,
+     a footer. Shaped after the research-blog snapshots of the T3.6 sample; all text is invented. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Calibrated abstention in retrieval agents | Example Lab Blog</title>
+  <meta name="description" content="How retrieval agents can learn when not to answer.">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="mega-menu" aria-label="Main">
+      <ul>
+        <li><a href="/research">Research</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/business">Business</a></li>
+        <li><a href="/developers">Developers</a></li>
+        <li><a href="/company">Company</a></li>
+        <li><a href="/login">Log in</a></li>
+        <li><a href="/try">Try the assistant</a></li>
+      </ul>
+      <div class="menu-panel">
+        <p>Explore our many areas of focus</p>
+        <ul>
+          <li><a href="/areas/applied">Applied systems and sciences</a></li>
+          <li><a href="/areas/earth">Earth observation</a></li>
+          <li><a href="/areas/health">Health and bioscience</a></li>
+          <li><a href="/areas/quantum">Quantum computing</a></li>
+          <li><a href="/areas/algorithms">Algorithms and theory</a></li>
+          <li><a href="/areas/responsible">Responsible development</a></li>
+          <li><a href="/areas/infra">Infrastructure and systems</a></li>
+        </ul>
+      </div>
+    </nav>
+    <nav class="sticky-bar" aria-label="Sticky">
+      <ul>
+        <li><a href="/research">Research</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/business">Business</a></li>
+        <li><a href="/developers">Developers</a></li>
+        <li><a href="/company">Company</a></li>
+        <li><a href="/login">Log in</a></li>
+        <li><a href="/try">Try the assistant</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <article class="post">
+      <h1>Calibrated abstention in retrieval agents</h1>
+      <p class="byline"><time datetime="2025-11-13">November 13, 2025</time> Ada Example and Bo Placeholder, Research Scientists</p>
+      <p>We introduce calibrated abstention, a training recipe that teaches retrieval agents to decline a question
+         when the retrieved evidence does not support any answer. The recipe pairs every training question with an
+         evidence set that is deliberately incomplete for a fixed fraction of examples.</p>
+      <p>Agents trained this way abstain on most unsupported questions while answering nearly as many supported
+         ones as the baseline. The effect holds across three evidence corpora and two model sizes, and it does not
+         require any change to the retrieval component itself.</p>
+      <h2>How the recipe works</h2>
+      <p>For each question we sample an evidence set from the corpus and, with probability one in four, remove the
+         passages that contain the answer. The agent is rewarded for answering correctly when the evidence suffices
+         and for abstaining when it does not; a wrong answer is penalised more heavily than an abstention.</p>
+      <p>We measure calibration as the gap between the agent's stated confidence and its accuracy on the questions
+         it chooses to answer. Trained agents halve this gap compared with prompting alone, and the gain persists
+         when the corpus is swapped for one the agent never saw during training.</p>
+      <h2>Limitations</h2>
+      <p>Abstention is learned relative to the training corpus, so a corpus with systematically missing topics
+         teaches the agent to abstain on those topics as well. We describe a simple rebalancing step that reduces
+         this effect, and we release the evaluation sets so that others can measure it on their own corpora.</p>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <ul>
+      <li><a href="/about">About</a></li>
+      <li><a href="/careers">Careers</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <p>Copyright Example Lab. All rights reserved.</p>
+  </footer>
+</body>
+</html>

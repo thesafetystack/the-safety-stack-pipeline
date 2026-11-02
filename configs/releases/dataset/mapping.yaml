@@ -1,0 +1,588 @@
+# The Safety Stack: the dataset release row as a projection of the internal corpus row.
+# The format id is the release id: the export's UTC date (`stack export --release-id` overrides it).
+#
+# The one hand-maintained description of the released schema. stack/fold/dataset.py reads it to build the release
+# parquet from a build's corpus and generates from it: the arrow schema, the parquet field descriptions, the row's JSON
+# Schema (schema.json, every kind's record and payload inline), FORMAT.md's field tables and the card's field table. Types and nullability of an `internal` entry come from the
+# internal pyarrow schema (stack.schemas; a field declared with a trailing `_` is non-nullable) and the code refuses an
+# entry whose `internal` path does not exist. A `transform` entry is implemented in code under its public path (the code
+# refuses a transform it does not implement and an implementation without an entry) and declares `type` and `nullable`.
+#
+# Conventions: `public` and `internal` are dotted paths; `[]` marks a list level. An entry without `internal` or
+# `transform` is a struct that only groups its children. Children of a mapped struct that are not listed are DROPPED
+# (allow-list). `enum` lists the values a reader may rely on (`open: true`: more may appear; the build fails on an
+# unlisted value of a closed enum); `pattern` documents a free string's grammar (not validated). `exclude` on a list
+# entry drops elements by field value. `rename_internal: true` marks a public name the pipeline should adopt too.
+#
+# Annotations: `annotations` is one struct with one typed column per kind; each kind is {metadata, payload}. `metadata`
+# is ONE struct type shared by every kind (`meta:` below), so a reader can UNION the kinds' metadata
+# (FORMAT's long-table recipe, one row per document and kind). A kind that was not run for a
+# document has its whole `annotations.<kind>` NULL (no status word stands for "not run"). Payload members are the
+# internal payload structs restricted to `keep`. `annotations.other` carries any annotation without a typed column as
+# JSON with the id of its JSON Schema (empty in this release; a non-empty one needs a `json_kinds` entry).
+
+internal: {family: documents, family_version: 6, registry: stack.schemas.payloads.registry.REGISTRY}
+
+rows:
+  filter: screen_relevant        # stack.query named filter: screen ok and verdict relevant
+  drop: [masked, retired, sensitivity, shadow_anchor]
+
+# Variants: one arrow schema, built once, written twice; they differ in values and in the sibling files.
+variants:
+  public:                        # the distributed variant
+    abstract: withhold           # abstract := NULL; release.abstract = withheld_pending_rights_review (or none)
+    texts: not_distributed       # release.text = not_distributed; no texts table
+    quote_cap_chars: 300         # every text class
+  internal:                      # the maintainers' variant (abstracts, full quotes and texts); not distributed
+    abstract: keep               # release.abstract = shipped | none
+    texts: inline                # release.text = inline; content.text.body holds the converted text
+    quote_cap_chars: null        # uncapped; release.cuts = []
+
+quote_cut: "a string longer than the cap is cut at the last word boundary at or before cap-1 code points and U+2026 '…' appended, so the shipped string is <= cap; a string of exactly the cap is kept whole; with no word boundary in reach it is cut at cap-1"
+
+# Capped paths (public names; document-derived strings). Model-written prose is never capped.
+quote_paths:
+  - annotations.screen.payload.quotes[].text
+  - annotations.stack_relevance.payload.quotes[].text
+  - annotations.shallow_review_relevance.payload.quotes[].text
+  - annotations.safety_techniques.payload.techniques[].quotes[].text
+  - annotations.safety_techniques.payload.extra_techniques[].quotes[].text
+  - annotations.model_roles.payload.models[].evidence[].quote
+  - annotations.model_roles.payload.variant_models[].quote
+  - annotations.model_roles.payload.extra_models[].quote
+surface_paths:
+  - annotations.affiliation.payload.items[].author_surface
+  - annotations.affiliation.payload.items[].affiliations[].surface
+  - annotations.model_name_matches.payload.matches[].surfaces[]
+  - annotations.model_name_matches.payload.ambiguous[].text
+# Model-written free text (shipped uncapped in both variants; listed in FORMAT.md and release.json policy.prose_paths).
+prose_paths:
+  - annotations.screen.payload.reasoning
+  - annotations.translation.payload.title_en
+  - annotations.translation.payload.abstract_en
+  - annotations.screen.payload.off_topic_reason
+  - annotations.text_usability.payload.note
+  - annotations.safety_techniques.payload.techniques[].note
+  - annotations.safety_techniques.payload.extra_techniques[].gloss
+  - annotations.model_roles.payload.models[].note
+# Paths derived from the document's abstract (D755): they follow the variant's abstract policy (NULL where it
+# withholds abstracts; checked).
+abstract_paths:
+  - annotations.translation.payload.abstract_en
+
+# Prose scrub (both variants): pipeline jargon in model notes replaced by the public term. The build checks that no
+# `forbid` pattern is left in any shipped string of the path.
+prose_scrub:
+  - path: annotations.model_roles.payload.models[].note
+    rules:
+      - {pattern: '\b[Mm]enu (nodes|rows|entries)\b', replace: 'catalogue entries', keep_case: true}
+      - {pattern: '\b[Mm]enu (node|row|entry)\b', replace: 'catalogue entry', keep_case: true}
+    forbid: ['(?i)\bmenu (node|row|entr)']
+
+# Internal workflows that are not released (retired, or not annotations of the document).
+dropped_workflows: [triage, technique_roles]
+# The organisations of the affiliations (D736, D737): every items[].affiliations[] of `kind` also carries org_ids,
+# org_status and org_candidates, copied from the document's stored record of `from` (annotate.affiliation_orgs; joined by item_key and
+# position), NULL where the document has none; that record is also its own kind column, whose metadata is their
+# provenance, and its pinned vocabulary ships as taxonomies/orgs-<version>.yaml (stack/fold/dataset.py ORG_FIELDS).
+org_fields: {kind: affiliation, from: affiliation_orgs}
+# Kinds released as JSON in annotations.other (none yet): {kind: {schema: <the id of its JSON Schema>}}.
+json_kinds: {}
+
+# Status remap (a documented transformed projection: FORMAT.md states each rule's reason and `set` with the number of
+# values it changed; release.json counts them by rule). Internal follow-up: set these statuses in select.py.
+status_remap:
+  - id: override_empty
+    when: "provenance = override AND status = ok AND the producer's own empty test holds for the payload (safety_techniques: techniques and extra_techniques both empty; model_roles: no models[] row with any role >= 1 AND variant_models and extra_models empty, workflows/annotate/model_roles/main.py)"
+    set: {status: empty}
+    reason: stand-in (override-supplied) payloads that found nothing, which the producer's own rule calls empty rather than ok
+  - id: producer_call_failed
+    when: "kind = model_name_matches AND status = failed_permanent AND the producing model_roles call failed (its record failed with the same error_class, or an override replaced it): the matcher ran before the judge call but its hits are persisted only with a successful call, so no output exists"
+    set: {error_class: producer_call_failed}
+    reason: model_name_matches records of model_roles calls that failed (a stand-in may have replaced the answer); they have no hits
+
+# ------------------------------------------------------------------------------------------- the row, top level
+fields:
+  - public: release_id
+    transform: release_id
+    type: string
+    nullable: false
+    doc: Release this row comes from (the export's UTC date, YYYY-MM-DD). Constant within a file; keeps rows self-identifying when releases are stacked. Also in the parquet file metadata and release.json.
+  - public: doc_id
+    internal: doc_id
+    doc: Document id (13 lowercase alphanumerics). Stable across releases; a merged document keeps the surviving id and lists the others in identity.former_doc_ids.
+  - public: title
+    internal: metadata.title
+    doc: Title (merged; field_sources says which source supplied it, origin `human` where the maintainers fixed it, an override of kind metadata_fix in config/overrides.jsonl; identity.members[].title keeps each source's).
+  - public: abstract
+    internal: metadata.abstract
+    doc: Abstract or opening excerpt as a source supplied it. NULL in the public variant (release.abstract = withheld_pending_rights_review) and where none exists (none). Third-party text.
+  - public: authors[]
+    internal: metadata.authors[]
+    doc: Byline authors in order, from the supplying source.
+  - public: authors[].name
+    internal: metadata.authors[].name
+    doc: Author name as supplied.
+  - public: authors[].orcid
+    internal: metadata.authors[].orcid
+    doc: ORCID when the provider gives one.
+  - public: authors[].affiliation_raw
+    internal: metadata.authors[].affiliation_raw
+    doc: Affiliation string from the provider (OpenAlex institution name). Text-derived affiliations are the `affiliation` annotation.
+  - public: published_date
+    transform: published_date
+    type: date32
+    nullable: true
+    doc: Publication date (the merged metadata.published_at, a UTC timestamp internally, as a date). See published_precision; the supplying source is field_sources[field = published_at]; per-source dates are identity.members[].published_at.
+  - public: published_precision
+    transform: published_precision
+    type: string
+    nullable: false
+    enum: [day, year_inferred, unknown]
+    doc: "How precise published_date is: `unknown` = no date; `year_inferred` = the date is exactly midnight UTC on 1 January, the providers' placeholder for a year-only date (a genuine midnight-1-January date is marked the same); `day` otherwise."
+  - public: doc_type
+    internal: metadata.doc_type
+    enum: {values: [preprint, paper, conference, journal, forum_post, lab_blog, system_card, model_card, framework_policy, book, other], open: true}
+    doc: "Document type from the providers and collectors (the merged metadata.doc_type: the form and venue, e.g. an arXiv record is a preprint whatever it contains), or a maintainers' fix (field_sources origin `human`). NULL where the collector gave none (hand-added and newsletter-linked URLs and papers). Two model-assigned types also exist: annotations.doc_class.payload.doc_type (the screen call; filled for every screened row) and doc_kind of safety_techniques and model_roles (the genre each annotator read the document as); FORMAT.md says which to use for what, VOCABULARY.md lists all three."
+  - public: is_withdrawn
+    internal: metadata.is_withdrawn
+    doc: A source reports the work withdrawn.
+  - public: canonical_url
+    transform: canonical_url
+    type: string
+    nullable: true
+    doc: The anchor source's canonical URL (landing page). Fetch-only query parameters (a contact address, a URL signature) are removed.
+  - public: field_sources[]
+    internal: metadata.field_sources[]
+    doc: Provenance of each merged bibliographic field (title, abstract, authors, published date, doc_type).
+  - public: field_sources[].field
+    internal: metadata.field_sources[].field
+    enum: [title, abstract, authors, published_at, doc_type]
+    doc: The field (published_at = published_date).
+  - public: field_sources[].source_id
+    internal: metadata.field_sources[].source_id
+    doc: The source (identity.members[].source_id) that supplied it; the doc_id itself for a metadata override.
+  - public: field_sources[].origin
+    internal: metadata.field_sources[].origin
+    enum: [provider, human, import]
+    doc: "`provider` = taken from the source's record; `human` = set by a maintainers' override: a row of kind metadata_fix, or, for a document added by hand (member channel manual_url or manual_paper), the manual_source row that supplied its record (its key is `<key_kind>=<key_value>` of that member); the row's `method` says how much of it was AI-prepared."
+
+  # ---- identity
+  - public: identity
+    internal: identity
+    doc: Which source records make up this document and how they were joined.
+  - public: identity.anchor_source_id
+    internal: identity.anchor_source_id
+    doc: The member whose record anchors the document.
+  - public: identity.channels
+    internal: identity.channels
+    doc: Distinct channels of the members, plus lesswrong where a member is alignmentforum (every Alignment Forum post is also served by LessWrong under the same post id; identity.keys then holds its lesswrong.com URL).
+  - public: identity.former_doc_ids
+    internal: identity.former_doc_ids
+    doc: Ids of documents merged into this one in earlier builds (look an old id up here).
+  - public: identity.override_ids
+    internal: identity.override_ids
+    doc: Identity and bibliographic overrides applied to this document (identity_merge and metadata_fix rows of config/overrides.jsonl); the merge that joined a member is also its members[].override_id.
+  - public: identity.members[]
+    internal: identity.members[]
+    doc: One entry per source record.
+  - public: identity.members[].source_id
+    internal: identity.members[].source_id
+    doc: Member id; referenced by content.source_id, field_sources[].source_id, identity.keys[].source_id.
+  - public: identity.members[].channel
+    internal: identity.members[].channel
+    doc: Collector channel that produced the record (openalex, arxiv, semantic_scholar, lesswrong, alignmentforum, <lab>_blog, manual_url, ...).
+  - public: identity.members[].channel_class
+    internal: identity.members[].license_class
+    rename_internal: true
+    enum: [open, public_web, restricted, api_tos, api_abstract, shadow]
+    doc: "Our distribution-policy class for the member's CHANNEL, not a statement about the work or its licence (a Semantic Scholar record of an arXiv preprint shows `restricted` while its arXiv member shows `open`). VOCABULARY.md defines the values."
+  - public: identity.members[].key_kind
+    internal: identity.members[].key_kind
+    enum: {values: [doi, fm_post, url, openalex, s2, pmid], open: true}
+    doc: "Kind of the member's primary key (`fm_post` = ForumMagnum post id: LessWrong / Alignment Forum)."
+  - public: identity.members[].key_value
+    internal: identity.members[].key_value
+    doc: The primary key value.
+  - public: identity.members[].canonical_url
+    internal: identity.members[].canonical_url
+    doc: The record's canonical URL. Fetch-only query parameters (a contact address, a URL signature) are removed.
+  - public: identity.members[].title
+    internal: identity.members[].title
+    doc: Title as this source gives it.
+  - public: identity.members[].published_at
+    internal: identity.members[].published_at
+    doc: Publication timestamp as this source gives it (aggregators emit 1 January for year-only dates).
+  - public: identity.members[].doc_type
+    internal: identity.members[].doc_type
+    doc: Document type as this source gives it.
+  - public: identity.members[].edge_kind
+    internal: identity.members[].edge_kind
+    pattern: "anchor | key:<kind> | match:<rule> | human:merge"
+    doc: "How the member joined the document: `anchor`, `key:<kind>` (shared identifier), `match:<rule>` (title/author match), `human:merge` (an identity override)."
+  - public: identity.members[].edge_to_source_id
+    internal: identity.members[].edge_to_source_id
+    doc: The member it was joined to.
+  - public: identity.members[].override_id
+    internal: identity.members[].override_id
+    doc: The identity override that joined this member (edge_kind = human:merge).
+  - public: identity.members[].first_observed_at
+    internal: identity.members[].first_observed_at
+    doc: First time the collector saw the record (the per-source "first seen").
+  - public: identity.members[].last_observed_at
+    internal: identity.members[].last_observed_at
+    doc: Last time the collector saw the record.
+  - public: identity.members[].withdrawn_at
+    internal: identity.members[].withdrawn_at
+    doc: When the source reported the record withdrawn, if ever.
+  - public: identity.members[].withdrawn_reason
+    internal: identity.members[].withdrawn_reason
+    doc: The source's reason.
+  - public: identity.keys[]
+    internal: identity.keys[]
+    exclude: {kind: [flag, relay]}
+    doc: Every external identifier any member carries (an Alignment Forum member also its post's lesswrong.com URL). Look a document up here (with the kind; arXiv ids without version, DOIs lower-case).
+  - public: identity.keys[].kind
+    internal: identity.keys[].kind
+    enum: {values: [arxiv, doi, openalex, s2, fm_post, url, pmid, zenodo], open: true}
+    doc: Identifier kind.
+  - public: identity.keys[].value
+    internal: identity.keys[].value
+    doc: Identifier value.
+  - public: identity.keys[].source_id
+    internal: identity.keys[].source_id
+    doc: The member that carries it.
+
+  # ---- content: the text that was judged; the source file and the converted text as identifiers
+  - public: content
+    internal: content
+    doc: The document text the annotations were made on, as two byte identifiers (the fetched source file and our Markdown conversion of it) plus where it came from. release.text says whether this variant carries the converted text itself (content.text.body).
+  - public: content.source_id
+    internal: content.current_source_id
+    doc: Member whose fetched content is the text.
+  - public: content.role
+    internal: content.current_role
+    enum: [full_text, html, xml, post, page, readme, abstract]
+    doc: Kind of content the text came from (`html` = arXiv LaTeXML page; `full_text` = PDF; `post` = forum post body; `page` = web page; `xml` = publisher XML).
+  - public: content.quality
+    internal: content.current_text_quality
+    enum: [ok, flagged, failed]
+    doc: Rule-based conversion-quality bucket of the text (the model's own view is the text_usability annotation).
+  - public: content.source
+    doc: The file fetched from the source, as an identifier (no bytes shipped in either variant).
+  - public: content.source.url
+    transform: content.source.url
+    type: string
+    nullable: true
+    doc: URL fetched (PDF or page); NULL for a collector-delivered body (forum posts). Fetch-only query parameters (a contact address, a URL signature) are removed.
+  - public: content.source.sha256
+    transform: content.source.sha256
+    type: string
+    nullable: true
+    doc: SHA-256 of the fetched file (PDF, HTML, or the collector's body). An identifier of the input, checkable by anyone who fetches the same URL and gets the same bytes.
+  - public: content.source.bytes
+    transform: content.source.bytes
+    type: int64
+    nullable: true
+    doc: Size of the fetched file in bytes.
+  - public: content.source.media_type
+    transform: content.source.media_type
+    type: string
+    nullable: true
+    doc: Media type of the fetched file (application/pdf, text/html, text/markdown for a collector's body).
+  - public: content.source.captured_at
+    transform: content.source.captured_at
+    type: timestamp[us, UTC]
+    nullable: false
+    doc: When it was fetched (UTC).
+  - public: content.source.revision
+    transform: content.source.revision
+    type: string
+    nullable: true
+    doc: Version label of the fetched item when the source has versions (arXiv `v2`).
+  - public: content.text
+    doc: "Our Markdown conversion of the source file: the basis of every text-based annotation."
+  - public: content.text.sha256
+    internal: content.current_text_sha256
+    doc: SHA-256 of the converted Markdown text (UTF-8). The identifier of what every annotation judged; content.text.body, where present, hashes to it.
+  - public: content.text.bytes
+    transform: content.text.bytes
+    type: int64
+    nullable: true
+    doc: Size of the converted text in UTF-8 bytes.
+  - public: content.text.media_type
+    transform: content.text.media_type
+    type: string
+    nullable: true
+    doc: Media type of the converted text (text/markdown).
+  - public: content.text.converter
+    transform: content.text.converter
+    type: string
+    nullable: true
+    doc: Converter stamp that produced the text, `<tool>@<version>+tier<k>` (e.g. fetchpdf-md@0.1.0+tierlatexml); `inband` for a collector-delivered body.
+  - public: content.text.body
+    transform: content.text.body
+    type: string
+    nullable: true
+    doc: "The converted text itself (UTF-8 Markdown; up to a few MB), where this variant distributes texts (release.text = inline); NULL where it does not (release.text = not_distributed). Third-party text, not covered by CC0."
+
+  # ---- release: what this release did to this row
+  - public: release
+    doc: What this release did to this row. Lets a reader tell a withheld value from an absent one, a cut quote from a short one, and see how much of the document is quoted.
+  - public: release.abstract
+    transform: release.abstract
+    type: string
+    nullable: false
+    enum: [shipped, withheld_pending_rights_review, none]
+    doc: "`withheld_pending_rights_review`: an abstract exists internally; this release's policy withholds every abstract from the public variant until the redistribution terms are reviewed per supplier. `shipped`: the abstract column holds it. `none`: no source supplied one."
+  - public: release.text
+    transform: release.text
+    type: string
+    nullable: false
+    enum: [not_distributed, inline]
+    doc: "`not_distributed` (public): no document text ships; content.text.sha256 identifies it. `inline`: the converted text is in content.text.body of the same row."
+  - public: release.quote_chars
+    transform: release.quote_chars
+    type: int32
+    nullable: false
+    doc: "Characters (code points) of quoted document text shipped in this row's annotations, as serialised: repeats counted, ellipses included, surfaces excluded. For the rights statement; not a coverage ratio (content.text.bytes counts UTF-8 bytes)."
+  - public: release.cuts[]
+    transform: release.cuts
+    type: list<struct<path string, chars int32>>
+    nullable: false
+    doc: "Every quote or surface this release cut, with its original length; [] = nothing cut. A cut string ends with '…'. Producers already stop technique and model quotes at 300 characters at annotation time; those are not cuts and are not marked."
+  - public: release.cuts[].path
+    doc: Path of the cut string with list indices, e.g. annotations.safety_techniques.payload.techniques[2].quotes[0].text.
+  - public: release.cuts[].chars
+    doc: Original length in code points.
+
+  # ---- annotations: one typed column per kind, each {metadata: META, payload}
+  - public: annotations
+    doc: "Every annotation of the document: one column per kind, each a struct {metadata, payload}; NULL = the kind was not run for this document (affiliation runs only on papers, preprints, conference papers and journal articles whose text came from a PDF, arXiv HTML or publisher XML). metadata has the same type in every kind. Kinds produced by one call share config_id and decided_at: the screen call yields screen, doc_class, stack_relevance, shallow_review_relevance and text_usability; the model_roles call yields model_roles and model_name_matches, except where a stand-in replaced model_roles (FORMAT.md)."
+  - public: annotations.screen
+    internal: annotations.screen.payload
+    keep: [verdict, basis_role, buckets, quotes, off_topic_reason, confidence, reasoning, adjudication_tier, tier1_verdict]
+    enums: {verdict: [relevant, borderline, irrelevant], buckets: [paper, critique_commentary, eval_report, deployment_signal, lab_safety_doc, release_news, incident, offtopic]}
+    doc: "The relevance screen: one call answers the Stack question (stack_relevance), the Shallow Review question (shallow_review_relevance), the text's usability (text_usability) and the document class (doc_class); this record is the call-level verdict."
+    docs:
+      verdict: "Call-level verdict = the more inclusive of the two question verdicts (stack_relevance, shallow_review_relevance): relevant if either is. Every shipped row is relevant."
+      basis_role: "Content role of the snapshot the model read (as content.role). It can differ from content.role when two snapshots converted to identical text: the text hash is the same (the build checks basis_digest = content.text.sha256)."
+      buckets: Document buckets the model assigned (several allowed).
+      quotes: "Text excerpts supporting the verdict: {text, offset}; offset = code-point offset of the original excerpt in the exact converted text identified by content.text.sha256 (usable only with those bytes). Capped."
+      off_topic_reason: "The model's reason when it judged the document off topic (NULL on shipped rows, which are relevant; the scope overrides that made a document relevant cleared it)."
+      confidence: "Self-reported 0-1, derived: the maximum of the question confidences whose verdict matches the overall verdict; not calibrated; after a field override it still describes the model's own verdict."
+      reasoning: "The model's free-text reasoning (uncapped). Most read 'S is ... because ...; R is ... because ...': S = the Stack question (stack_relevance), R = the Shallow Review question (shallow_review_relevance)."
+      adjudication_tier: 1 = the first-pass model decided; 2 = a second pass adjudicated a borderline first pass.
+      tier1_verdict: The first pass's verdict (differs from verdict after adjudication or an override).
+  - public: annotations.doc_class
+    internal: annotations.doc_class.payload
+    keep: [doc_type, self_published, primary_lang]
+    doc: Document class read from the text by the screen call.
+    docs: {doc_type: "Document type read from the text by the screen call (VOCABULARY.md; differs from the providers' doc_type).", self_published: "The authors published it themselves (blog, forum, preprint without venue).", primary_lang: Primary language code of the text.}
+  - public: annotations.stack_relevance
+    internal: annotations.stack_relevance.payload
+    keep: [verdict, confidence, quotes, basis_role, adjudication_tier, tier1_verdict]
+    enums: {verdict: [relevant, borderline, irrelevant]}
+    doc: "Question S of the screen call: is the document in the Safety Stack's scope."
+    docs: {verdict: "relevant | borderline | irrelevant to the Safety Stack's scope (question S).", confidence: "The model's self-reported confidence (0-1).", quotes: "Supporting excerpts {text, offset}; capped.", basis_role: Content role judged., adjudication_tier: "1 | 2 (see screen).", tier1_verdict: "The first pass's verdict."}
+  - public: annotations.shallow_review_relevance
+    internal: annotations.sr_relevance.payload
+    rename_internal: consider
+    keep: [verdict, confidence, quotes, category, agenda, basis_role, adjudication_tier, tier1_verdict]
+    enums: {verdict: [relevant, borderline, irrelevant], category: [black_box, evals, theory, white_box, none, multi_agent_first, labs, make_ai_solve_it, safety_by_construction]}
+    patterns: {agenda: "<slug> | new:<slug>"}
+    doc: "Question R of the screen call: is the document in the Shallow Review of AI safety's scope."
+    docs: {verdict: "relevant | borderline | irrelevant to the Shallow Review of AI safety's scope (question R).", confidence: "The model's self-reported confidence (0-1).", quotes: "Supporting excerpts {text, offset}; capped.", category: Shallow Review top-level category., agenda: "Shallow Review agenda slug (`new:<slug>` = proposed by the model, not in the Shallow Review list).", basis_role: Content role judged., adjudication_tier: "1 | 2.", tier1_verdict: "The first pass's verdict."}
+  - public: annotations.text_usability
+    internal: annotations.text_usability.payload
+    keep: [verdict, issues, note, basis_role, adjudication_tier]
+    enums: {verdict: [usable, degraded, unusable], issues: [not_body, cut_off, garbled_maths, garbled_tables, bad_encoding, mostly_markup, stub, other]}
+    doc: The screen call's view of whether the converted text is usable as the document body.
+    docs: {verdict: Is the converted text usable as the document body., issues: Problems found., note: "Model free text (uncapped) describing the extracted text.", basis_role: Content role judged., adjudication_tier: "1 | 2."}
+  - public: annotations.affiliation
+    internal: annotations.affiliation.payload
+    keep: ["items[].author_name", "items[].author_surface", "items[].byline_index", "items[].orcid", "items[].resolution", "items[].affiliations[].surface", "items[].affiliations[].org_slugs", "items[].affiliations[].org_ids", "items[].affiliations[].org_status", "items[].affiliations[].org_candidates"]
+    enums: {"items[].resolution": [openalex, text, email_domain, xml, unknown], "items[].affiliations[].org_status": [matched, ambiguous, non_org, generic, unmatched]}
+    doc: Author affiliations read from the byline (run only where doc_type is paper, preprint, conference or journal and content.role is full_text, html or xml).
+    docs:
+      "items[]": One item per byline author, in byline order.
+      "items[].author_name": "Normalised author name (lower-cased, combining accents removed, name order normalised; letters such as ł are kept): the key for reconciling items with authors[] by name. The rule: Unicode NFD, combining marks removed, typographic dashes made `-`, lower-cased, whitespace collapsed, and `Family, Given` (one comma, the part after it not jr, sr, ii, iii, iv, phd, md or esq) turned into `given family`. Normalise authors[].name the same way; prefer orcid where both have one; the pipeline itself matched fuzzily, so some items match no author exactly. Not a plain lower-casing of author_surface; match by name, not by position, since the text's byline and the provider's author list can differ in length."
+      "items[].author_surface": The name as written in the text (verbatim surface; capped like quotes).
+      "items[].byline_index": Position in the byline, 0-based.
+      "items[].orcid": ORCID when found.
+      "items[].resolution": "How the affiliation was resolved: openalex (provider), text, email_domain, xml, unknown."
+      "items[].affiliations[]": "Affiliations of the author; [] when none was found (exactly the items with resolution unknown in this release)."
+      "items[].affiliations[].surface": "Affiliation as written (verbatim surface; capped like quotes)."
+      "items[].affiliations[].org_slugs": "Slugs of the organisations of the pipeline's lab registry (a few dozen labs and institutes) that the surface names (the models catalogue's maker slugs where the organisation is a lab). Superseded by org_ids, which covers every organisation of the organisation vocabulary; kept for this format."
+      "items[].affiliations[].org_ids": "The organisations the affiliation names: ids of taxonomies/orgs-<version>.yaml (its entries[].id: name, type, country, parent; the version is annotations.affiliation_orgs.payload.vocab_version), in first-seen order, an organisation implied by a more specific one left out (Google DeepMind is deepmind, whose parent is google); [] when none was resolved (org_status says why); NULL when the document has no affiliation_orgs record. Copied from annotations.affiliation_orgs (a deterministic matcher over the whole surface, not the capped one, with the author's other affiliations as context; no model), whose metadata is their provenance."
+      "items[].affiliations[].org_status": "How the surface resolved (from annotations.affiliation_orgs): matched (org_ids names every organisation found), ambiguous (a name fits several organisations and the context did not decide; org_ids holds only the resolved ones), non_org (not an organisation, e.g. Independent researcher), generic (only a unit such as a department, without its organisation), unmatched (no organisation of the vocabulary: an unknown name, or a string naming nothing); NULL with org_ids."
+      "items[].affiliations[].org_candidates": "For an ambiguous affiliation, one list per name the context did not decide, holding the organisations it may be (ids of taxonomies/orgs-<version>.yaml; a bare \"Northeastern University\" gives [[northeastern-university, northeastern-university-us]]); [] for every other status; NULL with org_ids. Copied from annotations.affiliation_orgs."
+  - public: annotations.affiliation_orgs
+    internal: annotations.affiliation_orgs.payload
+    keep: [org_ids, vocab_version]
+    doc: "The organisations the document's affiliations name, resolved without a model by a deterministic matcher over the affiliation payload (annotator = rule, origin = computed; run where affiliation is decided, re-run when it changes or the vocabulary does). Its answer per affiliation is in annotations.affiliation (items[].affiliations[].org_ids and org_status); this record carries its provenance and the document-level lists."
+    docs:
+      org_ids: "Every organisation any affiliation of the document names (ids of taxonomies/orgs-<vocab_version>.yaml), in first-seen order."
+      vocab_version: "Version of the organisation vocabulary the ids belong to (taxonomies/orgs-<version>.yaml)."
+  - public: annotations.safety_techniques
+    internal: annotations.technique_staged.payload
+    rename_internal: consider
+    keep: [doc_kind, taxonomy_version, flags,
+           "techniques[].slug", "techniques[].roles", "techniques[].quotes", "techniques[].flags", "techniques[].note",
+           "extra_techniques[].name_as_written", "extra_techniques[].gloss", "extra_techniques[].hint_technique", "extra_techniques[].roles", "extra_techniques[].quotes", "extra_techniques[].flags"]
+    renames: {"techniques[].quotes[].anchored": "techniques[].quotes[].verified", "extra_techniques[].quotes[].anchored": "extra_techniques[].quotes[].verified"}
+    enums: {doc_kind: [paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other]}
+    patterns: {flags: "no_techniques_found | menu_gap:<surface>", "techniques[].flags": "recommended | rejected | supportive | confirmed | claims_absent | quote_unverified | variant:<name>"}
+    doc: Which safety techniques of the techniques taxonomy the document engages with, in which roles and how prominently.
+    docs:
+      doc_kind: The rubric's own kind of document (its list of document kinds, not the providers' doc_type; VOCABULARY.md).
+      taxonomy_version: Techniques taxonomy version the slugs belong to (taxonomies/techniques-<version>.yaml).
+      flags: "Document-level flags (free strings): no_techniques_found; menu_gap:<surface> = a technique the taxonomy lacks."
+      "techniques[]": One row per taxonomy slug found.
+      "techniques[].slug": "Taxonomy slug: the id of one of the taxonomy file's entries, a technique (node technique) or a group node (node group: a generic mention of a field, such as mechanistic-interp or red-teaming); leave group nodes out of per-technique counts."
+      "techniques[].roles": "Struct of 12 int32 strengths 0-4, one per role (mentioned, cited_work, discussed, used, evaluated, modified, introduced, analyzed, attested_use, suspected_use, considered, critiqued). Strength = prominence of that role in this document: 0 absent, 1 trace (a sentence), 2 minor but real (a paragraph), 3 substantial (a main thread), 4 central (the document's headline for that role). mentioned >= every other role. VOCABULARY.md has the role definitions."
+      "techniques[].quotes": "Verbatim excerpts {text, anchored}; anchored = the original excerpt was found in the converted text (exact or after whitespace/punctuation normalisation); it says nothing about whether the excerpt supports the label, and after a release cut it describes the original, not the shipped string. Capped."
+      "techniques[].flags": "Row flags from the rubric (free strings): recommended / rejected = the direction of a `considered` row; supportive; confirmed; claims_absent; quote_unverified; variant:<name>. VOCABULARY.md defines them."
+      "techniques[].note": "The model's note on the row (free text, uncapped; some are `implemented_with: <method>` tags)."
+      "extra_techniques[]": Off-taxonomy techniques the document engages with.
+      "extra_techniques[].name_as_written": The name as the document writes it.
+      "extra_techniques[].gloss": The model's one-line description (free text).
+      "extra_techniques[].hint_technique": Nearest taxonomy slug, when the model named one.
+      "extra_techniques[].roles": As techniques[].roles.
+      "extra_techniques[].quotes": As techniques[].quotes.
+      "extra_techniques[].flags": As techniques[].flags.
+  - public: annotations.model_roles
+    internal: annotations.model_roles.payload
+    keep: [doc_kind, flags,
+           "models[].node_id", "models[].matched_node_id", "models[].roles", "models[].evidence", "models[].note",
+           "variant_models[].base_node_id", "variant_models[].names_as_written", "variant_models[].quote", "variant_models[].roles",
+           "extra_models[].name_as_written", "extra_models[].quote", "extra_models[].roles", "extra_models[].node_id"]
+    enums: {doc_kind: [paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other]}
+    patterns: {flags: "subsumed:<node>:<by> | bib_only:<node> | matcher_fp:<node> | not_found:<node> (plus rare malformed values)"}
+    doc: Which AI models of the models catalogue the document names and which roles they play in it.
+    docs:
+      doc_kind: The rubric's own kind of document.
+      flags: "Document-level flags explaining zero-role candidates (free strings): subsumed (a more specific node carries the roles), bib_only (named only in references), matcher_fp (the name match is not a model mention), not_found. The rubric asks for one flag per all-zero row; the model does not always comply (the known inconsistencies below give the counts): treat an all-zero row without a flag as unexplained."
+      "models[]": "Every catalogue node the name matcher found, judge-reviewed: the candidates for \"named here\". Join node_id to taxonomies/models-<version>.yaml."
+      "models[].node_id": Catalogue node graded (may be more specific than the matcher's).
+      "models[].matched_node_id": The matcher's node (= node_id except where the judge refined; the join key to model_name_matches).
+      "models[].roles": "Struct of 10 int32 strengths 0-4 (mentioned, cited_work, discussed, usage_experience, built_on, instrument, modified, evaluated_behavioral, analyzed_internals, introduced); the same 0-4 prominence scale as techniques; 0 = asked, not found. VOCABULARY.md has the role definitions."
+      "models[].evidence": "Excerpts {roles [str], quote}: the roles each quote supports. Capped. Some quotes are table rows copied with their HTML tags."
+      "models[].note": "The model's note on the row (free text, uncapped; 'graded on X' = the role is recorded on catalogue entry X)."
+      "variant_models[]": Named derivatives of a catalogue model (fine-tunes, sizes) the document engages with.
+      "variant_models[].base_node_id": The catalogue node they derive from.
+      "variant_models[].names_as_written": The derivative names as written.
+      "variant_models[].quote": One supporting excerpt; capped.
+      "variant_models[].roles": As models[].roles.
+      "extra_models[]": Off-catalogue models the document engages with.
+      "extra_models[].name_as_written": Name as written.
+      "extra_models[].quote": One supporting excerpt; capped.
+      "extra_models[].roles": As models[].roles.
+      "extra_models[].node_id": Catalogue node the name resolves to, when exactly one does.
+  - public: annotations.model_name_matches
+    internal: annotations.model_regexp_matches.payload
+    rename_internal: consider
+    keep: ["matches[].node_id", "matches[].surfaces", "matches[].match_class", "ambiguous[].text", "ambiguous[].candidates", "ambiguous[].match_class"]
+    renames: {"matches[].match_class": "matches[].strength", "ambiguous[].match_class": "ambiguous[].strength"}
+    enums: {"matches[].match_class": [strong, weak], "ambiguous[].match_class": [strong, weak]}
+    doc: "The deterministic name matcher's raw hits (a record of the model_roles call; annotator = matcher): the candidate list the model_roles judge saw. Where an override replaced the model_roles answer (provenance = override there), this record keeps the original call's metadata; if that call failed, it is failed_permanent with error_class producer_call_failed and no hits."
+    docs:
+      "matches[]": Every name-matcher hit (deterministic patterns over the text), strong entries first.
+      "matches[].node_id": Catalogue node matched.
+      "matches[].surfaces": Matched strings in document order, duplicates kept (list length = occurrence count); capped like quotes.
+      "matches[].match_class": strong (an unambiguous pattern) or weak.
+      "ambiguous[]": Spans the matcher could not attribute to one node.
+      "ambiguous[].text": The span; capped like quotes.
+      "ambiguous[].candidates": Candidate nodes.
+      "ambiguous[].match_class": strong or weak.
+  - public: annotations.translation
+    internal: annotations.translation.payload
+    keep: [from_lang, title_en, abstract_en, method]
+    enums: {method: [llm, human]}
+    patterns: {from_lang: "ISO 639-1 code (zh, ja, ko, ru, de, ...)"}
+    doc: "MACHINE TRANSLATIONS (D755) of a non-English document's title and abstract into English, beside the originals (title and abstract stay as the sources gave them). Made by a language model (method = llm; metadata names the model and config_id) for the screen-relevant documents whose title or abstract is not English; not reviewed by people unless method = human. NULL for an English document (the kind was not run) or empty when the model found the original already English."
+    docs:
+      from_lang: "Language of the original title and abstract, as the model detected it (ISO 639-1)."
+      title_en: "The title in English: a machine translation (method = llm), not the source's title. Model-written; shipped uncapped."
+      abstract_en: "The abstract in English: a machine translation of the third-party abstract, so it follows the abstract policy (NULL where the variant withholds abstracts, release.abstract). Model-written."
+      method: "llm (a machine translation by the model the metadata names) or human (a maintainer's translation, an override)."
+  - public: annotations.other[]
+    internal: annotations.other[]
+    doc: Annotations of a kind without a typed column yet, as JSON text with the id of the JSON Schema it validates against. Empty in this release.
+  - public: annotations.other[].payload
+    internal: annotations.other[].payload.payload_json
+    doc: The payload as JSON text.
+  - public: annotations.other[].schema
+    transform: annotations.other[].schema
+    type: string
+    nullable: false
+    doc: Id of the payload's JSON Schema (no kind uses annotations.other in this format).
+
+# The metadata struct of every kind (annotations.<kind>.metadata and annotations.other[].metadata): one type.
+meta:
+  - name: kind
+    type: string
+    nullable: false
+    enum: {values: [screen, doc_class, stack_relevance, shallow_review_relevance, text_usability, affiliation, affiliation_orgs, safety_techniques, model_roles, model_name_matches, translation], open: true}
+    doc: The kind (= the column name; repeated so the metadata of all kinds can be stacked into one table).
+  - name: version
+    internal: version
+    doc: Payload schema version of this kind (FORMAT.md names it per kind; schema.json has the payload's schema).
+  - name: status
+    internal: status
+    enum: [ok, empty, failed_permanent, failed_transient, quarantined, skipped, not_attempted, partial]
+    doc: "ok = an answer exists (for the screen kinds and affiliation, negative answers included; for safety_techniques and model_roles, some positive row); empty = decided, no positive label (a model_roles `empty` record may still list zero-role candidates; an override-supplied payload gets the status its content earns: status_remap); failed_permanent = no answer (payload lists NULL; error_class says why); quarantined = withheld by the operator or a cap; the rest = not decided. A kind not run for the document is a NULL column, not a status."
+  - name: error_class
+    internal: error_class
+    doc: Reason for a non-ok status (query_invalid = the provider rejected the request; truncated = the reply hit the output cap; producer_call_failed = the record's producing call failed; VOCABULARY.md lists all).
+  - name: config_id
+    type: string
+    nullable: false
+    pattern: "<producer>:<prompt>:<model>:<8 hex> | override:<id>[+<id>...]"
+    doc: "Readable, immutable id of the call configuration (prompt, model, parameters) that produced the payload, shared by every payload made with it, not an id of one request: <producer kind>:<prompt name>:<model>:<first 8 hex of the pipeline's config digest> (screen:screen-v12:gpt-6-luna:63dc7d28 for all five records of the screen call); `override:<id>[+<id>...]` for a payload overrides supplied. An entry of config/configs.json resolves it (stage, prompt, model, parameters, taxonomy pin, components, the full digest)."
+  - name: decided_at
+    internal: decided_at
+    doc: When the payload was produced (UTC). For an override-supplied payload, the time the override entered the overrides chain.
+  - name: origin
+    internal: origin
+    enum: [ai_check, human, computed, rule, import]
+    doc: "Tier of the effective decision: `ai_check` = the annotation stage's answer (a language-model call and its deterministic components; a stand-in model answer supplied as an override is ai_check too), `human` = a maintainers' override set the deciding value(s) (not necessarily a per-item human review: the override's `method` says how much of it was AI-prepared), `computed` / `rule` = derived without a model. Who produced the payload is `annotator`."
+  - name: annotator
+    type: string
+    nullable: true
+    doc: Who or what produced the payload, as the provider names the model (gpt-6-luna, claude-opus-5-5), `matcher`, `rule` or `human`. On a `mixed` record it names the base answer's producer.
+  - name: provenance
+    type: string
+    nullable: false
+    enum: [pipeline, override, mixed]
+    doc: "Where the payload came from: `pipeline` = no override applied; `override` = overrides supplied the whole payload (config_id override:<ids>); `mixed` = field or item edits over a pipeline answer (config_id, decided_at and annotator describe the base model answer; override_fields lists what changed)."
+  - name: override_ids
+    type: list<string>
+    nullable: false
+    doc: Override rows (config/overrides.jsonl, field override_id) that produced or changed this record, in application order. Empty for an unmodified pipeline answer.
+  - name: override_fields
+    type: list<string>
+    nullable: false
+    doc: Payload fields overrides set (e.g. [verdict, off_topic_reason]); items[<byline_index>] for a replaced affiliation item; [] when none.
+
+# ------------------------------------------------------------------------------------------- the files of the bundle
+# One line per shipped path (FORMAT's "Files" table and the card); the build refuses a shipped file no line covers and a
+# listed file it did not write (a `<dir>/` line: one file or more under it).
+files:
+  data/corpus.parquet: "The full row per document: bibliographic fields, identity, content identifiers, release facts and every annotation (nested). The contract and the hub's only configuration; everything else resolves its ids or describes it."
+  config/configs.json: "One entry per config_id: the call that produced annotations (stage, prompt name and digests, model, parameters, taxonomy pin) or the overrides that supplied them."
+  config/overrides.jsonl: "The active overrides of the pipeline's output (maintainers' decisions and stand-in annotations), one line each: override_id, run_id, kind, target, operation, key, field, value, note, author, method, created_at."
+  taxonomies/: "The techniques taxonomy and the models catalogue the annotations were graded against (byte-identical to the pinned versions; one file per version: annotations kept from an earlier config ship their version beside the current one), and the organisation vocabulary affiliations' org_ids resolve in (byte-identical to the versions the annotations pinned; sha256 of each in release.json, which lists every version per name, oldest first)."
+  schema.json: "JSON Schema of one row, self-contained: every kind's record and payload inline."
+  VOCABULARY.md: "A sentence for every value word that occurs in this release, and a glossary."
+  FORMAT.md: "The file format: every field, the ids and where they resolve, the rules and the recipes."
+  README.md: "The dataset card, with the annotation quality table."
+  LICENSE: "CC0 1.0 for our annotations and documentation, with the third-party carve-outs."
+  release.json: "The manifest: every other file with its size and sha256, row counts, the build, the policy; also the status remap counts (remap), the overrides chain and how many records it changed per internal workflow (overrides.applied), the stand-ins, the affiliations by org_status (orgs; no_record = the document has no affiliation_orgs record), per annotate stage what it ships (stages: its selection digest, its target config and the earlier configs it accepted, each with config_id and the documents under it), and parent_release (null in this release)."
+
+# ------------------------------------------------------------------------------------------- shipped tables
+tables:
+  configs: "config/configs.json: one entry per config_id in the corpus; generated from the build's run records (prompt pins, whose digest is the config digest) and the overrides chain"
+  overrides: "config/overrides.jsonl: the active rows of the overrides chain the build applied (the effective rule: revokes applied, one winner per group; a <wf> row the document's build record does not use is left out), each with the run that added it"
+  taxonomies: "taxonomies/*.yaml: the techniques taxonomy and the models catalogue the build's prompts pinned (sha256 checked against the pins; one file per version the shipped configs and the build's own configs pinned), and the organisation vocabulary the affiliation_orgs records pinned (sha256 checked against the pin)"
+  vocabulary: "VOCABULARY.md: every value word with a sentence, from configs/releases/dataset/vocab.yaml; the build checks that every enumerated value seen in the data has an entry"

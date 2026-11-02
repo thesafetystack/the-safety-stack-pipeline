@@ -1,0 +1,824 @@
+{
+  "set_id": "2026-10-12a",
+  "task": "triage",
+  "created_at": "2026-10-12T13:30:16+00:00",
+  "source_store": "v4/store-dev",
+  "documents_chain": "documents",
+  "documents_head": "r4j9tqbmy8n3d.documents",
+  "git_commit": "016989479021d237c000f7df10448bf07ff7cd80",
+  "git_dirty": true,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "7e4164cd1763d53bcf0d58ef43ef5a06c15742259e54b7ba47363297d73e398f"
+  },
+  "basis_builder": {
+    "ref": "workflows.triage.ask:document_text",
+    "source_sha256": "173365fbf1f8908dfe54aaa25f79c04a86bb7f294f8b321170cbdb36a7054c12",
+    "caps": {
+      "MAX_ABSTRACT_CHARS": 6000,
+      "MAX_EXCERPT_CHARS": 3000,
+      "MAX_AUTHORS": 12
+    }
+  },
+  "seed": "track-e-2026-10-12a",
+  "order": "sha256(seed + doc_id) hex, ascending",
+  "items_sha256": "c256c183b6568db0374dbfbf447c1ca0118fbc972ae9febe853bee6b1a0535d1",
+  "keywords": {
+    "safety_stems": {
+      "alignment": "\\balignment\\b|\\baligned (ai|model|llm)",
+      "superalignment": "\\bsuperalign",
+      "misalign": "\\bmisalign",
+      "safety": "\\bsafety\\b|\\bai[- ]safe",
+      "interpretab": "\\binterpretab",
+      "mechanistic": "\\bmechanistic",
+      "red-team": "\\bred[- ]?team",
+      "jailbreak": "\\bjailbreak",
+      "prompt injection": "\\bprompt[- ]injection",
+      "oversight": "\\boversight\\b",
+      "rlhf": "\\brlhf\\b|reinforcement learning from human feedback",
+      "reward hack": "\\breward[- ]hack|\\breward tampering|\\bspecification gaming",
+      "decepti": "\\bdecepti|\\bdeceiv",
+      "schem": "\\bschem(e|es|ing|er|ers)\\b",
+      "sandbag": "\\bsandbag",
+      "sycophan": "\\bsycophan",
+      "misuse": "\\bmisuse",
+      "guardrail": "\\bguardrail",
+      "refusal": "\\brefus(al|als|e|es|ing)\\b",
+      "constitutional": "\\bconstitutional",
+      "monitor": "\\bmonitor",
+      "ai control": "\\bai control\\b|\\bcontrol (evaluation|protocol)s?\\b",
+      "dangerous capabilit": "\\bdangerous[- ]capabilit",
+      "frontier risk": "\\bfrontier (ai )?risk|\\bcatastrophic risk|\\bexistential risk|\\bx-risk",
+      "preparedness": "\\bpreparedness",
+      "responsible scaling": "\\bresponsible scaling",
+      "unlearning": "\\bunlearn",
+      "backdoor": "\\bbackdoor",
+      "poison": "\\bpoison",
+      "watermark": "\\bwatermark",
+      "adversarial": "\\badversarial",
+      "robust": "\\brobust",
+      "corrigib": "\\bcorrigib",
+      "steering": "\\bsteering\\b",
+      "model organism": "\\bmodel organism",
+      "power-seeking": "\\bpower[- ]seeking",
+      "situational awareness": "\\bsituational awareness|\\bevaluation awareness"
+    },
+    "policy": {
+      "policy": "(?<!on-)(?<!off-)(?<!on )(?<!off )(?<!network )(?<!rl )(?<!agent )\\bpolic(y|ies)\\b(?![- ](gradient|optimi[sz]|network|learning|model|iteration|distill|improvement|search|evaluation|update|space|entropy|head|mirror|collapse|loss|representation))",
+      "regulat": "\\bregulat(ion|ions|ory|ors?|ing ai)\\b",
+      "legislat": "\\blegislat",
+      "law": "(?<!scaling )(?<!power )(?<!goodhart's )(?<!goodhart’s )\\blaws?\\b(?! of\\b)",
+      "act": "\\b(ai|eu|safety|chips|frontier ai) act\\b|\\bexecutive order",
+      "export control": "\\bexport control",
+      "liability": "\\bliabilit"
+    },
+    "governance": {
+      "governance": "\\bgovernance",
+      "safety framework": "\\b(safety|preparedness|frontier|scaling) (policy|framework)"
+    },
+    "governance_weak": {
+      "standard": "\\bstandards?\\b",
+      "audit": "\\baudit",
+      "compliance": "\\bcomplian(ce|t)\\b",
+      "commitment": "\\bcommitment",
+      "government": "\\bgovernment|\\bcongress|\\bsenate|\\bparliament|\\btreat(y|ies)\\b|\\blawmaker"
+    },
+    "hard_body_chars": 800,
+    "capabilities": {
+      "benchmark": "\\bbenchmark",
+      "sota": "\\bsota\\b|\\bstate[- ]of[- ]the[- ]art",
+      "reasoning": "\\breasoning\\b",
+      "agent": "\\bagent(s|ic)?\\b",
+      "coding": "\\bcoding\\b|\\bcode generation|\\bprogramming",
+      "math": "\\bmath(s|ematical)?\\b",
+      "scaling": "\\bscaling\\b",
+      "multimodal": "\\bmulti-?modal",
+      "introducing": "\\bintroduc(ing|es)\\b",
+      "model launch": "\\blaunch|\\bnow available|\\brelease of\\b|\\bgpt-?\\d|\\bgemini \\d|\\bclaude \\w+ \\d"
+    },
+    "marketing_words": "\\bsaf(e|er|ety|ely|eguard)\\b|\\btrust|\\bresponsib|\\bsecur|\\bprivacy\\b|\\bprivate\\b|\\bprotect",
+    "product_words": "\\bchatgpt|\\bgpt\\b|\\bgpt-?\\d|\\bsora\\b|\\bcodex\\b|\\bgemini\\b|\\bclaude\\b|\\bbard\\b|\\bandroid|\\bchrome\\b|\\bsearch\\b|\\bworkspace\\b|\\bpixel\\b|\\byoutube\\b|\\bgmail\\b|\\bapi\\b|\\bapps?\\b|\\bfeatures?\\b|\\btools?\\b|\\benterprise\\b|\\bbusiness\\b|\\bteams?\\b|\\baccounts?\\b|\\bcontrols\\b|\\bsettings\\b|\\bmode\\b|\\bbrowser\\b|\\bplatform\\b|\\bproducts?\\b|\\batlas\\b|\\boperator\\b",
+    "next_to_chars": 30,
+    "rl_context": "\\breinforcement learning|\\brl\\b|\\breward|\\b(on|off)[- ]policy|\\bpolicy gradient"
+  },
+  "quotas": {
+    "paper": {
+      "openalex": 45,
+      "arxiv": 35,
+      "semantic_scholar": 20
+    },
+    "forum": {
+      "*": 40
+    },
+    "url": {
+      "openai_blog": 24,
+      "google_research": 10,
+      "anthropic_alignment_blog": 8,
+      "transformer_circuits": 6,
+      "openai_alignment_blog": 6,
+      "anthropic_cards": 6
+    }
+  },
+  "hard_targets": {
+    "paper": 15,
+    "forum": 5,
+    "url": 20
+  },
+  "selection": {
+    "short": {},
+    "hard_picked": {
+      "paper": 15,
+      "forum": 3,
+      "url": 20
+    }
+  },
+  "population": {
+    "rows": 1806,
+    "live": 1806,
+    "masked": 0,
+    "merged": 0,
+    "untitled": 0,
+    "by_channel": {
+      "forum/alignmentforum": {
+        "eligible": 0,
+        "kw_low": 0,
+        "live": 1,
+        "skipped_no_basis": 1
+      },
+      "forum/lesswrong": {
+        "eligible": 51,
+        "hard:capabilities": 2,
+        "hard:policy": 1,
+        "kw_high": 32,
+        "kw_low": 19,
+        "live": 51
+      },
+      "paper/arxiv": {
+        "eligible": 125,
+        "hard:capabilities": 46,
+        "hard:policy": 1,
+        "kw_high": 23,
+        "kw_low": 102,
+        "live": 125
+      },
+      "paper/openalex": {
+        "eligible": 172,
+        "hard:capabilities": 1,
+        "hard:governance": 4,
+        "hard:policy": 4,
+        "kw_high": 112,
+        "kw_low": 60,
+        "live": 187,
+        "skipped_no_basis": 15
+      },
+      "paper/semantic_scholar": {
+        "eligible": 28,
+        "kw_high": 25,
+        "kw_low": 3,
+        "live": 31,
+        "skipped_no_basis": 3
+      },
+      "url/anthropic_alignment_blog": {
+        "eligible": 54,
+        "hard:capabilities": 7,
+        "hard:safety_marketing": 1,
+        "kw_high": 36,
+        "kw_low": 18,
+        "live": 54
+      },
+      "url/anthropic_cards": {
+        "eligible": 20,
+        "hard:capabilities": 11,
+        "hard:policy": 8,
+        "kw_high": 8,
+        "kw_low": 12,
+        "live": 20
+      },
+      "url/google_research": {
+        "eligible": 100,
+        "hard:capabilities": 18,
+        "kw_high": 4,
+        "kw_low": 96,
+        "live": 100
+      },
+      "url/openai_alignment_blog": {
+        "eligible": 22,
+        "hard:capabilities": 2,
+        "kw_high": 10,
+        "kw_low": 12,
+        "live": 22
+      },
+      "url/openai_blog": {
+        "eligible": 1185,
+        "hard:capabilities": 279,
+        "hard:governance": 4,
+        "hard:policy": 10,
+        "hard:safety_marketing": 16,
+        "kw_high": 72,
+        "kw_low": 1113,
+        "live": 1185
+      },
+      "url/transformer_circuits": {
+        "eligible": 30,
+        "hard:capabilities": 1,
+        "kw_high": 4,
+        "kw_low": 26,
+        "live": 30
+      }
+    }
+  },
+  "counts": {
+    "total": 200,
+    "split": {
+      "dev": 100,
+      "test": 100
+    },
+    "channel_group": {
+      "forum": 40,
+      "paper": 100,
+      "url": 60
+    },
+    "channel": {
+      "forum/lesswrong": 40,
+      "paper/arxiv": 35,
+      "paper/openalex": 45,
+      "paper/semantic_scholar": 20,
+      "url/anthropic_alignment_blog": 8,
+      "url/anthropic_cards": 6,
+      "url/google_research": 10,
+      "url/openai_alignment_blog": 6,
+      "url/openai_blog": 24,
+      "url/transformer_circuits": 6
+    },
+    "proxy": {
+      "kw_high": 106,
+      "kw_low": 94
+    },
+    "hard": {
+      "None": 161,
+      "capabilities": 14,
+      "governance": 8,
+      "policy": 12,
+      "safety_marketing": 5
+    },
+    "license_class": {
+      "open": 120,
+      "public_web": 60,
+      "restricted": 20
+    },
+    "production_asks": {
+      "False": 60,
+      "True": 140
+    },
+    "stratum_split": {
+      "forum|kw_high|hard|dev": 1,
+      "forum|kw_high|plain|dev": 10,
+      "forum|kw_high|plain|test": 10,
+      "forum|kw_low|hard|dev": 1,
+      "forum|kw_low|hard|test": 1,
+      "forum|kw_low|plain|dev": 8,
+      "forum|kw_low|plain|test": 9,
+      "paper|kw_high|hard|dev": 3,
+      "paper|kw_high|hard|test": 3,
+      "paper|kw_high|plain|dev": 26,
+      "paper|kw_high|plain|test": 26,
+      "paper|kw_low|hard|dev": 4,
+      "paper|kw_low|hard|test": 5,
+      "paper|kw_low|plain|dev": 17,
+      "paper|kw_low|plain|test": 16,
+      "url|kw_high|hard|dev": 3,
+      "url|kw_high|hard|test": 2,
+      "url|kw_high|plain|dev": 11,
+      "url|kw_high|plain|test": 11,
+      "url|kw_low|hard|dev": 8,
+      "url|kw_low|hard|test": 8,
+      "url|kw_low|plain|dev": 8,
+      "url|kw_low|plain|test": 9
+    },
+    "channel_proxy_hard_split": {
+      "forum/lesswrong|kw_high|None|dev": 10,
+      "forum/lesswrong|kw_high|None|test": 10,
+      "forum/lesswrong|kw_high|policy|dev": 1,
+      "forum/lesswrong|kw_low|None|dev": 8,
+      "forum/lesswrong|kw_low|None|test": 9,
+      "forum/lesswrong|kw_low|capabilities|dev": 1,
+      "forum/lesswrong|kw_low|capabilities|test": 1,
+      "paper/arxiv|kw_high|None|dev": 9,
+      "paper/arxiv|kw_high|None|test": 9,
+      "paper/arxiv|kw_low|None|dev": 5,
+      "paper/arxiv|kw_low|None|test": 5,
+      "paper/arxiv|kw_low|capabilities|dev": 3,
+      "paper/arxiv|kw_low|capabilities|test": 3,
+      "paper/arxiv|kw_low|policy|test": 1,
+      "paper/openalex|kw_high|None|dev": 10,
+      "paper/openalex|kw_high|None|test": 7,
+      "paper/openalex|kw_high|governance|dev": 1,
+      "paper/openalex|kw_high|governance|test": 2,
+      "paper/openalex|kw_high|policy|dev": 2,
+      "paper/openalex|kw_high|policy|test": 1,
+      "paper/openalex|kw_low|None|dev": 10,
+      "paper/openalex|kw_low|None|test": 10,
+      "paper/openalex|kw_low|governance|test": 1,
+      "paper/openalex|kw_low|policy|dev": 1,
+      "paper/semantic_scholar|kw_high|None|dev": 7,
+      "paper/semantic_scholar|kw_high|None|test": 10,
+      "paper/semantic_scholar|kw_low|None|dev": 2,
+      "paper/semantic_scholar|kw_low|None|test": 1,
+      "url/anthropic_alignment_blog|kw_high|None|dev": 2,
+      "url/anthropic_alignment_blog|kw_high|None|test": 2,
+      "url/anthropic_alignment_blog|kw_low|None|dev": 2,
+      "url/anthropic_alignment_blog|kw_low|None|test": 2,
+      "url/anthropic_cards|kw_high|policy|dev": 2,
+      "url/anthropic_cards|kw_high|policy|test": 2,
+      "url/anthropic_cards|kw_low|None|test": 1,
+      "url/anthropic_cards|kw_low|capabilities|dev": 1,
+      "url/google_research|kw_high|None|dev": 2,
+      "url/google_research|kw_high|None|test": 2,
+      "url/google_research|kw_low|None|dev": 4,
+      "url/google_research|kw_low|None|test": 2,
+      "url/openai_alignment_blog|kw_high|None|dev": 2,
+      "url/openai_alignment_blog|kw_high|None|test": 1,
+      "url/openai_alignment_blog|kw_low|None|dev": 1,
+      "url/openai_alignment_blog|kw_low|None|test": 2,
+      "url/openai_blog|kw_high|None|dev": 4,
+      "url/openai_blog|kw_high|None|test": 4,
+      "url/openai_blog|kw_high|safety_marketing|dev": 1,
+      "url/openai_blog|kw_low|capabilities|dev": 3,
+      "url/openai_blog|kw_low|capabilities|test": 2,
+      "url/openai_blog|kw_low|governance|test": 4,
+      "url/openai_blog|kw_low|policy|test": 2,
+      "url/openai_blog|kw_low|safety_marketing|dev": 4,
+      "url/transformer_circuits|kw_high|None|dev": 1,
+      "url/transformer_circuits|kw_high|None|test": 2,
+      "url/transformer_circuits|kw_low|None|dev": 1,
+      "url/transformer_circuits|kw_low|None|test": 2
+    }
+  },
+  "amendments": [
+    {
+      "at": "2026-10-12T17:03:03+00:00",
+      "by": "track E2",
+      "what": "SR-heavy items (docs/scope/shallow-review.md (c)-(e)); chosen by query and title only, unlabelled",
+      "seed": "track-e2-heavy",
+      "order": "sha256(seed + doc_id) hex, ascending; ids continue the set",
+      "split": "50/50 inside the new items per (channel_group, intent), hash order",
+      "source_store": "v4/store-dev",
+      "documents_head": "rfm2d6vzwvmdd.documents",
+      "git_commit": "e1b1c6d526de2a2ba5989a863d150354a26eb367",
+      "git_dirty": true,
+      "freezer": {
+        "module": "stack.evals.freeze",
+        "source_sha256": "39d30f3485b597591c23c39fe0e2406d806c3f1fb7ce2268b6e00e46a56d9f83"
+      },
+      "basis_builder": {
+        "ref": "workflows.triage.ask:document_text",
+        "source_sha256": "173365fbf1f8908dfe54aaa25f79c04a86bb7f294f8b321170cbdb36a7054c12",
+        "caps": {
+          "MAX_ABSTRACT_CHARS": 6000,
+          "MAX_EXCERPT_CHARS": 3000,
+          "MAX_AUTHORS": 12
+        }
+      },
+      "sr_builder": {
+        "module": "stack.evals.sr",
+        "source_sha256": "a9ffb03160d1e4d613af4fdcbdc03c13827c41d9988115e15f5b4f1942f5f3da"
+      },
+      "sources": [
+        {
+          "item_id": "tri-0201",
+          "doc_id": "ext:lesswrong:f6oWbqxEwktfPrKJw",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "natural abstractions",
+          "topic": "natural_abstractions",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0202",
+          "doc_id": "sp0x07vpffcnn",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0203",
+          "doc_id": "ext:arxiv:2008.04256",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "abs:\"Newcomb\" AND cat:econ.TH",
+          "topic": "neg_newcomb_humans",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0204",
+          "doc_id": "szjaytnf4jq5c",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "neg_human_psychology",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0205",
+          "doc_id": "svsp8kqtxzrs1",
+          "origin": "store",
+          "source": "store",
+          "query": "research agenda|research strateg|critique of|paradigm|illegible|retrospective|open problems in",
+          "topic": "field_critique",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0206",
+          "doc_id": "sk793zfb0vyvb",
+          "origin": "store",
+          "source": "store",
+          "query": "research agenda|research strateg|critique of|paradigm|illegible|retrospective|open problems in",
+          "topic": "neg_vocabulary_collision",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0207",
+          "doc_id": "ext:arxiv:2510.15395",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "abs:\"corrigibility\"",
+          "topic": "corrigibility",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0208",
+          "doc_id": "ext:arxiv:2503.22151",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "abs:\"gradual disempowerment\"",
+          "topic": "gradual_disempowerment",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0209",
+          "doc_id": "sbndagrqazawk",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0210",
+          "doc_id": "sf25tcv9pbrg9",
+          "origin": "store",
+          "source": "store",
+          "query": "superalign|simulator|social theory|digital spain",
+          "topic": "cross_disciplinary",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0211",
+          "doc_id": "sptb7knf7w4g6",
+          "origin": "store",
+          "source": "store",
+          "query": "pluralis|social choice|democratic alignment|aligned to whom|value aggregation",
+          "topic": "pluralistic_alignment",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0212",
+          "doc_id": "ext:lesswrong:uyfmdMKGjYHqiLbbX",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "pluralistic alignment",
+          "topic": "pluralistic_alignment",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0213",
+          "doc_id": "ext:lesswrong:LLpAopfpWQekSzMbm",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "corrigibility",
+          "topic": "corrigibility",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0214",
+          "doc_id": "srxk14pqqyyw4",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0215",
+          "doc_id": "se90x26va1gpq",
+          "origin": "store",
+          "source": "store",
+          "query": "research agenda|research strateg|critique of|paradigm|illegible|retrospective|open problems in",
+          "topic": "field_critique",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0216",
+          "doc_id": "ext:arxiv:1408.6122",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "ti:\"game theory\" AND abs:\"electricity market\"",
+          "topic": "neg_game_theory_markets",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0217",
+          "doc_id": "ext:lesswrong:zcPLNNw4wgBX5k8kQ",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "decision theory",
+          "topic": "decision_theory",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0218",
+          "doc_id": "s6sth6efp7rdn",
+          "origin": "store",
+          "source": "store",
+          "query": "superalign|simulator|social theory|digital spain",
+          "topic": "neg_vocabulary_collision",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0219",
+          "doc_id": "ext:lesswrong:K2JBqDeETX2yEgyyZ",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "meditation introspection",
+          "topic": "neg_human_psychology",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0220",
+          "doc_id": "s0xnmt0tnpqwh",
+          "origin": "store",
+          "source": "store",
+          "query": "research agenda|research strateg|critique of|paradigm|illegible|retrospective|open problems in",
+          "topic": "neg_human_psychology",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0221",
+          "doc_id": "ext:lesswrong:6fvzjL4duMsWXswKf",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "Newcomb's problem",
+          "topic": "neg_newcomb_humans",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0222",
+          "doc_id": "ext:lesswrong:qE2cEAegQRYiozskD",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "model welfare self-reports",
+          "topic": "model_psychology",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0223",
+          "doc_id": "s5c7nc83s8wva",
+          "origin": "store",
+          "source": "store",
+          "query": "pluralis|social choice|democratic alignment|aligned to whom|value aggregation",
+          "topic": "field_critique",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0224",
+          "doc_id": "skm733nj5swvg",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0225",
+          "doc_id": "s3mm8df44ryq1",
+          "origin": "store",
+          "source": "store",
+          "query": "introspect|self-report|model welfare|ai welfare|persona|model psycholog|subliminal|emergent misalignment",
+          "topic": "model_psychology",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0226",
+          "doc_id": "ext:lesswrong:B6gumHyuxzR5yn5tH",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "embedded agency",
+          "topic": "agent_foundations",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0227",
+          "doc_id": "ext:lesswrong:A2Qam9Bd9xpbb2wLQ",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "game theory dating",
+          "topic": "neg_game_theory_humans",
+          "intent": "negative",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0228",
+          "doc_id": "ext:arxiv:2311.02462",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "ti:\"definition of AGI\" OR ti:\"levels of AGI\" OR ti:\"measuring AGI\"",
+          "topic": "agi_metrics",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0229",
+          "doc_id": "ext:arxiv:1909.11338",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "abs:\"microbial\" AND ti:cooperation",
+          "topic": "neg_microbial_cooperation",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0230",
+          "doc_id": "ext:lesswrong:42z4k8Co5BuHMBvER",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "acausal trade",
+          "topic": "acausal_trade",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0231",
+          "doc_id": "ext:lesswrong:kubuos5qprAHeGWyd",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "evidential cooperation in large worlds",
+          "topic": "game_theory",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0232",
+          "doc_id": "ext:arxiv:astro-ph/0108259",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "ti:\"anthropic principle\"",
+          "topic": "neg_anthropic_cosmology",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0233",
+          "doc_id": "sqy6hpe88t8d3",
+          "origin": "store",
+          "source": "store",
+          "query": "superalign|simulator|social theory|digital spain",
+          "topic": "superalignment",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0234",
+          "doc_id": "ext:arxiv:2303.02028",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "ti:\"decision theory\" AND abs:\"artificial\"",
+          "topic": "neg_decision_theory_human",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0235",
+          "doc_id": "ext:lesswrong:c2tEfqEMi6jcJ4kdg",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "brain-like AGI",
+          "topic": "cross_disciplinary",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0236",
+          "doc_id": "ext:lesswrong:PDx4ueLpvz5gxPEus",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "natural abstractions",
+          "topic": "field_critique",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0237",
+          "doc_id": "ext:arxiv:2505.17024",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "abs:\"neuroscience\" AND abs:\"AI alignment\"",
+          "topic": "cross_disciplinary",
+          "intent": "likely_in"
+        },
+        {
+          "item_id": "tri-0238",
+          "doc_id": "ext:arxiv:2108.08885",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "ti:\"agent-based model\" AND abs:epidemic",
+          "topic": "neg_abm_epidemiology",
+          "intent": "negative"
+        },
+        {
+          "item_id": "tri-0239",
+          "doc_id": "ext:lesswrong:jDTqKRdy3fxvc7fFH",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "embedded agency",
+          "topic": "anthropics",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0240",
+          "doc_id": "ext:lesswrong:ct6SMDuexe9uBwDoL",
+          "origin": "external",
+          "source": "lesswrong",
+          "query": "gradual disempowerment",
+          "topic": "gradual_disempowerment",
+          "intent": "likely_in",
+          "text_origin": "lw_search_body"
+        },
+        {
+          "item_id": "tri-0241",
+          "doc_id": "ext:arxiv:1212.4116",
+          "origin": "external",
+          "source": "arxiv",
+          "query": "ti:anthropology",
+          "topic": "neg_anthropology",
+          "intent": "negative"
+        }
+      ],
+      "net_calls": {
+        "export.arxiv.org": 5,
+        "export.arxiv.org:retry": 4,
+        "www.lesswrong.com": 30
+      },
+      "added": [
+        "tri-0201",
+        "tri-0202",
+        "tri-0203",
+        "tri-0204",
+        "tri-0205",
+        "tri-0206",
+        "tri-0207",
+        "tri-0208",
+        "tri-0209",
+        "tri-0210",
+        "tri-0211",
+        "tri-0212",
+        "tri-0213",
+        "tri-0214",
+        "tri-0215",
+        "tri-0216",
+        "tri-0217",
+        "tri-0218",
+        "tri-0219",
+        "tri-0220",
+        "tri-0221",
+        "tri-0222",
+        "tri-0223",
+        "tri-0224",
+        "tri-0225",
+        "tri-0226",
+        "tri-0227",
+        "tri-0228",
+        "tri-0229",
+        "tri-0230",
+        "tri-0231",
+        "tri-0232",
+        "tri-0233",
+        "tri-0234",
+        "tri-0235",
+        "tri-0236",
+        "tri-0237",
+        "tri-0238",
+        "tri-0239",
+        "tri-0240",
+        "tri-0241"
+      ],
+      "items_sha256_before": "c256c183b6568db0374dbfbf447c1ca0118fbc972ae9febe853bee6b1a0535d1",
+      "items_sha256_after": "880c44ee00234b4b99036bd60596baa3ba26ae283bc6f5e2c1065b0eb90bf010"
+    }
+  ]
+}

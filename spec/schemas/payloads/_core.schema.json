@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/payloads/_core.schema.json",
+  "title": "PayloadCore",
+  "description": "Shared payload definitions the kept payload schemas pull in by $ref (screen_verdict, doc_class: grounding_idx). v3's reserved payload core (evidence_tier, independence, relation, stance, date_asserted, confidence, the keys a v3 read policy could reference) is in v3's _core.schema.json (moved 2026-10-14).",
+  "type": "object",
+  "properties": {
+    "grounding_idx": {
+      "$ref": "#/$defs/grounding_idx"
+    }
+  },
+  "$defs": {
+    "grounding_idx": {
+      "title": "grounding_idx",
+      "description": "Indices into the annotation envelope's grounding array (annotations.grounding) that back the value(s) this record asserts. Payloads are quote-free: the verbatim quote/span/text_digest lives on the envelope, verified at write (§6.2); the payload points at it by position, as taxman does. May be empty only for an explicitly assessed-empty / unknown value that asserts thinness and therefore cites nothing.",
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  }
+}

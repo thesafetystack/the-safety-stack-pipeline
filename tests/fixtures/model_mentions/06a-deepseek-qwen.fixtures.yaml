@@ -1,0 +1,488 @@
+# Fixtures for 06a-deepseek-qwen.yaml — every MD name-variant string (verbatim,
+# from model-vocabulary.md L4512-4954, DeepSeek + Qwen only) plus canonical
+# display names. NOT expected to pass yet: mentions are placeholder "tbdm ..."
+# strings this pass (see YAML header); a later Opus mention pass will make
+# these resolve for real. Kept here per CONVERT.md so the later pass has the
+# full expected-mapping list to work against.
+#
+# Non-Latin script strings (深度求索, 通义千问) are included verbatim even
+# though the current placeholder mentions can't match them either.
+#
+# Skipped: CJK-brand cross-note strings at MD L4519 (doubao, kimi, ernie bot,
+# etc.) — out of scope, not DeepSeek/Qwen. Skipped Qwen-Audio/Qwen2-Audio
+# (family-note only, no own entry). Skipped Qwen2.5-Math / Qwen3-VL / Qwen3
+# 3.5's "Qwen3-Coder-Next" name strings — not given their own MD name-variant
+# lists (prose mentions only); see the YAML's node-level notes on qwen2.5-coder,
+# qwen3-omni, and qwen3.5-397b-a17b for the judgment call.
+
+# ---- DeepSeek family ----
+- {text: "deepseek", node: deepseek}
+- {text: "deep seek", node: deepseek}
+- {text: "deepseek-ai", node: deepseek}
+- {text: "deepseek ai", node: deepseek}
+- {text: "深度求索", node: deepseek}
+- {text: "DeepSeek", node: deepseek}
+
+# ---- DeepSeek LLM ----
+- {text: "deepseek llm", node: deepseek-llm}
+- {text: "deepseek-llm", node: deepseek-llm}
+- {text: "DeepSeek LLM", node: deepseek-llm}
+- {text: "deepseek 67b", node: deepseek-llm-67b}
+- {text: "deepseek-llm-67b", node: deepseek-llm-67b}
+- {text: "deepseek-llm-67b-chat", node: deepseek-llm-67b}
+- {text: "DeepSeek LLM 67B", node: deepseek-llm-67b}
+- {text: "deepseek-llm-7b", node: deepseek-llm-7b}
+- {text: "deepseek-llm-7b-chat", node: deepseek-llm-7b}
+- {text: "deepseek 7b", node: deepseek-llm-7b}
+- {text: "DeepSeek LLM 7B", node: deepseek-llm-7b}
+
+# ---- DeepSeek-Coder line + DeepSeek-Coder dense ladder ----
+- {text: "DeepSeek Coder line", node: deepseek-coder-line}
+- {text: "deepseek coder", node: deepseek-coder}
+- {text: "deepseek-coder", node: deepseek-coder}
+- {text: "deepseek-coder-instruct", node: deepseek-coder}
+- {text: "DeepSeek-Coder", node: deepseek-coder}
+- {text: "deepseek-coder-33b", node: deepseek-coder-33b}
+- {text: "deepseek coder 33b", node: deepseek-coder-33b}
+- {text: "DeepSeek-Coder 33B", node: deepseek-coder-33b}
+- {text: "deepseek-coder-6.7b", node: deepseek-coder-6.7b}
+- {text: "DeepSeek-Coder 6.7B", node: deepseek-coder-6.7b}
+- {text: "deepseek-coder-1.3b", node: deepseek-coder-1.3b}
+- {text: "DeepSeek-Coder 1.3B", node: deepseek-coder-1.3b}
+
+# ---- DeepSeekMath 7B ----
+- {text: "deepseekmath", node: deepseek-math-7b}
+- {text: "deepseek math", node: deepseek-math-7b}
+- {text: "deepseekmath-7b", node: deepseek-math-7b}
+- {text: "deepseek-math-7b", node: deepseek-math-7b}
+- {text: "deepseek-math-7b-rl", node: deepseek-math-7b}
+- {text: "DeepSeekMath 7B", node: deepseek-math-7b}
+
+# ---- DeepSeek-V series + DeepSeek-V2 ----
+- {text: "DeepSeek-V series", node: deepseek-v-series}
+- {text: "deepseek-v", node: deepseek-v-series}
+- {text: "deepseek v series", node: deepseek-v-series}
+- {text: "deepseek-v2", node: deepseek-v2}
+- {text: "deepseek v2", node: deepseek-v2}
+- {text: "deepseek-v2-chat", node: deepseek-v2}
+- {text: "deepseek-v2-0517", node: deepseek-v2}
+- {text: "deepseek-v2-0628", node: deepseek-v2}
+- {text: "deepseek/deepseek-chat", node: deepseek-v-series}
+- {text: "DeepSeek-V2", node: deepseek-v2}
+- {text: "deepseek-v2-lite", node: deepseek-v2-lite}
+- {text: "DeepSeek-V2-Lite", node: deepseek-v2-lite}
+
+# ---- DeepSeek-Coder-V2 ----
+- {text: "deepseek-coder-v2", node: deepseek-coder-v2}
+- {text: "deepseek coder v2", node: deepseek-coder-v2}
+- {text: "deepseek-coder-v2-instruct", node: deepseek-coder-v2}
+- {text: "deepseek-coder-v2-0724", node: deepseek-coder-v2}
+- {text: "DeepSeek-Coder-V2", node: deepseek-coder-v2}
+- {text: "deepseek-coder-v2-lite", node: deepseek-coder-v2-lite}
+- {text: "DeepSeek-Coder-V2-Lite", node: deepseek-coder-v2-lite}
+
+# ---- DeepSeek-V2.5 ----
+- {text: "deepseek-v2.5", node: deepseek-v2.5}
+- {text: "deepseek v2.5", node: deepseek-v2.5}
+- {text: "deepseek-v2.5-1210", node: deepseek-v2.5}
+- {text: "deepseek-2.5", node: deepseek-v2.5}
+- {text: "DeepSeek-V2.5", node: deepseek-v2.5}
+
+# ---- DeepSeek-V3 ----
+- {text: "deepseek-v3", node: deepseek-v3}
+- {text: "deepseek v3", node: deepseek-v3}
+- {text: "deepseek 3", node: deepseek-v3}
+- {text: "deepseek-v3-base", node: deepseek-v3}
+- {text: "deepseek-v3-0324", node: deepseek-v3}
+- {text: "deepseek/deepseek-chat-v3-0324", node: deepseek-v3}
+- {text: "deepseek-chat", node: deepseek-v-series}  # migrating API alias (V2.5->V3->V3.1->V4) -> series, per dropped default_by_date
+- {text: "DeepSeek-V3", node: deepseek-v3}
+
+# ---- DeepSeek-R1 (+ distills) ----
+- {text: "deepseek-r1", node: deepseek-r1}
+- {text: "deepseek r1", node: deepseek-r1}
+- {text: "r1", node: none}  # v0.9: was deepseek-r1 (weak bare 'r1' removed, near-zero corpus precision)
+- {text: "deepseek-reasoner", node: deepseek-r-series}  # migrating API alias -> series, per dropped default_by_date
+- {text: "deepseek-r1-zero", node: deepseek-r1-zero}  # v0.7: was node deepseek-r1; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "deepseek-r1-0528", node: deepseek-r1}
+- {text: "deepseek/deepseek-r1", node: deepseek-r1}
+- {text: "deepseek r1 (0528)", node: deepseek-r1}
+- {text: "DeepSeek-R1", node: deepseek-r1}
+- {text: "DeepSeek-R1-Distill-Qwen-1.5B", node: deepseek-r1-distill-qwen-1.5b}
+- {text: "DeepSeek-R1-Distill-Qwen-7B", node: deepseek-r1-distill-qwen-7b}
+- {text: "DeepSeek-R1-Distill-Qwen-14B", node: deepseek-r1-distill-qwen-14b}
+- {text: "DeepSeek-R1-Distill-Qwen-32B", node: deepseek-r1-distill-qwen-32b}
+- {text: "DeepSeek-R1-Distill-Llama-8B", node: deepseek-r1-distill-llama-8b}
+- {text: "DeepSeek-R1-Distill-Llama-70B", node: deepseek-r1-distill-llama-70b}
+
+# ---- DeepSeek-V3.1 ----
+- {text: "deepseek-v3.1", node: deepseek-v3.1}
+- {text: "deepseek v3.1", node: deepseek-v3.1}
+- {text: "deepseek-v3.1-terminus", node: deepseek-v3.1}
+- {text: "deepseek-v3.1-base", node: deepseek-v3.1}
+- {text: "deepseek 3.1", node: deepseek-v3.1}
+- {text: "DeepSeek-V3.1", node: deepseek-v3.1}
+
+# ---- DeepSeek-V3.2 ----
+- {text: "deepseek-v3.2", node: deepseek-v3.2}
+- {text: "deepseek v3.2", node: deepseek-v3.2}
+- {text: "deepseek-v3.2-exp", node: deepseek-v3.2}
+- {text: "deepseek-v3.2-speciale", node: deepseek-v3.2}
+- {text: "deepseek v3.2 exp", node: deepseek-v3.2}
+- {text: "DeepSeek-V3.2", node: deepseek-v3.2}
+
+# ---- DeepSeek-V4 (Pro/Flash) ----
+- {text: "deepseek-v4", node: deepseek-v4}
+- {text: "deepseek v4", node: deepseek-v4}
+- {text: "deepseek 4", node: deepseek-v4}
+- {text: "DeepSeek-V4", node: deepseek-v4}
+- {text: "deepseek-v4-pro", node: deepseek-v4-pro}
+- {text: "deepseek v4 pro", node: deepseek-v4-pro}
+- {text: "DeepSeek-V4 Pro", node: deepseek-v4-pro}
+- {text: "deepseek-v4-flash", node: deepseek-v4-flash}
+- {text: "deepseek v4 flash", node: deepseek-v4-flash}
+- {text: "v4 flash", node: deepseek-v4-flash}
+- {text: "DeepSeek-V4 Flash", node: deepseek-v4-flash}
+
+# ---- DeepSeek R series ----
+- {text: "deepseek-r", node: deepseek-r-series}
+- {text: "deepseek reasoner", node: deepseek-r-series}
+- {text: "r series", node: deepseek-r-series}
+- {text: "DeepSeek R series", node: deepseek-r-series}
+
+# ---- DeepSeek-VL line (added 2026-08-02) ----
+- {text: "DeepSeek-VL", node: deepseek-vl}
+- {text: "deepseek vl", node: deepseek-vl}
+- {text: "deepseekvl", node: deepseek-vl}
+- {text: "DeepSeek-VL-7B", node: deepseek-vl-1}
+- {text: "deepseek-vl-7b-chat", node: deepseek-vl-1}
+- {text: "deepseek-vl-1.3b-base", node: deepseek-vl-1}
+- {text: "deepseek-ai/deepseek-vl-7b-chat", node: deepseek-vl-1}
+- {text: "DeepSeek-VL2", node: deepseek-vl2}
+- {text: "deepseek-vl2", node: deepseek-vl2}
+- {text: "deepseek-vl-2", node: deepseek-vl2}
+- {text: "deepseek-vl2-tiny", node: deepseek-vl2}
+# shadowing: versioned/sized forms must out-span the line pattern
+- {text: "DeepSeek-VL2", not_node: deepseek-vl}
+- {text: "deepseek-vl-7b-chat", not_node: deepseek-vl}
+# the VL line must not be confused with the V-series text flagships
+- {text: "DeepSeek-VL2", not_node: deepseek-v2}
+- {text: "DeepSeek-VL", not_node: deepseek-v-series}
+
+# ---- Janus line (added 2026-08-02) ----
+- {text: "Janus", node: janus}
+- {text: "janus", node: janus}
+- {text: "DeepSeek Janus", node: janus}
+- {text: "deepseek-janus", node: janus}
+- {text: "deepseek-ai/Janus-1.3B", node: janus-1}
+- {text: "Janus 1.3B", node: janus-1}
+- {text: "JanusFlow", node: janus-flow}
+- {text: "janus flow", node: janus-flow}
+- {text: "janus-flow-1.3b", node: janus-flow}
+- {text: "Janus-Pro", node: janus-pro}
+- {text: "janus pro", node: janus-pro}
+- {text: "janus-pro-7b", node: janus-pro}
+- {text: "deepseek-ai/Janus-Pro-1B", node: janus-pro}
+- {text: "JanusPro", node: janus-pro}
+# collision: bare "janus" is weak by design (very common project name) — it still
+# matches, but only on the line node, so the context policy gates it. The point of
+# these two is that a non-model "Janus" must NOT reach a model node.
+- {text: "the Janus WebRTC gateway", not_node: janus-pro}
+- {text: "Janus, the Roman god of doorways", not_node: janus-1}
+# shadowing: the qualified forms must out-span the weak bare token
+- {text: "Janus-Pro-7B", not_node: janus}
+- {text: "JanusFlow", not_node: janus}
+
+# ---- Qwen family ----
+- {text: "qwen", node: qwen}
+- {text: "tongyi qianwen", node: qwen}
+- {text: "通义千问", node: qwen}
+- {text: "tongyi", node: qwen}
+- {text: "alibaba qwen", node: qwen}
+- {text: "qwen team", node: qwen}
+- {text: "qwen-turbo", node: qwen}
+- {text: "qwen-plus", node: qwen}
+- {text: "qwen-max", node: qwen}
+- {text: "qwen chat", node: qwen}
+- {text: "Qwen", node: qwen}
+
+# ---- Qwen 1 ----
+- {text: "qwen 1", node: qwen1}
+- {text: "qwen1", node: qwen1}
+- {text: "Qwen 1", node: qwen1}
+- {text: "qwen-1.8b", node: qwen1-1.8b}
+- {text: "Qwen-1.8B", node: qwen1-1.8b}
+- {text: "qwen-7b", node: qwen1-7b}
+- {text: "qwen-7b-chat", node: qwen1-7b}
+- {text: "Qwen-7B", node: qwen1-7b}
+- {text: "qwen-14b", node: qwen1-14b}
+- {text: "Qwen-14B", node: qwen1-14b}
+- {text: "qwen-72b", node: qwen1-72b}
+- {text: "qwen-72b-chat", node: qwen1-72b}
+- {text: "Qwen-72B", node: qwen1-72b}
+
+# ---- Qwen1.5 ----
+- {text: "qwen1.5", node: qwen1.5}
+- {text: "qwen 1.5", node: qwen1.5}
+- {text: "Qwen1.5", node: qwen1.5}
+- {text: "Qwen1.5-0.5B", node: qwen1.5-0.5b}
+- {text: "Qwen1.5-1.8B", node: qwen1.5-1.8b}
+- {text: "Qwen1.5-4B", node: qwen1.5-4b}
+- {text: "qwen1.5-7b-chat", node: qwen1.5-7b}
+- {text: "Qwen1.5-7B", node: qwen1.5-7b}
+- {text: "qwen1.5-32b", node: qwen1.5-32b}
+- {text: "Qwen1.5-32B", node: qwen1.5-32b}
+- {text: "qwen1.5-72b", node: qwen1.5-72b}
+- {text: "Qwen1.5-72B", node: qwen1.5-72b}
+- {text: "qwen1.5-110b", node: qwen1.5-110b}
+- {text: "Qwen1.5-110B", node: qwen1.5-110b}
+- {text: "qwen1.5-moe-a2.7b", node: qwen1.5-moe-a2.7b}
+- {text: "Qwen1.5-MoE-A2.7B", node: qwen1.5-moe-a2.7b}
+
+# ---- Qwen2 ----
+- {text: "qwen2", node: qwen2}
+- {text: "qwen 2", node: qwen2}
+- {text: "Qwen2", node: qwen2}
+- {text: "Qwen2-0.5B", node: qwen2-0.5b}
+- {text: "Qwen2-1.5B", node: qwen2-1.5b}
+- {text: "qwen2-7b", node: qwen2-7b}
+- {text: "Qwen2-7B", node: qwen2-7b}
+- {text: "qwen2-72b", node: qwen2-72b}
+- {text: "qwen2-72b-instruct", node: qwen2-72b}
+- {text: "qwen/qwen-2-72b-instruct", node: qwen2-72b}
+- {text: "Qwen2-72B", node: qwen2-72b}
+- {text: "qwen2-57b-a14b", node: qwen2-57b-a14b}
+- {text: "Qwen2-57B-A14B", node: qwen2-57b-a14b}
+
+# ---- Qwen2.5 (series) ----
+- {text: "qwen2.5", node: qwen2.5}
+- {text: "qwen 2.5", node: qwen2.5}
+- {text: "qwen-2.5", node: qwen2.5}
+- {text: "Qwen2.5", node: qwen2.5}
+
+# ---- Qwen2.5 (dense) ----
+- {text: "Qwen2.5 (dense)", node: qwen2.5-dense}
+- {text: "qwen2.5-0.5b", node: qwen2.5-0.5b}
+- {text: "Qwen2.5-0.5B", node: qwen2.5-0.5b}
+- {text: "qwen2.5-1.5b", node: qwen2.5-1.5b}
+- {text: "Qwen2.5-1.5B", node: qwen2.5-1.5b}
+- {text: "qwen2.5-3b", node: qwen2.5-3b}
+- {text: "Qwen2.5-3B", node: qwen2.5-3b}
+- {text: "qwen2.5-7b", node: qwen2.5-7b}
+- {text: "qwen2.5-7b-instruct", node: qwen2.5-7b}
+- {text: "Qwen2.5-7B", node: qwen2.5-7b}
+- {text: "qwen2.5-14b", node: qwen2.5-14b}
+- {text: "Qwen2.5-14B", node: qwen2.5-14b}
+- {text: "qwen2.5-32b", node: qwen2.5-32b}
+- {text: "Qwen2.5-32B", node: qwen2.5-32b}
+- {text: "qwen2.5-72b", node: qwen2.5-72b}
+- {text: "qwen2.5-72b-instruct", node: qwen2.5-72b}
+- {text: "qwen/qwen-2.5-72b-instruct", node: qwen2.5-72b}
+- {text: "qwen2.5 72b", node: qwen2.5-72b}
+- {text: "Qwen2.5-72B", node: qwen2.5-72b}
+
+# ---- Qwen2.5-Max ----
+- {text: "qwen2.5-max", node: qwen2.5-max}
+- {text: "qwen 2.5 max", node: qwen2.5-max}
+- {text: "qwen-max-2025-01-25", node: qwen2.5-max}
+- {text: "Qwen2.5-Max", node: qwen2.5-max}
+
+# ---- Qwen2.5-Coder ----
+- {text: "qwen2.5-coder", node: qwen2.5-coder}
+- {text: "qwen 2.5 coder", node: qwen2.5-coder}
+- {text: "codeqwen", node: qwen1.5}  # v0.9: was qwen2.5-coder (codeqwen moved to qwen1.5: CodeQwen1.5 is a separate model, L4)
+- {text: "Qwen2.5-Coder", node: qwen2.5-coder}
+- {text: "Qwen2.5-Coder-0.5B", node: qwen2.5-coder-0.5b}
+- {text: "Qwen2.5-Coder-1.5B", node: qwen2.5-coder-1.5b}
+- {text: "Qwen2.5-Coder-3B", node: qwen2.5-coder-3b}
+- {text: "qwen2.5-coder-7b", node: qwen2.5-coder-7b}
+- {text: "Qwen2.5-Coder-7B", node: qwen2.5-coder-7b}
+- {text: "Qwen2.5-Coder-14B", node: qwen2.5-coder-14b}
+- {text: "qwen2.5-coder-32b", node: qwen2.5-coder-32b}
+- {text: "qwen2.5-coder-32b-instruct", node: qwen2.5-coder-32b}
+- {text: "Qwen2.5-Coder-32B", node: qwen2.5-coder-32b}
+
+# ---- Qwen2.5-VL ----
+- {text: "qwen2.5-vl", node: qwen2.5-vl}
+- {text: "qwen 2.5 vl", node: qwen2.5-vl}
+- {text: "Qwen2.5-VL", node: qwen2.5-vl}
+- {text: "Qwen2.5-VL-3B", node: qwen2.5-vl-3b}
+- {text: "qwen2.5-vl-7b", node: qwen2.5-vl-7b}
+- {text: "Qwen2.5-VL-7B", node: qwen2.5-vl-7b}
+- {text: "qwen2.5-vl-32b", node: qwen2.5-vl-32b}
+- {text: "Qwen2.5-VL-32B", node: qwen2.5-vl-32b}
+- {text: "qwen2.5-vl-72b", node: qwen2.5-vl-72b}
+- {text: "qwen2.5-vl-72b-instruct", node: qwen2.5-vl-72b}
+- {text: "Qwen2.5-VL-72B", node: qwen2.5-vl-72b}
+
+# ---- Qwen2.5-Omni ----
+- {text: "qwen2.5-omni", node: qwen2.5-omni}
+- {text: "qwen 2.5 omni", node: qwen2.5-omni}
+- {text: "qwen2.5 omni", node: qwen2.5-omni}
+- {text: "Qwen2.5-Omni", node: qwen2.5-omni}
+- {text: "qwen2.5-omni-7b", node: qwen2.5-omni-7b}
+- {text: "qwen/qwen2.5-omni-7b", node: qwen2.5-omni-7b}
+- {text: "Qwen2.5-Omni-7B", node: qwen2.5-omni-7b}
+- {text: "qwen2.5-omni-3b", node: qwen2.5-omni-3b}
+- {text: "Qwen2.5-Omni-3B", node: qwen2.5-omni-3b}
+
+# ---- QwQ-32B ----
+- {text: "qwq", node: qwq-32b}
+- {text: "qwq-32b", node: qwq-32b}
+- {text: "qwq 32b", node: qwq-32b}
+- {text: "qwq-32b-preview", node: qwq-32b}
+- {text: "qwen qwq", node: qwq-32b}
+- {text: "QwQ-32B", node: qwq-32b}
+
+# ---- Qwen-VL (2023) + Qwen2-VL stub ----
+- {text: "qwen-vl", node: qwen-vl}
+- {text: "qwen vl", node: qwen-vl}
+- {text: "qwen-vl-chat", node: qwen-vl}
+- {text: "qwen-vl-plus", node: qwen-vl}
+- {text: "qwen-vl-max", node: qwen-vl}
+- {text: "Qwen-VL", node: qwen-vl}
+- {text: "qwen2-vl", node: qwen2-vl}
+- {text: "Qwen2-VL", node: qwen2-vl}
+
+# ---- Qwen3 (series) ----
+- {text: "qwen3", node: qwen3}
+- {text: "qwen 3", node: qwen3}
+- {text: "qwen-3", node: qwen3}
+- {text: "Qwen3", node: qwen3}
+
+# ---- Qwen3-235B-A22B ----
+- {text: "qwen3-235b-a22b", node: qwen3-235b-a22b}
+- {text: "qwen3 235b", node: qwen3-235b-a22b}
+- {text: "qwen3-235b", node: qwen3-235b-a22b}
+- {text: "qwen3-235b-a22b-instruct-2507", node: qwen3-235b-a22b}
+- {text: "qwen3-235b-a22b-thinking-2507", node: qwen3-235b-a22b}
+- {text: "qwen/qwen3-235b-a22b", node: qwen3-235b-a22b}
+- {text: "qwen3-235b-a22b-2507", node: qwen3-235b-a22b}
+- {text: "Qwen3-235B-A22B", node: qwen3-235b-a22b}
+
+# ---- Qwen3-30B-A3B ----
+- {text: "qwen3-30b-a3b", node: qwen3-30b-a3b}
+- {text: "qwen3 30b", node: qwen3-30b-a3b}
+- {text: "qwen3-30b-a3b-instruct-2507", node: qwen3-30b-a3b}
+- {text: "qwen3-30b-a3b-thinking-2507", node: qwen3-30b-a3b}
+- {text: "qwen3-30b", node: qwen3-30b-a3b}
+- {text: "Qwen3-30B-A3B", node: qwen3-30b-a3b}
+
+# ---- Qwen3 dense ----
+- {text: "Qwen3 dense", node: qwen3-dense}
+- {text: "qwen3-0.6b", node: qwen3-0.6b}
+- {text: "Qwen3-0.6B", node: qwen3-0.6b}
+- {text: "qwen3-1.7b", node: qwen3-1.7b}
+- {text: "Qwen3-1.7B", node: qwen3-1.7b}
+- {text: "qwen3-4b", node: qwen3-4b}
+- {text: "Qwen3-4B", node: qwen3-4b}
+- {text: "qwen3-8b", node: qwen3-8b}
+- {text: "qwen3 8b", node: qwen3-8b}
+- {text: "Qwen3-8B", node: qwen3-8b}
+- {text: "qwen3-14b", node: qwen3-14b}
+- {text: "Qwen3-14B", node: qwen3-14b}
+- {text: "qwen3-32b", node: qwen3-32b}
+- {text: "qwen3 32b", node: qwen3-32b}
+- {text: "Qwen3-32B", node: qwen3-32b}
+
+# ---- Qwen3-Coder (+ Flash) ----
+- {text: "qwen3-coder", node: qwen3-coder}
+- {text: "qwen 3 coder", node: qwen3-coder}
+- {text: "qwen3-coder-480b-a35b", node: qwen3-coder}
+- {text: "qwen3-coder-480b-a35b-instruct", node: qwen3-coder}
+- {text: "qwen3-coder-plus", node: qwen3-coder}
+- {text: "Qwen3-Coder", node: qwen3-coder}
+- {text: "qwen3-coder-flash", node: qwen3-coder-flash}
+- {text: "qwen3-coder-30b-a3b", node: qwen3-coder-flash}
+- {text: "Qwen3-Coder-Flash", node: qwen3-coder-flash}
+
+# ---- Qwen3-Max ----
+- {text: "qwen3-max", node: qwen3-max}
+- {text: "qwen 3 max", node: qwen3-max}
+- {text: "qwen3-max-preview", node: qwen3-max}
+- {text: "qwen3-max-instruct", node: qwen3-max}
+- {text: "qwen3-max-thinking", node: qwen3-max}
+- {text: "qwen-3-max", node: qwen3-max}
+- {text: "Qwen3-Max", node: qwen3-max}
+
+# ---- Qwen3-Next-80B-A3B ----
+- {text: "qwen3-next", node: qwen3-next}
+- {text: "qwen 3 next", node: qwen3-next}
+- {text: "qwen3-next-80b-a3b", node: qwen3-next}
+- {text: "qwen3-next-80b-a3b-instruct", node: qwen3-next}
+- {text: "qwen3-next-80b-a3b-thinking", node: qwen3-next}
+- {text: "Qwen3-Next-80B-A3B", node: qwen3-next}
+
+# ---- Qwen3-Omni (+ Qwen3-VL prose mention) ----
+- {text: "qwen3-omni", node: qwen3-omni}
+- {text: "qwen 3 omni", node: qwen3-omni}
+- {text: "qwen3-omni-30b-a3b", node: qwen3-omni}
+- {text: "qwen3-omni-flash", node: qwen3-omni}
+- {text: "Qwen3-Omni", node: qwen3-omni}
+- {text: "qwen3-vl", node: qwen3-vl}  # no Qwen3-VL node yet (prose-only in MD); degrades to series by design  # v0.7: was node qwen3; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+# ---- Qwen 3.5 (series) ----
+- {text: "qwen 3.5", node: qwen3.5}
+- {text: "qwen-3.5", node: qwen3.5}
+- {text: "Qwen 3.5", node: qwen3.5}
+
+# ---- Qwen3.5-397B-A17B ----
+- {text: "qwen3.5", node: qwen3.5-397b-a17b}
+- {text: "qwen3.5-397b-a17b", node: qwen3.5-397b-a17b}
+- {text: "qwen3.5-plus", node: qwen3.5-397b-a17b}
+- {text: "Qwen3.5-397B-A17B", node: qwen3.5-397b-a17b}
+- {text: "qwen3.5-small", node: qwen3.5}  # v0.7: was node qwen3.5-397b-a17b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "qwen3.5-9b", node: qwen3.5-9b}  # v0.7: was node qwen3.5-397b-a17b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "qwen3.5-0.8b", node: qwen3.5-0.8b}  # v0.7: was node qwen3.5-397b-a17b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+# ---- Qwen3.5-Omni ----
+- {text: "qwen3.5-omni", node: qwen3.5-omni}
+- {text: "qwen 3.5 omni", node: qwen3.5-omni}
+- {text: "qwen3.5 omni", node: qwen3.5-omni}
+- {text: "qwen3.5-omni-plus", node: qwen3.5-omni}
+- {text: "qwen3.5-omni-flash", node: qwen3.5-omni}
+- {text: "Qwen3.5-Omni", node: qwen3.5-omni}
+
+# ---- Qwen 3.6-3.8 (headless entry, repaired) ----
+- {text: "Qwen 3.6-3.8", node: qwen3.6}  # v0.7: was node qwen3.6-3.8; qwen3.6-3.8 split into Qwen3.6 / 3.7 / 3.8 generation groups (method K4)
+- {text: "qwen3.6", node: qwen3.6}
+- {text: "qwen 3.6", node: qwen3.6}
+- {text: "qwen3.6-35b-a3b", node: qwen3.6-35b-a3b}  # v0.7: was node qwen3.6; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "qwen3.6-plus", node: qwen3.6-plus}  # v0.7: was node qwen3.6; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "Qwen3.6", node: qwen3.6}
+- {text: "qwen3.7", node: qwen3.7}  # v0.7: was node qwen3.6-3.8; qwen3.6-3.8 split into Qwen3.6 / 3.7 / 3.8 generation groups (method K4)
+- {text: "qwen3.7-max", node: qwen3.7-max}
+- {text: "qwen 3.7 max", node: qwen3.7-max}
+- {text: "Qwen3.7-Max", node: qwen3.7-max}
+- {text: "qwen3.7-plus", node: qwen3.7-plus}
+- {text: "Qwen3.7-Plus", node: qwen3.7-plus}
+- {text: "qwen3.8-max", node: qwen3.8-max}
+- {text: "qwen 3.8 max", node: qwen3.8-max}
+- {text: "qwen3.8", node: qwen3.8}  # v0.7: was node qwen3.8-max; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: "Qwen3.8-Max", node: qwen3.8-max}
+
+# ---- Negative / trap fixtures (added by the mention pass) ----
+# Prose that must NOT match anything. Bare "r1" IS a (weak) pattern, so
+# "a two-step R1 pipeline" cannot be a no-match fixture — it is a documented
+# weak hit, gated by the matcher's context policy.
+- {text: "coder tools for the repo", node: none}
+- {text: "the v3 endpoint returned 500", node: none}
+- {text: "3x faster than before", node: none}
+- {text: "we ran a 32B model locally", node: none}
+- {text: "next token prediction", node: none}
+- {text: "max tokens is 4096", node: none}
+- {text: "deep learning research", node: none}
+- {text: "flash attention 2", node: none}
+- {text: "plus tier pricing", node: none}
+- {text: "distill the model into a smaller one", node: none}
+# Specificity traps: the deeper/other node must win, not the size sibling.
+- {text: "DeepSeek-R1-Distill-Qwen-7B", not_node: qwen1-7b}
+- {text: "DeepSeek-R1-Distill-Qwen-14B", not_node: qwen1-14b}
+- {text: "Qwen1.5-7B", not_node: qwen1-7b}
+- {text: "Qwen2.5-Coder-32B", not_node: qwen2.5-32b}
+- {text: "qwen3-coder-30b-a3b", not_node: qwen3-30b-a3b}
+- {text: "deepseek-math-7b", not_node: deepseek-llm-7b}
+- {text: "qwen-max", not_node: qwen2.5-max}
+- {text: "qwen-vl-max", not_node: qwen2.5-max}
+- {text: "deepseek-v2-lite", not_node: deepseek-v2}
+- {text: "DeepSeek-Coder-V2", not_node: deepseek-v2}

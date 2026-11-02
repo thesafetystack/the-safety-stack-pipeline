@@ -1,0 +1,167 @@
+# Safety Stack Review — search configuration (concept-group strategy)
+#
+# Each concept_group is a cluster of synonym surface forms for ONE technique.
+# The search emits ONE OR-grouped query per group per API, in that API's native
+# syntax (verified by live probes):
+#   - OpenAlex  title_and_abstract.search: t1|t2|t3   (token-AND per term, no phrase)
+#   - S2 bulk   "t1" | "t2" | "t3"                     (quoted phrases)
+#   - EuropePMC ("t1" OR "t2" OR "t3")                 (quoted phrases)
+#
+# Flags:
+#   broad:  contains common-token terms that FLOOD OpenAlex's token-AND search
+#           (e.g. "debate", "AI control", "honesty"). On OpenAlex these get a
+#           Computer-Science field filter (primary_topic.field.id:17); S2/EPMC
+#           phrase-match them precisely so no filter needed there.
+#   misuse: dangerous-capability terms ANDed with an AI-context term so we don't
+#           ingest all of biosecurity. Skipped on OpenAlex (can't cleanly express
+#           the intersection); run on S2/EuropePMC.
+#
+# Per-group override:
+#   openalex_terms: REPLACES `terms` on OpenAlex ONLY (S2/EuropePMC always use
+#           `terms`). Needed when a phrase is fine phrase-matched but floods
+#           OpenAlex's token-AND (every word matched independently) — e.g.
+#           "sparse autoencoder" token-ANDs to any paper with "sparse" AND
+#           "autoencoder", so the override narrows it to "sparse autoencoder
+#           interpretability". `openalex_terms: []` = group has NO term that is
+#           OpenAlex-viable; the group runs only on the phrase-match APIs.
+#           These flags/overrides are visible per group on the dashboard's
+#           /keyword-optimization page.
+
+from_date: "2020-01-01"
+
+# AI-context terms ANDed into misuse-group queries.
+ai_context:
+  - "large language model"
+  - "foundation model"
+  - "language model"
+  - "artificial intelligence"
+  - "frontier model"
+
+concept_groups:
+  # --- umbrella / framing ---
+  - {id: umbrella, broad: true, terms: ["AI safety", "AI alignment", "alignment of large language models", "AGI safety", "existential risk from AI"]}
+  - {id: superalignment, terms: ["superalignment", "aligning superhuman models"]}
+
+  # --- iterative alignment / training ---
+  - {id: rlhf, terms: ["RLHF", "reinforcement learning from human feedback", "RLAIF", "reinforcement learning from AI feedback"]}
+  - {id: preference_opt, terms: ["direct preference optimization"]}
+  - {id: specs, broad: true, terms: ["constitutional AI", "deliberative alignment", "model specification", "model spec"]}
+  - {id: safety_tuning, broad: true, terms: ["safety fine-tuning", "safety alignment", "refusal training", "inoculation prompting"]}
+
+  # --- steering / unlearning / control / safeguards ---
+  - {id: steering, broad: true, terms: ["activation steering", "steering vectors", "representation engineering", "activation patching", "inference-time intervention", "concept erasure"]}
+  - {id: unlearning, terms: ["machine unlearning", "knowledge unlearning", "concept unlearning", "tamper-resistant safeguards"]}
+  - {id: control, broad: true, terms: ["AI control", "control protocol", "untrusted model", "trusted monitoring", "AI control evaluations"], openalex_terms: ["untrusted model", "AI control evaluations"]}
+  - {id: jailbreak, broad: true, terms: ["jailbreak", "jailbreaking large language models", "prompt injection", "adversarial robustness language models", "safety classifier", "constitutional classifiers", "guardrails"]}
+  - {id: cot_monitor, terms: ["chain-of-thought monitoring", "chain-of-thought faithfulness", "reasoning faithfulness"]}
+
+  # --- model psychology / misalignment behaviors ---
+  - {id: misalignment_behaviors, terms: ["emergent misalignment", "alignment faking", "sleeper agents", "deceptive alignment", "backdoor language models"]}
+  - {id: reward_hacking, terms: ["reward hacking", "reward tampering", "specification gaming", "goal misgeneralization", "reward overoptimization", "Goodhart"]}
+  - {id: persona, broad: true, terms: ["sycophancy", "persona vectors", "character training", "emergent values"]}
+  - {id: power_seeking, broad: true, terms: ["power-seeking", "instrumental convergence", "shutdown resistance", "self-preservation"]}
+
+  # --- data / goal robustness ---
+  - {id: data_safety, terms: ["data poisoning language models", "backdoor language models", "pretraining data filtering", "synthetic data for alignment"]}
+  - {id: rl_safety, broad: true, terms: ["reward modeling", "reward model", "assistance games", "cooperative inverse reinforcement learning", "mild optimization", "quantilization"]}
+
+  # --- white-box / interpretability ---
+  - {id: mech_interp, terms: ["mechanistic interpretability"]}
+  - {id: sparse_coding, terms: ["sparse autoencoder", "dictionary learning", "polysemanticity", "monosemanticity"], openalex_terms: ["sparse autoencoder interpretability", "dictionary learning interpretability", "polysemanticity", "monosemanticity"]}
+  - {id: interp_tools, terms: ["logit lens", "causal scrubbing", "causal abstraction", "interchange intervention", "probing classifiers"]}
+  - {id: model_diffing, terms: ["model diffing", "crosscoder"]}
+  - {id: dev_interp, terms: ["developmental interpretability", "singular learning theory", "grokking"]}
+  - {id: data_attribution, broad: true, terms: ["training data attribution", "data influence functions"]}
+  - {id: elk, terms: ["eliciting latent knowledge"]}
+  - {id: deception_detect, terms: ["deception detection language models", "truthfulness language models", "AI deception"]}
+  - {id: anomaly, terms: ["mechanistic anomaly detection"]}
+
+  # --- safety by construction / theory ---
+  - {id: safety_by_construction, terms: ["guaranteed safe AI", "provably safe AI", "formal verification neural network"]}
+  - {id: corrigibility, terms: ["corrigibility", "shutdown problem", "safe interruptibility"]}
+  - {id: agent_foundations, terms: ["agent foundations", "logical induction", "embedded agency"], openalex_terms: []}   # phrase-only terms -> S2/EPMC only
+
+  # --- make-AI-solve-it / oversight ---
+  - {id: oversight, terms: ["scalable oversight", "amplified oversight", "recursive reward modeling", "iterated amplification"]}
+  - {id: w2s, terms: ["weak-to-strong generalization"]}
+  - {id: debate, terms: ["AI safety via debate", "language model debate"]}
+
+  # --- evals ---
+  - {id: capability_evals, terms: ["dangerous capability evaluation", "frontier model evaluation", "capability elicitation"]}
+  - {id: autonomy_evals, broad: true, terms: ["autonomous agent evaluation", "agentic safety evaluation", "long-horizon agent"]}
+  - {id: scheming, terms: ["AI scheming", "situational awareness", "evaluation awareness"], openalex_terms: ["AI scheming"]}
+  - {id: stego, terms: ["steganography language models", "LLM steganography", "linguistic steganography", "encoded reasoning"]}
+  - {id: red_team, terms: ["automated red teaming", "red teaming language models"]}
+
+  # --- misuse / WMD (AND ai_context; S2/EuropePMC only) ---
+  - {id: misuse_bio, misuse: true, terms: ["biosecurity", "bioweapon", "dual-use biology", "biological weapons", "pathogen"]}
+  - {id: misuse_chem, misuse: true, terms: ["chemical weapons", "CBRN", "chemical synthesis"]}
+  - {id: misuse_cyber, misuse: true, terms: ["cyber capability evaluation", "offensive cyber", "cybersecurity capabilities", "autonomous exploitation"]}
+
+  # --- governance-tech / multi-agent ---
+  - {id: governance, broad: true, terms: ["responsible scaling policy", "frontier safety framework", "AI safety case"]}
+  - {id: multi_agent, broad: true, terms: ["multi-agent alignment", "multi-agent safety", "collusion language models", "cooperative AI"]}
+
+# Which concept groups each source runs. "all" = every group above
+# (OpenAlex auto-skips misuse groups and CS-filters broad groups).
+sources:
+  openalex: all
+  # S2 key verified working (Jul 2026); runs in stage search-other-apis alongside
+  # Europe PMC. Falls back to keyless throttled mode automatically if the key dies.
+  semantic_scholar: all
+  europepmc:
+    - umbrella
+    - superalignment
+    - control
+    - jailbreak
+    - cot_monitor
+    - misalignment_behaviors
+    - reward_hacking
+    - scheming
+    - deception_detect
+    - elk
+    - oversight
+    - corrigibility
+    - capability_evals
+    - autonomy_evals
+    - red_team
+    - governance
+    - multi_agent
+    - misuse_bio
+    - misuse_chem
+    - misuse_cyber
+
+lesswrong:
+  forums:
+    - lesswrong
+    - alignmentforum
+  # Algolia search is token-based (no boolean), so keywords are individual & curated.
+  keywords:
+    - "mechanistic interpretability"
+    - "scalable oversight"
+    - "AI control"
+    - "deceptive alignment"
+    - "alignment faking"
+    - "chain-of-thought monitoring"
+    - "AI scheming"
+    - "eliciting latent knowledge"
+    - "sparse autoencoder"
+    - "activation steering"
+    - "weak-to-strong generalization"
+    - "reward hacking"
+    - "corrigibility"
+    - "emergent misalignment"
+    - "sandbagging"
+    - "debate"
+  # Tag slugs — VERIFY against the LW tags API; drop any that 0-hit.
+  tags:
+    - ai-control
+    - interpretability-ml-and-ai
+    - ai-evaluations
+    - deceptive-alignment
+    - inner-alignment
+    - mesa-optimization
+    - rlhf
+    # NOTE: 'corrigibility' tag slug returns 0 hits on LW — dropped (covered by the
+    # 'corrigibility' keyword instead). Verified slugs above all resolve (82-1006 hits).
+  min_karma: 25

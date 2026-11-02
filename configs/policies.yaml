@@ -1,0 +1,18 @@
+# policies.yaml — quote -> span anchoring acceptance (§6.2), read by stack/anchor.py (Anchorer.from_config;
+# the affiliation stage and the evals). Validated against spec/schemas/config/policies.schema.json.
+#
+# v3's read-time policies (admission policies, metadata precedence, absence thresholds, quarantine and attempt
+# caps, excerpt caps, publication gates) were read by no v4 code; they were retired with v3
+# with their schema (D438). The live equivalents are code constants: fetch attempts FETCH_CAP
+# (stack/fetchcycle.py), convert attempts CAP (workflows/acquire/convert.py), annotate attempts CAP
+# (stack/annotate/evidence.py), gather's field precedence PROVIDER_RANK (workflows/gather/merge.py).
+version: "4.0.1"   # 4.0.1 (2026-11-02): comments only (no paths into removed trees); no value moves.
+                   # 4.0.0 (2026-10-14): `anchoring.per_workflow` entry `annotate.tech_index` removed (no such
+                   # workflow): every workflow anchors at anchor_min_score.
+                   # 3.0.0 (2026-10-14): only `anchoring` is left (values unchanged); the rest were retired with v3.
+                   # 2.0.0: metadata family fetch.scholarly renamed to fetch.metadata.
+
+# Quote -> span anchoring acceptance (§6.2).
+anchoring:
+  anchor_min_score: 0.98
+  per_workflow: {}                   # workflow -> its own threshold (stack/anchor.py Anchorer.from_config); none now

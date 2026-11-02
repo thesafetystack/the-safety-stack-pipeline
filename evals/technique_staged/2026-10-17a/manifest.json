@@ -1,0 +1,47 @@
+{
+  "task": "technique_staged",
+  "set_id": "2026-10-17a",
+  "source": "evals/technique_roles/2026-10-13a (an-0001..0025, texts byte-identical); a read-only store copy (an-0026..0036: sources/mirror-docs.jsonl, staged by scripts/stage.py)",
+  "items": 36,
+  "items_sha256": "2a4238c405cda87c1252fa7cfe90f865f977962437cbe038f40f35c3b8b1c9bc",
+  "splits": {
+    "dev": 20,
+    "test": 16
+  },
+  "gold": {
+    "file": "gold.jsonl",
+    "sha256": "60524d0428c01618f618fbce6996edae580a8a535b04d6fe5ffb298c39817115",
+    "from": "adjudication/reconciled.jsonl",
+    "rows": 406,
+    "candidate_rows": 8,
+    "extra_techniques": 16,
+    "menu_gaps": 68
+  },
+  "frozen_with": {
+    "taxonomy_path": "taxonomy/taxonomy-v0.9.yaml",
+    "taxonomy_sha256": "52815d3bdebf0fccfa5ffc8f31190dc4ca4ab40f27df9d5b7dcdd5466fe71cf2",
+    "taxonomy_version": "0.9",
+    "rubric": "rubric-v0.9-a",
+    "rubric_digest": "c1551b8bf0283591ea318f535d20ad6e9e5468cdee2b39a7f122c15fbe6b3e52",
+    "prompt_set": "technique-staged-v1",
+    "prompt_digests": {
+      "single": {
+        "single": "20de8cdf8a87098766aeb2a029c8b52e51f9f95ab45b4a474a49aa03f2d1d716"
+      },
+      "sweep": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "sweep": "3a9d1d8067fa2355032ed5d9abc6c3a4e964df411ef994deb008eabc4a72fc91"
+      },
+      "staged": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "select": "3b26b5dded7c3b161d0a7acbde858c0eefa5f68575c3dd39204669d33ddd8ede",
+        "grade": "d4d5568ad2d80d0c092c4ee41898f35073d9a04020036e2f1dba5a4fb3694af4"
+      },
+      "lexical": {
+        "grade": "d4d5568ad2d80d0c092c4ee41898f35073d9a04020036e2f1dba5a4fb3694af4"
+      }
+    },
+    "segmenter_version": "seg-v1",
+    "lexical_version": "lex-v2"
+  }
+}

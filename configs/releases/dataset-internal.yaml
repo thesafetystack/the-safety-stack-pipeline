@@ -1,0 +1,11 @@
+# Dataset release, contentful internal variant (stack/fold/dataset.py; release id = the export's UTC date). `stack export --in
+# <corpus.build> --config dataset-internal --out DIR [--blobs DIR]`. Abstracts, uncapped quotes and the text inline
+# (content.text.body).
+# For the private HF repo only.
+name: dataset-internal
+format: dataset
+variant: internal
+hf_repo: thesafetystack/the-safety-stack-private
+# The judge eval set whose stored labels the export scores against this build for the card's quality table (D728).
+judge_eval: evals/judge-2026-10-25j
+internal_variant_note: "This is the maintainers' internal variant (abstracts, uncapped quotes, full texts); it is not distributed."
