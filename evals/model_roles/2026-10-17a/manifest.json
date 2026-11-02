@@ -1,0 +1,37 @@
+{
+  "task": "model_roles",
+  "set_id": "2026-10-17a",
+  "source": "evals/model_roles/2026-10-16a (an-0001..0025), evals/screen/2026-10-12a (an-0026..0030), synthetic/ (an-0031..0037)",
+  "items": 37,
+  "items_sha256": "6534b6c5a1e865e5d3333fb117a180aa417e5c8d92eec2f7833382e29aa142a1",
+  "splits": {
+    "dev": 21,
+    "test": 16
+  },
+  "frozen_with": {
+    "models_yaml_sha256": "ce35fb95729991de3a5cea8d29829d22ed202b236f6a57308140cc23a9643315",
+    "models_yaml_version": "0.9",
+    "model_roles_prompt": "model-roles-v2",
+    "model_roles_prompt_digest": "c8bcda1a4c028825a66416ca6f018ae150431f2acfc7ba8533e888d6d5dd12bc"
+  },
+  "gold": {
+    "file": "gold.jsonl",
+    "sha256": "5bbae11c689105fe1aef4c6a74340af6a4f36b6eb88d5d81f2898f2c73bf2b1c",
+    "from": "evals/model_roles/2026-10-16a/gold.jsonl + gold-remap.jsonl + gold-new.jsonl",
+    "remapped_items": [
+      "an-0001",
+      "an-0003",
+      "an-0005",
+      "an-0007",
+      "an-0010",
+      "an-0011",
+      "an-0017",
+      "an-0018",
+      "an-0019",
+      "an-0020",
+      "an-0021",
+      "an-0022",
+      "an-0023"
+    ]
+  }
+}

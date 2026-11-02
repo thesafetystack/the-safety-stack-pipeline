@@ -1,0 +1,98 @@
+{
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "usability",
+  "doc_class",
+  "rationale"
+ ],
+ "properties": {
+  "usability": {
+   "type": "object",
+   "properties": {
+    "verdict": {
+     "type": "string",
+     "enum": [
+      "usable",
+      "degraded",
+      "unusable"
+     ]
+    },
+    "issues": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "enum": [
+       "not_body",
+       "cut_off",
+       "garbled_maths",
+       "garbled_tables",
+       "bad_encoding",
+       "mostly_markup",
+       "stub",
+       "other"
+      ]
+     }
+    },
+    "note": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "maxLength": 200
+    }
+   },
+   "required": [
+    "verdict",
+    "issues",
+    "note"
+   ],
+   "additionalProperties": false
+  },
+  "doc_class": {
+   "type": "object",
+   "properties": {
+    "doc_type": {
+     "type": "string",
+     "enum": [
+      "paper",
+      "preprint",
+      "system_card",
+      "model_card",
+      "framework_policy",
+      "lab_blog",
+      "eval_report",
+      "product_doc",
+      "regulatory",
+      "critique",
+      "news",
+      "forum_post",
+      "tweet",
+      "webpage",
+      "dataset",
+      "other"
+     ]
+    },
+    "self_published": {
+     "type": "boolean"
+    },
+    "primary_lang": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "maxLength": 16
+    }
+   },
+   "required": [
+    "doc_type",
+    "self_published",
+    "primary_lang"
+   ],
+   "additionalProperties": false
+  },
+  "rationale": {
+   "type": "string"
+  }
+ }
+}

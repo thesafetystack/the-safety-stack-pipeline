@@ -1,0 +1,829 @@
+{"calibration": false, "how": "6/6", "item_id": "g3-0001", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0001", "severity": ["substantive", "substantive"], "slug": "input-output-content-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0001", "severity": ["substantive", "substantive", "substantive"], "slug": "human-red-teaming", "support": 3, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0001", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0001", "severity": ["substantive", "substantive"], "slug": "toxicity-hate-speech-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0001", "severity": ["substantive", "substantive"], "slug": "groundedness-faithfulness-verification", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0001", "severity": ["substantive", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0001", "severity": [], "slug": "safety-sft-refusal-training", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0001", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0001", "severity": ["peripheral", "peripheral", "peripheral"], "slug": "truthfulness-factuality-eval", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0001", "severity": ["peripheral", "peripheral"], "slug": "ai-output-disclosure-labeling", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0001", "severity": ["substantive", "substantive", "peripheral"], "slug": "contextual-privacy-information-flow-controls", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0001", "severity": [], "slug": "llm-based-safety-classifier", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0002", "severity": [], "slug": "rlhf", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0003", "severity": [], "slug": "prompt-injection-jailbreak-detector", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0003", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0003", "severity": ["peripheral", "peripheral"], "slug": "moral-self-correction", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0003", "severity": ["peripheral", "peripheral"], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0003", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0003", "severity": [], "slug": "safety-sft-refusal-training", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0003", "severity": ["peripheral", "substantive"], "slug": "jailbreak-robustness-eval", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0003", "severity": ["substantive", "substantive", "peripheral"], "slug": "monitor-robustness-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0003", "severity": [], "slug": "real-time-streaming-safety-detection-rollback", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0003", "severity": [], "slug": "human-red-teaming", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0004", "severity": ["peripheral", "substantive"], "slug": "tool-use-agent-execution-sandboxing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0004", "severity": ["peripheral", "substantive"], "slug": "system-prompt-behavioral-steering", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0004", "severity": ["peripheral", "peripheral"], "slug": "human-in-the-loop-approval-gates", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0004", "severity": [], "slug": "instruction-hierarchy-training", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0004", "severity": ["peripheral", "peripheral"], "slug": "hidden-private-chain-of-thought", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0005", "severity": [], "slug": "rlhf", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0006", "severity": [], "slug": "intrinsic-interpretability-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "circuit-breakers-representation-rerouting", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "harmful-request-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0008", "severity": ["substantive", "substantive"], "slug": "automated-red-teaming", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "white-box-safety-mechanism-attacks", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "classifier-guided-contrastive-decoding", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0008", "severity": ["peripheral", "substantive"], "slug": "safety-training-data-construction", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "activation-steering-repe", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0008", "severity": ["peripheral", "peripheral"], "slug": "input-output-content-safety-classifier", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0008", "severity": [], "slug": "finetuning-resistant-tamper-resistant-safety", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0008", "severity": ["peripheral", "peripheral"], "slug": "finetuning-safety-preservation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0008", "severity": ["peripheral", "substantive"], "slug": "truthfulness-factuality-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0008", "severity": ["substantive", "substantive"], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0008", "severity": ["substantive", "substantive"], "slug": "model-diffing", "support": 2, "verdict": "dont_care"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0009", "severity": ["substantive", "core"], "slug": "bias-fairness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0009", "severity": ["peripheral", "peripheral"], "slug": "training-data-bias-fairness-mitigation", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0009", "severity": ["peripheral", "peripheral"], "slug": "model-level-bias-mitigation", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0009", "severity": ["core", "core"], "slug": "interpretability-based-model-auditing", "support": 3, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0009", "severity": [], "slug": "capability-elicitation-methodology", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0009", "severity": ["substantive", "substantive", "substantive", "substantive"], "slug": "truthfulness-factuality-eval", "support": 2, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0010", "severity": ["core", "core"], "slug": "bias-fairness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0010", "severity": [], "slug": "model-level-bias-mitigation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0010", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0010", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0010", "severity": ["peripheral", "substantive"], "slug": "truthfulness-factuality-eval", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0010", "severity": ["peripheral", "peripheral"], "slug": "toxicity-hate-speech-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0010", "severity": ["substantive", "substantive"], "slug": "prompt-rewriting-for-compliance", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0010", "severity": ["substantive", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0010", "severity": [], "slug": "tool-action-output-safety-filters", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0011", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0011", "severity": ["peripheral", "substantive"], "slug": "activation-steering-repe", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0011", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0011", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0011", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0011", "severity": ["peripheral", "peripheral"], "slug": "automated-red-teaming", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0011", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0011", "severity": [], "slug": "white-box-safety-mechanism-attacks", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0011", "severity": ["core", "substantive"], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0011", "severity": ["peripheral", "peripheral"], "slug": "model-diffing", "support": 1, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0012", "severity": ["substantive", "core"], "slug": "multi-turn-conversation-safety-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0012", "severity": [], "slug": "internal-state-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0012", "severity": ["substantive", "substantive"], "slug": "multi-turn-multi-snapshot-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0012", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0012", "severity": ["peripheral", "substantive"], "slug": "jailbreak-robustness-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0012", "severity": ["peripheral", "substantive"], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0012", "severity": ["peripheral", "peripheral"], "slug": "generalisation-confining-finetuning", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0012", "severity": ["peripheral", "peripheral"], "slug": "bias-fairness-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0012", "severity": [], "slug": "safety-sft-refusal-training", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0012", "severity": ["peripheral"], "slug": "input-output-content-safety-classifier", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0012", "severity": ["substantive", "substantive", "peripheral"], "slug": "model-organisms-of-misalignment", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0012", "severity": ["peripheral"], "slug": "representation-concept-suppression", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0012", "severity": [], "slug": "finetuning-data-safety-screening", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0012", "severity": [], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0012", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0012", "severity": ["peripheral", "peripheral", "peripheral"], "slug": "value-alignment-eval", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0013", "severity": [], "slug": "surrogate-goal-bargaining", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0014", "severity": ["peripheral", "substantive", "substantive", "substantive"], "slug": "rlaif", "support": 1, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0015", "severity": ["core", "core"], "slug": "hallucination-reduction-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0015", "severity": [], "slug": "truthfulness-factuality-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0015", "severity": ["peripheral"], "slug": "self-verification", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0015", "severity": [], "slug": "groundedness-faithfulness-verification", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0015", "severity": [], "slug": "classifier-guided-contrastive-decoding", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0016", "severity": ["core", "core"], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0016", "severity": [], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0016", "severity": ["peripheral", "peripheral"], "slug": "training-data-bias-fairness-mitigation", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "automated-behavioral-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "harmful-request-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "multi-turn-multi-snapshot-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "user-wellbeing-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "crisis-wellbeing-safeguards", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "bias-fairness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "reward-hacking-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["substantive", "substantive"], "slug": "honeypot-evals", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "agentic-harmful-action-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "dangerous-capability-evaluation.cbrn", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["substantive", "substantive"], "slug": "dangerous-capability-evaluation.ai-rnd-acceleration", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "capability-elicitation-methodology", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "sandbagging-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "situational-eval-awareness-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "sycophancy-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "shutdown-self-preservation-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "sabotage-covert-side-task-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["substantive", "substantive"], "slug": "scheming-deceptive-alignment-evaluation", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0018", "severity": ["substantive", "substantive"], "slug": "honesty-lying-eval", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "substantive"], "slug": "truthfulness-factuality-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0018", "severity": ["peripheral", "peripheral"], "slug": "cot-faithfulness-monitorability-eval", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["substantive", "substantive"], "slug": "cot-monitorability-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "chain-of-thought-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "trusted-monitoring-suspicion-scoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "judge-rm-verifier-robustness-audit", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "value-alignment-eval", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "substantive"], "slug": "persuasion-manipulation-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "multimodal-safety-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0018", "severity": ["substantive"], "slug": "clarification-underspecification-eval", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "peripheral"], "slug": "eval-contamination-control", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "tool-use-agent-execution-sandboxing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0018", "severity": ["peripheral"], "slug": "model-weight-security-exfiltration-controls", "support": 5, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "prefill-blocking", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "cot-faithfulness-monitorability-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "substantive"], "slug": "character-persona-training", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "peripheral"], "slug": "rlhf", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "human-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "human-uplift-studies", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "age-assurance-gating", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0018", "severity": [], "slug": "interpretability-based-model-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "automated-abuse-behavioral-monitoring", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "in-the-wild-incident-surveillance", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "pretraining-safety-evaluation-monitoring", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "substantive"], "slug": "eval-realism-deployment-simulation", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "agentic-scope-of-autonomy-constraints", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "monitor-robustness-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["substantive", "substantive"], "slug": "agent-audit-logging-observability", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "ai-output-disclosure-labeling", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0018", "severity": ["peripheral", "substantive"], "slug": "clarification-seeking-training", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0018", "severity": ["substantive"], "slug": "hidden-private-chain-of-thought", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0018", "severity": ["peripheral", "substantive", "substantive", "peripheral"], "slug": "llm-based-safety-classifier", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0018", "severity": [], "slug": "disclosure-concealment-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0018", "severity": ["peripheral"], "slug": "multi-agent-collusion-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["substantive", "substantive"], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["substantive", "substantive"], "slug": "safety-classifier-hardening", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "prompt-injection-jailbreak-detector", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "llm-based-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "human-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "dangerous-capability-evaluation.cbrn", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "harmful-unsafe-content-filtering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0019", "severity": [], "slug": "automated-abuse-behavioral-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["peripheral", "peripheral"], "slug": "jailbreak-rapid-response", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["peripheral", "peripheral"], "slug": "multimodal-safety-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["peripheral", "peripheral"], "slug": "internal-state-monitoring", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0019", "severity": [], "slug": "mechanistic-anomaly-detection", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["peripheral", "peripheral"], "slug": "formal-verification-gsai", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["peripheral", "substantive"], "slug": "monitor-robustness-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0019", "severity": ["substantive", "substantive"], "slug": "input-output-content-safety-classifier", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0020", "severity": ["substantive", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0021", "severity": [], "slug": "internal-state-monitoring", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0021", "severity": ["core", "core"], "slug": "self-consistency-hallucination-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0021", "severity": [], "slug": "self-verification", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0021", "severity": ["peripheral", "peripheral"], "slug": "calibrated-uncertainty-estimation", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0021", "severity": ["substantive", "peripheral"], "slug": "confidence-calibration-eval", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0021", "severity": ["substantive", "peripheral"], "slug": "groundedness-faithfulness-verification", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0021", "severity": ["peripheral", "substantive", "substantive"], "slug": "truthfulness-factuality-eval", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0022", "severity": ["peripheral", "peripheral"], "slug": "formal-verification-gsai", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0023", "severity": [], "slug": "automated-abuse-behavioral-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0024", "severity": ["peripheral", "substantive"], "slug": "harmful-request-evaluation", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0024", "severity": [], "slug": "safety-sft-refusal-training", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0024", "severity": ["peripheral"], "slug": "dangerous-capability-evaluation.cbrn", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0025", "severity": ["substantive", "substantive"], "slug": "automated-red-teaming", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0025", "severity": [], "slug": "vlm-adversarial-defense", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0025", "severity": ["substantive", "core"], "slug": "multimodal-safety-eval", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0025", "severity": ["peripheral", "peripheral"], "slug": "automated-behavioral-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0025", "severity": ["substantive", "core", "core", "core"], "slug": "persuasion-capability-eval", "support": 3, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0026", "severity": ["peripheral", "peripheral"], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0026", "severity": ["peripheral", "substantive"], "slug": "eval-realism-deployment-simulation", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0026", "severity": ["peripheral", "peripheral"], "slug": "kill-switch-shutdown-criteria", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0026", "severity": ["peripheral", "substantive"], "slug": "safe-constrained-rlhf", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0026", "severity": [], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0027", "severity": ["core", "core"], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0027", "severity": [], "slug": "multimodal-safety-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0027", "severity": [], "slug": "keyword-blocklist-filter", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0027", "severity": [], "slug": "input-output-content-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0027", "severity": ["peripheral", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0027", "severity": [], "slug": "safety-sft-refusal-training", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0027", "severity": ["peripheral"], "slug": "crisis-wellbeing-safeguards", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0027", "severity": ["substantive", "substantive"], "slug": "jailbreak-robustness-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0027", "severity": ["peripheral", "substantive"], "slug": "vlm-adversarial-defense", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0027", "severity": [], "slug": "white-box-safety-mechanism-attacks", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0027", "severity": ["substantive", "substantive"], "slug": "harmful-request-evaluation", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0027", "severity": [], "slug": "llm-based-safety-classifier", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0028", "severity": ["core", "core"], "slug": "cot-faithfulness-monitorability-training", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0028", "severity": [], "slug": "cot-faithfulness-monitorability-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0028", "severity": [], "slug": "cot-monitorability-eval", "support": 4, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0028", "severity": ["peripheral", "peripheral"], "slug": "chain-of-thought-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0030", "severity": [], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0030", "severity": ["substantive", "substantive"], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0030", "severity": ["peripheral", "peripheral"], "slug": "dangerous-capability-evaluation.cbrn", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0030", "severity": ["peripheral", "substantive"], "slug": "eval-contamination-control", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0030", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0030", "severity": ["peripheral"], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0030", "severity": [], "slug": "multimodal-safety-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0030", "severity": [], "slug": "automated-behavioral-auditing", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0030", "severity": ["peripheral", "substantive", "substantive", "substantive"], "slug": "capability-elicitation-methodology", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/borderline", "item_id": "g3-0030", "severity": ["substantive", "substantive", "peripheral"], "slug": "judge-rm-verifier-robustness-audit", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0031", "severity": ["peripheral"], "slug": "citation-grounded-answering", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0031", "severity": ["peripheral", "peripheral"], "slug": "groundedness-faithfulness-verification", "support": 1, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0033", "severity": ["substantive", "substantive"], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0033", "severity": [], "slug": "finetuning-safety-preservation", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0033", "severity": ["peripheral"], "slug": "instruction-hierarchy-training", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0033", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0034", "severity": [], "slug": "staged-structured-release", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0034", "severity": ["peripheral", "peripheral"], "slug": "harmful-unsafe-content-filtering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0034", "severity": ["peripheral"], "slug": "runtime-safety-shielding", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0034", "severity": [], "slug": "human-red-teaming", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0035", "severity": [], "slug": "rlhf", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0035", "severity": ["peripheral", "peripheral"], "slug": "truthfulness-factuality-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0035", "severity": ["peripheral", "peripheral"], "slug": "chain-of-thought-monitoring", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0035", "severity": [], "slug": "model-diffing", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0035", "severity": ["substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0036", "severity": [], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0036", "severity": [], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0036", "severity": [], "slug": "differential-privacy-training-dp-sgd", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0036", "severity": [], "slug": "pii-removal-redaction", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0036", "severity": ["substantive", "substantive"], "slug": "anti-memorization-training", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0036", "severity": ["peripheral", "peripheral"], "slug": "representation-concept-suppression", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0037", "severity": [], "slug": "inverse-rl-cirl", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0037", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0038", "severity": ["substantive", "core"], "slug": "multimodal-safety-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "harmful-request-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "circuit-breakers-representation-rerouting", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "input-output-content-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0038", "severity": ["peripheral", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0038", "severity": ["peripheral", "peripheral"], "slug": "system-prompt-behavioral-steering", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0038", "severity": ["peripheral"], "slug": "safety-sft-refusal-training", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0038", "severity": [], "slug": "human-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0038", "severity": [], "slug": "harmful-unsafe-content-filtering", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/borderline", "item_id": "g3-0038", "severity": ["peripheral", "peripheral", "peripheral"], "slug": "eval-contamination-control", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0038", "severity": [], "slug": "llm-based-safety-classifier", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0038", "severity": [], "slug": "monitor-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0039", "severity": [], "slug": "runtime-safety-shielding", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0039", "severity": ["substantive", "substantive"], "slug": "function-call-tool-use-hallucination-detection", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0039", "severity": [], "slug": "agentic-scope-of-autonomy-constraints", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0039", "severity": [], "slug": "human-in-the-loop-approval-gates", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0039", "severity": ["substantive", "substantive"], "slug": "least-privilege-minimal-tool-access", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0039", "severity": ["substantive", "substantive"], "slug": "eval-realism-deployment-simulation", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0039", "severity": ["peripheral", "substantive"], "slug": "gated-agent-self-modification", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0039", "severity": ["peripheral", "peripheral"], "slug": "system-prompt-behavioral-steering", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0039", "severity": [], "slug": "chain-of-thought-monitoring", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0039", "severity": [], "slug": "clarification-underspecification-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0039", "severity": ["substantive"], "slug": "cot-faithfulness-monitorability-training", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0039", "severity": ["substantive"], "slug": "automated-behavioral-auditing", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0039", "severity": ["peripheral", "substantive", "peripheral", "peripheral"], "slug": "truthfulness-factuality-eval", "support": 2, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["core", "core"], "slug": "configurable-safety-alignment", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "authorisation-keyed-capabilities", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["core", "core"], "slug": "control-token-toxicity-steering", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "safety-training-data-construction", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["substantive", "substantive"], "slug": "constitutional-ai", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0040", "severity": ["substantive", "substantive"], "slug": "safe-completion-training", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "rlaif", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "safe-constrained-rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "harmful-request-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "llm-based-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0040", "severity": ["peripheral", "peripheral"], "slug": "capability-gating-fallback-routing", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["peripheral", "peripheral"], "slug": "model-organisms-of-misalignment", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["peripheral", "peripheral"], "slug": "backdoor-detection-removal", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0040", "severity": [], "slug": "interpretability-based-model-auditing", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0040", "severity": [], "slug": "staged-structured-release", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0040", "severity": ["substantive", "substantive", "substantive"], "slug": "system-prompt-behavioral-steering", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0040", "severity": ["peripheral", "peripheral", "peripheral"], "slug": "input-output-content-safety-classifier", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["peripheral", "peripheral"], "slug": "backdoor-red-teaming-detection-eval", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0040", "severity": [], "slug": "human-red-teaming", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0040", "severity": ["peripheral", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0042", "severity": [], "slug": "harmful-request-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0042", "severity": [], "slug": "llm-based-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0042", "severity": ["substantive", "substantive"], "slug": "tool-action-output-safety-filters", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0042", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0042", "severity": ["peripheral"], "slug": "safety-sft-refusal-training", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0042", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0042", "severity": ["peripheral", "peripheral"], "slug": "agentic-harmful-action-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0042", "severity": [], "slug": "camel-data-flow-taint-tracking", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0042", "severity": ["peripheral", "peripheral"], "slug": "groundedness-faithfulness-verification", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0042", "severity": ["peripheral", "substantive"], "slug": "automated-red-teaming", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0042", "severity": ["peripheral", "peripheral"], "slug": "prompt-injection-agent-security-eval", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0042", "severity": ["peripheral", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0042", "severity": ["peripheral"], "slug": "moral-self-correction", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0042", "severity": ["substantive", "substantive"], "slug": "multi-turn-multi-snapshot-eval", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "least-privilege-minimal-tool-access", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "constitutional-ai", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "input-output-content-safety-classifier", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "retrieved-content-source-validation", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "agent-output-memory-sanitization", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0042", "severity": ["substantive", "substantive", "substantive"], "slug": "monitor-robustness-eval", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0042", "severity": ["substantive", "substantive"], "slug": "truthfulness-factuality-eval", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0042", "severity": ["peripheral"], "slug": "agent-supply-chain-security-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "jailbreak-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0042", "severity": [], "slug": "capability-elicitation-methodology", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0043", "severity": [], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0043", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0043", "severity": ["substantive", "substantive"], "slug": "safety-sft-refusal-training", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0043", "severity": ["peripheral", "substantive"], "slug": "safety-training-data-construction", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0043", "severity": ["peripheral", "peripheral"], "slug": "backdoor-red-teaming-detection-eval", "support": 4, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0043", "severity": ["peripheral", "peripheral"], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0043", "severity": [], "slug": "jailbreak-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0043", "severity": ["peripheral", "substantive"], "slug": "model-weight-security-exfiltration-controls", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0043", "severity": ["substantive", "substantive"], "slug": "rlhf", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/borderline", "item_id": "g3-0043", "severity": ["substantive", "substantive", "peripheral"], "slug": "finetuning-safety-preservation", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0043", "severity": [], "slug": "model-identification-weight-fingerprinting", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0043", "severity": ["core"], "slug": "white-box-safety-mechanism-attacks", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0044", "severity": [], "slug": "runtime-safety-shielding", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0044", "severity": ["core", "core"], "slug": "formal-verification-gsai", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0044", "severity": [], "slug": "safe-constrained-rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0044", "severity": ["peripheral", "substantive"], "slug": "rule-based-reward-models", "support": 1, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0045", "severity": ["core", "core"], "slug": "calibrated-uncertainty-estimation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0045", "severity": [], "slug": "confidence-calibration-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0045", "severity": [], "slug": "self-consistency-hallucination-detection", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0045", "severity": ["peripheral", "substantive"], "slug": "tool-use-agent-execution-sandboxing", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0045", "severity": ["peripheral", "peripheral"], "slug": "rlhf", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0045", "severity": ["peripheral", "peripheral"], "slug": "anti-reward-hacking-mitigation", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0045", "severity": ["peripheral"], "slug": "bias-fairness-eval", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0045", "severity": ["peripheral"], "slug": "model-level-bias-mitigation", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0045", "severity": [], "slug": "internal-state-monitoring", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0045", "severity": [], "slug": "self-verification", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0045", "severity": ["substantive"], "slug": "eval-contamination-control", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0046", "severity": ["peripheral", "peripheral"], "slug": "rl-environment-verifier-hardening", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0046", "severity": [], "slug": "anti-reward-hacking-mitigation", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0047", "severity": ["peripheral", "substantive"], "slug": "training-data-bias-fairness-mitigation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0047", "severity": ["peripheral", "peripheral"], "slug": "pii-removal-redaction", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0047", "severity": ["peripheral"], "slug": "input-output-content-safety-classifier", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0047", "severity": ["peripheral", "peripheral"], "slug": "bias-fairness-eval", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0048", "severity": ["core", "core"], "slug": "prompt-injection-jailbreak-detector", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0048", "severity": ["core", "core"], "slug": "safety-classifier-hardening", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0048", "severity": ["substantive", "substantive"], "slug": "monitor-robustness-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0048", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0048", "severity": ["substantive", "substantive"], "slug": "automated-red-teaming", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0048", "severity": [], "slug": "prompt-injection-defense-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0048", "severity": [], "slug": "spotlighting-context-delimiting", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0048", "severity": ["peripheral", "peripheral"], "slug": "prompt-rewriting-for-compliance", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0048", "severity": ["peripheral", "peripheral"], "slug": "system-prompt-behavioral-steering", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0048", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0048", "severity": ["peripheral"], "slug": "eval-contamination-control", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0048", "severity": ["substantive", "substantive"], "slug": "human-red-teaming", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0051", "severity": [], "slug": "value-alignment-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0051", "severity": [], "slug": "bias-fairness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0051", "severity": [], "slug": "truthfulness-factuality-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0051", "severity": [], "slug": "toxicity-hate-speech-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["substantive", "substantive"], "slug": "groundedness-faithfulness-verification", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "substantive"], "slug": "self-consistency-hallucination-detection", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0051", "severity": ["peripheral", "peripheral"], "slug": "confidence-calibration-eval", "support": 4, "verdict": "dont_care"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["substantive", "substantive"], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "substantive"], "slug": "automated-red-teaming", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0051", "severity": ["peripheral"], "slug": "harmful-request-evaluation", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "peripheral"], "slug": "rlhf", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0051", "severity": ["substantive"], "slug": "automated-behavioral-auditing", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0051", "severity": [], "slug": "dangerous-capability-evaluation.autonomous-replication", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "peripheral"], "slug": "capability-elicitation-methodology", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "substantive"], "slug": "eval-contamination-control", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "llm-based-safety-classifier", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "peripheral"], "slug": "internal-state-monitoring", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "shutdown-self-preservation-eval", "support": 5, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "multi-agent-collusion-eval", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0051", "severity": ["substantive"], "slug": "cot-faithfulness-monitorability-eval", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0051", "severity": ["substantive"], "slug": "automated-reasoning-checks", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "peripheral"], "slug": "training-data-bias-fairness-mitigation", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0051", "severity": ["peripheral", "peripheral", "peripheral", "peripheral"], "slug": "ai-safety-via-debate", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0051", "severity": ["peripheral", "substantive"], "slug": "input-output-content-safety-classifier", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "sycophancy-eval", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "dangerous-capability-evaluation", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0051", "severity": ["peripheral", "substantive"], "slug": "safety-training-data-construction", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "model-level-bias-mitigation", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0051", "severity": [], "slug": "situational-eval-awareness-detection", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0051", "severity": ["substantive"], "slug": "eval-realism-deployment-simulation", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0052", "severity": [], "slug": "judge-rm-verifier-robustness-audit", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0052", "severity": ["core", "core"], "slug": "cot-faithfulness-monitorability-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0052", "severity": [], "slug": "bias-fairness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0052", "severity": [], "slug": "cot-faithfulness-monitorability-training", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0052", "severity": [], "slug": "model-level-bias-mitigation", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0053", "severity": ["substantive", "substantive"], "slug": "in-the-wild-incident-surveillance", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0053", "severity": ["substantive", "substantive"], "slug": "eval-realism-deployment-simulation", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0053", "severity": [], "slug": "privacy-preserving-usage-analysis", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0053", "severity": ["peripheral", "peripheral"], "slug": "bias-fairness-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0053", "severity": ["peripheral", "peripheral"], "slug": "user-wellbeing-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0053", "severity": [], "slug": "multi-turn-multi-snapshot-eval", "support": 5, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0053", "severity": ["peripheral", "peripheral"], "slug": "truthfulness-factuality-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0054", "severity": ["substantive", "substantive"], "slug": "multimodal-safety-eval", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present/borderline", "item_id": "g3-0054", "severity": ["peripheral", "substantive", "substantive", "substantive"], "slug": "automated-red-teaming", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0056", "severity": ["peripheral", "substantive"], "slug": "truthfulness-factuality-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0056", "severity": ["peripheral", "peripheral"], "slug": "machine-unlearning", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0056", "severity": ["peripheral", "peripheral"], "slug": "hallucination-reduction-training", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0056", "severity": ["peripheral", "peripheral"], "slug": "intrinsic-interpretability-training", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0056", "severity": [], "slug": "judge-rm-verifier-robustness-audit", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0057", "severity": ["core", "substantive"], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0057", "severity": [], "slug": "rlaif", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0057", "severity": [], "slug": "constitutional-ai", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0057", "severity": ["substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0058", "severity": ["substantive", "substantive"], "slug": "groundedness-faithfulness-verification", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0058", "severity": [], "slug": "training-data-attribution-membership-testing", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0058", "severity": ["peripheral", "peripheral"], "slug": "truthfulness-factuality-eval", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "human-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0059", "severity": ["substantive", "substantive"], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0059", "severity": ["peripheral", "peripheral"], "slug": "input-output-content-safety-classifier", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0059", "severity": ["peripheral", "substantive"], "slug": "llm-based-safety-classifier", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "rlaif", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "harmful-unsafe-content-filtering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0059", "severity": ["peripheral"], "slug": "pii-removal-redaction", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0059", "severity": ["substantive", "substantive"], "slug": "harmful-request-evaluation", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0059", "severity": [], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0059", "severity": ["peripheral", "peripheral"], "slug": "rule-based-reward-models", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0059", "severity": ["peripheral", "peripheral"], "slug": "over-refusal-mitigation-sft", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0059", "severity": [], "slug": "safety-conditional-pretraining-objectives", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0059", "severity": [], "slug": "white-box-safety-mechanism-attacks", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0059", "severity": ["peripheral", "peripheral"], "slug": "jailbreak-rapid-response", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0059", "severity": ["peripheral"], "slug": "multi-turn-multi-snapshot-eval", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0059", "severity": ["substantive", "peripheral"], "slug": "over-refusal-false-refusal-eval", "support": 3, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0059", "severity": ["peripheral", "substantive"], "slug": "eval-contamination-control", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0059", "severity": [], "slug": "truthfulness-factuality-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0062", "severity": [], "slug": "harmful-unsafe-content-filtering", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0062", "severity": ["peripheral", "substantive"], "slug": "pii-removal-redaction", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0062", "severity": [], "slug": "harmful-request-evaluation", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0064", "severity": [], "slug": "sandbagging-mitigation", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0064", "severity": ["substantive", "substantive"], "slug": "model-organisms-of-misalignment", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0064", "severity": [], "slug": "eval-awareness-suppression", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0064", "severity": [], "slug": "internal-state-monitoring", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0064", "severity": [], "slug": "activation-steering-repe", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0064", "severity": [], "slug": "cot-faithfulness-monitorability-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0064", "severity": ["substantive", "substantive", "substantive", "substantive"], "slug": "moral-self-correction", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0064", "severity": [], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0064", "severity": ["peripheral", "peripheral"], "slug": "hidden-private-chain-of-thought", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0064", "severity": [], "slug": "sandbagging-detection", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0065", "severity": [], "slug": "ai-supply-chain-security", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0065", "severity": ["substantive", "substantive"], "slug": "prompt-injection-jailbreak-detector", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0065", "severity": ["peripheral", "peripheral"], "slug": "agent-supply-chain-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0065", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0066", "severity": ["core", "core", "core"], "slug": "multimodal-safety-eval", "support": 4, "verdict": "dont_care"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0066", "severity": ["substantive", "substantive"], "slug": "confidence-calibration-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0066", "severity": ["substantive", "substantive"], "slug": "interpretability-based-model-auditing", "support": 3, "verdict": "dont_care"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0067", "severity": ["core", "core"], "slug": "model-organisms-of-misalignment", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0067", "severity": [], "slug": "reward-hacking-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0067", "severity": [], "slug": "cot-faithfulness-monitorability-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0067", "severity": [], "slug": "eval-contamination-control", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0067", "severity": [], "slug": "training-data-attribution-membership-testing", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0067", "severity": [], "slug": "chain-of-thought-monitoring", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0068", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0068", "severity": ["substantive", "substantive"], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0068", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0068", "severity": [], "slug": "multimodal-safety-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0068", "severity": ["substantive", "substantive"], "slug": "truthfulness-factuality-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0068", "severity": [], "slug": "activation-steering-repe", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0068", "severity": [], "slug": "self-consistency-hallucination-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0068", "severity": ["peripheral", "peripheral"], "slug": "internal-state-monitoring", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0068", "severity": ["peripheral", "peripheral"], "slug": "prompt-injection-jailbreak-detector", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0068", "severity": ["peripheral", "peripheral"], "slug": "human-red-teaming", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0068", "severity": ["peripheral"], "slug": "rlhf", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0068", "severity": [], "slug": "white-box-safety-mechanism-attacks", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0068", "severity": [], "slug": "classifier-guided-contrastive-decoding", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0068", "severity": [], "slug": "automated-reasoning-checks", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0068", "severity": [], "slug": "interpretability-based-model-auditing", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0068", "severity": ["peripheral"], "slug": "representation-concept-suppression", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0069", "severity": ["substantive", "substantive"], "slug": "mechanistic-anomaly-detection", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "arbiters absent", "item_id": "g3-0070", "severity": ["core"], "slug": "citation-grounded-answering", "support": 6, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0070", "severity": ["substantive", "substantive"], "slug": "truthfulness-factuality-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0070", "severity": [], "slug": "calibrated-uncertainty-estimation", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0070", "severity": ["substantive", "substantive"], "slug": "eval-realism-deployment-simulation", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0071", "severity": [], "slug": "contextual-privacy-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0071", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0071", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0071", "severity": ["peripheral"], "slug": "human-in-the-loop-approval-gates", "support": 4, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0071", "severity": ["peripheral", "peripheral"], "slug": "camel-data-flow-taint-tracking", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0071", "severity": ["peripheral", "peripheral"], "slug": "formal-verification-gsai", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0071", "severity": [], "slug": "agent-supply-chain-security-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0071", "severity": ["substantive", "substantive", "substantive", "substantive"], "slug": "contextual-privacy-information-flow-controls", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0071", "severity": ["peripheral", "substantive"], "slug": "runtime-safety-shielding", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0071", "severity": ["peripheral"], "slug": "agent-audit-logging-observability", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0073", "severity": [], "slug": "interpretability-based-model-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0073", "severity": ["substantive", "substantive"], "slug": "model-organisms-of-misalignment", "support": 3, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0073", "severity": ["peripheral", "substantive"], "slug": "internal-state-monitoring", "support": 4, "verdict": "dont_care"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0073", "severity": ["peripheral", "peripheral"], "slug": "representation-concept-suppression", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0073", "severity": ["peripheral", "peripheral"], "slug": "activation-steering-repe", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0074", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0074", "severity": [], "slug": "llm-based-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0074", "severity": ["substantive", "substantive"], "slug": "input-output-content-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0074", "severity": [], "slug": "safety-classifier-hardening", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0074", "severity": ["peripheral", "peripheral"], "slug": "safety-rate-limits-resource-budgets", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0074", "severity": ["peripheral", "peripheral"], "slug": "csam-detection-pipeline", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0074", "severity": ["peripheral", "peripheral"], "slug": "reference-content-fingerprinting", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0074", "severity": [], "slug": "rlhf", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0074", "severity": ["peripheral"], "slug": "jailbreak-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0074", "severity": ["peripheral"], "slug": "prompt-injection-agent-security-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0074", "severity": [], "slug": "safety-sft-refusal-training", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0074", "severity": ["core", "core"], "slug": "monitor-robustness-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0074", "severity": ["peripheral"], "slug": "consistency-invariance-training", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0074", "severity": ["peripheral"], "slug": "system-prompt-behavioral-steering", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "dangerous-capability-evaluation.cbrn", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0075", "severity": ["substantive", "substantive"], "slug": "dangerous-capability-evaluation.ai-rnd-acceleration", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "human-uplift-studies", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "human-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0075", "severity": ["substantive", "substantive"], "slug": "multimodal-safety-eval", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0075", "severity": ["peripheral", "peripheral"], "slug": "input-output-content-safety-classifier", "support": 3, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "tool-use-agent-execution-sandboxing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0075", "severity": [], "slug": "capability-elicitation-methodology", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0075", "severity": ["peripheral", "peripheral"], "slug": "cbrn-high-risk-domain-hazard-classifier", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0075", "severity": ["peripheral", "peripheral"], "slug": "eval-contamination-control", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0075", "severity": ["peripheral", "substantive"], "slug": "harmful-request-evaluation", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0076", "severity": [], "slug": "shutdown-incentive-neutralization", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0078", "severity": [], "slug": "staged-structured-release", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0078", "severity": ["peripheral", "substantive"], "slug": "dangerous-capability-evaluation", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0078", "severity": [], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0078", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0078", "severity": [], "slug": "finetuning-resistant-tamper-resistant-safety", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0078", "severity": [], "slug": "persuasion-capability-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0078", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0078", "severity": ["peripheral", "peripheral", "peripheral"], "slug": "white-box-safety-mechanism-attacks", "support": 4, "verdict": "dont_care"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0078", "severity": ["peripheral", "peripheral"], "slug": "content-fingerprinting-ai-content-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0078", "severity": ["peripheral", "peripheral"], "slug": "tool-use-agent-execution-sandboxing", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0078", "severity": ["peripheral"], "slug": "least-privilege-minimal-tool-access", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0078", "severity": [], "slug": "representation-concept-suppression", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0078", "severity": [], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0078", "severity": ["peripheral"], "slug": "activation-steering-repe", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0078", "severity": ["peripheral"], "slug": "value-alignment-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0079", "severity": ["peripheral", "peripheral"], "slug": "reversible-action-side-effect-minimization", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "human-in-the-loop-approval-gates", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0080", "severity": ["substantive", "substantive"], "slug": "kill-switch-shutdown-criteria", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "least-privilege-minimal-tool-access", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "agentic-scope-of-autonomy-constraints", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "dangerous-capability-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0080", "severity": ["peripheral", "peripheral"], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0080", "severity": ["peripheral"], "slug": "dangerous-capability-evaluation.cbrn", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "human-uplift-studies", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "eval-realism-deployment-simulation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0080", "severity": [], "slug": "tool-use-agent-execution-sandboxing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "agent-audit-logging-observability", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0080", "severity": ["peripheral", "peripheral", "peripheral"], "slug": "shutdown-self-preservation-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "kyc-tiered-access-controls", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0080", "severity": ["peripheral", "peripheral"], "slug": "dangerous-capability-evaluation.ai-rnd-acceleration", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "shutdown-incentive-neutralization", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "monitor-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "runtime-safety-shielding", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "in-the-wild-incident-surveillance", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0080", "severity": [], "slug": "ai-output-disclosure-labeling", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "arbiters present", "item_id": "g3-0082", "severity": ["peripheral", "core", "substantive", "substantive"], "slug": "character-persona-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0082", "severity": ["peripheral", "peripheral"], "slug": "rl-environment-verifier-hardening", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0082", "severity": [], "slug": "generalisation-confining-finetuning", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0082", "severity": [], "slug": "anti-reward-hacking-mitigation", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0083", "severity": ["peripheral", "peripheral"], "slug": "kill-switch-shutdown-criteria", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0083", "severity": [], "slug": "agentic-scope-of-autonomy-constraints", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0084", "severity": [], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0084", "severity": ["substantive", "substantive"], "slug": "multimodal-safety-eval", "support": 5, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0084", "severity": ["substantive", "substantive"], "slug": "representation-concept-suppression", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0084", "severity": ["substantive", "substantive"], "slug": "classifier-guided-contrastive-decoding", "support": 3, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0084", "severity": ["peripheral", "peripheral"], "slug": "harmful-unsafe-content-filtering", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0084", "severity": ["peripheral"], "slug": "adversarial-training-jailbreak-robustness", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0084", "severity": [], "slug": "jailbreak-robustness-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0084", "severity": [], "slug": "prompt-rewriting-for-compliance", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0085", "severity": ["peripheral", "peripheral"], "slug": "training-data-bias-fairness-mitigation", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0085", "severity": ["peripheral"], "slug": "model-level-bias-mitigation", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "calibrated-uncertainty-estimation", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "human-in-the-loop-approval-gates", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "sycophancy-eval", "support": 5, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "crisis-wellbeing-safeguards", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "anti-sycophancy-training", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "user-wellbeing-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0085", "severity": [], "slug": "agentic-scope-of-autonomy-constraints", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0087", "severity": ["core", "core"], "slug": "prompt-rewriting-for-compliance", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0087", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0087", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0087", "severity": ["peripheral", "peripheral"], "slug": "prompt-injection-jailbreak-detector", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0087", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0087", "severity": ["peripheral", "peripheral"], "slug": "automated-reasoning-checks", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0087", "severity": [], "slug": "input-smoothing-smoothllm", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0087", "severity": [], "slug": "differential-privacy-training-dp-sgd", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0087", "severity": ["peripheral"], "slug": "llm-based-safety-classifier", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0087", "severity": [], "slug": "attacker-deceiving-defenses", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0087", "severity": [], "slug": "cot-faithfulness-monitorability-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0087", "severity": [], "slug": "inter-agent-communication-monitoring", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0087", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0087", "severity": ["peripheral", "peripheral"], "slug": "interpretability-based-model-auditing", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0088", "severity": ["core"], "slug": "activation-steering-repe", "support": 2, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0089", "severity": ["core", "peripheral"], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0089", "severity": [], "slug": "sycophancy-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0089", "severity": [], "slug": "automated-behavioral-auditing", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0090", "severity": ["peripheral", "substantive"], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0090", "severity": ["peripheral", "peripheral"], "slug": "bias-fairness-eval", "support": 3, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0091", "severity": ["core", "substantive"], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0091", "severity": [], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0091", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0092", "severity": [], "slug": "bias-fairness-eval", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0092", "severity": ["substantive", "substantive"], "slug": "chain-of-thought-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0092", "severity": ["substantive", "substantive"], "slug": "classifier-guided-contrastive-decoding", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0092", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0092", "severity": [], "slug": "model-level-bias-mitigation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0092", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0092", "severity": ["peripheral"], "slug": "situational-eval-awareness-detection", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0092", "severity": [], "slug": "cot-faithfulness-monitorability-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0092", "severity": ["peripheral"], "slug": "interpretability-based-model-auditing", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/borderline", "item_id": "g3-0092", "severity": ["substantive", "substantive", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0092", "severity": ["substantive"], "slug": "llm-based-safety-classifier", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0092", "severity": ["substantive", "core"], "slug": "cot-monitorability-eval", "support": 2, "verdict": "in"}
+{"calibration": true, "how": "arbiters absent", "item_id": "g3-0093", "severity": ["core"], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0093", "severity": [], "slug": "safe-completion-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0093", "severity": [], "slug": "honesty-anti-deception-training", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0094", "severity": ["substantive", "substantive"], "slug": "activation-steering-repe", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0094", "severity": [], "slug": "white-box-safety-mechanism-attacks", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0094", "severity": ["peripheral", "peripheral"], "slug": "moral-self-correction", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0094", "severity": ["peripheral", "peripheral"], "slug": "automated-red-teaming", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0094", "severity": ["peripheral"], "slug": "safety-sft-refusal-training", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0094", "severity": ["peripheral", "peripheral"], "slug": "rlhf", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0094", "severity": ["peripheral", "peripheral"], "slug": "jailbreak-robustness-eval", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0094", "severity": [], "slug": "interpretability-based-model-auditing", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0095", "severity": ["substantive", "substantive"], "slug": "constitutional-ai", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0095", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0095", "severity": ["peripheral", "peripheral"], "slug": "safety-training-data-construction", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0095", "severity": ["peripheral"], "slug": "clarification-seeking-training", "support": 1, "verdict": "out"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0096", "severity": ["substantive", "substantive"], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0096", "severity": ["peripheral", "substantive"], "slug": "human-in-the-loop-approval-gates", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0096", "severity": ["substantive", "core", "core", "core"], "slug": "eval-realism-deployment-simulation", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0096", "severity": [], "slug": "agentic-harmful-action-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0096", "severity": ["peripheral", "peripheral"], "slug": "agentic-scope-of-autonomy-constraints", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0096", "severity": ["peripheral", "substantive"], "slug": "contextual-privacy-information-flow-controls", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0096", "severity": ["peripheral", "substantive"], "slug": "runtime-safety-shielding", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0096", "severity": [], "slug": "multi-turn-multi-snapshot-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0096", "severity": [], "slug": "clarification-underspecification-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present/borderline", "item_id": "g3-0096", "severity": ["substantive", "substantive", "substantive"], "slug": "clarification-seeking-training", "support": 1, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "chain-of-thought-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "cot-monitorability-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "monitor-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "sabotage-covert-side-task-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "sandbagging-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "dangerous-capability-evaluation.cbrn", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "dangerous-capability-evaluation.ai-rnd-acceleration", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "eval-realism-deployment-simulation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "situational-eval-awareness-detection", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "honeypot-evals", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "jailbreak-robustness-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "automated-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "human-red-teaming", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "prompt-injection-agent-security-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "harmful-request-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "multi-turn-multi-snapshot-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "user-wellbeing-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "agentic-harmful-action-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0097", "severity": ["peripheral"], "slug": "multimodal-safety-eval", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "truthfulness-factuality-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "disclosure-concealment-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "scheming-deceptive-alignment-evaluation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "automated-behavioral-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "multi-agent-collusion-eval", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "capability-elicitation-methodology", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "eval-contamination-control", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "reward-hacking-eval", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "cot-faithfulness-monitorability-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0097", "severity": ["substantive"], "slug": "clarification-underspecification-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "human-uplift-studies", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "safety-sft-refusal-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "adversarial-training-jailbreak-robustness", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "prompt-injection-defense-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "instruction-hierarchy-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "safe-completion-training", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "configurable-safety-alignment", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "safety-training-data-construction", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "over-refusal-mitigation-sft", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0097", "severity": ["peripheral"], "slug": "deliberative-alignment", "support": 5, "verdict": "out"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "crisis-wellbeing-safeguards", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "age-assurance-gating", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "pii-removal-redaction", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0097", "severity": ["peripheral", "peripheral"], "slug": "anti-reward-hacking-mitigation", "support": 5, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "cot-faithfulness-monitorability-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["peripheral", "peripheral"], "slug": "self-report-confession-training", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "human-in-the-loop-approval-gates", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "system-prompt-behavioral-steering", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "agentic-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "tool-use-agent-execution-sandboxing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "model-weight-security-exfiltration-controls", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "task-adherence-monitoring", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["peripheral", "substantive"], "slug": "self-exfiltration-oversight-deactivation-detection", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "kill-switch-shutdown-criteria", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "internal-state-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "real-time-streaming-safety-detection-rollback", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "llm-based-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "cbrn-high-risk-domain-hazard-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "input-output-content-safety-classifier", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "automated-abuse-behavioral-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "kyc-tiered-access-controls", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "staged-structured-release", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0097", "severity": [], "slug": "jailbreak-rapid-response", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["peripheral", "peripheral"], "slug": "hidden-private-chain-of-thought", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "agent-exfiltration-prevention-egress-filtering", "support": 5, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "safety-pretraining-data-augmentation-upsampling", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["peripheral", "substantive"], "slug": "multi-turn-conversation-safety-monitoring", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0097", "severity": ["substantive"], "slug": "clarification-seeking-training", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "agentic-scope-of-autonomy-constraints", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "rl-environment-verifier-hardening", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "interpretability-based-model-auditing", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "honesty-lying-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["substantive", "substantive"], "slug": "runtime-safety-shielding", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "contextual-privacy-eval", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0097", "severity": ["substantive", "substantive", "peripheral"], "slug": "judge-rm-verifier-robustness-audit", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0097", "severity": [], "slug": "model-organisms-of-misalignment", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0097", "severity": ["peripheral", "peripheral"], "slug": "toxicity-hate-speech-eval", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0098", "severity": [], "slug": "machine-unlearning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0098", "severity": [], "slug": "privacy-memorization-auditing", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0098", "severity": ["substantive", "substantive", "substantive"], "slug": "backdoor-red-teaming-detection-eval", "support": 4, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0098", "severity": ["peripheral", "peripheral"], "slug": "differential-privacy-training-dp-sgd", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters present", "item_id": "g3-0098", "severity": ["substantive", "substantive", "substantive"], "slug": "backdoor-detection-removal", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0098", "severity": [], "slug": "finetuning-attack-unlearning-robustness-eval", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0099", "severity": [], "slug": "intrinsic-interpretability-training", "support": 3, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0099", "severity": ["substantive", "substantive"], "slug": "cot-faithfulness-monitorability-training", "support": 1, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "rlhf", "support": 6, "verdict": "in"}
+{"calibration": true, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["substantive", "substantive"], "slug": "rlaif", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "constitutional-ai", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "character-persona-training", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "activation-steering-repe", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "internal-state-monitoring", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "generalisation-confining-finetuning", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent/present", "item_id": "g3-0100", "severity": ["peripheral", "peripheral"], "slug": "finetuning-data-safety-screening", "support": 4, "verdict": "dont_care"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["peripheral", "substantive"], "slug": "user-wellbeing-eval", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "over-refusal-mitigation-sft", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["peripheral", "substantive"], "slug": "safety-sft-refusal-training", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "llm-based-safety-classifier", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0100", "severity": ["peripheral"], "slug": "system-prompt-behavioral-steering", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent/borderline", "item_id": "g3-0100", "severity": ["peripheral", "peripheral"], "slug": "instruction-hierarchy-training", "support": 2, "verdict": "dont_care"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "deliberative-alignment", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "anti-reward-hacking-mitigation", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["substantive", "substantive"], "slug": "reward-hacking-eval", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["peripheral", "substantive"], "slug": "judge-rm-verifier-robustness-audit", "support": 5, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "eval-contamination-control", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "truthfulness-factuality-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "6/6", "item_id": "g3-0100", "severity": [], "slug": "sycophancy-eval", "support": 6, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["peripheral", "peripheral"], "slug": "hallucination-reduction-training", "support": 4, "verdict": "in"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["peripheral", "peripheral"], "slug": "citation-grounded-answering", "support": 3, "verdict": "in"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0100", "severity": [], "slug": "tool-use-agent-execution-sandboxing", "support": 4, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0100", "severity": [], "slug": "harmful-request-evaluation", "support": 2, "verdict": "out"}
+{"calibration": false, "how": "adjudicators absent", "item_id": "g3-0100", "severity": [], "slug": "critique-models", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "arbiters absent", "item_id": "g3-0100", "severity": ["substantive"], "slug": "moral-self-correction", "support": 1, "verdict": "out"}
+{"calibration": false, "how": "adjudicators present", "item_id": "g3-0100", "severity": ["peripheral", "substantive"], "slug": "safety-training-data-construction", "support": 2, "verdict": "in"}
+{"calibration": false, "how": "arbiters present/absent", "item_id": "g3-0100", "severity": ["peripheral", "peripheral"], "slug": "rule-based-reward-models", "support": 1, "verdict": "dont_care"}
+{"arms": ["HSALL"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0010", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 0, "verdict": "out"}
+{"arms": ["S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0018", "severity": [], "slug": "dangerous-capability-evaluation", "support": 0, "verdict": "out"}
+{"arms": ["BASE"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0018", "severity": [], "slug": "human-in-the-loop-approval-gates", "support": 0, "verdict": "out"}
+{"arms": ["HALL", "S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0018", "severity": [], "slug": "over-refusal-mitigation-sft", "support": 0, "verdict": "out"}
+{"arms": ["BASE"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0018", "severity": [], "slug": "task-decomposition-misuse-eval", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "S1", "S1v"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0020", "severity": [], "slug": "process-based-supervision", "support": 0, "verdict": "out"}
+{"arms": ["HSALL", "HSALLv"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0026", "severity": [], "slug": "shutdown-incentive-neutralization", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0029", "severity": [], "slug": "character-persona-training", "support": 0, "verdict": "out"}
+{"arms": ["HSALL", "HSALLv", "S1", "S1v"], "calibration": false, "how": "extra borderline/present", "item_id": "g3-0033", "severity": ["substantive", "substantive"], "slug": "eval-realism-deployment-simulation", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE", "HALL", "HALLv", "HSALL", "HSALLv"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0035", "severity": [], "slug": "activation-steering-repe", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "HALL", "HALLv", "HSALL", "HSALLv"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0035", "severity": ["peripheral"], "slug": "representation-concept-suppression", "support": 0, "verdict": "dont_care"}
+{"arms": ["HALL", "HALLv"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0038", "severity": [], "slug": "over-refusal-false-refusal-eval", "support": 0, "verdict": "out"}
+{"arms": ["S1", "S1v"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0038", "severity": [], "slug": "real-time-streaming-safety-detection-rollback", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "HALL", "HSALL"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0042", "severity": ["core"], "slug": "automated-behavioral-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["HSALL"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0043", "severity": ["substantive"], "slug": "harmful-request-evaluation", "support": 0, "verdict": "dont_care"}
+{"arms": ["HSALL"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0043", "severity": ["peripheral"], "slug": "staged-structured-release", "support": 0, "verdict": "dont_care"}
+{"arms": ["S1"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0045", "severity": ["core"], "slug": "introspection-training", "support": 0, "verdict": "dont_care"}
+{"arms": ["HALL", "HSALL"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0048", "severity": [], "slug": "llm-based-safety-classifier", "support": 0, "verdict": "out"}
+{"arms": ["BASE"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0049", "severity": [], "slug": "hallucination-reduction-training", "support": 0, "verdict": "out"}
+{"arms": ["HSALL", "HSALLv"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0051", "severity": ["peripheral"], "slug": "agentic-harmful-action-eval", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE", "HALL", "HALLv", "HSALL", "HSALLv", "S1", "S1v"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0051", "severity": ["peripheral"], "slug": "dangerous-capability-evaluation.cyber-offense", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0051", "severity": [], "slug": "human-red-teaming", "support": 0, "verdict": "out"}
+{"arms": ["HALL", "HALLv"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0051", "severity": ["peripheral"], "slug": "interpretability-based-model-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE", "HALL", "HSALL"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0052", "severity": ["core"], "slug": "automated-behavioral-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["HALL", "HALLv"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0056", "severity": [], "slug": "anti-reward-hacking-mitigation", "support": 0, "verdict": "out"}
+{"arms": ["HALL", "HALLv", "HSALL", "HSALLv", "S1", "S1v"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0056", "severity": ["substantive"], "slug": "eval-realism-deployment-simulation", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE", "S1"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0064", "severity": ["substantive"], "slug": "automated-behavioral-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0064", "severity": [], "slug": "cot-monitorability-eval", "support": 0, "verdict": "out"}
+{"arms": ["S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0064", "severity": [], "slug": "harmful-request-evaluation", "support": 0, "verdict": "out"}
+{"arms": ["HALL", "HSALL"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0065", "severity": [], "slug": "kyc-tiered-access-controls", "support": 0, "verdict": "out"}
+{"arms": ["HSALL"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0065", "severity": [], "slug": "safety-rate-limits-resource-budgets", "support": 0, "verdict": "out"}
+{"arms": ["HALL", "HALLv"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0066", "severity": ["core"], "slug": "automated-behavioral-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["HALL", "HALLv"], "calibration": false, "how": "extra present/present", "item_id": "g3-0071", "severity": ["substantive", "substantive"], "slug": "agentic-scope-of-autonomy-constraints", "support": 0, "verdict": "in"}
+{"arms": ["HALL", "HALLv", "HSALL", "HSALLv", "S1", "S1v"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0071", "severity": ["core"], "slug": "automated-behavioral-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["HALL"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0074", "severity": ["substantive"], "slug": "eval-realism-deployment-simulation", "support": 0, "verdict": "dont_care"}
+{"arms": ["HSALL", "HSALLv"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0075", "severity": [], "slug": "agentic-harmful-action-eval", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "HSALL", "HSALLv", "S1", "S1v"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0075", "severity": ["substantive"], "slug": "eval-realism-deployment-simulation", "support": 0, "verdict": "dont_care"}
+{"arms": ["HALL", "HALLv"], "calibration": false, "how": "extra borderline/absent", "item_id": "g3-0075", "severity": ["peripheral"], "slug": "over-refusal-false-refusal-eval", "support": 0, "verdict": "dont_care"}
+{"arms": ["S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0076", "severity": [], "slug": "shutdown-self-preservation-eval", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "HALL", "HSALL", "S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0092", "severity": [], "slug": "process-based-supervision", "support": 0, "verdict": "out"}
+{"arms": ["BASE"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0094", "severity": [], "slug": "critique-models", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0094", "severity": [], "slug": "internal-state-monitoring", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "HALL", "HSALL", "S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0094", "severity": [], "slug": "representation-concept-suppression", "support": 0, "verdict": "out"}
+{"arms": ["BASE", "HALL", "HALLv", "HSALL", "HSALLv", "S1", "S1v"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0096", "severity": [], "slug": "automated-behavioral-auditing", "support": 0, "verdict": "out"}
+{"arms": ["HSALL", "HSALLv"], "calibration": false, "how": "extra present/present", "item_id": "g3-0097", "severity": ["peripheral", "substantive"], "slug": "character-persona-training", "support": 0, "verdict": "in"}
+{"arms": ["S1", "S1v"], "calibration": false, "how": "extra present/absent", "item_id": "g3-0097", "severity": ["peripheral"], "slug": "safety-classifier-hardening", "support": 0, "verdict": "dont_care"}
+{"arms": ["HSALL"], "calibration": false, "how": "extra absent/present", "item_id": "g3-0100", "severity": ["substantive"], "slug": "interpretability-based-model-auditing", "support": 0, "verdict": "dont_care"}
+{"arms": ["BASE", "HALL", "HSALL", "S1"], "calibration": false, "how": "extra present/present", "item_id": "g3-0100", "severity": ["peripheral", "substantive"], "slug": "multi-turn-multi-snapshot-eval", "support": 0, "verdict": "in"}
+{"arms": ["HALL", "HSALL", "S1"], "calibration": false, "how": "extra absent/absent", "item_id": "g3-0100", "severity": [], "slug": "representation-concept-suppression", "support": 0, "verdict": "out"}

@@ -1,0 +1,328 @@
+# batch-2026-10a: the full fetch (the first `batch-import` build pair, 2026-10), window 2025-10-01 to now, into
+# series `batch-import` of the S3 store `stack-store/` beside the e2e basis series `main` (D491). The weekly builds
+# continue the same series with this plan or a dated successor. docs/howto/full-run.md is the procedure; the runs are
+# recorded in the store's run records.
+# Revision 2 (2026-10-17), the backfill to 2024-01-01: the six search collectors' `from` moves from 2025-10-01 to
+# 2024-01-01 and forums' `max_records` from 20000 to 40000; nothing else changes (the first revision ran as plan
+# digest 0c36a927…). Each search query's coverage key leaves the floor out, so its ok windows from 2025-10-01 stand
+# and only the hole [2024-01-01, 2025-10-01) is due (D272): arXiv, OpenAlex, S2 and LessWrong-tag queries ask it as
+# a bounded window; forums and AF ask it from its start without an upper bound (their APIs have none) and drop hits
+# after its end, so each forum query re-pages 2024-01-01 to now once: hence the forums cap, which a query must not
+# reach (a capped pass claims nothing and stays due). Only collector line digests and the plan digest change; the
+# gate, prompts and the triage, acquire and annotate lines are as before, so rows already asked carry (a document
+# that gains a gap member is re-triaged only if its fields change and its primary role is not yet fetched).
+# `collect.feeds` keeps `since: 2025-10-01` (in its coverage key; the feeds list only recent items). Builds of this
+# revision continue series `batch-import` without `--new-series`; the build order below holds, with no
+# `--new-series` anywhere.
+# Revision 3 (2026-10-18), the backfill to 2020-01-01 (D641, D642): arxiv_sweep, openalex, semantic_scholar,
+# af_graphql and lw_graphql move `from` to 2020-01-01, so the hole [2020-01-01, 2024-01-01) is due as in revision 2.
+# Forums moves to 2020-01-02, not 2020-01-01: its channels' `from_date` is 2020-01-01 and a first pass from the
+# channel floor is sent no lower date bound (D641; with D642 a hole is sent no lower bound anyway, so this matters
+# only for a query with no coverage yet). ForumMagnum's search answers at most 10,000 hits per request (page 100 of
+# 100 is an HTTP 400, now a `partial` with reason `limit`) and drops a two-sided date range; since D642 the forums
+# stage sends a hole only its upper bound and the karma floor, so a hole pages the query's karma-gated history
+# before the hole's end (largest of the 2020 holes: 7,397 hits, probed 2026-10-18). The three queries whose 2024
+# hole failed in every build of revision 2 now ask [2020-01-02, 2025-10-01) (AI alignment 7,731, AI control 8,563);
+# `kw:model specification` (10,384) keeps `query_from` 2025-10-01 and its hole is dropped. Only the six collector
+# line digests and the plan digest change; feeds (`since`), blogs, cards, caps and every non-collector line are as
+# before.
+# Revision 4 (2026-10-19), the backfill to 2015-01-01, forums to 2006-01-01 (D646): arxiv_sweep, openalex and
+# semantic_scholar move `from` to 2015-01-01; forums, lw_graphql and af_graphql to 2006-01-01 (the forums hole request
+# is sent only its upper bound and the karma floor since D642, so it already returned the pre-2015 posts and cut them
+# client-side: the earlier floor costs no forum request; LessWrong holds 2,953 posts with karma >= 25 before 2015, 2
+# before 2006; the channel-floor quirk of revision 3 makes a new label's first pass carry no lower date bound, which
+# at 2006 is the whole index either way). Largest existing forum hole request (LessWrong, before 2020-01-02, karma >=
+# 25) 2,964 hits, unchanged by the floor. channels.yaml 2.2.0 adds two concept groups with the 2006-2019 vocabulary,
+# `legacy-alignment` (AI-context gated) and `legacy-safety`: new coverage keys only (OpenAlex, S2, arXiv keyword
+# family via `keyword_groups`, 20 forum labels x 2 forums), nothing existing re-swept. Their first forum passes are
+# whole histories: `kw:value alignment` and `kw:value learning` exceed the 10,000-hit cap on LessWrong and start at
+# 2024-01-01 (`query_from`); the next largest is `kw:AI boxing` at 9,570 (asked once, then tails). af_graphql needs
+# the D645 code (bounded hole spans, split on the server's skip limit): its hole is [2006-01-01, 2024-01-01), the
+# 2020-2023 part of which failed in every build of revision 3; its span length is the stage default (180 days).
+# Only the six collector line digests and the plan digest change; feeds (`since`), blogs, cards, caps and every
+# non-collector line are as before.
+# Revision 5 (2026-10-21), the pre-2020 scope review's round-2 decisions (D653-D664): no window moves. (1) Code that
+# changes every OpenAlex coverage key, so the 147 OpenAlex queries (58 groups, 25 institutions, 64 author buckets)
+# re-sweep from 2015-01-01 once (≈ 2,800 requests, ≈ $2, ≈ 2-3 h; fits `max_usd: 3.00`): the work type
+# `conference-paper` (D653) and, on the openalex channel's `keyword_cuts` (channels.yaml 2.3.0), the pre-2020
+# exception (D654: hits before 2020 with a pre-2020 safety stem bypass the publisher cut; umbrella asked without the
+# CS-field filter before 2020, since D671 as a second umbrella entry with its own key: 148 queries, umbrella's own
+# entry also asks 2015-2019 with the filter, +2-3 requests; plan digest unchanged); the roster 1.4.0 adds hand-checked
+# author ids (D655). The same publisher-cut exception
+# on semantic_scholar changes its 59 group keys: S2 re-sweeps from 2015-01-01 once (≈ 575 requests at >= 2.5 s,
+# ≈ 25-50 min), in its standalone run beside the builds (build order below). (2) Prompts, staged (D656): triage
+# `safety-relevance-v4` (title variant `safety-relevance-title-v2`): the narrow-settings clause and `Published:`/
+# `Source:` record lines; the new pin name re-asks every pair in triage's question scope (≈ 94k: rows whose primary
+# role is not yet `ok`). The screen stays on `screen-v12` until its next change, when `screen-v13` (written, tested)
+# is pinned with it in one corpus re-ask (≈ 65k rows); meanwhile new texts are screened by v12. The
+# technique-provenance variants (`-p4`, D657) are not pinned. (3) Manual sources (D658, D664): `collect.manual` reads
+# the overrides chain (the prepared configs/overrides/manual_sources.yaml and lineage_origins.yaml are added to the
+# store with `stack overrides add` before the build, an operator step), `collect.links` harvests only the flagged
+# manual sources' links (`rules: [flagged_links]`; the newsletters' links stay off), the gate gains `manual_accept`
+# and `selected_links`, acquire `wants` the manual and link channels. (4) Acquisition repairs, code only
+# (D660-D662): Distill DOIs fetched as their HTML article, a `quality_garbled` PDF re-converted once by the raw-text
+# tier, `deepmind_blog` dates from `article:published_time` (card-dates-lookup's default channels). Not in this
+# revision: the forum karma 10-24 backfill (D659: probe below its trigger), screen-v13, the review's other channel and
+# term proposals. Builds continue series `batch-import` (no `--new-series`); the build order below holds, with
+# `stack overrides add` first.
+# Revision 5, workers (2026-10-22, D692): triage, screen and affiliation ask 256 calls at once (was 32; 256 was the
+# cap until D716's 1024, 64 the default of a line without the option). `workers` is in no config digest or work key
+# (triage drops it from its line's digest; annotate's digest has no options), so nothing already answered is asked
+# again; only the plan digest changes. collect.links, the plan's other LLM line, has no worker option (it asks one at a time).
+# Revision 6, recheck (2026-10-22, D701): an ok page on openai.com (or a subdomain) is rechecked every 30 days, not
+# weekly (`acquire.recheck.hosts`); its weekly rechecks turned 1,097 ok pages failed_transient[forbidden] (HTTP 403).
+# The recheck periods are in no line digest, convert pin or work key: only the plan digest changes; nothing is
+# fetched or asked again by itself, and a role's next check moves at its next ok episode.
+# Revision 7, annotations (2026-10-24, D707-D710, D714): the two corpus annotations on the screen-relevant rows (the
+# release filter `screen_relevant`: screen ok and verdict relevant, borderline out; 39,269 rows in the latest
+# corpus.build), scoped by a scope read of this build's screen (not part of the basis). annotate.technique_staged:
+# prompt set technique-staged-v5-a1.1 (D708), mode single with the gleaning turn, doc_cap 900,000 characters,
+# max_tokens 64,000 (a cap; the eval runs used 16,000 with a 32,000 retry), techniques taxonomy 1.0.0
+# (taxonomy/techniques-1.0.0.yaml, D707), role extract_staged_openai (default reasoning effort). annotate.model_roles:
+# prompt model-roles-v3b, doc_cap 900,000, role extract_main_openai; both roles call gpt-6-luna on the OpenAI API
+# directly with no fallback model (a luna failure fails the document: a transport failure failed_transient, asked
+# again by a later run; a request luna refuses with a 4xx failed_permanent[query_invalid], not asked again; D714,
+# D717); its catalogue is configs/models.yaml = models 1.0.0 (D707;
+# model_roles has no catalogue pin key: the file's sha256 is in its config digest). Budgets per run $300 / $230
+# (gold v3 eval rows, corpus-weighted: ~$5.5 / ~$3.0 per 1,000 documents, ~$217 / ~$119 for all 39,269; the
+# headroom covers the higher standalone eval figures, $6.5 / $4.8 per 1,000; the pilot measured $6.97 / ~$4.2 per 1,000,
+# so the full run raises technique_staged's to $350, D716). 1024 workers each (D716's cap; the pilot asked at 256). Both
+# workflows join `require_complete`, so an annotate run that stops short (budget, max_rows) makes the build
+# incomplete, reason `budget` / `limit` (D709). fold.build folds technique_staged, model_roles and its record
+# model_regexp_matches. The release configs are unchanged (public-v1 still drops both structs, D705).
+# Pilot then full run (D710): this file is the pilot, `max_rows: 1000` on both annotate lines (the first 1,000
+# uncarried rows in doc_id order, a uniform sample since ids are random; the build ends incomplete, reason
+# `limit`). The full run is this file with the two `max_rows` options removed: max_rows is in no config digest or
+# work key, so the full run carries the pilot's answers and asks only the rest. Plan digests: D714 has both (D710's
+# 3ee112e1… / ad195efc… were before the D714 roles). The pilot ran as build wf724dy8hmz7a (plan digest 1700efe2…);
+# this file is now the full run (D716): no max_rows, 1024 workers, technique_staged budget $350.
+# Revision 8, organisations (2026-10-28, D736, D737): `annotate.affiliation_orgs` after `annotate.affiliation` resolves
+# every affiliation surface to organisations of `taxonomy/orgs-0.2.1.yaml` (stack/orgvocab.py: a deterministic matcher,
+# no model, no spend; origin computed). Chained on `affiliation` (registry `reads`): only documents whose affiliation is
+# decided get a record; a changed affiliation answer recomputes that document, a vocabulary edit or a matcher change
+# (the file's sha256 and the matcher version are the pin's template digests) every document. fold.build folds it; the
+# dataset release ships it as the kind `affiliation_orgs` and copies its per-affiliation answer into `affiliation`
+# (`org_ids`, `org_status`, `org_candidates`). Not in `require_complete`. Nothing else changes; the plan digest changes
+# (D736 and D737 have the values). 2026-10-30 (D760, still revision 8, not deployed): vocabulary 0.2.1 and matcher 3 (a
+# city segment after an organisation is its address); every document's record recomputes, no model; the digest changes.
+# Revision 9, catalogue envelope (2026-10-29, D738): technique_staged reads `taxonomy/techniques-1.1.0.yaml` (1.0.0's
+# content in the catalogue envelope), model_roles `configs/models.yaml` = models 1.1.0 (maker and lab references to the
+# organisation vocabulary), affiliation_orgs `taxonomy/orgs-0.2.0.yaml` from the data repository (the maker facets
+# added, the Arc Institute entry fixed). Each file's sha256 is in its stage's config digest, so every document is asked
+# again; the prompts' bytes are those of 1.0.0 (menus, sub-menus, compact index, matcher inputs: D738 has the
+# equivalence test), so the LLM response cache answers each call that was answered before ($0); affiliation_orgs
+# recomputes. The plan digest changes (D738 has the value).
+# Revision 10, accepted configs (2026-10-30, D758): the technique_staged and model_roles lines name their revision-9
+# config as `target` and accept the decided answers of their 1.0.0 configs (`accepted:`), which keep their 1.0.0
+# labels; only those documents without a decided 1.0.0 answer are asked. affiliation_orgs recomputes. No config
+# digest changes; the plan digest does (D758 has the value).
+# Revision 9 on the Chinese-coverage branch (2026-10-30, D739-D757): `annotate.translation` (D755) after the screen, folded
+# by fold.build; acquire `wants` the new feed channel
+# `aisafetychina_substack` (Concordia AI's newsletter; `post`, the feed carries bodies; its items pass the gate by the
+# `newsletter_posts` rule, whose compiled SQL changes: `stack run triage --only select`, no LLM call). No stage line
+# changes. The re-sweeps come from the configs this plan reads (channels.yaml 2.5.0, roster 1.5.0): every OpenAlex
+# and S2 concept-group key (the venue allowlist digest), the new group `llm-safety`, three institutions, 13 author
+# buckets, 16 arXiv author names (D749 lists them with costs). Before the first build of the revision, the operator
+# also adds the prepared manual sources: stack overrides add configs/overrides/china_coverage.yaml
+# --out data/overrides/batch-import/ (--dry-run first).
+# Revision 11, the integration (2026-10-30, D778, D779): revision 10 above (accepted configs, D758, on the catalogue
+# envelope of revision 9, D738), the Chinese-coverage lines (its own "revision 9" just above: translation, the
+# aisafetychina_substack feed, the re-sweeps from channels.yaml 2.5.0 and roster 1.5.0) and the batch's D760, in one
+# file. affiliation_orgs reads `taxonomy/orgs-0.2.2.yaml` (0.2.0 of the data repository + 0.2.1's places + the Chinese
+# aliases; matcher 4), so every document's record recomputes (no model). Before the first build of the revision the
+# operator imports both prepared override files (`stack overrides add <file> --out data/overrides/batch-import/`,
+# `--dry-run` first): configs/overrides/china_coverage.yaml and configs/overrides/data_quality_2026_10.yaml (D768,
+# D772, D774). The plan digest changes (D779 has the value and what a first build asks).
+# Differences from the e2e basis plan std-2026-10-14a (RUNLOG (E2E); it was std-v3 with a 1,024-token triage role,
+# acquire newest first and 32 LLM workers):
+# - series `batch-import`; no e2e caps: no acquire `max_rows`, no screen `max_rows`, no `--filter`;
+# - collect: every e2e collector, forums over the whole window (stopped early in the e2e), S2 collect on, and
+#   `collect.feeds` (the three `kind: feed` newsletter channels; their items enter by the `newsletter_posts` gate
+#   rule, with `wants` `post` for the two feeds that carry bodies and `page` for the listing-only one);
+# - lookups: `collect.s2-lookup` asks only documents without a usable abstract (D520; 429s waited out, D521, D550)
+#   beside `collect.openalex-lookup` and `collect.card-dates-lookup`;
+# - cards: `full: true`: the github-org surfaces (deepseek, qwen) sweep their repo history, 25 repos a run, each
+#   capped run banked so the next resumes (D555; `limit` in the record until caught up);
+# - collect look-backs below the watermark (code defaults, not set here): arXiv 4 days (D405), forums 14 (D406),
+#   S2 30, AF 14 (D551) and OpenAlex 60 (D582);
+# - triage: role `classify_1k` (0 failed of 37,147 in the e2e) and `title_basis: true` (D527): a row with no abstract
+#   and no excerpt is asked on its title and metadata instead of being fetched blind;
+# - acquire: newest first; `arxiv_pdf: on_miss` (D480-D482: the LaTeXML HTML, the PDF only where the HTML is a miss,
+#   fetched by the next run of the repeat); OA PDFs and JATS for papers without an arXiv id (`wants` openalex and
+#   semantic_scholar); convert defaults (D483: no convert row cap, convert's own clock of `budget.max_minutes` after
+#   the fetch); 45 min of fetch per run (each run publishes; a drain loses nothing completed, D570), up to 6 runs per build, fetch and convert workers 8;
+# - LLM: gpt-6-luna (D310, sync) at 256 workers on triage, screen and affiliation (32 until D692; technique_staged and
+#   model_roles at 1024, the cap since D716); budgets per run: triage $20, screen $40, affiliation $50 (explicit, no
+#   longer the llm.yaml default); OpenAlex metered $3 per collect run;
+# - outputs: every line writes full files (`out: {kind: full}`): each run writes its directory's whole version,
+#   based on the directory's last file (a full after parts extends the chain; stack/stage_runner.py `_emit`),
+#   so a reader of a series directory takes one file;
+# - `fold.diagnostic: true` (corpus.everything/, so why-missing reads `excluded_reason` for every row).
+# Build order (docs/howto/full-run.md has the commands and checks). The lookups read documents/batch-import/, which
+# only a gather writes, and a plan lists gather once; so the first build stops after gather, and the second build's
+# lookups read its documents, its gather folds their abstracts in, and its triage sees them. S2 is off the builds'
+# critical path (D554): both builds `--skip collect.semantic_scholar --skip collect.s2-lookup`; S2 collect runs as a
+# standalone `stack run` beside build 1, and s2-lookup standalone after build 1 and before build 2:
+#   1. stack build batch-2026-10a --new-series --passes 1 --skip triage --skip acquire --skip 'fold.*' --skip 'annotate.*'
+#      --skip collect.semantic_scholar --skip collect.s2-lookup
+#      (collectors and gather; the lookups are skipped with a warning while documents/batch-import/ is empty;
+#      `--new-series` because series `main` of the store has documents);
+#      beside it: stack run collect.semantic_scholar (this plan's line; --new-series on its first run);
+#   then: stack run collect.s2-lookup (this plan's line), once build 1 and the S2 collect run have ended;
+#   2. stack build batch-2026-10a --passes N --skip collect.semantic_scholar --skip collect.s2-lookup (collectors
+#      again, only units due; the other lookups; gather; triage; acquire up to 6 runs; the folds; screen;
+#      affiliation). Later passes and builds resume acquire newest first (D265).
+#   Revision 5, before its first build: stack overrides add configs/overrides/manual_sources.yaml and
+#      configs/overrides/lineage_origins.yaml, each --out data/overrides/batch-import/ (--dry-run first; D658, D664);
+#      collect.manual and collect.links then run in every build. Its S2 re-sweep is the standalone S2 collect run.
+# No STACK_*_LIMIT / *_FRACTION / *_MAX_QUERIES may be set: builds and collector runs refuse to start (D553).
+# Store: --store s3://<bucket>/stack-store (or STACK_STORE). Venv: `uv sync --frozen --group convert-pdf`.
+plan: batch-2026-10a
+schema_version: 2
+series: batch-import
+prompts:
+  triage.safety-relevance-v4: {name: safety-relevance-v4, model: openai/gpt-6-luna, role: classify_1k}
+  annotate.screen: {name: screen-v12, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-6-luna}
+  collect.links: {name: link-select-v1, model: openai/gpt-6-luna}
+  annotate.affiliation: {name: affiliation-v1, role: extract_main}
+  # revision 8 (D736): the organisation vocabulary the matcher reads; its sha256 is in the config digest; revision 11
+  # (D778): orgs 0.2.2, matcher 4
+  annotate.affiliation_orgs: {name: orgs-0.2.2, vocab: taxonomy/orgs-0.2.2.yaml}
+  # revision 7 (D707-D710): the corpus annotations; revision 9 (D738): techniques 1.1.0, models 1.1.0
+  annotate.technique_staged: {name: technique-staged-v5-a1.1, role: extract_staged_openai, mode: single, glean: true,
+                              doc_cap: 900000, max_tokens: 64000, taxonomy: taxonomy/techniques-1.1.0.yaml}
+  annotate.model_roles: {name: model-roles-v3b, role: extract_main_openai, doc_cap: 900000}
+  # revision 9 (D755): English machine translations of non-English titles and abstracts; role `translate` (gpt-6-luna);
+  # `model: openai/gpt-5.6-terra` is the documented stronger option
+  annotate.translation: {name: translate-short-v1, role: translate}
+gate:
+  screen:
+    - {rule: newsletter_posts}
+    - {rule: manual_accept}
+    - {rule: selected_links}
+    - {rule: frontier_lab_posts}
+    - {rule: safety_org_posts}
+    - {rule: zvi_posts}
+    - {question: safety_relevance, prompt: triage.safety-relevance-v4, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  # pin 625b4004… = pymupdf4llm-v1 + structured {jats, arxiv_html}; needs `uv sync --frozen --group convert-pdf`
+  # (pymupdf4llm 1.28.0, pymupdf 1.28.0, trafilatura 2.2.0, fetchpdf @5bef000). arxiv_pdf does not change the pin.
+  convert: {config: pymupdf4llm-v1, expect_pin: 625b4004ba867f61}
+  wants: {arxiv: [full_text, html], openalex: [full_text, xml], semantic_scholar: [full_text], lesswrong: [post],
+          # `blogs` and `repos` match no channel (inert, as in std-v3)
+          blogs: [page], x: [post],
+          repos: [readme],
+          alignmentforum: [post],
+          zvi_substack: [post], import_ai: [post], paradigm3_news: [page],
+          aisafetychina_substack: [post],  # revision 9 (coverage, D748): Concordia AI's newsletter, bodies in the feed
+          anthropic_alignment_blog: [page], openai_blog: [page], openai_alignment_blog: [page],
+          transformer_circuits: [page], google_research: [page], mistral_blog: [page], deepmind_blog: [page],
+          anthropic_cards: [page], openai_cards: [page], deepmind_cards: [page], meta_cards: [page],
+          xai_cards: [page], deepseek_cards: [page], qwen_cards: [page], miri_blog: [page], metr_blog: [page],
+          transluce_blog: [page], goodfire_blog: [page], uk_aisi_blog: [page], redwood_blog: [page],
+          apollo_blog: [page], arc_blog: [page], epoch_blog: [page], forethought_blog: [page], far_ai_blog: [page],
+          timaeus_blog: [page], clr_blog: [page], softmax_blog: [page], meaning_alignment_blog: [page],
+          cooperative_ai_blog: [page],
+          # revision 5 (D658): the manual sources and the link targets collect.links selects from them
+          manual_url: [page], manual_paper: [full_text], manual_forum: [post],
+          links_url: [page], links_paper: [full_text], links_forum: [post]}
+  recheck: {default: weekly, hosts: {openai.com: 30d}}  # revision 6 (D701): openai.com pages monthly
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability, doc_class, affiliation,
+                                            affiliation_orgs, technique_staged, model_roles, model_regexp_matches,
+                                            translation]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: true
+recovery: {dead_run_charge: false}
+stages:
+  # Collectors from 2015-01-01 since revision 4, the three forum collectors from 2006-01-01 (2020-01-01 in revision 3,
+  # forums 2020-01-02; 2024-01-01 in revision 2, 2025-10-01 before; D272: only the gap is swept, header).
+  # collect.openalex's max_usd is OpenAlex's metered API, not LLM. S2 requests are spaced >= 2.5 s (the semantic_scholar channel's rate) by the
+  # cross-process Gate, retries included; a bare 429 backs off 5 s doubling to 60 s (D550).
+  - {stage: collect.arxiv_sweep, out: {kind: full}, prior: [sources, coverage], options: {from: "2015-01-01", families: [kw, cat],
+     keyword_groups: [umbrella, decision-theory-af, decision-theory, acausal, anthropics, infra-bayes,
+       natural-abstractions, tiling, program-equilibrium, game-theory-ai, gradual-disempowerment,
+       alignment-targets, social-choice-ai, model-psychology, introspection, agi-metrics,
+       heuristic-arguments, brain-like-agi, scientist-ai, steerability, shard-theory,
+       legacy-alignment, legacy-safety]}}
+  - {stage: collect.openalex, out: {kind: full}, prior: [sources, coverage], options: {from: "2015-01-01", max_records: 100000, max_usd: 3.00,
+     author_ids: true}}
+  - {stage: collect.semantic_scholar, out: {kind: full}, prior: [sources, coverage], options: {from: "2015-01-01", max_records: 100000}}
+  - {stage: collect.forums, out: {kind: full}, prior: [sources, coverage], options: {from: "2006-01-01", max_records: 40000,
+     # revision 3 (D642): the one query whose hole [2020-01-02, 2025-10-01) is over ForumMagnum's 10,000-hit cap
+     # even with the hole's upper bound and the karma floor sent (10,384 hits): its 2024 hole failed in every build
+     # of revision 2 and is dropped; every other query asks its hole. Revision 4 (D646): the two new legacy-alignment
+     # labels that LessWrong's loose matching makes over-cap on a first pass from the 2006 floor (karma >= 25, no
+     # date bound: value alignment 10,737, value learning 12,554 hits of 18,898 posts, 2026-10-19) start at
+     # 2024-01-01 (4,279 / 4,700); they stay asked on OpenAlex, S2 and arXiv from 2015
+     query_from: {"kw:model specification": "2025-10-01", "kw:value alignment": "2024-01-01",
+                  "kw:value learning": "2024-01-01"}}}
+  - {stage: collect.af_graphql, out: {kind: full}, prior: [sources, coverage], options: {from: "2006-01-01"}}
+  - {stage: collect.lw_graphql, out: {kind: full}, prior: [sources, coverage], options: {from: "2006-01-01", subwindow_days: 30,
+     tags: [ai, decision-theory, anthropics, acausal-trade, agent-foundations, embedded-agency, logical-induction,
+            updateless-decision-theory, functional-decision-theory, natural-abstraction, infra-bayesianism,
+            game-theory, logical-uncertainty]}}
+  - {stage: collect.blogs, out: {kind: full}, prior: [sources, coverage]}          # whole feed histories (C10: no floor)
+  - {stage: collect.cards, out: {kind: full}, prior: [sources, coverage], options: {full: true}}  # D555
+  - {stage: collect.feeds, out: {kind: full}, prior: [sources, coverage], options: {since: "2025-10-01"}}
+  # Revision 5 (D658): the overrides chain's manual sources (a revoked entry is retracted at once) and the links of the
+  # sources flagged `collect_links` there (only that rule: the newsletter link harvest stays off); collect.links reads
+  # documents/batch-import/ like the lookups, and an unselected target is retracted at once.
+  - {stage: collect.manual, out: {kind: full}, prior: [sources, coverage], miss_cap: 1}
+  - {stage: collect.links, out: {kind: full}, prior: [sources, coverage], miss_cap: 1, budget: {max_usd: 0.50},
+     options: {rules: [flagged_links]}}
+  # The lookups read documents/batch-import/: skipped in build 1 (empty), run from build 2 on (header).
+  - {stage: collect.openalex-lookup, out: {kind: full}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3,
+     options: {max_usd: 1.00}}
+  # Enrichment, retried next build: a batch still 429'd after three waits ends the run short, which must not keep
+  # every build `incomplete` (`require_complete: false`). A failed run still fails the build.
+  - {stage: collect.s2-lookup, out: {kind: full}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3, require_complete: false,
+     options: {only_missing_abstract: true}}
+  - {stage: collect.card-dates-lookup, out: {kind: full}, prior: [sources, coverage]}
+  - {stage: gather}
+  - {stage: triage, out: {kind: full}, prior: [triage_evidence], budget: {max_usd: 20}, options: {workers: 256, title_basis: true}}
+  # 45 min of fetch per run, then up to 45 min of convert on its own clock (D483); up to 6 runs per build (up to 9 h); shorter runs publish more often.
+  # A PDF made due by `on_miss` after quality ends the run `pending`, and the next run of the repeat fetches it (D482).
+  - {stage: acquire, out: {kind: full}, budget: {max_minutes: 45}, repeat: {until: scope_complete, max_runs: 6},
+     options: {order: newest_first, arxiv_pdf: on_miss, fetch_workers: 8, convert_workers: 8,
+               structured: {jats: true, arxiv_html: true}}}
+  - {stage: fold.corpus}
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 40},
+     options: {screen_usd_per_1k: 3.0, workers: 256}}
+  # structured texts are current with role xml/html (D276), so the byline filter takes all three paper roles
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], budget: {max_usd: 50}, options: {workers: 256},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role IN ('full_text', 'xml', 'html')"}
+  # Revision 8 (D736): no model, affiliation's own scope (its filter): a document there whose affiliation is not
+  # decided has no basis and gets a `skipped` (no_basis) record, which the dataset release treats as not run.
+  - {stage: annotate.affiliation_orgs, prior: [affiliation_orgs, affiliation_orgs_evidence], options: {workers: 8},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role IN ('full_text', 'xml', 'html')"}
+  # Revision 7 (D707-D710): the screen-relevant rows (`reads: [screen]` joins this build's screen for the filter).
+  # Pilot: max_rows 1000 on both lines; the full run removes the two max_rows options (header).
+  # Revision 10 (D758): the 1.1.0 catalogue pins (revision 9, D738) send the same request bytes as 1.0.0, so both
+  # lines accept the decided answers of their 1.0.0 configs (each kept answer stays labelled with its 1.0.0 config);
+  # `target` is the config the line's pin gives, refused at build start if the pin moves.
+  - {stage: annotate.technique_staged, prior: [technique_staged, technique_staged_evidence], reads: [screen],
+     filter: screen_relevant, budget: {max_usd: 350}, options: {workers: 1024},
+     target: 2c2dbd49105f08ed0ae9c3ab8c1431dcc2e86ac4bca9403ea5967d0a7402b273,
+     accepted: [{config: afc8e6f6e2d638c68d762d9101884aba6b0e3d0001f83a610646b1b6b107af35,
+                 name: technique-staged-v5-a1.1@techniques-1.0.0, decision: D758,
+                 note: "Techniques 1.1.0 is 1.0.0 in the catalogue envelope; every request of the stage is byte-identical under both (D738)."}]}
+  - {stage: annotate.model_roles, prior: [model_roles, model_roles_evidence], reads: [screen],
+     filter: screen_relevant, budget: {max_usd: 230}, options: {workers: 1024},
+     target: ad8e4f41f458f5a560bbc1c2dddf2d418925f96f91d429748778905b8c3232e6,
+     accepted: [{config: bb1fcb36642568f1cd82c97e147b223f0665e010b4957c0135069fe34fe66c0a,
+                 name: model-roles-v3b@models-1.0.0, decision: D758,
+                 note: "Models 1.1.0 is 1.0.0 in the catalogue envelope; every request of the stage is byte-identical under both (D738)."}]}
+  # Revision 9 (D755): screen-relevant documents whose title or abstract has a non-Latin letter or whose screen
+  # primary_lang is not English (workflows/annotate/translation/main.py SCOPE_FILTER, which the test pins to this line)
+  - {stage: annotate.translation, prior: [translation, translation_evidence], reads: [screen, doc_class],
+     budget: {max_usd: 2}, options: {workers: 64},
+     filter: "annotations.screen.status = 'ok' AND annotations.screen.payload.verdict = 'relevant' AND (regexp_matches(coalesce(metadata.title, '') || ' ' || coalesce(metadata.abstract, ''), '[\\p{Han}\\p{Hiragana}\\p{Katakana}\\p{Hangul}\\p{Cyrillic}\\p{Arabic}\\p{Hebrew}\\p{Thai}\\p{Devanagari}]') OR lower(coalesce(annotations.doc_class.payload.primary_lang, 'en')) NOT LIKE 'en%')"}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents, screen, screen_evidence, technique_staged, technique_staged_evidence,
+                   model_roles, model_roles_evidence]

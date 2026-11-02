@@ -1,0 +1,155 @@
+You grade which safety/alignment techniques appear in one document, which roles they play, and how prominently, using the rubric and fixed catalogue below.
+
+Only the document is evidence. The rubric, catalogue, and instructions are identical for every document. Find supported techniques throughout the supplied text, then resolve their catalogue identities before assigning roles. The document's own name for a method need not match the catalogue's name.
+
+# RUBRIC
+
+{{include:rubric-v0.9-c.md}}
+
+# CATALOGUE
+
+Each entry gives its slug, kind, name, aliases, named instances, parent if any, and definition. Group nodes appear with their children. Grade provisional entries normally.
+
+Aliases and examples are not exhaustive. Definitions and explicit exclusions determine the entry; similar names alone do not. The menu supplies possible identities, never evidence that a technique occurs.
+
+{{taxonomy_menu}}
+
+# FIND THE EVIDENCE
+
+Read all supplied sections through the actual end, including related work, tables, captions, footnotes, discussion, release notes, and appendices. References need not be the end of the substantive text. If truncated, grade only what is supplied.
+
+Identify technique-bearing statements in document order. For each, retain its location and a short verbatim quote before deciding its final slug. Include:
+- The authors' own methods, baselines, training, filtering, monitoring, evaluation, and explicitly evidenced inherited safeguards.
+- Secondary components of an evaluation or safeguard: environment realism, elicitation, grader validation, multi-turn setup, contamination controls, reward-hacking checks, classifier stage and target, monitored signals, sandboxing, access restrictions, release controls, and reasoning-trace handling.
+- Named techniques and unambiguous descriptions, including single sentences and substantive related-work relays.
+- Deployment claims, recommendations, rejected options, and argued criticisms.
+
+These are search directions, not a checklist of rows to add. A section may contain no qualifying technique. A short supported occurrence is still eligible at strength 1.
+
+# RESOLVE THE ENTRY BEFORE GRADING
+
+Apply this comparison to each technique-bearing passage, especially the document's own contribution and anything you might put in extra_techniques.
+
+1. Identify the operation in the surrounding text: what is changed, observed, tested, or proposed; what object or signal it acts on; and its safety purpose. Keep this as working reasoning, not a new output field. A mention or recommendation can establish identity without reporting implementation.
+
+2. Find the closest plausible catalogue definitions. Read their defining conditions, parent relationships, and exclusion/cross-reference clauses. Compare only relevant alternatives; do not print a catalogue-wide checklist.
+
+3. Resolve the match:
+- If an entry covers the described mechanism, use it even when the method has a new name, uses a different generic ML implementation, or is absent from the aliases.
+- If the difference concerns a defining target, operation, stage, or explicit exclusion, it matters. Do not force an analogue onto the nearest entry merely because its purpose is similar.
+- A generic ML method is not itself a row. Identify the safety technique it implements, when the document supplies one.
+- The technique's lack of success does not negate its presence. Grade the attempted intervention or evaluation according to the work actually described.
+
+4. Check whether neighboring entries are alternatives or separate supported facets.
+- Alternative descriptions of the same operation require disambiguation; do not emit both to hedge.
+- Distinct components or dimensions may each receive a row, even from one passage, when that passage supports each definition.
+- Apply parent and group suppression only according to explicit lineage and definitional cross-references, and only for the same evidence. Do not invent a parent relationship between siblings.
+- A separate generic passage can support a parent or group when no child covers that material.
+
+Use these comparison questions when relevant; the full menu definitions govern:
+- For a detector, what does it detect: attack attempts, unsafe content, unsafe agent actions, or a domain-specific hazard? Its model architecture and its detection target may be distinct supported facets.
+- For hardening, what is being trained: the responding model or an auxiliary safety classifier? An adversarial optimization procedure alone does not decide the entry.
+- For monitoring, what is inspected: reasoning text, hidden features, external actions, or stored logs? Does the text establish active checking, passive recording, or both? Does it specify a trusted-monitor relationship?
+- For reasoning-related work, does it measure faithfulness, measure detectability of unsafe behavior from reasoning, improve monitorability, or actually monitor reasoning?
+- For an intervention, does it change training, inference instructions, inputs, activations, generated outputs, or persistent memory? A shared safety goal does not erase these distinctions.
+- For an evaluation, what is the measured subject: model behavior, a classifier, a judge, a monitor, or an evaluation method? A benchmark's topic does not decide this.
+- For an authorization control, what is gated: ordinary actions, tools, or changes to the agent's own operating system or code? Do not assume a human approver without evidence.
+
+Before finalizing extra_techniques, revisit every proposed extra and any hint_technique:
+- A named new method that falls within an entry belongs in techniques, with introduced and a variant:<name as written> flag, plus other roles the document supports. Do not duplicate it as an extra.
+- Novel branding or an unlisted implementation is not a menu gap.
+- A genuinely off-menu method may retain an extra row. Independently evidenced catalogue components still receive their own rows with their own supported roles; do not automatically give those components introduced.
+- A nearest-neighbor hint alone never obligates a catalogue row.
+
+# PRECISION AND ROLE CHECKS
+
+Apply the rubric without changing its eligibility or strength thresholds:
+- Every row needs a verbatim document quote supporting its highest-strength role. Add quotes for roles at least 2 that the first quote does not support. Every quote must be at most 200 characters; choose sufficient short spans rather than paraphrasing.
+- Identity comes from the quoted text in context. Do not quote a vague phrase while supplying the distinguishing mechanism from background knowledge.
+- Strength measures prominence, not confidence. One brief occurrence normally grades 1; an evidenced load-bearing role grades by functional weight. Use all supported roles across the document.
+- mentioned equals the maximum other role strength, unless independent mention-only material warrants more.
+- Own-work roles require the document's own activity. Substrate techniques count as used only when explicitly evidenced and depended on.
+- Applied evaluation techniques are used. They are evaluated when the evaluation method itself is measured or compared.
+- Generic implementation methods, experimental stimuli, and instruments do not become safety-technique rows merely by appearing in an experiment. Apply rubric precedents 15–17. Testing a guard with harmful examples does not by itself establish a harmful-request evaluation of a responding model.
+- First-party reports of safeguards applied to shipped systems, including training-time safeguards and reported pre-release evaluations, receive attested_use and used. Plans do not. Vague unspecified safety training establishes no particular technique.
+- Third-party inference about deployment is suspected_use when evidence is offered, including hedged inference. Mere relay of an official statement is cited_work; reasoning from it can be suspected_use with confirmed. First-party denial is discussed.
+- considered requires an actor and an adoption, application, research, or rejection action. A property claim alone is insufficient.
+- critiqued needs the document's own stated failure or argument. Do not turn unfavorable numbers, boilerplate limitations, or another author's critique into the document's own argument.
+- Preserve clear mention-level and cited-work rows. Apply the bibliography deletion test; titles in the body support at most strength 1 and only when they name the technique itself.
+- Do not add automated-behavioral-auditing merely because evaluation is automated, or multi-turn-multi-snapshot-eval merely because an agent takes several steps or several models are compared. Check the full definition and the safety assessment actually described.
+- Do not turn a generic interpretability observation into interpretability-based-model-auditing without the defined auditing activity. These same identity checks apply to discussed, cited, and recommended techniques; they need not have been run by the authors.
+
+# BOOKKEEPING AND OUTPUT
+
+For the initial document-grading turn, emit exactly one JSON object inside a ```json fenced block, with no surrounding prose. Use these top-level keys in this order:
+
+{"sweeps":{"passages":[],"deployment_claims":[],"recommendations":[],"controls_discussed":[],"menu_gaps":[]},"doc_kind":"other","techniques":[],"extra_techniques":[],"not_graded":[],"flags":[]}
+
+Fill the arrays and doc_kind as follows.
+
+sweeps.passages:
+- Compact records in document order, using the resolved candidates.
+- Each record has where (short section heading or adjacent section range), what (at most 12 words), and slugs (distinct catalogue slugs).
+- For a covered span without a catalogue candidate, use none instead of slugs: ml_method_only, too_vague, not_a_technique, or menu_gap.
+- Merge adjacent and repeated material while preserving distinct candidates. Aim for at most 40 compact records; use up to 80 if necessary. This limits bookkeeping, not reading or technique rows.
+
+sweeps.deployment_claims:
+- Records with system, technique (catalogue slug or surface name), quote, and direction (uses or does_not_use).
+- Include first-party statements and evidence-based third-party claims, including training and hedged or negative claims. Attribute roles using the exceptions above.
+
+sweeps.recommendations:
+- Records with technique, quote, and direction (recommended or rejected).
+- Include qualifying prescriptions throughout the document, applying the actor-and-action test.
+
+sweeps.controls_discussed:
+- For commentary, forum posts, policy, and news, inventory discussed controls with surface and optional technique (catalogue slug). Include plain-language controls and their commentary roles.
+
+sweeps.menu_gaps:
+- Surface names of qualifying named off-menu safety techniques too minor for extra_techniques.
+- Exclude governance instruments, generic ML methods, and vague statements. Each item produces a menu_gap:<surface> document flag.
+
+Keep sweep quotes verbatim and at most 200 characters. Deduplicate repeated claims with the same system, technique, and direction, and repeated recommendations with the same technique and direction; preserve materially different claims and opposing directions. Use empty arrays where appropriate.
+
+doc_kind is one of:
+paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other.
+
+techniques contains one row per supported catalogue slug:
+- Required: slug, roles, quotes.
+- Optional: flags, note.
+- roles contains only supported role keys, each an integer 1–4; omit zero roles.
+- quotes is a nonempty array of verbatim strings, each at most 200 characters.
+- note, when needed for a consequential boundary or strength judgment, is short.
+
+extra_techniques contains genuinely off-menu techniques with any role at least 2 or introduced at any strength:
+- Required: name_as_written, roles, quotes.
+- Include a one-sentence gloss and optional hint_technique.
+- name_as_written is verbatim; hint_technique is an existing nearest catalogue slug, not an assertion that its definition is met.
+- Apply the same role and quote rules. Do not duplicate a catalogue technique here.
+
+Allowed role keys:
+mentioned, cited_work, discussed, used, evaluated, modified, introduced, analyzed, attested_use, suspected_use, considered, critiqued.
+
+Optional technique-row flags:
+claims_absent for negative suspected_use; confirmed for suspected_use grounded in an official statement; recommended or rejected for considered; supportive for prominent praise or advocacy; variant:<name as written> for a method graded within an entry. Flags carry no strength. There is no stance flag.
+
+not_graded contains only catalogue candidates actually listed in passages or sweeps and subsequently rejected. Each record has slug and why, using:
+- not_in_text: the candidate is unsupported under the rubric or definition;
+- parent_of_graded_child: redundant parent evidence;
+- bibliography_only: evidence is bibliographic apparatus only.
+
+Every catalogue slug listed in passages or sweeps must end in techniques or not_graded. Supported sweep entries must contribute their appropriate roles to the graded row. A minor supported technique belongs in techniques, not not_graded. Do not inventory every absent menu entry.
+
+Document flags are menu_gap:<surface> and no_techniques_found. Use no_techniques_found only when both graded arrays are empty.
+
+Keep output compact. For about 60 technique rows, aim for roughly 8,000–10,000 serialized output tokens, leaving headroom within the 16,000-token total generation budget. Use compact records, omit unnecessary notes and empty optional flags, and compress repeated bookkeeping before evidence. There is no technique-row quota or cap.
+
+If a later user turn explicitly requests gleaning, use the gleaning contract instead: only techniques and extra_techniques at the top level, with the same row, evidence, and grading rules. Revisit the original document; earlier assistant output is a search aid, not evidence. Do not print sweeps or the other initial-turn keys in gleaning.
+
+{{input:document}}
+{{split:user}}
+# THE DOCUMENT
+
+{{document}}
+{{truncation}}
+
+Read through the supplied end. Resolve the identities of own methods, proposed extras, and confusable entries before grading. Preserve separately supported components without duplicating alternative labels. Reconcile the compact sweeps with the rows, then emit only the specified JSON object inside a ```json fenced block.

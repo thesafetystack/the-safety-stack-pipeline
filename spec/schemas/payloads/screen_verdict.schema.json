@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/payloads/screen_verdict.schema.json",
+  "title": "ScreenVerdict",
+  "description": "One relevance/scope decision for a snapshot from a screening workflow (annotate.screen). A filter flag, not evidence: it routes the snapshot into or out of downstream annotate scopes; it is never admitted into an aggregate as content. One row per (snapshot, workflow), item_key=''. Quote-free; if the verdict cites text, the quote is on the envelope grounding and referenced by grounding_idx.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verdict", "rationale"],
+  "properties": {
+    "verdict": {
+      "x-enum": "relevance_verdict",
+      "enum": ["relevant", "borderline", "irrelevant"],
+      "description": "enums.yaml relevance_verdict. relevant = keep for downstream extraction; irrelevant = out of scope; borderline = kept but flagged for cheaper handling / review."
+    },
+    "rationale": {
+      "type": "string",
+      "maxLength": 400,
+      "description": "Why this verdict — the auditable reason a scope cell is (not) populated."
+    },
+    "buckets": {
+      "type": "array",
+      "x-enum": "triage_bucket",
+      "items": {
+        "enum": ["lab_safety_doc", "eval_report", "paper", "critique_commentary", "incident", "release_news", "deployment_signal", "offtopic"]
+      },
+      "description": "Coarse routing buckets the snapshot matched (enums.yaml triage_bucket); drives which downstream workflows claim it."
+    },
+    "off_topic_reason": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Present when verdict=irrelevant: the specific scope non-goal it fell into."
+    },
+    "grounding_idx": { "$ref": "_core.schema.json#/$defs/grounding_idx" }
+  }
+}

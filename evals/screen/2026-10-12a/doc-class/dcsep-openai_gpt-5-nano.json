@@ -1,0 +1,606 @@
+{
+ "run_id": "eval-doc_class-20261013T040243Z",
+ "model": "openai/gpt-5-nano",
+ "rows": [
+  {
+   "item_id": "scr-0001",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00122657,
+   "tokens_in": 1935,
+   "tokens_out": 708,
+   "latency_ms": 6376
+  },
+  {
+   "item_id": "scr-0002",
+   "doc_type": "news",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00038205,
+   "tokens_in": 1289,
+   "tokens_out": 794,
+   "latency_ms": 6606
+  },
+  {
+   "item_id": "scr-0004",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0003064,
+   "tokens_in": 1824,
+   "tokens_out": 538,
+   "latency_ms": 6850
+  },
+  {
+   "item_id": "scr-0005",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00035735,
+   "tokens_in": 1115,
+   "tokens_out": 754,
+   "latency_ms": 6982
+  },
+  {
+   "item_id": "scr-0006",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004339,
+   "tokens_in": 1206,
+   "tokens_out": 934,
+   "latency_ms": 7958
+  },
+  {
+   "item_id": "scr-0007",
+   "doc_type": "paper",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.0008274,
+   "tokens_in": 1094,
+   "tokens_out": 775,
+   "latency_ms": 7037
+  },
+  {
+   "item_id": "scr-0008",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00035635,
+   "tokens_in": 2063,
+   "tokens_out": 633,
+   "latency_ms": 4952
+  },
+  {
+   "item_id": "scr-0009",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00086618,
+   "tokens_in": 2969,
+   "tokens_out": 721,
+   "latency_ms": 6625
+  },
+  {
+   "item_id": "scr-0010",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00026855,
+   "tokens_in": 1011,
+   "tokens_out": 545,
+   "latency_ms": 4544
+  },
+  {
+   "item_id": "scr-0011",
+   "doc_type": "forum_post",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00038725,
+   "tokens_in": 2273,
+   "tokens_out": 684,
+   "latency_ms": 6391
+  },
+  {
+   "item_id": "scr-0012",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00039715,
+   "tokens_in": 2231,
+   "tokens_out": 714,
+   "latency_ms": 6452
+  },
+  {
+   "item_id": "scr-0013",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00042575,
+   "tokens_in": 843,
+   "tokens_out": 959,
+   "latency_ms": 9258
+  },
+  {
+   "item_id": "scr-0014",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0008185,
+   "tokens_in": 949,
+   "tokens_out": 789,
+   "latency_ms": 6928
+  },
+  {
+   "item_id": "scr-0015",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.000831,
+   "tokens_in": 1094,
+   "tokens_out": 784,
+   "latency_ms": 6527
+  },
+  {
+   "item_id": "scr-0017",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.000504,
+   "tokens_in": 2040,
+   "tokens_out": 1005,
+   "latency_ms": 8767
+  },
+  {
+   "item_id": "scr-0018",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00075468,
+   "tokens_in": 2354,
+   "tokens_out": 523,
+   "latency_ms": 4804
+  },
+  {
+   "item_id": "scr-0021",
+   "doc_type": "eval_report",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00026105,
+   "tokens_in": 893,
+   "tokens_out": 541,
+   "latency_ms": 5225
+  },
+  {
+   "item_id": "scr-0022",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00028245,
+   "tokens_in": 1241,
+   "tokens_out": 551,
+   "latency_ms": 5639
+  },
+  {
+   "item_id": "scr-0023",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00036115,
+   "tokens_in": 1063,
+   "tokens_out": 770,
+   "latency_ms": 8243
+  },
+  {
+   "item_id": "scr-0024",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004199,
+   "tokens_in": 942,
+   "tokens_out": 932,
+   "latency_ms": 8077
+  },
+  {
+   "item_id": "scr-0025",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00030605,
+   "tokens_in": 1153,
+   "tokens_out": 621,
+   "latency_ms": 5549
+  },
+  {
+   "item_id": "scr-0027",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0007357,
+   "tokens_in": 893,
+   "tokens_out": 596,
+   "latency_ms": 5031
+  },
+  {
+   "item_id": "scr-0031",
+   "doc_type": "webpage",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00094058,
+   "tokens_in": 2261,
+   "tokens_out": 1011,
+   "latency_ms": 8059
+  },
+  {
+   "item_id": "scr-0033",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0008889500000000001,
+   "tokens_in": 1216,
+   "tokens_out": 759,
+   "latency_ms": 6904
+  },
+  {
+   "item_id": "scr-0034",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00031885,
+   "tokens_in": 2361,
+   "tokens_out": 502,
+   "latency_ms": 5836
+  },
+  {
+   "item_id": "scr-0035",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0003718,
+   "tokens_in": 916,
+   "tokens_out": 815,
+   "latency_ms": 6602
+  },
+  {
+   "item_id": "scr-0036",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0002724,
+   "tokens_in": 1008,
+   "tokens_out": 555,
+   "latency_ms": 5517
+  },
+  {
+   "item_id": "scr-0038",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004015,
+   "tokens_in": 1086,
+   "tokens_out": 868,
+   "latency_ms": 6588
+  },
+  {
+   "item_id": "scr-0039",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004102,
+   "tokens_in": 1140,
+   "tokens_out": 883,
+   "latency_ms": 7270
+  },
+  {
+   "item_id": "scr-0040",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0011440500000000002,
+   "tokens_in": 1011,
+   "tokens_out": 445,
+   "latency_ms": 4227
+  },
+  {
+   "item_id": "scr-0041",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0003445,
+   "tokens_in": 1034,
+   "tokens_out": 732,
+   "latency_ms": 6780
+  },
+  {
+   "item_id": "scr-0042",
+   "doc_type": "preprint",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.0004184,
+   "tokens_in": 1056,
+   "tokens_out": 914,
+   "latency_ms": 7640
+  },
+  {
+   "item_id": "scr-0043",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0002574,
+   "tokens_in": 1060,
+   "tokens_out": 511,
+   "latency_ms": 5304
+  },
+  {
+   "item_id": "scr-0044",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.0002619,
+   "tokens_in": 1702,
+   "tokens_out": 442,
+   "latency_ms": 3337
+  },
+  {
+   "item_id": "scr-0045",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004399,
+   "tokens_in": 1014,
+   "tokens_out": 973,
+   "latency_ms": 9741
+  },
+  {
+   "item_id": "scr-0046",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00033465,
+   "tokens_in": 1453,
+   "tokens_out": 655,
+   "latency_ms": 6378
+  },
+  {
+   "item_id": "scr-0049",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00084892,
+   "tokens_in": 1126,
+   "tokens_out": 936,
+   "latency_ms": 8596
+  },
+  {
+   "item_id": "scr-0050",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0001998,
+   "tokens_in": 1004,
+   "tokens_out": 374,
+   "latency_ms": 4764
+  },
+  {
+   "item_id": "scr-0051",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00046115,
+   "tokens_in": 1255,
+   "tokens_out": 996,
+   "latency_ms": 7111
+  },
+  {
+   "item_id": "scr-0054",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0008414,
+   "tokens_in": 1410,
+   "tokens_out": 731,
+   "latency_ms": 6853
+  },
+  {
+   "item_id": "scr-0055",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0003078,
+   "tokens_in": 1084,
+   "tokens_out": 634,
+   "latency_ms": 5429
+  },
+  {
+   "item_id": "scr-0056",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00026325,
+   "tokens_in": 1145,
+   "tokens_out": 515,
+   "latency_ms": 3835
+  },
+  {
+   "item_id": "scr-0057",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00086114,
+   "tokens_in": 2233,
+   "tokens_out": 805,
+   "latency_ms": 8032
+  },
+  {
+   "item_id": "scr-0058",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.0003237,
+   "tokens_in": 2498,
+   "tokens_out": 497,
+   "latency_ms": 4966
+  },
+  {
+   "item_id": "scr-0060",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00087068,
+   "tokens_in": 2286,
+   "tokens_out": 830,
+   "latency_ms": 6895
+  },
+  {
+   "item_id": "scr-0065",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00036715,
+   "tokens_in": 2287,
+   "tokens_out": 632,
+   "latency_ms": 6172
+  },
+  {
+   "item_id": "scr-0066",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.0003932,
+   "tokens_in": 2400,
+   "tokens_out": 683,
+   "latency_ms": 5639
+  },
+  {
+   "item_id": "scr-0068",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.000466,
+   "tokens_in": 2320,
+   "tokens_out": 875,
+   "latency_ms": 7308
+  },
+  {
+   "item_id": "scr-0069",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0002826,
+   "tokens_in": 1044,
+   "tokens_out": 576,
+   "latency_ms": 5013
+  },
+  {
+   "item_id": "scr-0070",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00122385,
+   "tokens_in": 1023,
+   "tokens_out": 641,
+   "latency_ms": 7240
+  },
+  {
+   "item_id": "scr-0071",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "de",
+   "cost_usd": 0.00019315,
+   "tokens_in": 991,
+   "tokens_out": 359,
+   "latency_ms": 4223
+  },
+  {
+   "item_id": "scr-0072",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004424,
+   "tokens_in": 2448,
+   "tokens_out": 800,
+   "latency_ms": 5983
+  },
+  {
+   "item_id": "scr-0073",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0004062,
+   "tokens_in": 1044,
+   "tokens_out": 885,
+   "latency_ms": 7035
+  },
+  {
+   "item_id": "scr-0078",
+   "doc_type": "preprint",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.00128601,
+   "tokens_in": 1295,
+   "tokens_out": 823,
+   "latency_ms": 6361
+  },
+  {
+   "item_id": "scr-0080",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.0008536799999999999,
+   "tokens_in": 2252,
+   "tokens_out": 796,
+   "latency_ms": 5296
+  },
+  {
+   "item_id": "scr-0081",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.0003617,
+   "tokens_in": 2306,
+   "tokens_out": 616,
+   "latency_ms": 4068
+  },
+  {
+   "item_id": "scr-0084",
+   "doc_type": "paper",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00040855,
+   "tokens_in": 1059,
+   "tokens_out": 889,
+   "latency_ms": 7541
+  },
+  {
+   "item_id": "scr-0089",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00044325,
+   "tokens_in": 2497,
+   "tokens_out": 796,
+   "latency_ms": 8118
+  },
+  {
+   "item_id": "scr-0095",
+   "doc_type": "preprint",
+   "self_published": false,
+   "primary_lang": "en",
+   "cost_usd": 0.00031745,
+   "tokens_in": 2517,
+   "tokens_out": 479,
+   "latency_ms": 4491
+  },
+  {
+   "item_id": "scr-0099",
+   "doc_type": "lab_blog",
+   "self_published": true,
+   "primary_lang": "en",
+   "cost_usd": 0.000482,
+   "tokens_in": 2207,
+   "tokens_out": 627,
+   "latency_ms": 5997
+  }
+ ]
+}

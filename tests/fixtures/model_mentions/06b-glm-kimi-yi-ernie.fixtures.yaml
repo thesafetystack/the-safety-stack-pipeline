@@ -1,0 +1,335 @@
+# Fixtures for 06b-glm-kimi-yi-ernie.yaml.
+# Every name-variant string from the MD entries in L4955-5302 (+ family
+# product-name note L4512-4524), plus each node's canonical display name.
+#
+# Mention pass 2026-07-31: 3 generated fixtures dropped/retargeted, matching
+# the exclusions 01-openai.fixtures.yaml states in its own header:
+# - display names of pattern-less structural groups ("Yi (2023 generation)") —
+#   texts never name them; the group exists for aggregation only.
+# - date-annotated strings ("ernie bot (2023)", "wenxin yiyan (2023)") — the
+#   annotation is the MD's, not text; bare "Ernie Bot"/"Wenxin Yiyan" resolve
+#   to the family by design since schema v0.3 dropped default_by_date.
+# Negative fixtures for the traps closed by the mention pass are at the end.
+
+# --- GLM / Zhipu ---
+- {text: "GLM", node: glm}
+- {text: glm, node: glm}
+- {text: zhipu, node: glm}
+- {text: "zhipu ai", node: glm}
+- {text: z.ai, node: glm}
+- {text: zai, node: glm}
+- {text: thudm, node: glm}
+- {text: zai-org, node: glm}
+- {text: 智谱, node: glm}
+- {text: "zhipu qingyan", node: glm}
+
+- {text: "GLM-130B", node: glm-130b}
+- {text: glm-130b, node: glm-130b}
+- {text: "glm 130b", node: glm-130b}
+- {text: glm130b, node: glm-130b}
+
+- {text: "ChatGLM-6B", node: chatglm-6b}
+- {text: chatglm-6b, node: chatglm-6b}
+- {text: "chatglm 6b", node: chatglm-6b}
+- {text: chatglm, node: chatglm}  # v0.7: was node chatglm-6b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: chatglm-6b-int4, node: chatglm-6b}
+- {text: thudm/chatglm-6b, node: chatglm-6b}
+- {text: chatglm2, node: chatglm2-6b}  # v0.7: was node chatglm-6b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: chatglm2-6b, node: chatglm2-6b}  # v0.7: was node chatglm-6b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: chatglm3, node: chatglm3-6b}  # v0.7: was node chatglm-6b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: chatglm3-6b, node: chatglm3-6b}  # v0.7: was node chatglm-6b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+- {text: "GLM-4", node: glm-4}
+- {text: glm-4, node: glm-4}
+- {text: "glm 4", node: glm-4}
+- {text: glm-4-plus, node: glm-4}
+- {text: glm-4-air, node: glm-4}
+- {text: glm-4-flash, node: glm-4}
+- {text: glm-4-0520, node: glm-4}
+- {text: "glm-4 all tools", node: glm-4}
+
+- {text: "GLM-4-9B", node: glm-4-9b}
+- {text: glm-4-9b, node: glm-4-9b}
+- {text: glm-4-9b-chat, node: glm-4-9b}
+- {text: glm-4-32b-0414, node: glm-4-32b}  # v0.7: was node glm-4-9b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: glm-z1, node: glm-z1}  # v0.7: was node glm-4-9b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: glm-z1-32b, node: glm-z1-32b}  # v0.7: was node glm-4-9b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+- {text: "GLM-4.5", node: glm-4.5}
+- {text: glm-4.5, node: glm-4.5}
+- {text: "glm 4.5", node: glm-4.5}
+- {text: z-ai/glm-4.5, node: glm-4.5}
+
+- {text: "GLM-4.5-Air", node: glm-4.5-air}
+- {text: glm-4.5-air, node: glm-4.5-air}
+- {text: "glm 4.5 air", node: glm-4.5-air}
+- {text: glm-4.5v, node: glm-4.5v}  # v0.7: was node glm-4.5-air; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+- {text: "GLM-4.6", node: glm-4.6}
+- {text: glm-4.6, node: glm-4.6}
+- {text: "glm 4.6", node: glm-4.6}
+- {text: z-ai/glm-4.6, node: glm-4.6}
+- {text: glm-4.6-air, node: glm-4.6}
+
+- {text: "GLM-4.7", node: glm-4.7}
+- {text: glm-4.7, node: glm-4.7}
+- {text: "glm 4.7", node: glm-4.7}
+- {text: z-ai/glm-4.7, node: glm-4.7}
+
+- {text: "GLM-5", node: glm-5}
+- {text: glm-5, node: glm-5}
+- {text: "glm 5", node: glm-5}
+- {text: glm5, node: glm-5}
+- {text: z-ai/glm-5, node: glm-5}
+
+- {text: "GLM-5.2", node: glm-5.2}
+- {text: glm-5.2, node: glm-5.2}
+- {text: "glm 5.2", node: glm-5.2}
+- {text: z-ai/glm-5.2, node: glm-5.2}
+
+# --- CogVLM / Zhipu (added 2026-08-02) ---
+- {text: "CogVLM", node: cogvlm}
+- {text: cogvlm, node: cogvlm}
+- {text: "cogvlm-17b", node: cogvlm-1}
+- {text: "CogVLM-Chat", node: cogvlm-1}
+- {text: "cogvlm-chat-v1.1", node: cogvlm-1}
+- {text: "cogvlm-chat-hf", node: cogvlm-1}
+- {text: "THUDM/cogvlm-chat-hf", node: cogvlm-1}
+- {text: "cogvlm-grounding-generalist", node: cogvlm-1}
+- {text: "cogvlm-base-490", node: cogvlm-1}
+- {text: "CogVLM2", node: cogvlm2}
+- {text: "cogvlm2", node: cogvlm2}
+- {text: "cogvlm-2", node: cogvlm2}
+- {text: "cogvlm2-llama3-chat-19b", node: cogvlm2}
+- {text: "CogAgent", node: cogagent}
+- {text: "cogagent", node: cogagent}
+- {text: "cogagent-18b", node: cogagent}
+- {text: "cogagent-chat", node: cogagent}
+# shadowing: the versioned/derived nodes must out-span the bare family pattern
+- {text: "CogVLM2", not_node: cogvlm}
+- {text: "cogvlm-chat-v1.1", not_node: cogvlm}
+# CogVLM is a Zhipu brand but not part of the GLM text line — must not land on glm
+- {text: "CogVLM", not_node: glm}
+- {text: "CogAgent", not_node: glm}
+
+# --- Kimi / Moonshot ---
+- {text: "Kimi", node: kimi}
+- {text: kimi, node: kimi}
+- {text: moonshot, node: kimi}
+- {text: "moonshot ai", node: kimi}
+- {text: moonshotai, node: kimi}
+- {text: 月之暗面, node: kimi}
+- {text: kimi.ai, node: kimi}
+- {text: "kimi chat", node: kimi}
+- {text: kimi-vl, node: kimi-vl}  # v0.7: was node kimi; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: kimi-vl-16b-a3b, node: kimi-vl}  # v0.7: was node kimi; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: kimi-vl-thinking, node: kimi-vl-a3b-thinking}  # v0.7: was node kimi; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- {text: kimi-dev-72b, node: kimi}
+- {text: kimi-researcher, node: kimi}
+- {text: "kimi linear", node: kimi-linear-48b-a3b}  # v0.7: was node kimi; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+
+- {text: "moonshot-v1", node: moonshot-v1}
+- {text: moonshot-v1, node: moonshot-v1}
+- {text: moonshot-v1-8k, node: moonshot-v1}
+- {text: moonshot-v1-32k, node: moonshot-v1}
+- {text: moonshot-v1-128k, node: moonshot-v1}
+- {text: "moonshot v1", node: moonshot-v1}
+- {text: moonshot-v1-auto, node: moonshot-v1}
+- {text: moonshot-v1-vision-preview, node: moonshot-v1}
+
+- {text: "Kimi k1.5", node: kimi-k1.5}
+- {text: "kimi k1.5", node: kimi-k1.5}
+- {text: kimi-k1.5, node: kimi-k1.5}
+- {text: k1.5, node: kimi-k1.5}
+- {text: "kimi 1.5", node: kimi-k1.5}
+- {text: k0-math, node: kimi-k1.5}
+
+- {text: "Kimi K2.x", node: kimi-k2.x}
+
+- {text: "Kimi K2", node: kimi-k2}
+- {text: "kimi k2", node: kimi-k2}
+- {text: kimi-k2, node: kimi-k2}
+- {text: k2, node: kimi-k2}
+- {text: kimi-k2-instruct, node: kimi-k2}
+- {text: kimi-k2-base, node: kimi-k2}
+- {text: kimi-k2-0711-preview, node: kimi-k2}
+- {text: kimi-k2-0905, node: kimi-k2}
+- {text: kimi-k2-instruct-0905, node: kimi-k2}
+- {text: moonshotai/kimi-k2, node: kimi-k2}
+
+- {text: "Kimi K2 Thinking", node: kimi-k2-thinking}
+- {text: "kimi k2 thinking", node: kimi-k2-thinking}
+- {text: kimi-k2-thinking, node: kimi-k2-thinking}
+- {text: "k2 thinking", node: kimi-k2-thinking}
+- {text: k2-thinking, node: kimi-k2-thinking}
+
+- {text: "Kimi K2.5", node: kimi-k2.5}
+- {text: "kimi k2.5", node: kimi-k2.5}
+- {text: kimi-k2.5, node: kimi-k2.5}
+- {text: k2.5, node: kimi-k2.5}
+- {text: "kimi 2.5", node: kimi-k2.5}
+
+- {text: "Kimi K2.6", node: kimi-k2.6}
+- {text: "kimi k2.6", node: kimi-k2.6}
+- {text: kimi-k2.6, node: kimi-k2.6}
+- {text: k2.6, node: kimi-k2.6}
+- {text: "kimi k2.7", node: kimi}  # v0.9: was kimi-k2.6 (Kimi K2.7 aliases moved to the family (L4), no node yet)
+- {text: "k2.7 code", node: kimi}  # v0.9: was kimi-k2.6 (Kimi K2.7 aliases moved to the family (L4), no node yet)
+- {text: kimi-k2.7-code, node: kimi}  # v0.9: was kimi-k2.6 (Kimi K2.7 aliases moved to the family (L4), no node yet)
+
+- {text: "Kimi K3", node: kimi-k3}
+- {text: "kimi k3", node: kimi-k3}
+- {text: kimi-k3, node: kimi-k3}
+- {text: k3, node: kimi-k3}
+- {text: moonshotai/kimi-k3, node: kimi-k3}
+
+# --- Yi / 01.AI ---
+- {text: "Yi", node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: yi, node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: 01.ai, node: yi}
+- {text: 01-ai, node: yi}
+- {text: "zero one ai", node: yi}
+- {text: 零一万物, node: yi}
+- {text: lingyiwanwu, node: yi}
+- {text: "yi series", node: yi}
+# Yi-VL got its own node 2026-08-02; these two used to resolve to the family.
+- {text: "Yi-VL", node: yi-vl}
+- {text: yi-vl, node: yi-vl}
+- {text: "yi vl", node: yi-vl}
+- {text: yi-vl-6b, node: yi-vl}
+- {text: yi-vl-34b, node: yi-vl}
+- {text: "01-ai/Yi-VL-34B", node: yi-vl}
+- {text: yi-vl-34b, not_node: yi}
+- {text: yi-coder-1.5b, node: yi}
+- {text: yi-coder-9b, node: yi}
+- {text: yi-9b, node: yi}
+
+# dropped: "Yi (2023 generation)" is the group display name; yi-2023 is a
+# pattern-less structural group (see header).
+
+- {text: "Yi 6B", node: yi-6b}
+- {text: yi-6b, node: yi-6b}
+- {text: "yi 6b", node: yi-6b}
+- {text: yi-6b-200k, node: yi-6b}
+
+- {text: "Yi 34B", node: yi-34b}
+- {text: yi-34b, node: yi-34b}
+- {text: "yi 34b", node: yi-34b}
+- {text: yi-34b-chat, node: yi-34b}
+- {text: yi-34b-200k, node: yi-34b}
+- {text: 01-ai/yi-34b, node: yi-34b}
+
+- {text: "Yi-1.5", node: yi-1.5}
+- {text: yi-1.5, node: yi-1.5}
+- {text: "yi 1.5", node: yi-1.5}
+
+- {text: "Yi-1.5 6B", node: yi-1.5-6b}
+- {text: yi-1.5-6b, node: yi-1.5-6b}
+
+- {text: "Yi-1.5 9B", node: yi-1.5-9b}
+- {text: yi-1.5-9b, node: yi-1.5-9b}
+
+- {text: "Yi-1.5 34B", node: yi-1.5-34b}
+- {text: yi-1.5-34b, node: yi-1.5-34b}
+- {text: yi-1.5-34b-chat, node: yi-1.5-34b}
+
+- {text: "Yi-Large", node: yi-large}
+- {text: yi-large, node: yi-large}
+- {text: "yi large", node: yi-large}
+- {text: yi-large-turbo, node: yi-large}
+- {text: yi-large-rag, node: yi-large}
+- {text: 01-ai/yi-large, node: yi-large}
+
+- {text: "Yi-Lightning", node: yi-lightning}
+- {text: yi-lightning, node: yi-lightning}
+- {text: "yi lightning", node: yi-lightning}
+
+# --- ERNIE / Baidu ---
+- {text: "ERNIE", node: ernie}
+- {text: ernie, node: ernie}
+- {text: "ernie bot", node: ernie}
+- {text: wenxin, node: ernie}
+- {text: "wenxin yiyan", node: ernie}
+- {text: 文心一言, node: ernie}
+- {text: 文心, node: ernie}
+- {text: "baidu ernie", node: ernie}
+- {text: "wenxin da moxing", node: ernie}
+- {text: ernie-bot, node: ernie}
+- {text: ernie-bot-turbo, node: ernie}
+- {text: ernie-speed, node: ernie}
+- {text: ernie-lite, node: ernie}
+- {text: ernie-tiny, node: ernie}
+
+- {text: "ERNIE 3.0", node: ernie-3.0}
+- {text: "ernie 3.0", node: ernie-3.0}
+- {text: ernie-3.0, node: ernie-3.0}
+- {text: ernie3.0, node: ernie-3.0}
+# retargeted from ernie-3.0: the "(2023)" annotation is not text (see header).
+- {text: "ernie bot", node: ernie}
+- {text: "wenxin yiyan", node: ernie}
+
+- {text: "ERNIE 3.5", node: ernie-3.5}
+- {text: "ernie 3.5", node: ernie-3.5}
+- {text: ernie-3.5, node: ernie-3.5}
+- {text: ernie-3.5-8k, node: ernie-3.5}
+- {text: "ernie bot 3.5", node: ernie-3.5}
+
+- {text: "ERNIE 4.0", node: ernie-4.0}
+- {text: "ernie 4.0", node: ernie-4.0}
+- {text: ernie-4.0, node: ernie-4.0}
+- {text: "ernie 4", node: ernie-4.0}
+- {text: ernie-4.0-8k, node: ernie-4.0}
+- {text: ernie-4.0-turbo-8k, node: ernie-4.0}
+- {text: "ernie bot 4", node: ernie-4.0}
+
+- {text: "ERNIE 4.5", node: ernie-4.5}
+- {text: "ernie 4.5", node: ernie-4.5}
+- {text: ernie-4.5, node: ernie-4.5}
+
+- {text: "ERNIE 4.5 300B-A47B", node: ernie-4.5-300b-a47b}
+- {text: ernie-4.5-300b-a47b, node: ernie-4.5-300b-a47b}
+- {text: baidu/ernie-4.5-300b-a47b, node: ernie-4.5-300b-a47b}
+- {text: ernie-4.5-turbo, node: ernie-4.5}  # v0.9: was ernie-4.5-300b-a47b (alias removed: ERNIE 4.5 Turbo is a different model)
+- {text: "ernie 4.5 turbo", node: ernie-4.5}  # v0.9: was ernie-4.5-300b-a47b (alias removed: ERNIE 4.5 Turbo is a different model)
+
+- {text: "ERNIE 4.5 21B-A3B", node: ernie-4.5-21b-a3b}
+- {text: ernie-4.5-21b-a3b, node: ernie-4.5-21b-a3b}
+
+- {text: "ERNIE 4.5 0.3B", node: ernie-4.5-0.3b}
+- {text: ernie-4.5-0.3b, node: ernie-4.5-0.3b}
+
+- {text: "ERNIE X1", node: ernie-x1}
+- {text: "ernie x1", node: ernie-x1}
+- {text: ernie-x1, node: ernie-x1}
+- {text: x1, node: none}  # weak pattern dropped 2026-08-01 (code/math variable; cost 0 docs)
+- {text: ernie-x1-turbo, node: ernie-x1}
+- {text: "ernie x1.1", node: ernie-x1}
+
+- {text: "ERNIE 5.0", node: ernie-5.0}
+- {text: "ernie 5.0", node: ernie-5.0}
+- {text: ernie-5.0, node: ernie-5.0}
+- {text: "ernie 5", node: ernie-5.0}
+- {text: "wenxin 5.0", node: ernie-5.0}
+- {text: "wenxin da moxing 5.0", node: ernie-5.0}
+
+- {text: "ERNIE 5.1", node: ernie-5.1}
+- {text: "ernie 5.1", node: ernie-5.1}
+- {text: ernie-5.1, node: ernie-5.1}
+- {text: "ernie 5.1 preview", node: ernie-5.1}
+
+# --- Negatives / traps closed by the mention pass ---
+# "01.ai"/"01-ai" are mentions_verbatim, NOT a flexible "01 ai" pattern: the
+# flexible form fires on year-month prose ("2026-01 AI models").
+- {text: "released 2026-01 AI models", node: none}
+- {text: "it is 3.5x cheaper", node: none}
+- {text: "Kimi is now 2.5 x cheaper", not_node: kimi-k2.5}
+# "k2.x" is mentions_verbatim for the same reason (flexible form eats "K2 x ...").
+- {text: "the K2 x GLM comparison", not_node: kimi-k2.x}
+# shadowing: deepest node must take the longest span
+- {text: "ERNIE 4.5 Turbo", not_node: ernie-4.0}
+- {text: "yi-1.5-9b", not_node: yi}
+- {text: "glm-4.5-air", not_node: glm-4.5}
+- {text: "kimi-k2-thinking", not_node: kimi-k2}
+- {text: "GLM-4V", not_node: glm}
+# weak-pattern traps (glm/k2/k3/yi/ernie/x1/moonshot) still match by design —
+# they are flagged weak, so they get context-policy gating, not silence.

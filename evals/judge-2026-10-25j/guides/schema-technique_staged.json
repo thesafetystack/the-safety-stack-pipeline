@@ -1,0 +1,273 @@
+{
+ "type": "object",
+ "required": [
+  "doc_kind",
+  "techniques"
+ ],
+ "properties": {
+  "sweeps": {
+   "type": "object",
+   "description": "the four required sweeps (rubric §7), written before any row",
+   "properties": {
+    "deployment_claims": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "system": {
+        "type": "string"
+       },
+       "technique": {
+        "type": "string"
+       },
+       "quote": {
+        "type": "string"
+       },
+       "direction": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "recommendations": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "technique": {
+        "type": "string"
+       },
+       "quote": {
+        "type": "string"
+       },
+       "direction": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "controls_discussed": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "surface": {
+        "type": "string"
+       },
+       "technique": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "menu_gaps": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "passages": {
+     "type": "array",
+     "description": "the inventory, written first: every technique-bearing passage in document order",
+     "items": {
+      "type": "object",
+      "properties": {
+       "where": {
+        "type": "string"
+       },
+       "what": {
+        "type": "string"
+       },
+       "slugs": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "none": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  },
+  "doc_kind": {
+   "enum": [
+    "paper",
+    "blogpost",
+    "commentary",
+    "model_card",
+    "system_card",
+    "technical_report",
+    "eval_report",
+    "news",
+    "policy",
+    "other"
+   ]
+  },
+  "techniques": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "slug",
+     "roles",
+     "quotes"
+    ],
+    "properties": {
+     "slug": {
+      "type": "string"
+     },
+     "roles": {
+      "type": "object",
+      "description": "role -> strength 1..4 (rubric §2), zero-valued roles OMITTED",
+      "properties": {
+       "mentioned": {
+        "type": "integer"
+       },
+       "cited_work": {
+        "type": "integer"
+       },
+       "discussed": {
+        "type": "integer"
+       },
+       "used": {
+        "type": "integer"
+       },
+       "evaluated": {
+        "type": "integer"
+       },
+       "modified": {
+        "type": "integer"
+       },
+       "introduced": {
+        "type": "integer"
+       },
+       "analyzed": {
+        "type": "integer"
+       },
+       "attested_use": {
+        "type": "integer"
+       },
+       "suspected_use": {
+        "type": "integer"
+       },
+       "considered": {
+        "type": "integer"
+       },
+       "critiqued": {
+        "type": "integer"
+       }
+      }
+     },
+     "quotes": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "flags": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "note": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "extra_techniques": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "name_as_written",
+     "roles",
+     "quotes"
+    ],
+    "properties": {
+     "name_as_written": {
+      "type": "string"
+     },
+     "gloss": {
+      "type": "string"
+     },
+     "hint_technique": {
+      "type": "string"
+     },
+     "roles": {
+      "type": "object",
+      "description": "role -> strength 1..4 (rubric §2), zero-valued roles OMITTED",
+      "properties": {
+       "mentioned": {
+        "type": "integer"
+       },
+       "cited_work": {
+        "type": "integer"
+       },
+       "discussed": {
+        "type": "integer"
+       },
+       "used": {
+        "type": "integer"
+       },
+       "evaluated": {
+        "type": "integer"
+       },
+       "modified": {
+        "type": "integer"
+       },
+       "introduced": {
+        "type": "integer"
+       },
+       "analyzed": {
+        "type": "integer"
+       },
+       "attested_use": {
+        "type": "integer"
+       },
+       "suspected_use": {
+        "type": "integer"
+       },
+       "considered": {
+        "type": "integer"
+       },
+       "critiqued": {
+        "type": "integer"
+       }
+      }
+     },
+     "quotes": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "flags": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "not_graded": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "slug": {
+      "type": "string"
+     },
+     "why": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}

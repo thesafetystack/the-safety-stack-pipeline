@@ -1,0 +1,47 @@
+# Fixture for tests/test_config.py: a minimal channels.yaml carrying the store-pipeline identity
+# keys (design §3.5, §5.6, §6; D13, D42) on one channel per group. Not a live config.
+version: "1.6.0"
+
+channel_groups:
+  paper:  { merge_keys: [doi, arxiv, openalex, s2, pmid, zenodo] }
+  forum:  { merge_keys: [fm_post] }
+  url:    { merge_keys: [url] }
+  social: { merge_keys: [x_post] }
+  record: { merge_keys: [registry_id] }
+
+channels:
+  - id: arxiv
+    kind: search
+    license_class: open
+    channel_group: paper
+    # miss_means omitted: defaults to `unknown`
+
+  - id: openalex
+    kind: search
+    license_class: open
+    channel_group: paper
+    miss_means: unknown
+    record_projection: [title, abstract, authors, published_at, doc_type, is_withdrawn, license_class]
+
+  - id: lesswrong
+    kind: search
+    license_class: open
+    channel_group: forum
+
+  - id: lab_blog
+    kind: scrape
+    license_class: public_web
+    channel_group: url
+
+  - id: x
+    kind: watch
+    license_class: api_tos
+    channel_group: social
+    miss_means: withdrawn
+    non_merging_keys: [conversation_id, reply_to_id, quote_of, repost_of, relay]
+
+  - id: incidents
+    kind: watch
+    license_class: public_web
+    channel_group: record
+    non_merging_keys: [related]

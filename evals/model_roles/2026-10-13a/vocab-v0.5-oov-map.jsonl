@@ -1,0 +1,43 @@
+{"item_id": "an-0002", "name": "Samuel's checkers learner", "node_id": null, "reason": "not added: a historical program named by its author; the text gives no family or maker to place it"}
+{"item_id": "an-0003", "name": "Opus 5.5", "node_id": "claude-opus-5.5", "reason": null}
+{"item_id": "an-0005", "name": "Jev 1.13", "node_id": "jev-1.13", "reason": null}
+{"item_id": "an-0005", "name": "GPT 6.1 Sol", "node_id": "gpt-6.1-sol", "reason": null}
+{"item_id": "an-0005", "name": "Opus 5.5", "node_id": "claude-opus-5.5", "reason": null}
+{"item_id": "an-0008", "name": "Claude 8 Pantheon", "node_id": null, "reason": "not added: a hypothetical future model in an essay, not a released or announced one"}
+{"item_id": "an-0009", "name": "Finetuned Constitutional classifier", "node_id": null, "reason": "not added: a description of an internal classifier on an unnamed small model, not a model name (and a technique-catalogue term)"}
+{"item_id": "an-0010", "name": "GLM 5.3", "node_id": "glm-5.3", "reason": null}
+{"item_id": "an-0010", "name": "Opus 5.5", "node_id": "claude-opus-5.5", "reason": null}
+{"item_id": "an-0010", "name": "Inkling-Small", "node_id": "inkling-small", "reason": null}
+{"item_id": "an-0010", "name": "Qwen3.8-27B", "node_id": "qwen3.8-27b", "reason": null}
+{"item_id": "an-0010", "name": "Nemotron-3.5-Lightning-30B-A3B", "node_id": "nemotron-3.5-lightning-30b-a3b", "reason": null}
+{"item_id": "an-0015", "name": "Claude Code", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes)"}
+{"item_id": "an-0019", "name": "Claude Haiku 5.5", "node_id": "claude-haiku-5.5", "reason": null}
+{"item_id": "an-0019", "name": "Fable 5.1", "node_id": "claude-fable-5.1", "reason": null}
+{"item_id": "an-0019", "name": "Opus 5.5", "node_id": "claude-opus-5.5", "reason": null}
+{"item_id": "an-0019", "name": "Gemini 4 Argon", "node_id": "gemini-4-argon", "reason": null}
+{"item_id": "an-0019", "name": "Sonnet 5.5", "node_id": "claude-sonnet-5.5", "reason": null}
+{"item_id": "an-0019", "name": "Claude Code", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes)"}
+{"item_id": "an-0019", "name": "Nano Banana 2.1", "node_id": "nano-banana-2.1", "reason": null}
+{"item_id": "an-0019", "name": "EmbeddingGemma 2", "node_id": "embeddinggemma-2", "reason": null}
+{"item_id": "an-0019", "name": "Astra", "node_id": "gpt-6-astra", "reason": null}
+{"item_id": "an-0019", "name": "GPT-6.1 Sol", "node_id": "gpt-6.1-sol", "reason": null}
+{"item_id": "an-0019", "name": "Luna", "node_id": "gpt-6.1-luna", "reason": null}
+{"item_id": "an-0019", "name": "GPT-6", "node_id": "gpt-6", "reason": null}
+{"item_id": "an-0019", "name": "Mistral Large 4", "node_id": "mistral-large-4", "reason": null}
+{"item_id": "an-0019", "name": "Beam", "node_id": null, "reason": "not added: 'a new open model from Reflection AI' with no family, and bare 'beam' would match beam search in most ML papers (weak hits feed model_roles' menu)"}
+{"item_id": "an-0019", "name": "Griffin", "node_id": null, "reason": "not added: 'a video model', no maker or family in the text; bare 'griffin' is an author surname in an-0012, an-0017, an-0021"}
+{"item_id": "an-0019", "name": "Dots", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes)"}
+{"item_id": "an-0019", "name": "DeepSeek v4.1-Flash", "node_id": "deepseek-v4.1-flash", "reason": null}
+{"item_id": "an-0019", "name": "GLM-5.3", "node_id": "glm-5.3", "reason": null}
+{"item_id": "an-0019", "name": "Grok 4.6", "node_id": "grok-4.6", "reason": null}
+{"item_id": "an-0019", "name": "K3 Swarm", "node_id": "kimi-k3-swarm", "reason": null}
+{"item_id": "an-0019", "name": "Grok Bot", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes)"}
+{"item_id": "an-0019", "name": "Sydney", "node_id": null, "reason": "not added: a persona name in a quoted post ('There's Sydney and 4o'), no family in the text; bare 'sydney' is a city"}
+{"item_id": "an-0019", "name": "HIPM", "node_id": null, "reason": "not added: the text (a quoted OpenAI disclosure) does not say what HIPM is or which family it belongs to"}
+{"item_id": "an-0019", "name": "Artex AI", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes) ('a cybersecurity tool called Artex AI')"}
+{"item_id": "an-0019", "name": "Pangram", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes) (an AI-writing detector used as a service)"}
+{"item_id": "an-0019", "name": "Hark.com", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes) ('a new AI agent personal intelligence offering')"}
+{"item_id": "an-0021", "name": "Inkling", "node_id": "inkling", "reason": null}
+{"item_id": "an-0021", "name": "Claude Code", "node_id": null, "reason": "not added: a product, tool or service, not a model (the vocabulary has no product nodes)"}
+{"item_id": "an-0022", "name": "Astra", "node_id": "gpt-6-astra", "reason": null}
+{"item_id": "an-0023", "name": "GPT-6 Astra", "node_id": "gpt-6-astra", "reason": null}

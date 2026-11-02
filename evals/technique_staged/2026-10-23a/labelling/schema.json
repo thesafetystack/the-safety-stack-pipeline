@@ -1,0 +1,306 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "gold-v3/techniques/label.schema.json",
+ "title": "Gold v3 technique label (one document)",
+ "description": "Same shape as the 2026-10-18 gold round's labeller output (guide v2.0 Output section), plus item_id/labeller; the scoring code reads label.techniques[].slug/roles/confidence.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "item_id",
+  "labeller",
+  "doc_kind",
+  "techniques",
+  "extra_techniques",
+  "menu_gaps",
+  "doc_note"
+ ],
+ "properties": {
+  "item_id": {
+   "type": "string",
+   "pattern": "^g3-[0-9]{4}$"
+  },
+  "labeller": {
+   "type": "string",
+   "minLength": 1
+  },
+  "doc_kind": {
+   "enum": [
+    "paper",
+    "blogpost",
+    "commentary",
+    "model_card",
+    "system_card",
+    "technical_report",
+    "eval_report",
+    "news",
+    "policy",
+    "other"
+   ]
+  },
+  "techniques": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "slug",
+     "roles",
+     "quote",
+     "confidence",
+     "reason",
+     "implemented_with",
+     "alt_slugs",
+     "level_alternatives"
+    ],
+    "properties": {
+     "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]*$"
+     },
+     "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+       "mentioned": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "cited_work": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "discussed": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "used": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "evaluated": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "modified": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "introduced": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "analyzed": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "attested_use": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "suspected_use": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "considered": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "critiqued": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       }
+      },
+      "description": "The rubric's 12 roles, integers 1-4, zeros omitted; mentioned >= every other role."
+     },
+     "quote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Verbatim span of docs/<item_id>/text.txt (whitespace may be normalised; nothing else)."
+     },
+     "confidence": {
+      "enum": [
+       "high",
+       "med",
+       "low"
+      ]
+     },
+     "reason": {
+      "type": "string",
+      "minLength": 1
+     },
+     "implemented_with": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "alt_slugs": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[a-z0-9][a-z0-9.-]*$"
+      }
+     },
+     "level_alternatives": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[a-z0-9][a-z0-9.-]*$"
+      }
+     }
+    }
+   }
+  },
+  "extra_techniques": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "name_as_written",
+     "gloss",
+     "nearest_slug",
+     "roles",
+     "quote"
+    ],
+    "properties": {
+     "name_as_written": {
+      "type": "string",
+      "minLength": 1
+     },
+     "gloss": {
+      "type": "string"
+     },
+     "nearest_slug": {
+      "anyOf": [
+       {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9.-]*$"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+       "mentioned": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "cited_work": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "discussed": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "used": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "evaluated": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "modified": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "introduced": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "analyzed": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "attested_use": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "suspected_use": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "considered": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       },
+       "critiqued": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+       }
+      },
+      "description": "The rubric's 12 roles, integers 1-4, zeros omitted; mentioned >= every other role."
+     },
+     "quote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Verbatim span of docs/<item_id>/text.txt (whitespace may be normalised; nothing else)."
+     },
+     "confidence": {
+      "enum": [
+       "high",
+       "med",
+       "low"
+      ]
+     }
+    }
+   }
+  },
+  "menu_gaps": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "surface",
+     "note"
+    ],
+    "properties": {
+     "surface": {
+      "type": "string"
+     },
+     "note": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "doc_note": {
+   "type": "string"
+  }
+ }
+}

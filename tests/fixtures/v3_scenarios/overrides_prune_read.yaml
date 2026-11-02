@@ -1,0 +1,85 @@
+# v3 overrides / prune / read decision table, mined from tests/test_overrides_prune_read.py at
+# v3 commit 9312c8c (T1.8, D40). The v3 test ran Writer.override / prune_rows and stack.read.Read
+# against Postgres canonical views; the file is retired with the DB. Consumers: T2.7b (gather
+# merge: `fields.yaml` human override beats providers; effective_meta precedence) in M2, and the
+# `<wf>` overrides of the LLM phases (human beats a higher-version machine row) in M4, per
+# DESIGN §12 (overrides; origin = 'human'). Aggregates and prune have no v4 equivalent (D40
+# retires aggregates; v4 has `gc`, not row pruning); their rows are kept as v3 referent only.
+# No test reads this file yet.
+
+overrides:
+  - id: human_annotation_beats_higher_version_machine
+    v3_test: test_override_annotation_human_wins_over_higher_version_machine
+    target: {table: annotations, workflow: annotate.claim, ann_type: claim, workflow_version: 1, origin: ai,
+             payload: {relation: deploys, subject_grain: model_release, technique: rlhf, grounding_idx: [0]}}
+    override: {payload: {relation: denies, subject_grain: model_release, technique: rlhf, grounding_idx: [0]}, origin: "human:tomas"}
+    then: {machine_row: {workflow_version: 2, accepted: true, same_identity_key: true}}
+    expect:
+      copy_inherits: [snapshot_id, workflow, workflow_version, ann_type, item_key]
+      overrides: target
+      op_run: {workflow: op.override, accepted: true, status: ok}
+      canonical: override     # before and after the v2 machine row (origin precedence > version)
+
+  - id: corrected_payload_validated
+    v3_test: test_override_validation_and_metadata_aggregate
+    target: {table: annotations, ann_type: claim}
+    override: {payload: {relation: bogus}, origin: "human:tomas"}
+    expect: ValidationFailed
+
+  - id: origin_must_be_human_or_check
+    v3_test: test_override_validation_and_metadata_aggregate
+    target: {table: annotations, ann_type: claim}
+    override: {payload: {relation: denies}, origin: auto}
+    expect: ValidationFailed   # origin must be human:* or check:*
+
+  - id: metadata_override_canonical
+    v3_test: test_override_validation_and_metadata_aggregate
+    target: {table: metadata, workflow: collect.meta, payload: {title: Orig, pub_date: "2026-01-01"}}
+    override: {payload: {title: Human, pub_date: "2026-01-01"}, origin: "human:tomas"}
+    expect: {canonical: override, canonical_origin: "human:tomas"}
+
+  - id: aggregate_override_canonical
+    v3_test: test_override_validation_and_metadata_aggregate
+    target: {table: aggregates, workflow: aggregate.facet_answers,
+             value: {technique: rlhf, facets: {maturity: {values: [deployed], origin: initial_pass}}}}
+    override: {value: {technique: rlhf, facets: {maturity: {values: [retired], origin: human_set}}}, origin: "human:tomas"}
+    expect: {canonical: override, canonical_origin: "human:tomas"}
+
+prune:
+  - {id: reviewed_annotation_refused, v3_test: test_prune_refusal_and_success, table: annotations, referenced_by: review, expect: PruneRefused}
+  - {id: unreferenced_annotation_pruned, v3_test: test_prune_refusal_and_success, table: annotations, referenced_by: null,
+     expect: {deleted: 1, recorded_in: runs.detail.pruned}}
+  - {id: source_with_snapshots_refused, v3_test: test_prune_refusal_and_success, table: sources, referenced_by: snapshots,
+     expect: {raises: PruneRefused, message_names: snapshots}}
+
+read:
+  - id: doc_title_falls_through_to_title_hint
+    v3_test: test_read_api_end_to_end
+    source: {title_hint: My Title}
+    metadata: []
+    expect: {title: My Title}
+  - id: text_roundtrip_and_absent
+    v3_test: test_read_api_end_to_end
+    expect: {text_of_snapshot: exact, absent_well_formed_id: KeyError}
+  - id: effective_meta_precedence
+    v3_test: test_read_api_end_to_end
+    metadata:
+      - {workflow: collect.meta, payload: {title: Disc, pub_date: "2026-01-01"}}
+      - {workflow: fetch.metadata, payload: {title: Schol}}
+    expect: {title: Schol, pub_date: "2026-01-01"}   # scholarly title wins; pub_date falls through
+  - id: annotations_by_subject
+    v3_test: test_read_api_end_to_end
+    annotation: {ann_type: claim, subjects: ["technique:rlhf"]}
+    query: {subject: "technique:rlhf"}
+    expect: {returns: [the claim], subjects: ["technique:rlhf"]}
+  - id: pending_units
+    v3_test: test_read_api_end_to_end
+    snapshot: {in_corpus: true, claim_receipt: false}
+    expect: {pending_for: annotate.claim}
+  - id: draft_stubs
+    v3_test: test_read_api_end_to_end
+    expect: {admit: NotImplementedError, explain: NotImplementedError}
+  - id: masked_source_live_vs_canon
+    v3_test: test_masked_source_annotations_live_vs_canon
+    ops: [{annotate: claim}, {mask: {reason: off-topic, origin: "human:tomas"}}]
+    expect: {in_live_view: false, in_canon_view: true}   # masks filter at read time, never delete

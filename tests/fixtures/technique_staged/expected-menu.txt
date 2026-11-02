@@ -1,0 +1,19 @@
+## intervention
+- constitutional-ai [intervention] — Constitutional AI (CAI) {child of: policy-alignment}: Trains with AI feedback judged against a written constitution.
+- dp-training [intervention] — Differentially private training (provisional) (aka: DP training; e.g. DP-SGD): Trains under a stated differential-privacy guarantee.
+- keyword-blocklist-filter [intervention] — Keyword / blocklist filter: Blocks inputs or outputs that contain listed terms.
+- machine-unlearning [intervention] — Machine unlearning (aka: unlearning methods; e.g. RMU, NPO): Removes targeted knowledge or capabilities from a trained model.
+- rlhf [intervention] — RLHF (aka: reinforcement learning from human feedback): Aligns a model to preferences supplied by humans, with any optimiser.
+
+## monitoring
+- anomaly-detection [monitoring] — Activation-space anomaly detection (MAD / OOD) {child of: runtime-monitoring}: Flags inputs whose activations are out of distribution.
+- chain-of-thought-monitoring [monitoring] — Chain-of-thought monitoring (aka: CoT monitoring) {child of: runtime-monitoring}: Reads a model's reasoning trace to flag unsafe intent.
+- llm-based-safety-classifier [monitoring] — Guard models (aka: safeguard model; e.g. Llama Guard, ShieldGemma): Scores "unsafe" content with a dedicated safety LLM.
+
+## assessment
+- dangerous-capability-evaluation [assessment] — Dangerous-capability evaluation: Measures capabilities that could enable severe harm.
+- dangerous-capability-evaluation.cbrn [assessment] — CBRN / high-risk-domain evaluation {child of: dangerous-capability-evaluation}: Evaluates chemical, biological, radiological and nuclear uplift.
+
+## group nodes (generic-mention targets)
+- policy-alignment [group] — Safety-policy-guided alignment (aka: policy-guided alignment) {children: constitutional-ai, rlhf}: Derives training signals from an explicit safety policy.
+- runtime-monitoring [group] — Agent runtime monitoring {children: chain-of-thought-monitoring, anomaly-detection}: Group node for runtime monitors of agent actions.

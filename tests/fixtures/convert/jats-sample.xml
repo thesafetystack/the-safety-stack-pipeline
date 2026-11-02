@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.2 20190208//EN" "JATS-archivearticle1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" article-type="research-article">
+<front><article-meta>
+<title-group><article-title>A Fixture Article on Reward Models</article-title></title-group>
+<contrib-group><contrib contrib-type="author"><name><surname>Example</surname><given-names>Ada</given-names></name></contrib></contrib-group>
+<abstract><p>We evaluate reward models on a fixture benchmark and report their accuracy.</p></abstract>
+</article-meta></front>
+<body>
+<sec id="s1"><title>Introduction</title>
+<p>Paragraph 1: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 2: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 3: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 4: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 5: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 6: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 7: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 8: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 9: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 10: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 11: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 12: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 13: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 14: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 15: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 16: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 17: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 18: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 19: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 20: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 21: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 22: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 23: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 24: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 25: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 26: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 27: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 28: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 29: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+<p>Paragraph 30: reward models are trained on pairwise preferences and evaluated on held-out comparisons; the fixture text is long enough to be a paper body.</p>
+</sec>
+<sec id="s2"><title>Results</title>
+<p>The loss is <inline-formula><mml:math><mml:mi>L</mml:mi></mml:math></inline-formula> as in Table 1.</p>
+<table-wrap id="t1"><label>Table 1</label><caption><p>Accuracy by model.</p></caption>
+<table><thead><tr><th>Model</th><th>Accuracy</th></tr></thead>
+<tbody><tr><td>RM-small</td><td>71.2</td></tr><tr><td>RM-large</td><td>78.4</td></tr></tbody></table></table-wrap>
+</sec>
+</body>
+<back><ref-list><ref id="r1"><mixed-citation>A. Author. A cited paper. 2024.</mixed-citation></ref></ref-list></back>
+</article>

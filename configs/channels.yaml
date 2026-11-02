@@ -1,0 +1,1022 @@
+# channels.yaml — configured origins of sources (10-design §8, §5.1).
+# Concept groups cluster synonym surface forms for ONE technique each and carry a
+# `techniques:` mapping into the taxonomy — the coverage-topic <-> taxonomy join that
+# absence claims need. Validated against channels.schema.json.
+version: "2.5.1"   # 2.5.1 (2026-11-02): comments only (attributions to the maintainer and internal labels reworded;
+                   # D792). No value moves.
+                   # 2.5.0 (Chinese coverage; approved 2026-10-30): `keyword_cuts.keep_venues` on openalex and
+                   # semantic_scholar (ACL Anthology, AAAI, IJCAI, NDSS and PLOS DOIs pass the publisher cut; the
+                   # allowlist digest is in every cut group's key: OpenAlex's 59 and S2's 59 group queries re-sweep from 2015 once); a new concept
+                   # group `llm-safety` (OpenAlex quoted with the CS filter, S2, no forum queries: the new concept-group
+                   # field `forum_terms`); three institutions (Shanghai AI Lab, BAAI, Zhipu; CS field), new keys
+                   # `inst:<Iid>` only; the feed channel `aisafetychina_substack` (Concordia AI's newsletter);
+                   # semantic_scholar's `keyword_cuts.venue_ai_term` (the allowlist keeps only AI-term hits there; the
+                   # vocabulary digest in its 59 group keys, the same one re-sweep).
+                   # 2.4.0: institutions[].org are ids of the organisation vocabulary (D737): google-deepmind,
+                   # mistral-ai, moonshot-ai become deepmind, mistral, moonshot (the registry's slugs). The org slug is
+                   # only the query label (metadata.matched_by) and a v3 topic key, in no coverage key: no re-sweep.
+                   # 2.3.0: the openalex channel's `keyword_cuts` gain the pre-2020 exception (D654): `publisher_cut_floor`
+                   # (hits before it with a pre-2020 safety stem bypass `drop_sources`) and `field_filter_floor` /
+                   # `field_filter_groups` (umbrella asked without the CS-field filter before 2020). Both are in the
+                   # group queries' coverage keys; D653's work type already makes every OpenAlex key new (one re-sweep
+                   # from the floor, plan batch-2026-10a revision 5). semantic_scholar's `keyword_cuts` gain the same
+                   # `publisher_cut_floor` (no field filter there): its 59 group keys change, one re-sweep from 2015.
+                   # 2.2.0: two new concept groups, `legacy-alignment` (AI-context gated) and `legacy-safety`
+                   # (the 2006-2019 vocabulary; the 2015 backfill, D646). Additive: new coverage keys only.
+                   # 2.1.0: semantic_scholar `politeness.rate_rps` 0.95 -> 0.4 and now READ: it is the cross-process Gate's
+                   # S2 interval (2.5 s) for collect, the lookups and acquire (D550). Values only.
+                   # 2.0.0: keys read by no v4 code removed (D438; 2026-10-14): every channel's
+                   # `schedule`, `politeness.max_concurrency`, `breadth_presets.*.from_default` and the top-level
+                   # `recall_seeds` (removed). Values of read keys unchanged.
+                   # 1.12.0: the backfill cuts (D304: the proposed cuts accepted; collection-yield.md
+                   # §10): `keyword_cuts` on the openalex and semantic_scholar channels (concept-group hits only:
+                   # publisher and no-DOI works and self-publication servers dropped, SSRN kept; OpenAlex's 24
+                   # unquoted non-broad groups keep a hit only with an AI term, stack/rules.py) and `s2_terms: []`
+                   # for scheming, specs and control. Every OpenAlex and S2 concept-group coverage key gains the
+                   # cut set (a new watermark key: the next run re-sweeps those queries from the floor).
+                   # 1.11.0: collection-yield cuts C2 (OpenAlex half) and C3 (2026-10-13, D270): heuristic-arguments
+                   # gets `openalex_terms: []` (skipped on OpenAlex too); scientist-ai loses "non-agentic AI" (terms
+                   # and openalex_terms). Query digests that change: OpenAlex `group:scientist-ai` (new filter, so a
+                   # new watermark key: its window re-sweeps from the floor); OpenAlex `group:heuristic-arguments`
+                   # (no longer asked); S2 `group:scientist-ai` (new s2_query); forums `kw:non-agentic AI` x 2 forums
+                   # (no longer asked); arXiv `kw:group:scientist-ai` keeps its label key (its watermark carries).
+                   # Values only.
+                   # 1.10.0: record projections gain the fields stack/identity.py's key adders read: lesswrong
+                   # `url` (a linkpost's target), openalex `locations` (arXiv locations); one new sources row per
+                   # post/work on its next observation (round 5, track T-ID). Values only.
+                   # 1.9.0: concept-group `s2_terms` (replaces `terms` on Semantic Scholar; empty = skip there):
+                   # steerability and heuristic-arguments skipped on S2 (round 4, track P). Additive.
+                   # 1.8.0: the link channels links_paper/forum/url/social (collect.links: link targets selected in
+                   # newsletter and flagged manual bodies; non-merging `relay` keys; round 4, track L2). Additive.
+                   # 1.7.0: `kind: feed` channels (collect.feeds) with optional `include_re`, and the manual
+                   # sources' channels manual_url/paper/forum/social (collect.manual, non-merging `flag` keys;
+                   # round 4, track L). Additive.
+                   # 1.6.3: `x` channel made real for collect.x-lookup (miss_means, non_merging_keys,
+                   # record_projection; round 4, track X). Additive.
+                   # 1.6.2: `card_dates` lookup channel (collect.card-dates-lookup, T2.6). Additive.
+                   # 1.6.1: `record_projection` set on the five search channels (stable provider fields
+                   # minus counters, C23) and `miss_means: unknown` stated on openalex (T2.1). Values
+                   # only; no v3 collector records a non-merging (`related`, `relay`) key yet.
+                   # 1.6.0: identity keys for the store pipeline (design §3.5, §6; D13, D42): every
+                   # channel declares its `channel_group` (required); optional `miss_means`
+                   # (default `unknown`), `non_merging_keys`, `record_projection` (C23); top-level
+                   # `channel_groups` lists each group's merging key kinds. Additive (§8.1).
+                   # 1.5.0 (v3; fetch.http is retired and v4 reads no `max_concurrency`): `max_concurrency` is now READ (fetch.http's per-host in-flight cap;
+                   # absent = 1, today's behaviour) and declared on lesswrong/alignmentforum: at
+                   # 3.3 rps one in-flight request reaches ~2 rps, two reach the declared rate.
+                   # Additive — no existing entry changes meaning (§8.1).
+                   # 1.4.0: breadth caps raised (standard 2000->5000, deep 8000->10000) — more
+                   # per-run headroom for over-cap concept groups; truncation semantics unchanged.
+                   # 1.3.0: `ai_context` ported (its consumer, collect.semantic_scholar, now
+                   # exists). Additive — no existing entry changes meaning (§8.1).
+
+breadth_presets:
+  standard: { max_results_per_query: 5000 }
+  deep:     { max_results_per_query: 10000 }
+
+# The AI-context disjunction ANDed onto `misuse: true` concept groups on the PHRASE-MATCH channels
+# (v1 search_config.yaml `ai_context`; v1 applied it on Semantic Scholar + Europe PMC). "bioweapon"
+# alone returns the whole biosecurity literature, so a misuse group is only meaningful intersected
+# with an AI-context term — which is why collect.openalex skips those groups outright (a token-AND
+# backend cannot express the intersection) and why the misuse axis needs a phrase-match channel.
+# Read by collect.semantic_scholar; a future collect.europepmc reads the same list.
+ai_context:
+  - "large language model"
+  - "foundation model"
+  - "language model"
+  - "artificial intelligence"
+  - "frontier model"
+
+# The concept groups (62 as of 1.11.0; the first 42 ported from v1 `pipeline/config/search_config.yaml`, 2026-07-22). They
+# ARE the recall strategy: collect.openalex emits one OR-grouped query per group, and
+# collect.forums one query per TERM, each receipt carrying `group:<id>` (+ `technique:<slug>`)
+# topic keys — the coverage-topic <-> taxonomy join absence claims read. Until this port the
+# file carried three groups, so both sweeps ran at ~7% of v1's query breadth.
+#
+# Two deliberate departures from the v1 file:
+#   * ids are kebab-case (`misuse-bio`, not `misuse_bio`) — the config slug pattern forbids `_`;
+#   * `techniques:` is populated for 37 groups (of 42 at the port; 37 of 62 as of 1.11.0) against the pinned taxonomy-v0.6
+#     (292 techniques). The 5 unmapped groups carry `group:<id>` alone — a wrong technique
+#     slug would be a silently false taxonomy join, an absent one is just a missing join.
+#
+# v1's `ai_context` list is ported above as of channels 1.3.0 — `collect.semantic_scholar` reads
+# it, so it is no longer committed-but-unread config (the trap `breadth_presets` fell into once).
+# v1's per-source group subsets (`sources.europepmc`, which ran EPMC over 21 of the 42 groups) are
+# still NOT ported: `concept_groups:` on the channel already expresses that selection when a
+# `collect.europepmc` workflow exists to read it.
+concept_groups:
+  # ── umbrella / framing ─────────────────────────────────────────────────────
+  - id: umbrella
+    broad: true
+    terms: ["AI safety", "AI alignment", "alignment of large language models", "AGI safety", "existential risk from AI"]
+  - id: superalignment
+    terms: ["superalignment", "aligning superhuman models"]
+  # ── iterative alignment / training ─────────────────────────────────────────
+  - id: rlhf
+    terms: ["RLHF", "reinforcement learning from human feedback", "RLAIF", "reinforcement learning from AI feedback"]
+    techniques: [rlhf, rlaif]
+  - id: preference-opt
+    terms: ["direct preference optimization"]
+    techniques: [dpo]
+  - id: specs
+    broad: true
+    terms: ["constitutional AI", "deliberative alignment", "model specification", "model spec"]
+    s2_terms: []  # backfill cut 5 (collection-yield.md §10): 33 S2 hits a week, 0 relevant ("model specification")
+    techniques: [constitutional-ai, deliberative-alignment, model-specification]
+  - id: safety-tuning
+    broad: true
+    terms: ["safety fine-tuning", "safety alignment", "refusal training", "inoculation prompting"]
+    techniques: [safety-sft-refusal-training, inoculation-prompting, safety-policy-guided-alignment]
+  # LLM safety vocabulary (approved 2026-10-30): the Chinese technical-safety literature's words (Concordia
+  # database misses: 91 of 92 carry no other group's phrase) for safety benchmarks and evaluations, harmful content,
+  # harmlessness and honesty, safety detectors, and safe RL (the post-2020 term; pre-2020 safe-RL works pass the
+  # D654 stems). Checked against the other groups: "safety alignment" and "safety fine-tuning" stay safety-tuning,
+  # "safety classifier" and "guardrails" jailbreak, "truthfulness language models" deception-detect, "safe
+  # exploration" legacy-safety. Most of these phrases are common outside AI (drug "safety evaluation", "honesty" in
+  # psychology: OpenAlex 2015-now 19,581 and 37,173 works unfiltered), so OpenAlex asks them quoted with the CS-field
+  # filter (`broad`: 7,525 works, 2,792 arXiv-located; with the AI context instead "safe reinforcement learning"
+  # keeps 59 of 1,246), Semantic Scholar as phrases (64,498 hits before the publisher cut keeps the arXiv-located
+  # ones), and the forums not at all (`forum_terms: []`: LessWrong's loose search returns 1,148-21,963 posts per
+  # phrase). Counts probed 2026-10-30, summed per phrase. New key `group:llm-safety` on OpenAlex and S2; no
+  # `techniques:` (no single technique).
+  - id: llm-safety
+    broad: true
+    terms: ["LLM safety", "safety benchmark", "safety evaluation", "harmful content", "harmlessness", "honesty",
+            "safety detector", "safe reinforcement learning"]
+    openalex_terms: ['"LLM safety"', '"safety benchmark"', '"safety evaluation"', '"harmful content"', '"harmlessness"',
+                     '"honesty"', '"safety detector"', '"safe reinforcement learning"']
+    forum_terms: []
+  # ── steering / unlearning / control / safeguards ───────────────────────────
+  - id: steering
+    broad: true
+    terms: ["activation steering", "steering vectors", "representation engineering", "activation patching", "inference-time intervention", "concept erasure"]
+    techniques: [activation-steering-repe, representation-concept-suppression, circuit-breakers-representation-rerouting]
+  - id: unlearning
+    terms: ["machine unlearning", "knowledge unlearning", "concept unlearning", "tamper-resistant safeguards"]
+    techniques: [machine-unlearning, finetuning-resistant-tamper-resistant-safety]
+  - id: control
+    broad: true
+    terms: ["AI control", "control protocol", "untrusted model", "trusted monitoring", "AI control evaluations"]
+    openalex_terms: ["untrusted model", "AI control evaluations"]
+    s2_terms: []  # backfill cut 5 (collection-yield.md §10): 22 S2 hits a week, 0 relevant
+    techniques: [ai-control-protocols, trusted-monitoring-suspicion-scoring]
+  - id: jailbreak
+    broad: true
+    terms: ["jailbreak", "jailbreaking large language models", "prompt injection", "adversarial robustness language models", "safety classifier", "constitutional classifiers", "guardrails"]
+    techniques: [adversarial-training-jailbreak-robustness, constitutional-classifiers, jailbreak-adversarial-input-detection-classifiers, prompt-injection-defense-agentic, multi-layer-guardrail-stack]
+  - id: cot-monitor
+    terms: ["chain-of-thought monitoring", "chain-of-thought faithfulness", "reasoning faithfulness"]
+    techniques: [chain-of-thought-monitoring, cot-auditing-for-agents]
+  # ── model psychology / misalignment behaviours ─────────────────────────────
+  - id: misalignment-behaviors
+    terms: ["emergent misalignment", "alignment faking", "sleeper agents", "deceptive alignment", "backdoor language models"]
+    techniques: [model-organisms-of-misalignment, alignment-faking-eval, scheming-deceptive-alignment-evaluation, data-poisoning-backdoor-defenses-pretraining]
+  - id: reward-hacking
+    terms: ["reward hacking", "reward tampering", "specification gaming", "goal misgeneralization", "reward overoptimization", "Goodhart"]
+    techniques: [anti-reward-hacking-mitigation, reward-hacking-eval, agentic-reward-hacking-resistance]
+  - id: persona
+    broad: true
+    terms: ["sycophancy", "persona vectors", "character training", "emergent values"]
+    techniques: [character-persona-training, anti-sycophancy-training, sycophancy-eval]
+  - id: power-seeking
+    broad: true
+    terms: ["power-seeking", "instrumental convergence", "shutdown resistance", "self-preservation"]
+    techniques: [self-exfiltration-oversight-deactivation-detection, kill-switch-shutdown-criteria]
+  # ── data / goal robustness ─────────────────────────────────────────────────
+  - id: data-safety
+    terms: ["data poisoning language models", "backdoor language models", "pretraining data filtering", "synthetic data for alignment"]
+    techniques: [data-poisoning-backdoor-defenses-pretraining, heuristic-rule-based-data-filtering, model-based-data-quality-filtering, synthetic-training-data-generation, training-data-poisoning-detection]
+  - id: rl-safety
+    broad: true
+    terms: ["reward modeling", "reward model", "assistance games", "cooperative inverse reinforcement learning", "mild optimization", "quantilization"]
+    techniques: [reward-modeling, inverse-rl-cirl, safe-constrained-rlhf]
+  # ── white-box / interpretability ───────────────────────────────────────────
+  - id: mech-interp
+    terms: ["mechanistic interpretability"]
+    techniques: [mechanistic-interp]
+  - id: sparse-coding
+    terms: ["sparse autoencoder", "dictionary learning", "polysemanticity", "monosemanticity"]
+    openalex_terms: ["sparse autoencoder interpretability", "dictionary learning interpretability", "polysemanticity", "monosemanticity"]
+    techniques: [sparse-autoencoders]
+  - id: interp-tools
+    terms: ["logit lens", "causal scrubbing", "causal abstraction", "interchange intervention", "probing classifiers"]
+    techniques: [linear-probes, automated-interpretability]
+  - id: model-diffing
+    terms: ["model diffing", "crosscoder"]
+    techniques: [model-diffing]
+  - id: dev-interp
+    terms: ["developmental interpretability", "singular learning theory", "grokking"]
+  - id: data-attribution
+    broad: true
+    terms: ["training data attribution", "data influence functions"]
+    techniques: [influence-functions-tda, training-data-attribution-membership-testing]
+  - id: elk
+    terms: ["eliciting latent knowledge"]
+    techniques: [eliciting-latent-knowledge]
+  - id: deception-detect
+    terms: ["deception detection language models", "truthfulness language models", "AI deception"]
+    techniques: [honesty-anti-deception-training, honesty-calibration-evaluation-suite]
+  - id: anomaly
+    terms: ["mechanistic anomaly detection"]
+    techniques: [mechanistic-anomaly-detection, ood-activation-space-anomaly-detection]
+  # ── safety by construction / theory ────────────────────────────────────────
+  - id: safety-by-construction
+    terms: ["guaranteed safe AI", "provably safe AI", "formal verification neural network"]
+    techniques: [formal-verification-gsai]
+  - id: corrigibility
+    terms: ["corrigibility", "shutdown problem", "safe interruptibility"]
+    techniques: [corrigibility-behaviors-training, kill-switch-shutdown-criteria]
+  - id: agent-foundations
+    terms: ["agent foundations", "logical induction", "embedded agency"]
+    # phrase-only terms — nothing here survives OpenAlex's token-AND, so the
+    # group is skipped there and runs only on the phrase-match APIs (v1 parity).
+    openalex_terms: []
+    techniques: [agent-foundations]
+  # ── make-AI-solve-it / oversight ───────────────────────────────────────────
+  - id: oversight
+    terms: ["scalable oversight", "amplified oversight", "recursive reward modeling", "iterated amplification"]
+    techniques: [recursive-reward-modeling, iterated-distillation-and-amplification, process-based-supervision, sandwiching-evaluation]
+  - id: w2s
+    terms: ["weak-to-strong generalization"]
+    techniques: [weak-to-strong-generalization]
+  - id: debate
+    terms: ["AI safety via debate", "language model debate"]
+    techniques: [ai-safety-via-debate]
+  # ── evals ──────────────────────────────────────────────────────────────────
+  - id: capability-evals
+    terms: ["dangerous capability evaluation", "frontier model evaluation", "capability elicitation"]
+    techniques: [dangerous-capability-evaluation, capability-elicitation-methodology]
+  - id: autonomy-evals
+    broad: true
+    terms: ["autonomous agent evaluation", "agentic safety evaluation", "long-horizon agent"]
+    techniques: [sabotage-covert-side-task-eval]
+  - id: scheming
+    terms: ["AI scheming", "situational awareness", "evaluation awareness"]
+    openalex_terms: ["AI scheming"]
+    s2_terms: []  # backfill cut 5 (collection-yield.md §10): 38 S2 hits a week, 0 relevant ("situational awareness": driving)
+    techniques: [scheming-deceptive-alignment-evaluation, situational-eval-awareness-detection, sandbagging-detection]
+  - id: stego
+    terms: ["steganography language models", "LLM steganography", "linguistic steganography", "encoded reasoning"]
+  - id: red-team
+    terms: ["automated red teaming", "red teaming language models"]
+    techniques: [automated-red-teaming, human-red-teaming]
+  # ── misuse / WMD. `misuse: true` = the querying workflow ANDs an AI-context term so the
+  # sweep does not ingest all of biosecurity. collect.openalex SKIPS these groups (token-AND
+  # cannot express that intersection) — exactly as v1 did; they are for the phrase-match APIs.
+  - id: misuse-bio
+    misuse: true
+    terms: ["biosecurity", "bioweapon", "dual-use biology", "biological weapons", "pathogen"]
+    techniques: [cbrn-high-risk-domain-hazard-classifier]
+  - id: misuse-chem
+    misuse: true
+    terms: ["chemical weapons", "CBRN", "chemical synthesis"]
+    techniques: [cbrn-high-risk-domain-hazard-classifier]
+  - id: misuse-cyber
+    misuse: true
+    terms: ["cyber capability evaluation", "offensive cyber", "cybersecurity capabilities", "autonomous exploitation"]
+    techniques: [dangerous-capability-evaluation]
+  # ── governance-tech / multi-agent ──────────────────────────────────────────
+  - id: governance
+    broad: true
+    terms: ["responsible scaling policy", "frontier safety framework", "AI safety case"]
+  - id: multi-agent
+    broad: true
+    terms: ["multi-agent alignment", "multi-agent safety", "collusion language models", "cooperative AI"]
+    techniques: [multi-agent-safety-protocols]
+  # ── SR-scope extension (2026-10-12; docs/scope/shallow-review.md (c), (d) I1-I10) ──
+  # No `techniques:` (taxonomy-v0.6 has no entries for these areas; a wrong slug is a false join),
+  # so their coverage keys `group:<id>` only. `needs_ai_context: true` = the term alone is another
+  # field's vocabulary ("decision theory" is operations research and medicine, (d) E1/E2): the
+  # phrase-match collectors and arXiv's keyword family AND it with `ai_context`; collect.openalex
+  # sends `("t1" OR "t2") AND ("<ai_context>" OR …)` as a boolean phrase query (probe 2026-10-12:
+  # "decision theory" 19,194 works = 617 with the AI disjunction + 18,577 without it).
+  # `openalex_terms` here are the same phrases QUOTED: OpenAlex phrase-matches a quoted term
+  # ("decision theory" 19,194 vs unquoted 413,929) and ORs quoted phrases with `|`; unquoted, a
+  # two-common-word phrase token-ANDs into a flood (the agent-foundations convention above).
+  - id: decision-theory-af
+    terms: ["updateless decision theory", "functional decision theory", "logical counterfactuals", "logical uncertainty"]
+    openalex_terms: ['"updateless decision theory"', '"functional decision theory"', '"logical counterfactuals"', '"logical uncertainty"']
+  - id: decision-theory
+    needs_ai_context: true
+    terms: ["decision theory", "Newcomb's problem"]
+  - id: acausal
+    terms: ["acausal trade", "acausal coordination", "evidential cooperation in large worlds", "multiverse-wide cooperation"]
+    openalex_terms: ['"acausal trade"', '"acausal coordination"', '"evidential cooperation in large worlds"', '"multiverse-wide cooperation"']
+  - id: anthropics
+    needs_ai_context: true
+    terms: ["anthropic reasoning", "self-sampling assumption", "self-indication assumption", "simulation argument"]
+  - id: infra-bayes
+    terms: ["infra-Bayesianism", "infra-Bayesian", "learning-theoretic agenda"]
+    openalex_terms: ['"infra-Bayesianism"', '"infra-Bayesian"', '"learning-theoretic agenda"']
+  - id: natural-abstractions
+    terms: ["natural abstraction", "natural latents", "platonic representation hypothesis"]
+    openalex_terms: ['"natural abstraction"', '"natural latents"', '"platonic representation hypothesis"']
+  - id: tiling
+    terms: ["tiling agents", "Löbian obstacle", "Vingean reflection"]
+    openalex_terms: ['"tiling agents"', '"Löbian obstacle"', '"Vingean reflection"']
+  - id: program-equilibrium
+    terms: ["program equilibrium", "open-source game theory", "safe Pareto improvements", "commitment races"]
+    openalex_terms: ['"program equilibrium"', '"open-source game theory"', '"safe Pareto improvements"', '"commitment races"']
+  - id: game-theory-ai
+    needs_ai_context: true
+    terms: ["game theory", "mechanism design", "evolutionary game theory"]
+  - id: gradual-disempowerment
+    terms: ["gradual disempowerment", "human disempowerment"]
+    openalex_terms: ['"gradual disempowerment"', '"human disempowerment"']
+  - id: alignment-targets
+    terms: ["pluralistic alignment", "law-following AI"]
+    openalex_terms: ['"pluralistic alignment"', '"law-following AI"']
+  - id: social-choice-ai
+    needs_ai_context: true
+    terms: ["social choice", "value aggregation"]
+  - id: model-psychology
+    terms: ["hyperstition", "machine psychology", "LLM psychology"]
+    openalex_terms: ['"hyperstition"', '"machine psychology"', '"LLM psychology"']
+  - id: introspection
+    needs_ai_context: true
+    terms: ["introspection"]
+  - id: agi-metrics
+    terms: ["definition of AGI", "levels of AGI", "measuring AGI"]
+    openalex_terms: ['"definition of AGI"', '"levels of AGI"', '"measuring AGI"']
+  - id: heuristic-arguments
+    terms: ["heuristic arguments"]
+    # S2 and OpenAlex: 0 of 14 S2 hits relevant in the 2026-10-12 SR window, the OpenAlex ones physics and
+    # mathematics (docs/design/collection-yield.md C2, adopted on S2 673c3ee, on OpenAlex 2026-10-13);
+    # ARC's work arrives through arc_blog and arXiv.
+    openalex_terms: []
+    s2_terms: []
+  - id: brain-like-agi
+    terms: ["brain-like AGI", "NeuroAI safety"]
+    openalex_terms: ['"brain-like AGI"', '"NeuroAI safety"']
+  - id: scientist-ai
+    # "non-agentic AI" dropped (collection-yield.md C3, 2026-10-13): the clear hits say "Scientist AI".
+    terms: ["Scientist AI"]
+    openalex_terms: ['"Scientist AI"']
+  - id: steerability
+    needs_ai_context: true
+    terms: ["steerability"]
+    # OpenAlex stems the word to "steer" (beam steering, steering vectors): the 2026-10-12 window
+    # returned 278 works in 30 days, 25 of them saying "steerab". Phrase-match channels only.
+    openalex_terms: []
+    # S2 stems it too: 669 of 836 S2 rows of the same window (collection-yield.md C1).
+    s2_terms: []
+  - id: shard-theory
+    terms: ["shard theory"]
+    openalex_terms: ['"shard theory"']
+  # ── legacy vocabulary, 2006-2019 (2.2.0, the 2015 backfill; D646) ─────────────────────────────
+  # The period's umbrella and technique names that no modern group carries. New groups only: no
+  # existing group, term or `ai_context` changes, so nothing already swept is asked again; the new
+  # coverage keys (OpenAlex/S2 `group:<id>`, forums `kw:<term>` x 2 forums, arXiv `kw:group:<id>`)
+  # sweep from their collectors' floors once. No `techniques:` (framing words, not one technique).
+  # `legacy-alignment`: collision-prone words ("value alignment" in organisations, "value learning"
+  # in education), so the phrase-match channels AND them with `ai_context`; forums send the terms as
+  # they are. `legacy-safety`: distinctive on their own, no AI clause ("quantilizer" and "safely
+  # interruptible" beside the existing "quantilization" / "safe interruptibility": no stemming is
+  # guaranteed across these forms). `openalex_terms` are the phrases quoted (decision-theory-af's
+  # convention).
+  - id: legacy-alignment
+    needs_ai_context: true
+    terms: ["value alignment", "value learning", "intelligence explosion", "utility indifference", "goal preservation"]
+    openalex_terms: ['"value alignment"', '"value learning"', '"intelligence explosion"', '"utility indifference"', '"goal preservation"']
+  - id: legacy-safety
+    terms: ["Friendly AI", "oracle AI", "AI boxing", "safe exploration", "inverse reward design", "wireheading",
+            "impact measure", "attainable utility", "safely interruptible", "off-switch game", "quantilizer",
+            "reflective oracle", "timeless decision theory", "inner alignment", "mesa-optimizer"]
+    openalex_terms: ['"Friendly AI"', '"oracle AI"', '"AI boxing"', '"safe exploration"', '"inverse reward design"',
+                     '"wireheading"', '"impact measure"', '"attainable utility"', '"safely interruptible"',
+                     '"off-switch game"', '"quantilizer"', '"reflective oracle"', '"timeless decision theory"',
+                     '"inner alignment"', '"mesa-optimizer"']
+
+# ── collect.openalex institution-id sweep (v1 orgs.yaml `openalex_institutions`) ──────────────
+# One planned query per institution: `institutions.id:<id>` from the openalex channel floor,
+# NO keyword filter (v1: institutions.id + a keyword search 504s on OpenAlex) — the goal is
+# recall of org-affiliated work matching no safety keyword and no rostered author. Coverage
+# receipts key `inst:<id>` with the org slug as `org:<slug>`.
+#   `fields:` — primary_topic.field.id volume guard (v1 `openalex_fields`), set ONLY on generic
+#   big-company entities whose output is mostly unrelated product research. Frontier labs and
+#   safety orgs pull UNFILTERED (only ~8% of DeepMind's works are primary-topic CS — a field
+#   filter would drop AlphaFold-style science and policy/eval work). 17=CS, 33=Social Sciences,
+#   18=Decision Sciences, 32=Psychology, 26=Mathematics.
+# Institution ids are NEVER auto-adopted: OpenAlex name search misresolves ("Anthropic" -> an
+# Anthropocene-studies institute; MIRI's institution record mixes in unrelated works), so ids are curated by hand
+# after checking the entity's homepage + a works sample on openalex.org/I<id>.
+institutions:
+  # --- frontier labs (unfiltered) ---
+  - { org: anthropic, id: I4387930290 }        # "Anthropic (United States)" — 0 works attributed yet
+  - { org: openai, id: I4210161460 }
+  - { org: deepmind, id: I4210090411 }         # Google DeepMind (United Kingdom)
+  - { org: meta, id: I4210114444 }             # Meta US
+  - { org: meta, id: I4210111288 }             # Meta UK
+  - { org: xai, id: I4401726768 }              # 0 works attributed yet
+  - { org: deepseek, id: I4405257960 }         # 0 works attributed yet
+  - { org: alibaba, id: I45928872, fields: [17, 33, 18, 32, 26] }    # Alibaba Group CN
+  - { org: alibaba, id: I4210095624, fields: [17, 33, 18, 32, 26] }  # Alibaba Group US
+  # --- other companies (research arms / infra / non-frontier developers) ---
+  - { org: microsoft-research, id: I4210164937, fields: [17, 33, 18, 32, 26] }  # MSR UK
+  - { org: microsoft-research, id: I4210113369, fields: [17, 33, 18, 32, 26] }  # MSR Asia
+  - { org: microsoft-research, id: I4210124949, fields: [17, 33, 18, 32, 26] }  # MSR India
+  - { org: google-research, id: I1291425158, fields: [17, 33, 18, 32, 26] }     # "Google (United States)"
+  - { org: mistral, id: I4390039361 }
+  - { org: cohere, id: I4401726847 }           # 0 works attributed yet
+  - { org: microsoft, id: I1290206253, fields: [17, 33, 18, 32, 26] }
+  - { org: nvidia, id: I4210127875, fields: [17, 33, 18, 32, 26] }   # NVIDIA US
+  - { org: nvidia, id: I1304085615, fields: [17, 33, 18, 32, 26] }   # NVIDIA UK
+  - { org: amazon, id: I1311688040, fields: [17, 33, 18, 32, 26] }   # Amazon US
+  - { org: amazon, id: I4210089985, fields: [17, 33, 18, 32, 26] }   # Amazon DE
+  - { org: moonshot, id: I4405260227 }         # 0 works attributed yet
+  - { org: bytedance, id: I4405256866 }        # 0 works attributed yet
+  - { org: tencent, id: I2250653659, fields: [17, 33, 18, 32, 26] }
+  - { org: baidu, id: I98301712, fields: [17, 33, 18, 32, 26] }
+  # --- Chinese state-backed labs and a frontier developer (approved 2026-10-30; CS field only) ---
+  # Checked 2026-10-30 (entity record: name, homepage, ROR; the most-cited CS works since 2024). Works 2015-now with
+  # the CS filter: 3,805 / 928 / 136 (the five-field guard would add 173 / 67 / 9).
+  - { org: shanghai-ai-lab, id: I4391012619, fields: [17] }  # Shanghai Artificial Intelligence Laboratory, shlab.org.cn, ROR 03wkvpx79 (InternVL, MMBench)
+  - { org: baai, id: I4210100255, fields: [17] }             # Beijing Academy of Artificial Intelligence, baai.ac.cn, ROR 016a74861 (EVA-02, C-Pack)
+  - { org: zhipu, id: I4401726915, fields: [17] }            # Zhipu AI (China), zhipuai.cn, ROR 005dzvw93 (CogAgent, AgentTuning)
+  # --- dedicated AI-safety orgs ---
+  - { org: govai, id: I4387155932 }            # Centre for the Governance of AI
+
+# Identity groups (design §6): `gather` unions documents on these key kinds, and only within a
+# group (v3 matched globally). Key kinds a channel records but never merges on (`related`,
+# `relay`, the X context keys) go on the channel as `non_merging_keys`.
+channel_groups:
+  paper:  { merge_keys: [doi, arxiv, openalex, s2, pmid, zenodo] }   # arXiv-DOI bridge: stack/scholarly_records.py
+  forum:  { merge_keys: [fm_post] }      # ForumMagnum post id: an LW/AF crosspost is one document
+  url:    { merge_keys: [url] }          # canonical URL
+  social: { merge_keys: [x_post] }       # one post per document
+  record: { merge_keys: [registry_id] }  # incident / OSINT registry id
+
+channels:
+  - id: openalex               # kind: search
+    kind: search
+    location: "https://api.openalex.org/works"
+    license_class: open
+    channel_group: paper
+    breadth: standard
+    concept_groups: all        # OpenAlex auto-skips misuse groups, CS-filters broad groups
+    from_date: "2020-01-01"
+    politeness: { rate_rps: 5, mailto: env }
+    miss_means: unknown          # §5.6: an OpenAlex miss is never a withdrawal
+    # SELECT_FIELDS minus the counter `cited_by_count` (C23); `locations` is read by the
+    # openalex_arxiv_location key adder (stack/identity.py)
+    record_projection: [id, doi, title, ids, type, publication_date, authorships, primary_location, best_oa_location, abstract_inverted_index, locations]
+    # Backfill cuts 1-3 (2026-10-13; collection-yield.md §10, D304-D306): concept-group hits only; the
+    # institution and author-id families keep every work. Counted per run as `cut_<name>` (+ `cut_<name>:<group>`).
+    # Re-enable: delete an entry here (the coverage key changes, so the group re-sweeps from the floor).
+    keyword_cuts:
+      drop_sources: [publisher, self_publication]   # keep arXiv-located works and SSRN only
+      # the unquoted token-AND groups without the CS field filter: "mechanistic interpretability" matches
+      # "mechanistic" + "interpret*" anywhere (oncology, pavement mechanics); NOT phrase-quoted (loses arXiv papers)
+      ai_term_groups: [rlhf, preference-opt, unlearning, cot-monitor, misalignment-behaviors, reward-hacking,
+                       data-safety, mech-interp, sparse-coding, interp-tools, model-diffing, dev-interp, elk,
+                       deception-detect, anomaly, safety-by-construction, corrigibility, oversight, w2s, debate,
+                       capability-evals, scheming, stego, red-team]
+      # The pre-2020 exception (D654), (a): a hit published before 2020 with a pre-2020 safety stem in title or abstract
+      # (stack/rules.py PRE2020_SAFETY_STEMS: "AI safety", "superintelligence", "quantilizer", "safe reinforcement
+      # learning", …) bypasses drop_sources, no-DOI works included; ai_term still applies. In every group's key.
+      publisher_cut_floor: "2020-01-01"
+      # (b): umbrella's windows before 2020 are asked without the CS-field filter (the period's philosophy-of-AI
+      # venues). Only umbrella: measured 2026-10-21, relaxing every broad group adds ~168k 2015-2019 hits (data-
+      # attribution +38.8k, power-seeking +30.0k, specs +27.8k, …); of a 50-hit sample of each group's added hits
+      # 0-3 survive the cuts (arXiv-located non-CS papers), none on AI safety; umbrella adds 1,423, 5 of 50 survive,
+      # 3 of them on AI safety.
+      field_filter_floor: "2020-01-01"
+      field_filter_groups: [umbrella]
+      # the Chinese-coverage work (approved 2026-10-30): the publisher cut keeps hits with an ACL Anthology (10.18653), AAAI (10.1609),
+      # IJCAI (10.24963), NDSS (10.14722) or PLOS (10.1371) DOI (stack/rules.py VENUE_DOI_PREFIXES; the oa lane fetched
+      # 98 %, 89 %, 35/38, 9/9 and 7/7 of such store documents without an arXiv copy). The allowlist's digest is in every cut group's key: one re-sweep of the groups from 2015.
+      keep_venues: true
+
+  - id: anthropic_alignment_blog   # kind: scrape
+    kind: scrape
+    location: "https://alignment.anthropic.com"
+    license_class: public_web
+    channel_group: url
+    self_published_org: anthropic
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: anthropic_cards        # kind: watch (per-lab card watcher)
+    kind: watch
+    # watch/scrape: collect (collect.cards) MAY fetch this `location` LISTING page only, parse it
+    # in code, and mint one source per listed card (discovery.via='watch', watch_url), one
+    # coverage row per scan; item CONTENT is fetched later by fetch, not here (10-design §5.1, D-M1).
+    #
+    # [FLAG for coordinator] The FULL v1 watch spec for each *_cards channel (discovery method,
+    # include_re/exclude_re/policy_re/text_slug_re, extra listing surfaces, github repos, pinned
+    # ids — ported from pipeline/config/doc_watch.yaml) does NOT fit here: channels.schema.json
+    # sets additionalProperties:false with no `params`/`watch` field, and ChannelDef mirrors that
+    # with extra="forbid". Per "report rather than hack", those selectors live in code, keyed by
+    # channel id, in workflows/collect/cards/main.py:WATCH_SPECS. `location` below is the PRIMARY
+    # listing surface only (some labs have several — the rest live in WATCH_SPECS). If the schema
+    # is later widened to allow a `watch:`/`params:` block, the WATCH_SPECS table can move here.
+    location: "https://www.anthropic.com/system-cards"   # v1 anthropic-systemcards surface (RSP surface is a 2nd spec)
+    license_class: public_web
+    channel_group: url
+    self_published_org: anthropic
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: manual                 # v1's drop-folder channel. No collector reads `location`: collect.manual reads the
+                                #   overrides chain and writes manual_<group> (workflows/collect/manual/main.py).
+                                #   Kept as a channel id: collect.v3_import fails on a v3 row whose channel is not
+                                #   here, and v1 rows without a discovery source were imported as `manual`.
+    kind: manual
+    location: "sources/_inbox"
+    license_class: restricted
+    channel_group: url   # drop folder: no scholarly keys; identity by location/file (§6 url group)
+
+  - id: x                      # collect.x-lookup (round 4, track X): X API v2 post lookup by id (`kind: manual`
+    kind: manual                #   because the schema has no lookup kind); one post per document (DESIGN §5.6)
+    location: "https://x.com"
+    license_class: api_tos
+    channel_group: social
+    miss_means: withdrawn       # a deleted, protected or suspended post (§5.6); retracted after the line's miss_cap
+    non_merging_keys: [conversation_id, reply_to_id, quote_of, repost_of]
+    record_projection: [post, thread, quoted, repost_of]   # without `includes` (context only); a done post is never re-asked
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Paper and forum channels below were first registered for the v1-corpus importer (collect.v1_import,
+  # removed; v4's importer is collect.v3_import). Its table mapping each v1 `source` to a channel is in git
+  # history of this file; v1 rows with no source, or a card of an unlisted lab, map to `manual`.
+  #
+  # License classing (project decision D8, conservative; docs/design/license-classes.md): arXiv carries an explicit
+  # open license (enums.license_class `open` gloss
+  # names arXiv directly) and LessWrong/AlignmentForum posts default to CC BY -> both get
+  # license_class: open. Lab blogs/cards/policy docs are self-published and publicly
+  # reachable but carry NO explicit open license -> license_class: public_web, matching the
+  # anthropic_alignment_blog / anthropic_cards idiom already established above (NOT `open`,
+  # despite the intent-shorthand "open-equivalent" — public_web is the closer registered
+  # value for "publicly reachable, no explicit license"). openalex / europepmc /
+  # semantic_scholar fulltexts were historically acquired by v1's fetchpdf waterfall, which
+  # can include shadow-library sources on a PER-ITEM basis; that distinction cannot be
+  # expressed at channel granularity (one license_class per channel, not per snapshot), and
+  # blanket-applying `shadow` would misclassify the legitimate-OA fraction too — so these
+  # three channels are classed conservatively as `restricted` (never `open`) rather than
+  # `shadow`, per D8's explicit recommendation. A future per-fetch reclassification (once
+  # fetch records real acquisition provenance) could sharpen this later.
+  # Egress (llm.yaml egress.by_license_class, applied per LLM call by stack/llm/__init__.py `_egress_rule`;
+  # a basis row without a license_class is sent as `restricted`, stack/annotate/stage.py): `restricted` and
+  # `api_tos` allow providers [anthropic, openai], `shadow` [openai] only, `open` and `public_web` also
+  # google-vertex. The `screen` role's model (openai/gpt-6-luna, which the plans also pin) and
+  # `screen_adjudicate`'s (openai/gpt-5.6-terra) are permitted under every class.
+  # ───────────────────────────────────────────────────────────────────────────
+
+  - id: arxiv                  # kind: search (arXiv Atom API author sweep; v1 search_arxiv.py)
+    kind: search
+    location: "http://export.arxiv.org/api/query"
+    license_class: open
+    channel_group: paper
+    breadth: standard
+    from_date: "2020-01-01"
+    politeness: { rate_rps: 0.33 }   # ~1 req / 3s (arXiv ToS)
+    # the v3 parsed Atom entry (arxiv_sweep parse_feed); every field is stable
+    record_projection: [arxiv_id, title, authors, abstract, pub_date]
+    # collect.arxiv_sweep runs this channel as an AUTHOR sweep. Its two code-level parameters have
+    # no channels.yaml schema slot (channel objects are additionalProperties:false, no `params`):
+    #   - roster: configs/rosters/researchers.yaml (env STACK_ARXIV_ROSTER) — the frontier-lab
+    #     researcher names, derived from the v1 DB (the only roster read; its header says how it is maintained).
+    #   - category allowlist cs.AI,cs.LG,cs.CL,cs.CR,cs.CY,cs.MA,stat.ML + cs.GT,cs.LO,math.LO,
+    #     econ.TH,q-bio.NC (rostered authors' game-theory, logic and decision-theory papers; SR
+    #     scope note (e)) — a module constant in workflows/collect/arxiv_sweep/main.py (dodges
+    #     physics namesakes on common surnames; physics stays excluded).
+    # Two more query families in the same stage, same channel and keys (SR scope note (e)):
+    #   - keyword family: one `(ti:"t" OR abs:"t" OR …)` query per concept group in the stage
+    #     option `keyword_groups` (default [umbrella, steerability], SR 2025's own arXiv sweep),
+    #     ANDed with the AI clause for `needs_ai_context` groups; coverage query `kw:group:<id>`;
+    #   - scoped-category family: `cat:<c> AND (<AI clause>)` per category in the option
+    #     `scoped_categories` (default the five above); coverage query `cat:<c>`.
+    #   The AI clause is `ai_context` above plus a few agent/AGI phrases (module constant).
+    #   Option `families` (default [author, kw, cat]) selects which run.
+
+  # collect.forums sweeps lesswrong + alignmentforum together (v1 search_forums.py). TERM queries
+  # come from `concept_groups` below (each carries its coverage topic_keys group:<id> +
+  # technique:<slug> — the taxonomy join); LW-specific knobs with no schema slot (tag slug list,
+  # min_karma 25) are documented, env-overridable constants in workflows/collect/forums/main.py.
+  # collect does NOT hydrate post bodies (the /api/search response embeds them and v1 captured
+  # them at search time; here fetch.http acquires content later — 10-design §5.1).
+  - id: lesswrong               # kind: search (LessWrong ForumMagnum Algolia /api/search)
+    kind: search
+    location: "https://www.lesswrong.com"
+    license_class: open
+    channel_group: forum
+    concept_groups: all
+    breadth: standard
+    from_date: "2020-01-01"
+    # LW and AF are one ForumMagnum backend behind two hostnames — two pacer buckets, ~6.6 rps combined.
+    politeness: { rate_rps: 3.3 }   # ~0.3s between requests
+    # the Algolia hit (collect.forums: `body`) or the GraphQL post (collect.lw_graphql: `htmlBody`)
+    # minus the counters `baseScore` etc. (C23); an absent field projects as null; `url` is read by the
+    # lw_linkpost key adder (stack/identity.py)
+    record_projection: [_id, title, postedAt, body, htmlBody, url]
+
+  - id: alignmentforum          # kind: search (AlignmentForum: same ForumMagnum DB as lesswrong)
+    kind: search
+    location: "https://www.alignmentforum.org"
+    license_class: open
+    channel_group: forum
+    concept_groups: all
+    breadth: standard
+    from_date: "2020-01-01"
+    politeness: { rate_rps: 3.3 }   # ~0.3s between requests
+    # the GraphQL post (af_graphql QUERY) minus the counter `baseScore` (C23)
+    record_projection: [_id, title, postedAt, htmlBody, slug, user, coauthors]
+
+  - id: europepmc               # kind: search
+    kind: search
+    location: "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+    license_class: restricted   # D8: DOI-discovered fulltext waterfall, classed conservatively (see note above)
+    channel_group: paper
+    concept_groups: all
+    breadth: standard
+    from_date: "2020-01-01"
+    politeness: { rate_rps: 5 }
+
+  # collect.semantic_scholar runs this channel as the PHRASE-MATCH academic axis (v1's
+  # `search-other-apis` stage, the S2 half of lib/search_engine.py). It is the channel that lights
+  # the `misuse: true` groups: S2's boolean query language takes quoted phrases and an explicit
+  # `+` (AND), so a misuse group can be intersected with the `ai_context` disjunction above — the
+  # thing collect.openalex cannot express and therefore skips. Sends SEMANTIC_SCHOLAR_API_KEY
+  # (free; environment or STACK_ENV_FILE) as x-api-key when set, else runs on the throttled
+  # keyless pool; a rejected key fails the query `provider_auth` (no key-degrade).
+  - id: semantic_scholar        # kind: search
+    kind: search
+    location: "https://api.semanticscholar.org/graph/v1/paper/search/bulk"
+    license_class: restricted   # D8: DOI-discovered fulltext waterfall, classed conservatively (see note above)
+    channel_group: paper
+    concept_groups: all
+    breadth: standard
+    from_date: "2020-01-01"
+    # READ (D550): the Gate's S2 interval, 1 / rate_rps, for every process (stack/provider_transport.py
+    # CHANNEL_PACED). With the key at 0.95 rps S2 answered 429 to ~40 % of requests.
+    politeness: { rate_rps: 0.4 }
+    # Backfill cuts 1-2 (collection-yield.md §10; as on openalex); cut 5 is `s2_terms: []` on three groups.
+    keyword_cuts:
+      drop_sources: [publisher, self_publication]
+      # The pre-2020 exception (D654 (a)), enabled here too: a hit published before 2020 with a pre-2020 safety stem
+      # bypasses drop_sources. In every S2 group's coverage key: the 59 S2 queries re-sweep from 2015 once
+      # (≈ 575 requests at ≥ 2.5 s, ≈ 25-50 min).
+      publisher_cut_floor: "2020-01-01"
+      # the Chinese-coverage work, as on openalex: the allowlisted venues' DOIs pass the publisher cut (a new key per group).
+      keep_venues: true
+      # ... only with an AI term in title or abstract: S2's group queries have no field filter, so llm-safety's
+      # "safety evaluation" found PLOS biomedical papers (3 of 13 venue hits in a 2026-10-30 window).
+      venue_ai_term: true
+    # FIELDS minus the counter `citationCount` (C23)
+    record_projection: [paperId, externalIds, title, abstract, authors, venue, year, publicationDate, publicationTypes, openAccessPdf]
+
+  - id: openai_blog             # kind: scrape
+    kind: scrape
+    location: "https://openai.com"
+    license_class: public_web
+    channel_group: url
+    self_published_org: openai
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: openai_alignment_blog   # kind: scrape
+    kind: scrape
+    location: "https://alignment.openai.com"
+    license_class: public_web
+    channel_group: url
+    self_published_org: openai
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: transformer_circuits    # kind: scrape (Anthropic's transformer-circuits.pub)
+    kind: scrape
+    location: "https://transformer-circuits.pub"
+    license_class: public_web
+    channel_group: url
+    self_published_org: anthropic
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  # ── lab blogs added 2026-08-10 ────────────────────────────────────────────
+  # Coverage audit: the registry tracks 37 orgs; collect.blogs covered blogs from TWO of them
+  # (Anthropic, OpenAI). These close the highest-value gaps among the labs we already resolve
+  # affiliations for. Surface choice per site was measured, not assumed (see SITE_SPECS):
+  # a declared feed is preferred (small, dated, cheap to re-walk), sitemap next, html-index last.
+  - id: google_research         # kind: scrape (research.google/blog — declared RSS, 101 items)
+    kind: scrape
+    location: "https://research.google/blog/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: google-research
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: mistral_blog            # kind: scrape (mistral.ai/news — <link rel=alternate> RSS, 80 items)
+    kind: scrape
+    location: "https://mistral.ai/news/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: mistral
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: deepmind_blog           # kind: scrape (deepmind.google/blog — 343 posts via sitemap)
+    kind: scrape                # NOTE: distinct from `deepmind_cards` (watch, model cards only).
+    location: "https://deepmind.google/blog/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: deepmind
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  # ── safety-org and research-org blogs (SR scope, 2026-10-12) ──
+  # docs/scope/shallow-review.md (e). Surfaces measured 2026-10-12, specs and measured facts in
+  # workflows/collect/blogs/main.py:SITE_SPECS. self_published_org is unset where
+  # configs/registry.yaml has no org (goodfire, epoch, forethought, timaeus, clr, softmax,
+  # meaning alignment, cooperative ai).
+  - id: miri_blog              # kind: scrape (intelligence.org/blog — RSS 6 + Yoast sitemap archive)
+    kind: scrape
+    location: "https://intelligence.org/blog/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: miri
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: metr_blog              # kind: scrape (metr.org — RSS 104 items: blog, notes, evaluation reports)
+    kind: scrape
+    location: "https://metr.org/blog/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: metr
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: transluce_blog         # kind: scrape (transluce.org — sitemap, top-level post slugs)
+    kind: scrape
+    location: "https://transluce.org/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: transluce
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: goodfire_blog          # kind: scrape (goodfire.com/research + /blog — sitemap)
+    kind: scrape
+    location: "https://www.goodfire.com/research"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: uk_aisi_blog           # kind: scrape (aisi.gov.uk/blog + /research — indexes + sitemap)
+    kind: scrape
+    location: "https://www.aisi.gov.uk/blog"
+    license_class: public_web
+    channel_group: url
+    self_published_org: uk-aisi
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: redwood_blog           # kind: scrape (blog.redwoodresearch.org (Substack) — RSS 20 + sitemap)
+    kind: scrape
+    location: "https://blog.redwoodresearch.org/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: redwood
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: apollo_blog            # kind: scrape (apolloresearch.ai /blog /science /governance /monitoring)
+    kind: scrape
+    location: "https://www.apolloresearch.ai/blog"
+    license_class: public_web
+    channel_group: url
+    self_published_org: apollo
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: arc_blog               # kind: scrape (alignment.org/blog (Ghost) — RSS 15 + posts sitemap)
+    kind: scrape
+    location: "https://www.alignment.org/blog/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: arc
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: epoch_blog             # kind: scrape (epoch.ai publications + gradient-updates — Atom 50 + sitemap)
+    kind: scrape
+    location: "https://epoch.ai/latest"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: forethought_blog       # kind: scrape (forethought.org/research — RSS 78 items)
+    kind: scrape
+    location: "https://www.forethought.org/research"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: far_ai_blog            # kind: scrape (far.ai/blog + /research — index + sitemap)
+    kind: scrape
+    location: "https://www.far.ai/blog"
+    license_class: public_web
+    channel_group: url
+    self_published_org: far-ai
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: timaeus_blog           # kind: scrape (timaeus.co /research + /blog — sitemap)
+    kind: scrape
+    location: "https://timaeus.co/research"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: clr_blog               # kind: scrape (longtermrisk.org/research — index (Center on Long-Term Risk))
+    kind: scrape
+    location: "https://longtermrisk.org/research/"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: softmax_blog           # kind: scrape (softmax.com/blog — index, 5 posts)
+    kind: scrape
+    location: "https://softmax.com/blog"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: meaning_alignment_blog # kind: scrape (Meaning Alignment Institute Substack — RSS 20)
+    kind: scrape
+    location: "https://meaningalignment.substack.com/"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: cooperative_ai_blog    # kind: scrape (cooperativeai.com/blog (Cooperative AI Foundation) — index)
+    kind: scrape
+    location: "https://www.cooperativeai.com/blog"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  # NOT ADDED — ai.meta.com/blog: no feed, /sitemap.xml 404s, the robots.txt-declared
+  # sitemap (ai_meta_com_sitemap.xml.gz) returns 403 to non-browser clients, and the index page
+  # server-renders ZERO post links (fully JS-hydrated). There is no surface a plain-HTTP
+  # collector can read. Revisit if collect gains a headless-browser rung (fetch already has one
+  # behind STACK_FETCH_BROWSER), or if Meta publishes a feed.
+
+  # The six lab stubs below carry only the schema-legal fields (kind/location/license_class/
+  # self_published_org/politeness). Their full watch specs (methods + regexes + extra
+  # surfaces) live in workflows/collect/cards/main.py:WATCH_SPECS — see the anthropic_cards [FLAG].
+  # `location` = each lab's PRIMARY listing surface (verified against pipeline/config/doc_watch.yaml).
+  - id: openai_cards            # kind: watch. WATCH_SPECS: html-index (deploymentsafety) + sitemap (openai.com)
+    kind: watch
+    location: "https://deploymentsafety.openai.com/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: openai
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: deepmind_cards          # kind: watch. WATCH_SPECS: html-index (model-cards) x2 + sitemap (FSF)
+    kind: watch
+    location: "https://deepmind.google/models/model-cards/"
+    license_class: public_web
+    channel_group: url
+    self_published_org: deepmind
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: meta_cards              # kind: watch. WATCH_SPECS: github-tree (llama-models, PurpleLlama) + pinned-pdf (Frontier AI Framework)
+    kind: watch
+    location: "https://github.com/meta-llama"
+    license_class: public_web
+    channel_group: url
+    self_published_org: meta
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: xai_cards               # kind: watch. WATCH_SPECS: html-index (/safety+/news) + pinned archive (delisted cards/frameworks)
+    kind: watch
+    location: "https://x.ai/safety"
+    license_class: public_web
+    channel_group: url
+    self_published_org: xai
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: deepseek_cards          # kind: watch. WATCH_SPECS: github-org scan (deepseek-ai), watermark-bootstrapped
+    kind: watch
+    location: "https://github.com/deepseek-ai"
+    license_class: public_web
+    channel_group: url
+    self_published_org: deepseek
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: qwen_cards              # kind: watch (Alibaba/Qwen; org_slug 'alibaba' in WATCH_SPECS). Covers stems
+    kind: watch                #   embedding either the current "alibaba-" or the legacy "qwen-" org slug.
+    location: "https://github.com/QwenLM"                # WATCH_SPECS: github-org scan (QwenLM), watermark-bootstrapped
+    license_class: public_web
+    channel_group: url
+    self_published_org: alibaba
+    politeness: { rate_rps: 0.5, respect_robots: true }
+
+  - id: card_dates              # collect.card-dates-lookup (v3 fetch.card_dates); `kind: watch` because the
+    kind: watch                 #   schema has no lookup kind (not in collect.cards' WATCH_SPECS, so not scanned).
+                                #   Official card pages' publication dates for card documents without one; rows carry the
+    license_class: public_web   #   card's `url` key, so gather unions them into the card's document. Fetches at
+    channel_group: url          #   each card channel's own politeness (stack/lookup/card_date_backfill.py).
+    miss_means: unknown         # a date not found says nothing about the card
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Track L (round 4): newsletter feeds and manual sources.
+  #
+  # `kind: feed` = one RSS/Atom feed per channel, read by collect.feeds (workflows/collect/feeds/main.py):
+  # one `sources` row per item (url group), the item's full body (`content:encoded`, Atom `content`) minted
+  # in-band as role `post` (raw text/html) so acquire needs no fetch; an item without a body is listing-only.
+  # A new Substack / newsletter / blog feed is one entry here (id, location = the feed URL, channel_group:
+  # url, license_class, optional include_re / self_published_org) plus, in the plan, a `collect.feeds` stage line
+  # (only links-scratch.yaml has one) and one `acquire.wants` line; see docs/howto/add-feed.md.
+  - id: zvi_substack            # Zvi Mowshowitz, "Don't Worry About the Vase" (weekly AI #N and the rest);
+    kind: feed                  #   Substack RSS, 20 newest items, each with content:encoded (probe 2026-10-12)
+    location: "https://thezvi.substack.com/feed"
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5 }
+
+  - id: import_ai               # Jack Clark's Import AI (weekly); WordPress RSS at jack-clark.net, 10 newest
+    kind: feed                  #   items with content:encoded. (A Substack mirror importai.substack.com exists; the
+    location: "https://jack-clark.net/feed/"   # site the link-source list names is the one read.)
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5 }
+
+  - id: paradigm3_news          # Paradigm 3 "Humans on AI" newsletter (twice weekly). RSS with descriptions only
+    kind: feed                  #   (no body): listing-only, acquire fetches the server-rendered page. The feed also
+    location: "https://paradigm3.org/feed.xml"   # carries /research/<slug> posts: excluded by include_re.
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5 }
+    include_re: "^https?://(?:www\\.)?paradigm3\\.org/news/"
+
+  - id: aisafetychina_substack  # Concordia AI, "AI Safety in China" (Substack; the Chinese-coverage work, approved 2026-10-30): RSS, the
+    kind: feed                  #   20 newest items (2025-11 to 2026-10 on 2026-10-30), each with content:encoded. Older
+    location: "https://aisafetychina.substack.com/feed"  # issues are not in the feed (Substack archive only).
+    license_class: public_web
+    channel_group: url
+    politeness: { rate_rps: 0.5 }
+
+  # Manual sources (collect.manual): `<store>/overrides/manual_sources.yaml`, human-curated, one entry per URL
+  # with flags (`collect_links`, `accept`) carried as non-merging `flag` keys. Each URL is typed by
+  # stack.urls.link_keys and lands on the channel of its identity group. (`manual` above is the v1 drop folder.)
+  - id: manual_url
+    kind: manual
+    location: "overrides/manual_sources.yaml"
+    license_class: public_web
+    channel_group: url
+    miss_means: withdrawn       # an entry revoked or removed from the file is retracted (stage line miss_cap: 1)
+    non_merging_keys: [flag]
+
+  - id: manual_paper
+    kind: manual
+    location: "overrides/manual_sources.yaml"
+    license_class: restricted   # as the paper search channels (D8): the acquired copy's licence is unknown
+    channel_group: paper
+    miss_means: withdrawn
+    non_merging_keys: [flag]
+
+  - id: manual_forum
+    kind: manual
+    location: "overrides/manual_sources.yaml"
+    license_class: open         # LessWrong / AF / EA Forum posts: CC BY by default, as `lesswrong`
+    channel_group: forum
+    miss_means: withdrawn
+    non_merging_keys: [flag]
+
+  - id: manual_social
+    kind: manual
+    location: "overrides/manual_sources.yaml"
+    license_class: api_tos      # as `x`: the text arrives through the X API (collect.x-lookup)
+    channel_group: social
+    miss_means: withdrawn
+    non_merging_keys: [flag]
+
+  # Link targets (collect.links, round 4 (L2); docs/design/link-crawling.md §4.7): one source per selected target of
+  # a linking document's body (newsletters, flagged manual sources), on the channel of the target's identity group
+  # (stack.urls.link_keys). `kind: manual` as `x`: the schema has no derived kind. Keys: the target's typed keys plus
+  # one non-merging `relay` key per linking document (its url key). A target no linking document links any more is
+  # retracted (`miss_means: withdrawn`, stage line `miss_cap: 1`). The record (the `provider_record` in-band entry, D522) holds the target, every
+  # linking document with its occurrences (anchor, context, heading) and the selector's decision.
+  - id: links_paper
+    kind: manual
+    location: "collect.links (documents head)"
+    license_class: restricted   # as manual_paper: the acquired copy's licence is unknown
+    channel_group: paper
+    miss_means: withdrawn
+    non_merging_keys: [relay]
+    record_projection: [target, linked_from]
+
+  - id: links_forum
+    kind: manual
+    location: "collect.links (documents head)"
+    license_class: open         # as manual_forum / lesswrong
+    channel_group: forum
+    miss_means: withdrawn
+    non_merging_keys: [relay]
+    record_projection: [target, linked_from]
+
+  - id: links_url
+    kind: manual
+    location: "collect.links (documents head)"
+    license_class: public_web
+    channel_group: url
+    miss_means: withdrawn
+    non_merging_keys: [relay]
+    record_projection: [target, linked_from]
+
+  - id: links_social
+    kind: manual
+    location: "collect.links (documents head)"
+    license_class: api_tos      # as `x`: the text arrives through the X API (collect.x-lookup)
+    channel_group: social
+    miss_means: withdrawn
+    non_merging_keys: [relay]
+    record_projection: [target, linked_from]

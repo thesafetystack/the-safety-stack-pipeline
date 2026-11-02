@@ -1,0 +1,628 @@
+{
+ "scores": {
+  "(node, role) >= 1": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.8998,
+      0.9389
+     ],
+     "precision": [
+      0.9217,
+      0.9616
+     ],
+     "recall": [
+      0.8709,
+      0.9219
+     ]
+    },
+    "f1": 0.9192,
+    "fn": 124,
+    "fp": 66,
+    "jaccard": 0.8505,
+    "n_items": 100,
+    "precision": 0.9425,
+    "recall": 0.8971,
+    "tp": 1081
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.886,
+      0.9369
+     ],
+     "precision": [
+      0.8768,
+      0.9368
+     ],
+     "recall": [
+      0.8864,
+      0.9459
+     ]
+    },
+    "f1": 0.9132,
+    "fn": 93,
+    "fp": 105,
+    "jaccard": 0.8403,
+    "n_items": 100,
+    "precision": 0.9085,
+    "recall": 0.9181,
+    "tp": 1042
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.8764,
+      0.9281
+     ],
+     "precision": [
+      0.8667,
+      0.9214
+     ],
+     "recall": [
+      0.8754,
+      0.9418
+     ]
+    },
+    "consensus_units": 1081,
+    "f1": 0.9033,
+    "fn": 96,
+    "fp": 115,
+    "jaccard": 0.8236,
+    "n_items": 100,
+    "precision": 0.8955,
+    "precision_vs_union": 0.9327,
+    "production_units": 1100,
+    "recall": 0.9112,
+    "recall_on_consensus": 0.9112,
+    "tp": 985
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.8776,
+      0.9233
+     ],
+     "precision": [
+      0.8953,
+      0.941
+     ],
+     "recall": [
+      0.8517,
+      0.9155
+     ]
+    },
+    "f1": 0.9024,
+    "fn": 131,
+    "fp": 88,
+    "jaccard": 0.8221,
+    "majority_units": 1143,
+    "n_items": 100,
+    "precision": 0.92,
+    "precision_vs_union": 0.9555,
+    "production_units": 1100,
+    "recall": 0.8854,
+    "recall_on_majority": 0.8854,
+    "tp": 1012
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.864,
+      0.9155
+     ],
+     "precision": [
+      0.8831,
+      0.9347
+     ],
+     "recall": [
+      0.8381,
+      0.9059
+     ]
+    },
+    "f1": 0.891,
+    "fn": 146,
+    "fp": 99,
+    "jaccard": 0.8034,
+    "n_items": 100,
+    "precision": 0.91,
+    "recall": 0.8727,
+    "tp": 1001
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.8495,
+      0.9
+     ],
+     "precision": [
+      0.8926,
+      0.9406
+     ],
+     "recall": [
+      0.8005,
+      0.8729
+     ]
+    },
+    "f1": 0.8764,
+    "fn": 195,
+    "fp": 90,
+    "jaccard": 0.7799,
+    "n_items": 100,
+    "precision": 0.9182,
+    "recall": 0.8382,
+    "tp": 1010
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.8892,
+      0.926
+     ],
+     "precision": [
+      0.9016,
+      0.9416
+     ],
+     "recall": [
+      0.8633,
+      0.9231
+     ]
+    },
+    "f1": 0.9074,
+    "fn": 121,
+    "fp": 86,
+    "jaccard": 0.8305,
+    "n_items": 100,
+    "precision": 0.9218,
+    "recall": 0.8934,
+    "tp": 1014
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.8676,
+      0.915
+     ],
+     "precision": [
+      0.8336,
+      0.8981
+     ],
+     "recall": [
+      0.892,
+      0.9447
+     ]
+    },
+    "f1": 0.8923,
+    "fn": 91,
+    "fp": 161,
+    "jaccard": 0.8056,
+    "n_items": 100,
+    "precision": 0.8664,
+    "recall": 0.9198,
+    "tp": 1044
+   }
+  },
+  "(node, role) >= 2": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.8428,
+      0.9217
+     ],
+     "precision": [
+      0.9246,
+      0.9729
+     ],
+     "recall": [
+      0.7608,
+      0.8902
+     ]
+    },
+    "f1": 0.8859,
+    "fn": 155,
+    "fp": 39,
+    "jaccard": 0.7951,
+    "n_items": 100,
+    "precision": 0.9508,
+    "recall": 0.8293,
+    "tp": 753
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.8513,
+      0.9229
+     ],
+     "precision": [
+      0.8552,
+      0.9339
+     ],
+     "recall": [
+      0.8321,
+      0.9238
+     ]
+    },
+    "f1": 0.8887,
+    "fn": 97,
+    "fp": 81,
+    "jaccard": 0.7998,
+    "n_items": 100,
+    "precision": 0.8977,
+    "recall": 0.88,
+    "tp": 711
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.8307,
+      0.9149
+     ],
+     "precision": [
+      0.7967,
+      0.9111
+     ],
+     "recall": [
+      0.8521,
+      0.9335
+     ]
+    },
+    "consensus_units": 753,
+    "f1": 0.8766,
+    "fn": 78,
+    "fp": 112,
+    "jaccard": 0.7803,
+    "n_items": 100,
+    "precision": 0.8577,
+    "precision_vs_union": 0.9339,
+    "production_units": 787,
+    "recall": 0.8964,
+    "recall_on_consensus": 0.8964,
+    "tp": 675
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.8427,
+      0.9134
+     ],
+     "precision": [
+      0.8484,
+      0.9372
+     ],
+     "recall": [
+      0.8193,
+      0.9056
+     ]
+    },
+    "f1": 0.8808,
+    "fn": 110,
+    "fp": 81,
+    "jaccard": 0.7871,
+    "majority_units": 816,
+    "n_items": 100,
+    "precision": 0.8971,
+    "precision_vs_union": 0.9606,
+    "production_units": 787,
+    "recall": 0.8652,
+    "recall_on_majority": 0.8652,
+    "tp": 706
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.8302,
+      0.912
+     ],
+     "precision": [
+      0.8172,
+      0.9274
+     ],
+     "recall": [
+      0.828,
+      0.9097
+     ]
+    },
+    "f1": 0.8752,
+    "fn": 101,
+    "fp": 96,
+    "jaccard": 0.7782,
+    "n_items": 100,
+    "precision": 0.878,
+    "recall": 0.8725,
+    "tp": 691
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.808,
+      0.8836
+     ],
+     "precision": [
+      0.8717,
+      0.9479
+     ],
+     "recall": [
+      0.7356,
+      0.8436
+     ]
+    },
+    "f1": 0.8484,
+    "fn": 189,
+    "fp": 68,
+    "jaccard": 0.7367,
+    "n_items": 100,
+    "precision": 0.9136,
+    "recall": 0.7919,
+    "tp": 719
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.853,
+      0.9127
+     ],
+     "precision": [
+      0.8571,
+      0.9309
+     ],
+     "recall": [
+      0.8303,
+      0.9115
+     ]
+    },
+    "f1": 0.884,
+    "fn": 103,
+    "fp": 82,
+    "jaccard": 0.7921,
+    "n_items": 100,
+    "precision": 0.8958,
+    "recall": 0.8725,
+    "tp": 705
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.8189,
+      0.8997
+     ],
+     "precision": [
+      0.7487,
+      0.8754
+     ],
+     "recall": [
+      0.8771,
+      0.95
+     ]
+    },
+    "f1": 0.8625,
+    "fn": 68,
+    "fp": 168,
+    "jaccard": 0.7582,
+    "n_items": 100,
+    "precision": 0.815,
+    "recall": 0.9158,
+    "tp": 740
+   }
+  },
+  "judge_normalisation": {
+   "opus:repaired_docs": 10,
+   "sol:repaired_docs": 16,
+   "sonnet:repaired_docs": 2
+  },
+  "node presence (any role >= 1)": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.9582,
+      0.9799
+     ],
+     "precision": [
+      0.9443,
+      0.9764
+     ],
+     "recall": [
+      0.9644,
+      0.9892
+     ]
+    },
+    "f1": 0.9688,
+    "fn": 11,
+    "fp": 20,
+    "jaccard": 0.9395,
+    "n_items": 100,
+    "precision": 0.9601,
+    "recall": 0.9776,
+    "tp": 481
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9318,
+      0.9717
+     ],
+     "precision": [
+      0.9428,
+      0.9842
+     ],
+     "recall": [
+      0.9156,
+      0.9663
+     ]
+    },
+    "f1": 0.9546,
+    "fn": 29,
+    "fp": 17,
+    "jaccard": 0.9132,
+    "n_items": 100,
+    "precision": 0.9661,
+    "recall": 0.9435,
+    "tp": 484
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.9198,
+      0.9654
+     ],
+     "precision": [
+      0.8963,
+      0.953
+     ],
+     "recall": [
+      0.9374,
+      0.9855
+     ]
+    },
+    "consensus_units": 481,
+    "f1": 0.945,
+    "fn": 17,
+    "fp": 37,
+    "jaccard": 0.8958,
+    "n_items": 100,
+    "precision": 0.9261,
+    "precision_vs_union": 0.9421,
+    "production_units": 501,
+    "recall": 0.9647,
+    "recall_on_consensus": 0.9647,
+    "tp": 464
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.9159,
+      0.9612
+     ],
+     "precision": [
+      0.9112,
+      0.9669
+     ],
+     "recall": [
+      0.9106,
+      0.9663
+     ]
+    },
+    "f1": 0.9412,
+    "fn": 30,
+    "fp": 29,
+    "jaccard": 0.8889,
+    "majority_units": 502,
+    "n_items": 100,
+    "precision": 0.9421,
+    "precision_vs_union": 0.9601,
+    "production_units": 501,
+    "recall": 0.9402,
+    "recall_on_majority": 0.9402,
+    "tp": 472
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.9103,
+      0.9535
+     ],
+     "precision": [
+      0.9045,
+      0.9587
+     ],
+     "recall": [
+      0.9061,
+      0.9596
+     ]
+    },
+    "f1": 0.9341,
+    "fn": 33,
+    "fp": 33,
+    "jaccard": 0.8764,
+    "n_items": 100,
+    "precision": 0.9341,
+    "recall": 0.9341,
+    "tp": 468
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.9172,
+      0.9624
+     ],
+     "precision": [
+      0.9034,
+      0.9595
+     ],
+     "recall": [
+      0.9209,
+      0.9753
+     ]
+    },
+    "f1": 0.9426,
+    "fn": 24,
+    "fp": 33,
+    "jaccard": 0.8914,
+    "n_items": 100,
+    "precision": 0.9341,
+    "recall": 0.9512,
+    "tp": 468
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9323,
+      0.9603
+     ],
+     "precision": [
+      0.9391,
+      0.9757
+     ],
+     "recall": [
+      0.9093,
+      0.9596
+     ]
+    },
+    "f1": 0.9467,
+    "fn": 33,
+    "fp": 21,
+    "jaccard": 0.8989,
+    "n_items": 100,
+    "precision": 0.9581,
+    "recall": 0.9357,
+    "tp": 480
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9379,
+      0.9783
+     ],
+     "precision": [
+      0.9587,
+      0.9978
+     ],
+     "recall": [
+      0.9158,
+      0.9625
+     ]
+    },
+    "f1": 0.9612,
+    "fn": 30,
+    "fp": 9,
+    "jaccard": 0.9253,
+    "n_items": 100,
+    "precision": 0.9817,
+    "recall": 0.9415,
+    "tp": 483
+   }
+  },
+  "note": "models rows only (gold-v3 units); judge answers normalised by production's judge.normalize"
+ },
+ "set": "model_roles",
+ "status": {
+  "opus": {
+   "model_roles:valid": 100
+  },
+  "sol": {
+   "model_roles:valid": 100
+  },
+  "sonnet": {
+   "model_roles:valid": 100
+  }
+ }
+}

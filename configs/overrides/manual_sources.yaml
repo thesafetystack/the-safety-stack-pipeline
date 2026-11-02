@@ -1,0 +1,852 @@
+# manual_sources.yaml - hand-added sources prepared for the pre-2020 scope review round 2 (D658).
+#
+# Input to `stack overrides add` (target `manual_sources`, from this file's stem; docs/howto/overrides.md); not read
+# by any stage from here. The import is an operator step:
+#   stack overrides add configs/overrides/manual_sources.yaml --out data/overrides/<series>/ --dry-run   # writes nothing
+#   stack overrides add configs/overrides/manual_sources.yaml --out data/overrides/<series>/ --comment scope-r2-d6
+# Entries take effect only in a plan that runs `collect.manual` (stage line `miss_cap: 1`), gates on
+# `{rule: manual_accept}` and gives acquire wants for `manual_url: [page]` and `manual_paper: [full_text]`; the
+# `collect_links` flags only in a plan that also runs `collect.links` (rule `flagged_links`, an LLM budget) and
+# gates on `{rule: selected_links}` (configs/plans/links-scratch.yaml has all of these).
+# Validated by tests/test_collect_manual.py (`test_prepared_manual_sources_*`).
+#
+# Flags: `accept` = triage fetches the document without asking (rule `manual_accept`); the screen still judges it.
+# `collect_links` = the document becomes a linking document for `collect.links`.
+#
+# Blocks (override_id prefix):
+#   ms-r2-lm-          the 14 venue-gap landmarks of the review's landmark list plus #119 (Chollet), `accept`
+#   ms-r2-d3-          three landmarks the D3 re-sweep should find (#10, #92, #38), listed as a fallback, `accept`
+#   ms-r2-miri-post-   the 37 MIRI "New paper / New report" announcement posts, `collect_links`
+#   ms-r2-miri-similar- 8 further MIRI paper-announcement posts, `collect_links`
+#   ms-r2-miri-pdf-    the papers those 45 posts announce, as direct URLs, `accept`
+# Why the PDFs are listed directly: collect.links dropped a link to the linking page's own host as a self-link, and
+# the MIRI PDFs live on the posts' host (intelligence.org), so `collect_links` on the posts collected none of them
+# (it still reaches their off-host links). Since D665 a flagged page keeps its same-host PDF links, so the selector
+# sees these PDFs as well; the list stays until a build shows it picks them (both key the URL alike and join one
+# document). Papers the store already holds with a full text are left out.
+#
+# Identity: an arXiv or DOI URL is keyed by that id (it joins any member of the same paper); any other URL is keyed by
+# the URL only and never joins an OpenAlex or Semantic Scholar record of the same work (those carry no url keys).
+# Metadata (D666): `title`, `authors` and `published_at` are the source's own metadata fields (collect.manual writes
+# them into its `sources` row; gather merges them like any member's, ranking the manual channels after every
+# collected channel, so they only fill gaps; a `fields` override forces a value). Every `accept` entry has a title
+# and a date, and authors where a source on hand names them (the PDF's first page, the arXiv page); the
+# announcement posts have none (their `miri_blog` member gives the title). Dates: the earliest public date at hand, as a day when the PDF's first page, the note or the MIRI
+# announcement post that released the PDF gives one, else the note's year as `<year>-01-01` (read as year-only).
+# Where the PDF differs from the note (title, author), the PDF wins; the notes are unchanged.
+# Prepared and checked 2026-10-21: every URL fetched once (PDF first pages read) except the OpenAI and Medium pages,
+# which answer 403 to scripted clients (acquire's http lane then falls back to the Wayback Machine).
+
+# ---- ms-r2-lm-: venue-gap landmarks (+ #119)
+- override_id: ms-r2-lm-18-safety-gym
+  url: https://cdn.openai.com/safexp-short.pdf
+  title: "Benchmarking Safe Exploration in Deep Reinforcement Learning"
+  authors: ["Alex Ray", "Joshua Achiam", "Dario Amodei"]
+  published_at: 2019-01-01
+  flags:
+  - accept
+  note: 'Benchmarking Safe Exploration in Deep Reinforcement Learning (2019). Ray, Achiam, Amodei. OpenAI paper PDF (the Safety Gym paper), no arXiv, no DOI. Scope R2 landmark #18 (class V, venue gap); the blog/index page is in the store as a separate openai_blog document.'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-81-openai-charter
+  url: https://openai.com/charter/
+  title: "OpenAI Charter"
+  published_at: 2018-01-01
+  flags:
+  - accept
+  note: 'OpenAI Charter (2018). OpenAI. Web page. Scope R2 landmark #81 (V, venue gap: not in the openai_blog channel).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-86-building-safe-ai
+  url: https://deepmindsafetyresearch.medium.com/building-safe-artificial-intelligence-52f5f75058f1
+  title: "Building safe artificial intelligence: specification, robustness, and assurance"
+  published_at: 2018-09-27
+  flags:
+  - accept
+  note: 'Building safe artificial intelligence: specification, robustness, and assurance (2018-09-27). Ortega, Maini and the DeepMind safety team. Medium blog post. Scope R2 landmark #86 (V, venue gap). Its url key is the link target of the LessWrong/AF linkpost ''New DeepMind AI Safety Research Blog'', so gather may join it to that document.'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-96-vingean-reflection
+  url: https://intelligence.org/files/VingeanReflection.pdf
+  title: "Vingean Reflection: Reliable Reasoning for Self-Improving Agents"
+  authors: ["Benja Fallenstein", "Nate Soares"]
+  published_at: 2015-01-15
+  flags:
+  - accept
+  note: 'Vingean Reflection: Reliable Reasoning for Self-Improving Agents (2015). Fallenstein, Soares. MIRI technical report 2015-2, PDF. Scope R2 landmark #96 (V, venue gap); announced by MIRI post 2015-01-15.'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-95-tiling-agents
+  url: https://intelligence.org/files/TilingAgentsDraft.pdf
+  title: "Tiling Agents for Self-Modifying AI, and the Löbian Obstacle"
+  authors: ["Eliezer Yudkowsky", "Marcello Herreshoff"]
+  published_at: 2013-10-07
+  flags:
+  - accept
+  note: 'Tiling Agents for Self-Modifying AI, and the Lobian Obstacle (2013, early draft dated 2013-10-07). Yudkowsky, Herreshoff. MIRI report, PDF. Scope R2 landmark #95 (F, pre-floor, venue gap); linked from MIRI post 2013-12-31.'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-112-learning-what-to-value
+  url: https://intelligence.org/files/LearningValue.pdf
+  title: "Learning What to Value"
+  authors: ["Daniel Dewey"]
+  published_at: 2011-01-01
+  flags:
+  - accept
+  note: 'Learning What to Value (2011). Dewey. AGI 2011 (LNCS) paper, DOI 10.1007/978-3-642-22887-2_35; this is the MIRI-hosted PDF (the DOI is paywalled; a URL entry does not merge with a DOI record). Scope R2 landmark #112 (F, pre-floor, venue gap).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-117-tamer
+  url: https://www.cs.utexas.edu/~pstone/Papers/bib2html-links/KCAP09-knox.pdf
+  title: "Interactively Shaping Agents via Human Reinforcement: The TAMER Framework"
+  authors: ["W. Bradley Knox", "Peter Stone"]
+  published_at: 2009-01-01
+  flags:
+  - accept
+  note: 'Interactively Shaping Agents via Human Reinforcement: The TAMER Framework (2009). Knox, Stone. K-CAP 2009 paper, DOI 10.1145/1597735.1597738; author-hosted PDF. Scope R2 landmark #117 (F, pre-floor, human-feedback ancestry).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-75-machine-unlearning
+  url: https://www.cs.columbia.edu/~junfeng/papers/unlearning-sp15.pdf
+  title: "Towards Making Systems Forget with Machine Unlearning"
+  authors: ["Yinzhi Cao", "Junfeng Yang"]
+  published_at: 2015-01-01
+  flags:
+  - accept
+  note: 'Towards Making Systems Forget with Machine Unlearning (2015). Cao, Yang. IEEE S&P 2015 paper, DOI 10.1109/SP.2015.35, no arXiv; author-hosted PDF. Scope R2 landmark #75 (D: technique origin, expected-drop under the screen as written).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-110-gender-shades
+  url: https://proceedings.mlr.press/v81/buolamwini18a/buolamwini18a.pdf
+  title: "Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification"
+  authors: ["Joy Buolamwini", "Timnit Gebru"]
+  published_at: 2018-01-01
+  flags:
+  - accept
+  note: 'Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification (2018). Buolamwini, Gebru. FAT* 2018, PMLR volume 81, no DOI, no arXiv. Scope R2 landmark #110 (D, expected-drop).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-108-caliskan-biases
+  url: https://arxiv.org/abs/1608.07187
+  title: "Semantics derived automatically from language corpora contain human-like biases"
+  authors: ["Aylin Caliskan", "Joanna J. Bryson", "Arvind Narayanan"]
+  published_at: 2016-08-25
+  flags:
+  - accept
+  note: 'Semantics derived automatically from language corpora contain human-like biases (2017). Caliskan, Bryson, Narayanan. Science 2017, DOI 10.1126/science.aal4230; arXiv 1608.07187. Scope R2 landmark #108 (D, expected-drop).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-4-safely-interruptible
+  url: https://intelligence.org/files/Interruptibility.pdf
+  title: "Safely Interruptible Agents"
+  authors: ["Laurent Orseau", "Stuart Armstrong"]
+  published_at: 2016-01-01
+  flags:
+  - accept
+  note: 'Safely Interruptible Agents (2016). Orseau, Armstrong. UAI 2016 paper, no arXiv, no DOI; MIRI-hosted PDF. Scope R2 landmark #4 (V: present only as the MIRI announcement post and an AF explainer).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-9-corrigibility
+  url: https://intelligence.org/files/Corrigibility.pdf
+  title: "Corrigibility"
+  authors: ["Nate Soares", "Benja Fallenstein", "Eliezer Yudkowsky", "Stuart Armstrong"]
+  published_at: 2015-01-01
+  flags:
+  - accept
+  note: 'Corrigibility (2015). Soares, Fallenstein, Yudkowsky, Armstrong. AAAI-15 workshop paper (also MIRI TR 2014; CorrigibilityTR.pdf redirects here), no arXiv. Scope R2 landmark #9 (V: the store has the 2018 AF post of that name, not this paper).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-22-spec-gaming-list
+  url: https://vkrakovna.wordpress.com/2018/04/02/specification-gaming-examples-in-ai/
+  title: "Specification gaming examples in AI"
+  authors: ["Victoria Krakovna"]
+  published_at: 2018-04-02
+  flags:
+  - accept
+  note: 'Specification gaming examples in AI (2018-04-02). Krakovna. Blog post (the list). Scope R2 landmark #22 (V: present as the LW/AF crosspost, which this URL does not merge with).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-87-agent-incentives
+  url: https://deepmindsafetyresearch.medium.com/designing-agent-incentives-to-avoid-side-effects-e1ac80ea6107
+  title: "Designing agent incentives to avoid side effects"
+  published_at: 2019-03-11
+  flags:
+  - accept
+  note: 'Designing agent incentives to avoid side effects (2019-03-11). DeepMind safety team (Krakovna et al.). Medium blog post. Scope R2 landmark #87 (V: present as the AF crosspost, whose url key is this Medium post, so gather joins this entry to that document).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-lm-119-measure-of-intelligence
+  url: https://arxiv.org/abs/1911.01547
+  title: "On the Measure of Intelligence"
+  authors: ["François Chollet"]
+  published_at: 2019-11-05
+  flags:
+  - accept
+  note: 'On the Measure of Intelligence (2019). Chollet. arXiv 1911.01547. Scope R2 landmark #119 (A, holdout; unrostered author with no OpenAlex author id: decided as a manual item, D4).'
+  added_by: scope-r2-d6
+
+# ---- ms-r2-d3-: D3 fallbacks (revoke an entry if the D3 re-sweep brings the work as its own document)
+- override_id: ms-r2-d3-10-quantilizers
+  url: https://intelligence.org/files/QuantilizersSaferAlternative.pdf
+  title: "Quantilizers: A Safer Alternative to Maximizers for Limited Optimization"
+  authors: ["Jessica Taylor"]
+  published_at: 2015-11-29
+  flags:
+  - accept
+  note: 'Quantilizers: A Safer Alternative to Maximizers for Limited Optimization (2016). Taylor. AAAI-16 workshop paper, no DOI; MIRI-hosted PDF. Scope R2 landmark #10. D3 fallback: the D3 re-sweep should find the OpenAlex record, which carries no url key, so it would be a second document (identity merge or revoke this entry then).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-d3-92-safe-rl-survey
+  url: https://jmlr.org/papers/volume16/garcia15a/garcia15a.pdf
+  title: "A Comprehensive Survey on Safe Reinforcement Learning"
+  authors: ["Javier García", "Fernando Fernández"]
+  published_at: 2015-01-01
+  flags:
+  - accept
+  note: 'A Comprehensive Survey on Safe Reinforcement Learning (2015). Garcia, Fernandez. JMLR 16 (2015) 1437-1480, no DOI, no arXiv. Scope R2 landmark #92. D3 fallback: a D3 OpenAlex hit would not merge with this URL entry (identity merge or revoke this entry then).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-d3-38-agi-containment
+  url: https://arxiv.org/abs/1604.00545
+  title: "The AGI Containment Problem"
+  authors: ["James Babcock", "Janos Kramar", "Roman Yampolskiy"]
+  published_at: 2016-04-02
+  flags:
+  - accept
+  note: 'The AGI Containment Problem (2016). Babcock, Kramar, Yampolskiy. arXiv 1604.00545; AGI 2016 (LNCS), DOI 10.1007/978-3-319-41649-6_6. Scope R2 landmark #38 (A, holdout). D3 fallback: merges with any member keyed by the arXiv id.'
+  added_by: scope-r2-d6
+
+# ---- ms-r2-miri-post-: the 37 MIRI announcement posts (merge into their miri_blog documents by url key)
+- override_id: ms-r2-miri-post-new-paper-embryo-selection-for-cognitive-enhancement
+  url: https://intelligence.org/2013/10/30/new-paper-embryo-selection-for-cognitive-enhancement/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-10-30 (store document s34apk5zrnwja, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-racing-to-the-precipice
+  url: https://intelligence.org/2013/11/27/new-paper-racing-to-the-precipice/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-11-27 (store document s3ts444zqbbtt, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-predicting-agi-what-can-we-say-when-we-know-so-lit
+  url: https://intelligence.org/2013/12/01/new-paper-predicting-agi-what-can-we-say-when-we-know-so-little/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-12-01 (store document swrj9b54x8h3k, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-why-we-need-friendly-ai
+  url: https://intelligence.org/2013/12/18/new-paper-why-we-need-friendly-ai/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-12-18 (store document sxmfy8stqygqm, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-botworld
+  url: https://intelligence.org/2014/04/10/new-report-botworld/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-04-10 (store document s2y7waajmw99w, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-the-errors-insights-and-lessons-of-famous-ai-predi
+  url: https://intelligence.org/2014/04/30/new-paper-the-errors-insights-and-lessons-of-famous-ai-predictions/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-04-30 (store document s5b99ev289jh5, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-problems-of-self-reference-in-self-improving-space
+  url: https://intelligence.org/2014/05/06/new-paper-problems-of-self-reference-in-self-improving-space-time-embedded-intelligence/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-05-06 (store document skfjjwzfrxka4, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-program-equilibrium-prisoners-dilemma-via-lobs-the
+  url: https://intelligence.org/2014/05/17/new-paper-program-equilibrium-prisoners-dilemma-via-lobs-theorem/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-05-17 (store document sfdeghwm1e3gn, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-loudness-priors-preference-relations
+  url: https://intelligence.org/2014/05/30/new-report-loudness-priors-preference-relations/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-05-30 (store document s8brd27xn6j3q, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-distributions-allowing-tiling-staged-subjective-e
+  url: https://intelligence.org/2014/06/06/new-report-distributions-allowing-tiling-staged-subjective-eu-maximizers/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-06-06 (store document s5g12ebfz91y8, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-non-omniscience-probabilistic-inference-metamathe
+  url: https://intelligence.org/2014/06/23/new-report-non-omniscience-probabilistic-inference-metamathematics/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-06-23 (store document s87dq2qtas9va, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-exploratory-engineering-artificial-intelligence
+  url: https://intelligence.org/2014/08/22/new-paper-exploratory-engineering-artificial-intelligence/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-08-22 (store document setcam97bfbkt, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-corrigibility
+  url: https://intelligence.org/2014/10/18/new-report-corrigibility/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-10-18 (store document sz28qy43zjp8y, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-udt-known-search-order
+  url: https://intelligence.org/2014/10/30/new-report-udt-known-search-order/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-10-30 (store document s4xg3287g2862, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-concept-learning-safe-autonomous-ai
+  url: https://intelligence.org/2014/12/05/new-paper-concept-learning-safe-autonomous-ai/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-12-05 (store document s2r41sr8f8qfy, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-toward-idealized-decision-theory
+  url: https://intelligence.org/2014/12/16/new-report-toward-idealized-decision-theory/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-12-16 (store document s5h4msbcq884a, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-computable-probability-distributions-converge
+  url: https://intelligence.org/2014/12/16/new-report-computable-probability-distributions-converge/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-12-16 (store document stfj447evm3xr, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-tiling-agents-causal-graphs
+  url: https://intelligence.org/2014/12/16/new-report-tiling-agents-causal-graphs/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-12-16 (store document sjcaz2g38z4tj, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-questions-reasoning-logical-uncertainty
+  url: https://intelligence.org/2015/01/09/new-report-questions-reasoning-logical-uncertainty/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-01-09 (store document swgx6zrf89711, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-vingean-reflection-reliable-reasoning-self-improv
+  url: https://intelligence.org/2015/01/15/new-report-vingean-reflection-reliable-reasoning-self-improving-agents/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-01-15 (store document s86z9b8jvvzzr, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-formalizing-two-problems-realistic-world-models
+  url: https://intelligence.org/2015/01/22/new-report-formalizing-two-problems-realistic-world-models/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-01-22 (store document sv0j1g7dd91a2, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-value-learning-problem
+  url: https://intelligence.org/2015/01/29/new-report-value-learning-problem/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-01-29 (store document sc1ktrfd6szw6, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-introduction-lobs-theorem-miri-research
+  url: https://intelligence.org/2015/03/18/new-report-introduction-lobs-theorem-miri-research/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-03-18 (store document spc9v7ycgdt5r, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-papers-reflective
+  url: https://intelligence.org/2015/04/28/new-papers-reflective/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-04-28 (store document shy69gtx34hxt, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-the-asilomar-conference-a-case-study-in-risk-miti
+  url: https://intelligence.org/2015/06/30/new-report-the-asilomar-conference-a-case-study-in-risk-mitigation/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-06-30 (store document spk9dyxddg9x4, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-asymptotic-logical-uncertainty-and-the-benford-tes
+  url: https://intelligence.org/2015/09/30/new-paper-asymptotic-logical-uncertainty-and-the-benford-test/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-09-30 (store document sex122n5hrngv, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-report-leo-szilard-and-the-danger-of-nuclear-weapons
+  url: https://intelligence.org/2015/10/07/new-report-leo-szilard-and-the-danger-of-nuclear-weapons/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-10-07 (store document sfz0pdaxymmbk, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-formalizing-convergent-instrumental-goals
+  url: https://intelligence.org/2015/11/26/new-paper-formalizing-convergent-instrumental-goals/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-11-26 (store document sgskt42mw57nm, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-quantilizers
+  url: https://intelligence.org/2015/11/29/new-paper-quantilizers/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-11-29 (store document s6mnhfjb3p3gg, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-proof-producing-reflection-for-hol
+  url: https://intelligence.org/2015/12/04/new-paper-proof-producing-reflection-for-hol/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-12-04 (store document sardez470za48, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-defining-human-values-for-value-learners
+  url: https://intelligence.org/2016/02/29/new-paper-defining-human-values-for-value-learners/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2016-02-29 (store document s84hfbn472v1b, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-on-bounded-lob
+  url: https://intelligence.org/2016/03/31/new-paper-on-bounded-lob/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2016-03-31 (store document sgectrptpd7y4, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-safely-interruptible-agents
+  url: https://intelligence.org/2016/06/01/new-paper-safely-interruptible-agents/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2016-06-01 (store document s0p7b6j1v96yr, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-logical-induction
+  url: https://intelligence.org/2016/09/12/new-paper-logical-induction/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2016-09-12 (store document spa8kpsahx36w, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-optimal-polynomial-time-estimators
+  url: https://intelligence.org/2016/12/31/new-paper-optimal-polynomial-time-estimators/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2016-12-31 (store document s8j4h4w54c3je, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-cheating-death-in-damascus
+  url: https://intelligence.org/2017/03/18/new-paper-cheating-death-in-damascus/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2017-03-18 (store document sregan4bmqc1a, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-post-new-paper-learned-optimization
+  url: https://intelligence.org/2019/06/07/new-paper-learned-optimization/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2019-06-07 (store document s8q6cw7n4txj4, channel miri_blog), flagged for collect.links. One of the scope R2 '37 New paper/report posts'.
+  added_by: scope-r2-d6
+
+# ---- ms-r2-miri-similar-: further MIRI paper-announcement posts
+- override_id: ms-r2-miri-similar-early-draft-of-naturalistic-reflection-paper
+  url: https://intelligence.org/2013/03/22/early-draft-of-naturalistic-reflection-paper/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-03-22 (store document s1wdgdx71424g, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-altairs-timeless-decision-theory-paper-published
+  url: https://intelligence.org/2013/04/19/altairs-timeless-decision-theory-paper-published/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-04-19 (store document snqk0chdsgg4p, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-7-new-technical-reports-and-a-new-paper
+  url: https://intelligence.org/2013/12/31/7-new-technical-reports-and-a-new-paper/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2013-12-31 (store document s0m82gata7r64, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-new-chapter-cambridge-handbook-artificial-intelligence
+  url: https://intelligence.org/2014/06/19/new-chapter-cambridge-handbook-artificial-intelligence/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-06-19 (store document sge6ywhtgg5nj, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-new-technical-research-agenda-overview
+  url: https://intelligence.org/2014/12/23/new-technical-research-agenda-overview/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2014-12-23 (store document sntbbgyndsp5d, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-new-annotated-bibliography-miris-technical-agenda
+  url: https://intelligence.org/2015/02/05/new-annotated-bibliography-miris-technical-agenda/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-02-05 (store document saebx2whv9a2n, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-two-papers-accepted-to-agi-15
+  url: https://intelligence.org/2015/05/29/two-papers-accepted-to-agi-15/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2015-05-29 (store document sjdrnhet4v7x8, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-similar-two-new-papers-uniform
+  url: https://intelligence.org/2016/04/21/two-new-papers-uniform/
+  flags:
+  - collect_links
+  note: MIRI announcement post 2016-04-21 (store document stsd8878dnwz5, channel miri_blog), flagged for collect.links. A paper announcement beyond the R2 count of 37.
+  added_by: scope-r2-d6
+
+# ---- ms-r2-miri-pdf-: the announced papers' full texts
+- override_id: ms-r2-miri-pdf-definabilitytruthdraft
+  url: https://intelligence.org/files/DefinabilityTruthDraft.pdf
+  title: "Definability of Truth in Probabilistic Logic"
+  authors: ["Paul Christiano", "Eliezer Yudkowsky", "Marcello Herreshoff", "Mihaly Barasz"]
+  published_at: 2013-06-10
+  flags:
+  - accept
+  note: Definability of truth in probabilistic logic (Christiano et al.; the post links the 2013-03 early draft, this is the later draft). Linked from MIRI announcement post 2013-03-22 (store document s1wdgdx71424g).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-tdt
+  url: https://intelligence.org/files/TDT.pdf
+  title: "Timeless Decision Theory"
+  authors: ["Eliezer Yudkowsky"]
+  published_at: 2010-01-01
+  flags:
+  - accept
+  note: Timeless Decision Theory (Yudkowsky 2010). Linked from MIRI announcement post 2013-04-19 (store document snqk0chdsgg4p).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-embryoselection
+  url: https://intelligence.org/files/EmbryoSelection.pdf
+  title: "Embryo Selection for Cognitive Enhancement: Curiosity or Game-changer?"
+  authors: ["Carl Shulman", "Nick Bostrom"]
+  published_at: 2013-10-30
+  flags:
+  - accept
+  note: Embryo Selection for Cognitive Enhancement (Shulman & Bostrom). Linked from MIRI announcement post 2013-10-30 (store document s34apk5zrnwja).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-s00146-015-0590-y
+  url: https://doi.org/10.1007/s00146-015-0590-y
+  title: "Racing to the Precipice: a Model of Artificial Intelligence Development"
+  published_at: 2013-11-27
+  flags:
+  - accept
+  note: Racing to the Precipice (Armstrong, Bostrom, Shulman). Linked from MIRI announcement post 2013-11-27 (store document s3ts444zqbbtt). AI & Society (online 2015); the post's FHI PDF is gone (fhi.ox.ac.uk does not resolve), so the DOI (acquire's OA route).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-predictingagi
+  url: https://intelligence.org/files/PredictingAGI.pdf
+  title: "Predicting AGI: What can we say when we know so little?"
+  authors: ["Benja Fallenstein", "Alex Mennen"]
+  published_at: 2013-12-02
+  flags:
+  - accept
+  note: 'Predicting AGI: What can we say when we know so little? (Fallenstein & Mennen). Linked from MIRI announcement post 2013-12-01 (store document swrj9b54x8h3k).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-whyweneedfriendlyai
+  url: https://intelligence.org/files/WhyWeNeedFriendlyAI.pdf
+  title: "Why We Need Friendly AI"
+  authors: ["Luke Muehlhauser", "Nick Bostrom"]
+  published_at: 2013-12-18
+  flags:
+  - accept
+  note: Why We Need Friendly AI (Muehlhauser & Bostrom). Linked from MIRI announcement post 2013-12-18 (store document sxmfy8stqygqm).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-scientificinduction
+  url: https://intelligence.org/files/ScientificInduction.pdf
+  title: "Scientific Induction in Probabilistic Mathematics"
+  authors: ["Jeremy Hahn"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: Scientific Induction in Probabilistic Metamathematics. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-procrastinationparadox
+  url: https://intelligence.org/files/ProcrastinationParadox.pdf
+  title: "The Procrastination Paradox"
+  authors: ["Eliezer Yudkowsky"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: The Procrastination Paradox. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-consistencywaterfall
+  url: https://intelligence.org/files/ConsistencyWaterfall.pdf
+  title: "An infinitely descending sequence of sound theories each proving the next consistent"
+  authors: ["Benja Fallenstein"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: An infinitely descending sequence of sound theories each proving the next consistent. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-fallensteinsmonster
+  url: https://intelligence.org/files/FallensteinsMonster.pdf
+  title: "Fallenstein's Monster"
+  authors: ["Nate Soares"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: Fallenstein's Monster. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-recursivelydefinedtheories
+  url: https://intelligence.org/files/RecursivelyDefinedTheories.pdf
+  title: "Recursively-defined logical theories are well-defined"
+  authors: ["Nisan Stiennon"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: Recursively-defined logical theories are well-defined. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-tilingagents510
+  url: https://intelligence.org/files/TilingAgents510.pdf
+  title: "The 5-and-10 problem and the tiling agents formalism"
+  authors: ["Benja Fallenstein"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: The 5-and-10 problem and the tiling agents formalism. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-decreasingstrength
+  url: https://intelligence.org/files/DecreasingStrength.pdf
+  title: "Decreasing mathematical strength in one formalization of parametric polymorphism"
+  authors: ["Benja Fallenstein"]
+  published_at: 2013-12-31
+  flags:
+  - accept
+  note: Decreasing mathematical strength in one formalization of parametric polymorphism. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-1312-3626
+  url: https://arxiv.org/abs/1312.3626
+  title: "Paradoxes of rational agency and formal systems that verify their own soundness"
+  published_at: 2013-01-01
+  flags:
+  - accept
+  note: Paradoxes of rational agency and formal systems that verify their own soundness. Linked from MIRI announcement post 2013-12-31 (store document s0m82gata7r64).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-botworld
+  url: https://intelligence.org/files/Botworld.pdf
+  title: "Botworld 1.0"
+  authors: ["Nate Soares", "Benja Fallenstein"]
+  published_at: 2014-04-10
+  flags:
+  - accept
+  note: Botworld 1.0. Linked from MIRI announcement post 2014-04-10 (store document s2y7waajmw99w).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-0952813x-2014-895105
+  url: https://doi.org/10.1080/0952813X.2014.895105
+  title: "The errors, insights and lessons of famous AI predictions"
+  published_at: 2014-04-30
+  flags:
+  - accept
+  note: The errors, insights and lessons of famous AI predictions (Armstrong, Sotala, O hEigeartaigh). Linked from MIRI announcement post 2014-04-30 (store document s5b99ev289jh5). JETAI 2014; the post's MIRI PDF now redirects to the publisher, so the DOI (acquire's OA route).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-problemsselfreference
+  url: https://intelligence.org/files/ProblemsSelfReference.pdf
+  title: "Problems of self-reference in self-improving space-time embedded intelligence"
+  authors: ["Benja Fallenstein", "Nate Soares"]
+  published_at: 2014-05-06
+  flags:
+  - accept
+  note: Problems of self-reference in self-improving space-time embedded intelligence (Fallenstein & Soares). Linked from MIRI announcement post 2014-05-06 (store document skfjjwzfrxka4). the post's link redirects here.
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-programequilibrium
+  url: https://intelligence.org/files/ProgramEquilibrium.pdf
+  title: "Program Equilibrium in the Prisoner's Dilemma via Löb's Theorem"
+  authors: ["Patrick LaVictoire", "Benja Fallenstein", "Eliezer Yudkowsky", "Mihaly Barasz", "Paul Christiano", "Marcello Herreshoff"]
+  published_at: 2014-05-17
+  flags:
+  - accept
+  note: Program Equilibrium in the Prisoner's Dilemma via Lob's Theorem (LaVictoire et al.). Linked from MIRI announcement post 2014-05-17 (store document sfdeghwm1e3gn).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-loudnesspriors
+  url: https://intelligence.org/files/LoudnessPriors.pdf
+  title: "\"Loudness\": On priors over preference relations"
+  authors: ["Benja Fallenstein", "Nisan Stiennon"]
+  published_at: 2014-05-30
+  flags:
+  - accept
+  note: 'Loudness: on priors over preference relations (Fallenstein & Stiennon). Linked from MIRI announcement post 2014-05-30 (store document s8brd27xn6j3q).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-distributionsallowingtiling
+  url: https://intelligence.org/files/DistributionsAllowingTiling.pdf
+  title: "Distributions Allowing Tiling of Staged Subjective EU Maximizers"
+  authors: ["Eliezer Yudkowsky"]
+  published_at: 2014-05-11
+  flags:
+  - accept
+  note: Distributions allowing tiling of staged subjective EU maximizers (Fallenstein). Linked from MIRI announcement post 2014-06-06 (store document s5g12ebfz91y8).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-ethicsofai
+  url: https://intelligence.org/files/EthicsofAI.pdf
+  title: "The Ethics of Artificial Intelligence"
+  authors: ["Nick Bostrom", "Eliezer Yudkowsky"]
+  published_at: 2014-06-19
+  flags:
+  - accept
+  note: The Ethics of Artificial Intelligence (Bostrom & Yudkowsky, Cambridge Handbook of AI). Linked from MIRI announcement post 2014-06-19 (store document sge6ywhtgg5nj). The store has this work as sms32ajqphbx9 with an abstract only (no fetchable copy); this URL entry does not merge with it (an identity merge after the import joins them).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-non-omniscience
+  url: https://intelligence.org/files/Non-Omniscience.pdf
+  title: "Non-Omniscience, Probabilistic Inference, and Metamathematics"
+  authors: ["Paul Christiano"]
+  published_at: 2014-06-22
+  flags:
+  - accept
+  note: Non-omniscience, probabilistic inference, and metamathematics (Christiano). Linked from MIRI announcement post 2014-06-23 (store document s87dq2qtas9va).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-exploratoryengineeringai
+  url: https://intelligence.org/files/ExploratoryEngineeringAI.pdf
+  title: "Exploratory Engineering in AI"
+  authors: ["Luke Muehlhauser", "Bill Hibbard"]
+  published_at: 2014-08-22
+  flags:
+  - accept
+  note: Exploratory Engineering in AI (Muehlhauser & Hibbard). Linked from MIRI announcement post 2014-08-22 (store document setcam97bfbkt).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-udtsearchorder
+  url: https://intelligence.org/files/UDTSearchOrder.pdf
+  title: "UDT with known search order"
+  authors: ["Tsvi Benson-Tilsen"]
+  published_at: 2014-10-30
+  flags:
+  - accept
+  note: UDT with known search order (Benson-Tilsen). Linked from MIRI announcement post 2014-10-30 (store document s4xg3287g2862).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-conceptlearning
+  url: https://intelligence.org/files/ConceptLearning.pdf
+  title: "Concept learning for safe autonomous AI"
+  authors: ["Kaj Sotala"]
+  published_at: 2014-12-05
+  flags:
+  - accept
+  note: Concept learning for safe autonomous AI (Sotala). Linked from MIRI announcement post 2014-12-05 (store document s2r41sr8f8qfy).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-pi1pi2problem
+  url: https://intelligence.org/files/Pi1Pi2Problem.pdf
+  title: "Computable probability distributions which converge on believing true Π1 sentences will disbelieve true Π2 sentences"
+  authors: ["Will Sawin", "Abram Demski"]
+  published_at: 2014-12-16
+  flags:
+  - accept
+  note: Computable probability distributions which converge on believing true Pi1 sentences (Sawin & Demski). Linked from MIRI announcement post 2014-12-16 (store document stfj447evm3xr).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-tilingagentscausalgraphs
+  url: https://intelligence.org/files/TilingAgentsCausalGraphs.pdf
+  title: "Tiling agents in causal graphs"
+  authors: ["Nate Soares"]
+  published_at: 2014-12-16
+  flags:
+  - accept
+  note: Tiling agents in causal graphs (Soares). Linked from MIRI announcement post 2014-12-16 (store document sjcaz2g38z4tj).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-technicalagenda
+  url: https://intelligence.org/files/TechnicalAgenda.pdf
+  title: "Agent Foundations for Aligning Machine Intelligence with Human Interests: A Technical Research Agenda"
+  authors: ["Nate Soares", "Benya Fallenstein"]
+  published_at: 2014-12-23
+  flags:
+  - accept
+  note: 'Aligning Superintelligence with Human Interests: A Technical Research Agenda (Soares & Fallenstein). Linked from MIRI announcement post 2014-12-23 (store document sntbbgyndsp5d). The store has this work as sfy3hjhp686sd with an abstract only (no fetchable copy); this URL entry does not merge with it (an identity merge after the import joins them).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-questionslogicaluncertainty
+  url: https://intelligence.org/files/QuestionsLogicalUncertainty.pdf
+  title: "Questions of Reasoning Under Logical Uncertainty"
+  authors: ["Nate Soares", "Benja Fallenstein"]
+  published_at: 2015-01-09
+  flags:
+  - accept
+  note: Questions of reasoning under logical uncertainty (Soares & Fallenstein). Linked from MIRI announcement post 2015-01-09 (store document swgx6zrf89711).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-realisticworldmodels
+  url: https://intelligence.org/files/RealisticWorldModels.pdf
+  title: "Formalizing Two Problems of Realistic World-Models"
+  authors: ["Nate Soares"]
+  published_at: 2015-01-22
+  flags:
+  - accept
+  note: Formalizing two problems of realistic world-models (Soares). Linked from MIRI announcement post 2015-01-22 (store document sv0j1g7dd91a2).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-valuelearningproblem
+  url: https://intelligence.org/files/ValueLearningProblem.pdf
+  title: "The Value Learning Problem"
+  authors: ["Nate Soares"]
+  published_at: 2015-01-29
+  flags:
+  - accept
+  note: The value learning problem (Soares). Linked from MIRI announcement post 2015-01-29 (store document sc1ktrfd6szw6). The store has this work as s1pb4g3n8qtzy with an abstract only (no fetchable copy); this URL entry does not merge with it (an identity merge after the import joins them).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-annotatedbibliography
+  url: https://intelligence.org/files/AnnotatedBibliography.pdf
+  title: "Aligning Superintelligence with Human Interests: An Annotated Bibliography"
+  authors: ["Nate Soares"]
+  published_at: 2015-02-05
+  flags:
+  - accept
+  note: 'MIRI''s technical agenda: annotated bibliography. Linked from MIRI announcement post 2015-02-05 (store document saebx2whv9a2n).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-lob-notes-iaff
+  url: https://intelligence.org/files/lob-notes-IAFF.pdf
+  title: "An Introduction to Löb's Theorem in MIRI Research"
+  authors: ["Patrick LaVictoire"]
+  published_at: 2015-02-23
+  flags:
+  - accept
+  note: An Introduction to Lob's Theorem in MIRI Research (LaVictoire). Linked from MIRI announcement post 2015-03-18 (store document spc9v7ycgdt5r). The store has only the AF post of that title (a 337-character link post).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-reflectivesolomonoffaixi
+  url: https://intelligence.org/files/ReflectiveSolomonoffAIXI.pdf
+  title: "Reflective Variants of Solomonoff Induction and AIXI"
+  authors: ["Benja Fallenstein", "Nate Soares", "Jessica Taylor"]
+  published_at: 2015-04-28
+  flags:
+  - accept
+  note: Reflective variants of Solomonoff induction and AIXI (Fallenstein, Soares, Taylor). Linked from MIRI announcement post 2015-04-28 (store document shy69gtx34hxt).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-counterpossiblereasoning
+  url: https://intelligence.org/files/CounterpossibleReasoning.pdf
+  title: "Two Attempts to Formalize Counterpossible Reasoning in Deterministic Settings"
+  authors: ["Nate Soares", "Benja Fallenstein"]
+  published_at: 2015-05-29
+  flags:
+  - accept
+  note: Two Attempts to Formalize Counterpossible Reasoning in Deterministic Settings (Soares & Fallenstein). Linked from MIRI announcement post 2015-05-29 (store document sjdrnhet4v7x8).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-theasilomarconference
+  url: https://intelligence.org/files/TheAsilomarConference.pdf
+  title: "The Asilomar Conference: A Case Study in Risk Mitigation"
+  authors: ["Katja Grace"]
+  published_at: 2015-06-30
+  flags:
+  - accept
+  note: 'The Asilomar Conference: A Case Study in Risk Mitigation (Grace). Linked from MIRI announcement post 2015-06-30 (store document spk9dyxddg9x4).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-szilardnuclearweapons
+  url: https://intelligence.org/files/SzilardNuclearWeapons.pdf
+  title: "Leó Szilárd and the Danger of Nuclear Weapons: A Case Study in Risk Mitigation"
+  authors: ["Katja Grace"]
+  published_at: 2015-10-07
+  flags:
+  - accept
+  note: 'Leo Szilard and the Danger of Nuclear Weapons: A Case Study in Risk Mitigation (Grace). Linked from MIRI announcement post 2015-10-07 (store document sfz0pdaxymmbk).'
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-formalizingconvergentgoals
+  url: https://intelligence.org/files/FormalizingConvergentGoals.pdf
+  title: "Formalizing Convergent Instrumental Goals"
+  authors: ["Tsvi Benson-Tilsen", "Nate Soares"]
+  published_at: 2015-11-26
+  flags:
+  - accept
+  note: Formalizing convergent instrumental goals (Benson-Tilsen & Soares). Linked from MIRI announcement post 2015-11-26 (store document sgskt42mw57nm).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-proofproducingreflection
+  url: https://intelligence.org/files/ProofProducingReflection.pdf
+  title: "Proof-producing reflection for HOL with an application to model polymorphism"
+  authors: ["Benja Fallenstein", "Ramana Kumar"]
+  published_at: 2015-12-04
+  flags:
+  - accept
+  note: Proof-producing reflection for HOL (Fallenstein & Kumar). Linked from MIRI announcement post 2015-12-04 (store document sardez470za48).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-definingvaluesforvaluelearners
+  url: https://intelligence.org/files/DefiningValuesForValueLearners.pdf
+  title: "Defining Human Values for Value Learners"
+  authors: ["Kaj Sotala"]
+  published_at: 2016-02-29
+  flags:
+  - accept
+  note: Defining Human Values for Value Learners (Sotala). Linked from MIRI announcement post 2016-02-29 (store document s84hfbn472v1b).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-deathindamascus
+  url: https://intelligence.org/files/DeathInDamascus.pdf
+  title: "Cheating Death in Damascus"
+  authors: ["Benjamin A. Levinstein", "Nate Soares"]
+  published_at: 2017-03-18
+  flags:
+  - accept
+  note: Cheating Death in Damascus (Levinstein & Soares). Linked from MIRI announcement post 2017-03-18 (store document sregan4bmqc1a). The store has this work as sqjk3awrj1czw with an abstract only (no fetchable copy); this URL entry does not merge with it (an identity merge after the import joins them).
+  added_by: scope-r2-d6
+- override_id: ms-r2-miri-pdf-alignmentmachinelearning
+  url: https://intelligence.org/files/AlignmentMachineLearning.pdf
+  title: "Alignment for Advanced Machine Learning Systems"
+  authors: ["Jessica Taylor", "Eliezer Yudkowsky", "Patrick LaVictoire", "Andrew Critch"]
+  published_at: 2016-01-01
+  flags:
+  - accept
+  note: "Alignment for Advanced Machine Learning Systems (2016). Taylor, Yudkowsky, LaVictoire, Critch. MIRI technical report, PDF. Scope R2 landmark #33 (present as the 2020 OUP chapter, szv3m0d4mfc58, abstract only, no fetchable copy; R2 \xA72 'D6 for the PDFs'). This URL entry does not merge with it (an identity merge after the import joins them)."
+  added_by: scope-r2-d6

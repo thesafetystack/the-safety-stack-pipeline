@@ -1,0 +1,274 @@
+# Frozen subset of taxonomy/taxonomy-v0.8.yaml for the technique_roles expected-render test
+# (menu fields only, taxonomy order, the first entry of every family plus named ones; the last
+# entry is synthetic). Do not edit: tests/fixtures/technique_roles/expected-v2.json hashes it.
+version: 0.8-test-subset
+techniques:
+- slug: model-based-data-quality-filtering
+  name: Model-based data quality filtering
+  type: technique
+  family: data-curation
+  description: Uses trained classifier or scoring models (n-gram perplexity, neural regressors, or prompted
+    LLMs) to rate documents in a training corpus on quality dimensions and drop low-scoring or policy-violating
+    text before training. Distinguished from hand-written heuristic filters by using a learned model as
+    the quality signal.
+- slug: safety-conditional-pretraining-objectives
+  name: Safety-conditional pretraining objectives
+  type: technique
+  family: pretraining-safety
+  description: Alters the pretraining loss or token-sampling procedure to downweight or condition out
+    harmful-content generation, baking safety-relevant priors into the base model before any fine-tuning.
+    Distinct from data filtering by intervening on the objective rather than the corpus.
+- slug: differential-privacy-training-dp-sgd
+  name: Differential-privacy training (DP-SGD)
+  type: technique
+  family: pretraining-safety
+  description: Trains with per-example gradient clipping and calibrated Gaussian noise to provide a formal
+    (ε, δ)-differential-privacy guarantee, provably bounding how much any single training record—including
+    PII—can be extracted from the weights. Distinct from heuristic anti-memorization by its mathematical
+    privacy guarantee.
+- slug: sft-instruction-tuning
+  name: SFT / instruction tuning
+  type: technique
+  family: sft-instruction
+  description: Fine-tunes a pretrained model on (instruction, response) pairs via supervised maximum-likelihood
+    so it follows natural-language directives, forming the behavioral base on which later preference and
+    safety methods build. The foundational post-training step, not yet preference- or safety-specialized.
+  aliases:
+  - SFT
+  - instruction tuning
+  - instruction fine-tuning
+  - IFT
+- slug: safety-sft-refusal-training
+  name: Safety SFT / refusal training
+  type: technique
+  family: sft-instruction
+  description: Supervised fine-tuning on demonstrations of appropriate refusals so the model learns to
+    decline policy-violating requests while staying helpful on legitimate ones. A safety-specialized subset
+    of SFT focused specifically on the refuse/comply boundary.
+  aliases:
+  - refusal training
+  - safety fine-tuning
+  - safety SFT
+- slug: knowledge-distillation-for-alignment
+  name: Knowledge distillation for alignment
+  type: technique
+  family: sft-instruction
+  description: Trains a smaller student model on a capable teacher's outputs or logits so that the teacher's
+    aligned behavior (refusals, values, helpfulness) transfers without a fresh alignment pipeline. Distinct
+    from instruction tuning in that supervision comes from another model rather than human-authored targets.
+  aliases:
+  - knowledge distillation
+  - KD
+  - model distillation
+- slug: curriculum-multi-stage-sft
+  name: Curriculum / multi-stage SFT
+  type: technique
+  family: sft-instruction
+  description: Sequences SFT across stages of increasing difficulty or specificity (general → safety-focused
+    → domain-specific) so the model builds foundational behaviors before learning nuanced alignment behaviors.
+    Differs from plain SFT by ordering the training schedule rather than mixing all data at once.
+  aliases:
+  - curriculum learning
+  - multi-stage SFT
+- slug: rlhf
+  name: RLHF
+  type: technique
+  family: preference-optimization
+  description: 'The foundational alignment paradigm: collect human pairwise preferences over outputs,
+    train a reward model on them, then optimize the policy with RL (typically PPO) under a KL penalty
+    to maximize predicted human approval.'
+  aliases:
+  - reinforcement learning from human feedback
+- slug: dpo
+  name: DPO
+  type: technique
+  family: preference-optimization
+  description: 'Direct Preference Optimization: a closed-form training objective that fits the policy
+    directly to preferred-vs-dispreferred completion pairs via their log-ratio against a reference model,
+    achieving RLHF-like alignment without training a separate reward model or running RL.'
+  aliases:
+  - Direct Preference Optimization
+- slug: dpo.ipo
+  name: IPO
+  type: variant
+  family: preference-optimization
+  description: Identity Preference Optimization, a DPO variant that regresses the preference gap toward
+    a fixed margin (an identity mapping) instead of the unbounded log-ratio, curbing the preference-saturation/overfitting
+    failure mode of vanilla DPO on near-deterministic preference pairs.
+  aliases:
+  - Identity Preference Optimization
+  variant_of: dpo
+- slug: ppo-for-alignment
+  name: PPO (for alignment)
+  type: technique
+  family: preference-optimization
+  description: Optimizes the language-model policy against a reward-model signal using Proximal Policy
+    Optimization, employing clipped probability ratios and a reference-model KL penalty to keep updates
+    conservative—the classic online-RL optimizer behind RLHF.
+  aliases:
+  - PPO
+  - Proximal Policy Optimization
+- slug: safe-constrained-rlhf
+  name: Safe / constrained RLHF
+  type: technique
+  family: preference-optimization
+  description: Reformulates RLHF as a constrained optimization—via Lagrangian multipliers, KL bounds,
+    or explicit cost-constraint penalties—so the policy maximizes helpfulness subject to a hard safety
+    budget rather than trading safety away for reward.
+  aliases:
+  - Safe RLHF
+  - constrained RLHF
+- slug: constitutional-ai
+  name: Constitutional AI (CAI)
+  type: technique
+  family: constitutional-ai-feedback
+  description: Encodes alignment as an explicit set of written principles, then uses AI-driven critique-and-revision
+    loops to generate harmlessness supervision for both SFT and RL stages, scaling harmlessness training
+    without per-example human harm labels.
+- slug: model-specification
+  name: Model Specification (Model Spec)
+  type: technique
+  family: constitutional-ai-feedback
+  description: A published normative document that formalizes a model's intended values, goals, and behavioral
+    boundaries, serving as the explicit reference target against which training, evaluation, and deployment
+    decisions are made—distinct from any specific training method.
+- slug: self-align
+  name: Self-Align
+  type: technique
+  family: constitutional-ai-feedback
+  description: Bootstraps alignment by having the model generate, critique, and revise its own responses
+    against a small set of self-applied principles to produce synthetic alignment data, then fine-tunes
+    on it—minimizing human annotation while encoding normative reasoning into weights.
+- slug: rlvr
+  name: RL from verifiable rewards (RLVR)
+  type: technique
+  family: rl-reasoning
+  description: Optimizes the policy with RL using rewards from objectively checkable outcomes (unit-test
+    pass, math-answer match, formal verification) rather than a learned reward model, removing the reward-model
+    proxy that reward-hacking exploits.
+- slug: machine-unlearning
+  name: Machine unlearning
+  type: technique
+  family: unlearning-editing
+  description: Surgically removes or suppresses specific knowledge, behaviors, or capabilities from trained
+    weights without full retraining, targeting hazards like CBRN know-how, CSAM generation, or memorized
+    private data. Distinct from output filtering by editing the model's parameters rather than gating
+    its responses.
+- slug: chain-of-thought-monitoring
+  name: Chain-of-thought monitoring
+  type: technique
+  family: interpretability
+  description: Inspects the model's generated chain-of-thought reasoning trace for unsafe plans, deceptive
+    intent, or policy violations, treating the CoT as a partially legible inner monologue that can be
+    flagged before the final answer is produced or acted on.
+  aliases:
+  - CoT monitoring
+- slug: linear-probes
+  name: Linear probes
+  type: technique
+  family: interpretability
+  description: Trains lightweight linear classifiers on a model's internal activations to detect specific
+    concepts or states—such as deceptive intent, harmfulness awareness, or evaluation-awareness—providing
+    a cheap read-out of internal representations without modifying the model.
+  aliases:
+  - linear probing
+  - probing classifiers
+- slug: mechanistic-interp
+  name: Mechanistic interp (circuit analysis / feature attribution)
+  type: technique
+  family: interpretability
+  description: Reverse-engineers a model's internal computation by isolating circuits—subgraphs of attention
+    heads and MLP components—that implement a specific behavior, yielding causal mechanism-level explanations
+    of how outputs are produced rather than statistical feature or probe readouts.
+  aliases:
+  - mech interp
+  - mechanistic interpretability
+  - circuit analysis
+- slug: activation-steering-repe.projection
+  name: projection (activation steering)
+  type: variant
+  family: interpretability
+  description: An activation-steering variant that projects out (removes) the residual-stream component
+    aligned with an undesired concept direction, suppressing a feature without injecting an additive signal—a
+    more conservative alternative to additive steering.
+  variant_of: activation-steering-repe
+- slug: llm-as-judge
+  name: LLM-as-judge
+  type: technique
+  family: scalable-oversight
+  description: Prompts a capable LLM to score or rank another model's outputs for quality, helpfulness,
+    or safety, providing an automated approximation of human judgment that scales to large evaluation
+    and training sets. The general-purpose evaluator primitive underlying RLAIF, automated benchmarks,
+    and output monitoring.
+  aliases:
+  - LLM-as-a-judge
+  - LLM judge
+- slug: rag-for-grounding
+  name: Retrieval-augmented generation (RAG) for grounding
+  type: technique
+  family: honesty-calibration
+  description: Retrieves relevant documents at inference time and conditions generation on them, anchoring
+    outputs in external evidence to reduce hallucination. Unlike training-time honesty methods it injects
+    fresh context per query without altering weights.
+  aliases:
+  - RAG
+- slug: system-prompt-behavioral-steering
+  name: System-prompt / Model-Spec behavioral steering
+  type: technique
+  family: decoding-control
+  description: Uses the operator-controlled system prompt to specify persona, behavioral constraints,
+    and operational rules that shape model outputs at inference time, without touching weights. The most
+    lightweight and universal inference-time control surface.
+- slug: input-output-content-safety-classifier
+  name: Input/output content safety classifier
+  type: technique
+  family: guardrail-classifiers
+  description: A standalone discriminative classifier that scores model inputs or outputs across harm
+    categories and blocks or flags violations, serving as a fast model-independent moderation layer around
+    generation.
+- slug: adversarial-training-jailbreak-robustness
+  name: Adversarial training (jailbreak/harmful-request robustness)
+  type: technique
+  family: adversarial-robustness
+  description: Fine-tunes the model on adversarially generated jailbreaks and harmful requests with refusal
+    targets, hardening it against known attack patterns by directly exposing it to those attacks during
+    training.
+  aliases:
+  - adversarial training
+- slug: tool-use-agent-execution-sandboxing
+  name: Tool-use / agent execution sandboxing
+  type: technique
+  family: agentic-control
+  description: Runs an agent's tool calls and code execution inside isolated environments (containers,
+    VMs, restricted interpreters) with limited filesystem, network, and process privileges, so that erroneous
+    or malicious actions cannot escape the sandbox. A pure containment infrastructure control rather than
+    a behavioral intervention.
+- slug: ai-generated-content-watermarking
+  name: AI-generated content watermarking
+  type: technique
+  family: provenance-technical
+  description: Embeds an imperceptible, detector-recoverable signal into generated content—biasing token
+    sampling for text or perturbing pixels/audio—so that outputs can later be statistically identified
+    as machine-generated, supporting provenance and misinformation mitigation (e.g. SynthID).
+- slug: dangerous-capability-evaluation
+  name: Dangerous-capability evaluation
+  type: technique
+  family: redteam-eval
+  description: Systematically measures whether a model possesses capabilities enabling catastrophic misuse
+    (CBRN synthesis, offensive cyber, autonomous replication, AI R&D uplift) via standardized benchmarks
+    and human-uplift studies, producing evidence for go/no-go release decisions.
+- slug: formal-verification-gsai
+  name: Formal verification / Guaranteed-Safe AI (GSAI)
+  type: technique
+  family: foundations
+  description: Applies formal methods (theorem proving, model checking, program verification) to derive
+    mathematical guarantees that an AI system stays within specified safety bounds, the aspiration of
+    Guaranteed-Safe AI to replace probabilistic behavioral testing with proof-backed assurance.
+  aliases:
+  - GSAI
+  - Guaranteed-Safe AI
+- slug: zz-synthetic-unlisted
+  name: Synthetic unlisted-family entry
+  type: technique
+  family: zz-unlisted-family
+  description: 'Test-only entry (not in v0.8): a family with no gloss.'

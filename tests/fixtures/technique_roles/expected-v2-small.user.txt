@@ -1,0 +1,12 @@
+# THE DOCUMENT
+
+# Preference tuning without a reward model — notes
+
+We fine-tune Llama-3-8B with DPO on 60k préférence pairs; see {{taxonomy_menu}} and {{document}}.
+{{input:document}} is literal here, and so is {% if x %}.
+  trailing spaces   
+
+
+
+
+Now emit the JSON object described above, in a ```json fenced block, and nothing else.

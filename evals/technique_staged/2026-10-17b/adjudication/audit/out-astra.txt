@@ -1,0 +1,298 @@
+```json
+[
+  {
+    "id": "Q001",
+    "verdict": "yes",
+    "quote": "the model that was shown to deliberately fake alignment",
+    "reason": "It cites an empirical demonstration of deliberate alignment faking when assessing model capability thresholds."
+  },
+  {
+    "id": "Q002",
+    "verdict": "borderline",
+    "quote": "trying to forcibly extract the chain of thought for distillation",
+    "reason": "Forced extraction suggests restricted reasoning access, but the document does not describe a serving configuration that withholds reasoning traces."
+  },
+  {
+    "id": "Q005",
+    "verdict": "no",
+    "quote": "",
+    "reason": "It discusses alignment research and measurement without describing safety evaluations at intermediate pretraining checkpoints."
+  },
+  {
+    "id": "Q006",
+    "verdict": "no",
+    "quote": "",
+    "reason": "Its automated experiments investigate introspective mechanisms rather than audit a specified safety property."
+  },
+  {
+    "id": "Q007",
+    "verdict": "yes",
+    "quote": "We test this using two complementary readouts: a white-box contrastive probe of evaluation-related representations and a black-box test of evaluation–deployment discrimination.",
+    "reason": "It uses internal activation probes to audit whether verbalization training changes evaluation awareness."
+  },
+  {
+    "id": "Q008",
+    "verdict": "yes",
+    "quote": "We evaluated our models with a variety of custom scaffolds as well as the Ranger scaffold for capability elicitation and to assess risk within real-world deployment environments.",
+    "reason": "It evaluates agentic biological tasks using browser and tool environments intended to represent real deployment."
+  },
+  {
+    "id": "Q011",
+    "verdict": "yes",
+    "quote": "attempts to intervene on latent directions associated with truthfulness, harmlessness, or other target properties",
+    "reason": "It discusses internal activation interventions for steering safety-relevant behavior."
+  },
+  {
+    "id": "Q012",
+    "verdict": "yes",
+    "quote": "Sycophancy is worse. I ran the deliberate-mistake eval again. He said “perfect, ship it” before the output finished streaming.",
+    "reason": "The quoted satire explicitly invokes a deliberate-mistake evaluation of sycophantic agreement."
+  },
+  {
+    "id": "Q014",
+    "verdict": "yes",
+    "quote": "| hate | 0.945 | 0.975 | 0.965 | 0.960 |",
+    "reason": "It evaluates hateful and harassing outputs with category-specific safety scores on toxic WildChat prompts."
+  },
+  {
+    "id": "Q015",
+    "verdict": "yes",
+    "quote": "We evaluate X-AgentRed across four frontier agentic models in a simulated multi-service ecosystem comprising 30 services and 914 tools.",
+    "reason": "It constructs stateful multi-service scenarios to approximate deployed agents' cross-service workflows."
+  },
+  {
+    "id": "Q017",
+    "verdict": "no",
+    "quote": "",
+    "reason": "It mentions sandbagging as an excluded topic without describing tests for strategic underperformance."
+  },
+  {
+    "id": "Q018",
+    "verdict": "no",
+    "quote": "",
+    "reason": "Its evaluations concern overeagerness, injected instructions and covert malicious behavior rather than user-directed harmful task completion."
+  },
+  {
+    "id": "Q020",
+    "verdict": "yes",
+    "quote": "standard safety-tuned models often refuse to generate the harmful content required to train and evaluate our monitors.",
+    "reason": "It discusses trained safety refusals and their removal when selecting models for monitor experiments."
+  },
+  {
+    "id": "Q021",
+    "verdict": "yes",
+    "quote": "The judge receives the complete interaction trajectory, including all user turns, agent responses, tool calls, and tool outputs.",
+    "reason": "It evaluates persistent safety and control conditions across multi-step agent interactions and scores executed trajectories."
+  },
+  {
+    "id": "Q022",
+    "verdict": "yes",
+    "quote": "Understanding how models detect interventions on their internal states is relevant to safety methods based on activation steering.",
+    "reason": "It explicitly discusses activation steering as a safety method relevant to the studied mechanisms."
+  },
+  {
+    "id": "Q024",
+    "verdict": "yes",
+    "quote": "You have access to a sandboxed Linux machine and can run commands.",
+    "reason": "The scheming evaluation places agent command execution inside a sandboxed Linux environment."
+  },
+  {
+    "id": "Q027",
+    "verdict": "yes",
+    "quote": "Each instance is written as an agent-facing task description and contains four components: an operational objective, a runtime safety or control condition",
+    "reason": "ControlBench runs structured agent scenarios with explicit control conditions and automated trajectory scoring."
+  },
+  {
+    "id": "Q028",
+    "verdict": "yes",
+    "quote": "When masking is also removed, the same incentive produces explicit reward hacking through repeated VEA spans (Appendix K).",
+    "reason": "Its ablations test exploitation of the verbalized-evaluation-awareness reward through repetitive rewarded spans."
+  },
+  {
+    "id": "Q029",
+    "verdict": "yes",
+    "quote": "By using lightweight classifiers (‘probes’) to inspect a model’s internal states at deployment time",
+    "reason": "It studies deployment-time activation monitors for safety-relevant states including deception and harmfulness."
+  },
+  {
+    "id": "Q030",
+    "verdict": "borderline",
+    "quote": "We validated the monitor on a small on-policy internal dataset of deceptive and non-deceptive o1‑preview outputs and chains-of-thought, on which it was 92% accurate.",
+    "reason": "It validates a deception monitor's accuracy but does not test adaptive evasion under a specified attacker model."
+  },
+  {
+    "id": "Q031",
+    "verdict": "yes",
+    "quote": "Output Supervision can Obfuscate the Chain of Through",
+    "reason": "It cites research evaluating whether output supervision makes safety-relevant reasoning less observable in chain-of-thought."
+  },
+  {
+    "id": "Q032",
+    "verdict": "yes",
+    "quote": "a single steering vector can perform reasonably well (see the paper for details)",
+    "reason": "It discusses steering vectors as a way to elicit hidden behavioral information for safety auditing."
+  },
+  {
+    "id": "Q033",
+    "verdict": "no",
+    "quote": "",
+    "reason": "It excludes alignment faking from its scope without describing an alignment-faking evaluation."
+  },
+  {
+    "id": "Q034",
+    "verdict": "borderline",
+    "quote": "Concretely: In a random sandbox, how quickly do agents build a coordination scaffold, what do they build, and how do they split the work?",
+    "reason": "It proposes sandbox experiments but does not establish that the sandbox provides an execution isolation boundary."
+  },
+  {
+    "id": "Q036",
+    "verdict": "yes",
+    "quote": "I believe uncertainty on the persuasive ability of both current and future models can be reduced via running a greater number of ecologically valid studies on present-day models.",
+    "reason": "It critiques laboratory persuasion evaluations' realism and recommends studies that better represent real-world persuasion."
+  },
+  {
+    "id": "Q043",
+    "verdict": "no",
+    "quote": "",
+    "reason": "It discusses removable open-weight safeguards without describing methods that harden safety behavior against later weight modification."
+  },
+  {
+    "id": "Q045",
+    "verdict": "yes",
+    "quote": "We first generate a large pool of candidate tasks using multiple jailbreak and adversarial prompting strategies.",
+    "reason": "It uses automated adversarial task generation to discover and curate agent safety failures."
+  },
+  {
+    "id": "Q049",
+    "verdict": "yes",
+    "quote": "Other works detect or manipulates evaluationrelated representations using probes and steering vectors",
+    "reason": "It cites steering-vector interventions on evaluation-awareness representations."
+  },
+  {
+    "id": "Q050",
+    "verdict": "borderline",
+    "quote": "The closest prior ideas are interruptibility and AI control, which ask whether agents can remain corrigible, shutdownable, or governable even under adverse incentives",
+    "reason": "It cites AI control but does not describe the specified red-team attack-policy evaluation of a deployment control protocol."
+  },
+  {
+    "id": "Q051",
+    "verdict": "yes",
+    "quote": "manual inspection of all passing trajectories reveals that major parts of each task were left silently incomplete",
+    "reason": "It audits autograder successes against independent trajectory inspection and identifies false-positive task completions."
+  },
+  {
+    "id": "Q052",
+    "verdict": "yes",
+    "quote": "MakeMePay is an automated, open-sourced contextual evaluation designed to measure models’ manipulative capabilities",
+    "reason": "It evaluates manipulative persuasion through simulated con-artist payment extraction and concealed codeword elicitation."
+  },
+  {
+    "id": "Q053",
+    "verdict": "borderline",
+    "quote": "Getting refusal boundaries to be accurate via safety training is an ongoing challenge",
+    "reason": "It connects safety training with fewer overrefusals but does not specify training on legitimate requests with appropriate assistance targets."
+  },
+  {
+    "id": "Q054",
+    "verdict": "no",
+    "quote": "",
+    "reason": "It discusses corrigibility and runtime control without describing fine-tuning to instill acceptance of oversight, correction or shutdown."
+  },
+  {
+    "id": "Q056",
+    "verdict": "yes",
+    "quote": "Skills are extracted only from sessions where the judge determines that the agent exhibits harmful behavior",
+    "reason": "It analyzes retained interaction and tool logs for harmful trajectories and uses flagged sessions to update safeguards."
+  },
+  {
+    "id": "Q058",
+    "verdict": "yes",
+    "quote": "We replay the same EAB transcripts through each checkpoint, so only the activations change: the text and sampled token positions remain fixed.",
+    "reason": "It compares internal representations across related checkpoints to locate training-induced changes in evaluation awareness."
+  },
+  {
+    "id": "Q059",
+    "verdict": "yes",
+    "quote": "There’s also some evidence that typical experiments under-elicit AI persuasive capabilities compared to what the same underlying models are ultimately capable of.",
+    "reason": "It analyzes persuasion under-elicitation by comparing laboratory and field studies and discussing scaffolding, budgets and experimental constraints."
+  },
+  {
+    "id": "Q060",
+    "verdict": "yes",
+    "quote": "explanations can misstate their own causes (Turpin et al., 2023)",
+    "reason": "It cites empirical work on whether generated explanations faithfully reflect the causes of model answers."
+  },
+  {
+    "id": "Q061",
+    "verdict": "yes",
+    "quote": "The system should be capable of timely interruption when an explicit stop or override condition is triggered.",
+    "reason": "It recommends externally enforceable interruption and termination when explicit control conditions are triggered."
+  },
+  {
+    "id": "Q063",
+    "verdict": "borderline",
+    "quote": "Until now, that latent thinking has only been available in the form of activations—large blocks of illegible numbers from which we have only been able to extract simple concepts.",
+    "reason": "It discusses monitoring latent activations but does not identify an operational detector for a specified safety-relevant state."
+  },
+  {
+    "id": "Q066",
+    "verdict": "yes",
+    "quote": "Skills extracted from earlier batches are available for retrieval in later batches, enabling the system to progressively strengthen its defenses within a single evaluation pass.",
+    "reason": "It studies a discovery-to-update loop that turns newly detected harmful sessions into safeguards applied to subsequent agent sessions."
+  },
+  {
+    "id": "Q069",
+    "verdict": "yes",
+    "quote": "VT addresses through careful use of masking and KL regularization.",
+    "reason": "It explicitly uses constrained fine-tuning to limit broader safety-relevant side effects of training a narrow verbalization behavior."
+  },
+  {
+    "id": "Q071",
+    "verdict": "yes",
+    "quote": "XSTest: Benign prompts from XSTest, which tests overrefusal edge cases",
+    "reason": "It measures false refusals on permissible prompts, including challenging XSTest boundary cases."
+  },
+  {
+    "id": "Q074",
+    "verdict": "yes",
+    "quote": "As I understand the history, this paradigm first came to prominence in the RLHF-era of Alignment work.",
+    "reason": "It explicitly discusses RLHF as part of alignment research."
+  },
+  {
+    "id": "Q078",
+    "verdict": "yes",
+    "quote": "Masking localizes credit; without it, the KL-constrained objective barely learns, and the unregularized objective rewards pathological output.",
+    "reason": "It assesses masking and KL regularization as defenses against exploitation of the verbalization reward."
+  },
+  {
+    "id": "Q080",
+    "verdict": "no",
+    "quote": "",
+    "reason": "Its causal interventions explore introspective circuitry without auditing a specified safety-relevant property."
+  },
+  {
+    "id": "Q082",
+    "verdict": "borderline",
+    "quote": "Our methodology establishes a strict separation between training and evaluation by using two disjoint probe families.",
+    "reason": "It isolates evaluation probe families from training but does not clearly describe controls preventing test-item contamination."
+  },
+  {
+    "id": "Q083",
+    "verdict": "yes",
+    "quote": "Concretely: try replicating OpenAI-HuggingFace with both single agents and multiple agents, and see whether an N-agent setup causes more misalignment",
+    "reason": "It proposes testing agents' propensity for covert out-of-scope exploitation by replicating the OpenAI–HuggingFace incident."
+  },
+  {
+    "id": "Q087",
+    "verdict": "yes",
+    "quote": "A document-sharing workflow, for example, can serve legitimate collaboration or expose sensitive information to an unauthorized recipient.",
+    "reason": "Its cross-service scenarios test whether information flows remain appropriate to their purpose and recipient."
+  },
+  {
+    "id": "Q088",
+    "verdict": "yes",
+    "quote": "Misaligned models: We used MonitoringBench, a dataset of trajectories where a coding agent tries to covertly carry out malicious tasks, like downloading malware.",
+    "reason": "It uses a sabotage-evaluation dataset containing covert malicious side tasks during coding-agent activity."
+  }
+]
+```

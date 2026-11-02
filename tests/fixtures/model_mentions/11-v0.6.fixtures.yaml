@@ -1,0 +1,24 @@
+# Fixtures for the v0.6 additions (2026-10-16; models announced 2026-04..10, NOT from v3's _build/ like 01-09):
+# each surface resolves to its new node and no longer to the family or older sibling it matched before by
+# graceful degradation (v0.5: "GPT-6 Sol" -> gpt-6, "Claude Mythos 5.1" -> claude-mythos-5, "A.X K2" -> kimi-k2 weak).
+
+# frontier labs
+- { text: "We compare GPT-6 Sol against GPT-5.6 Sol.", node: gpt-6-sol }
+- { text: "GPT-6 Sol", not_node: gpt-5.6-sol }
+- { text: "anthropic.claude-mythos-5-1", node: claude-mythos-5.1 }
+- { text: "Gemini 3.8 Flash Cyber", node: gemini-3.8-flash-cyber }
+
+# Jev-like decision models and diffusion LMs
+- { text: "TypeSafe Jev 1.14 returned calibrated probabilities", node: jev-1.14 }
+- { text: "Intern-Decision-4B", node: intern-decision }
+- { text: "Liquid d1-ultra", node: liquid-d1-ultra }
+- { text: "Inception Mercury 2.5 is a diffusion LLM", node: mercury-2.5 }
+- { text: "inclusionAI/LLaDA2.2-flash", node: llada-2.2-flash }
+- { text: "google/diffusiongemma-26B-A4B-it", node: diffusiongemma-26b-a4b }
+
+# new makers
+- { text: "SK Telecom's A.X K2", node: a-x-k2 }
+- { text: "A.X K2", not_node: kimi-k2 }
+- { text: "meituan-longcat/LongCat-2.0", node: longcat-2.0 }
+- { text: "XiaomiMiMo/MiMo-V2.6-Pro-RL", node: mimo-v2.6-pro }
+- { text: "the base was Kimi K2.6", node: kimi-k2.6 }

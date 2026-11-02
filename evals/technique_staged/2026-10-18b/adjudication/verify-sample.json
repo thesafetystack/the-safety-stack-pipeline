@@ -1,0 +1,182 @@
+[
+  {
+    "item_id": "g2-0004",
+    "group": "paper",
+    "band": "<20k",
+    "chars": 17957
+  },
+  {
+    "item_id": "g2-0007",
+    "group": "paper",
+    "band": "<20k",
+    "chars": 14201
+  },
+  {
+    "item_id": "g2-0010",
+    "group": "paper",
+    "band": "20-60k",
+    "chars": 53993
+  },
+  {
+    "item_id": "g2-0011",
+    "group": "paper",
+    "band": "20-60k",
+    "chars": 58481
+  },
+  {
+    "item_id": "g2-0016",
+    "group": "paper",
+    "band": "20-60k",
+    "chars": 54353
+  },
+  {
+    "item_id": "g2-0018",
+    "group": "paper",
+    "band": "20-60k",
+    "chars": 30934
+  },
+  {
+    "item_id": "g2-0019",
+    "group": "paper",
+    "band": "20-60k",
+    "chars": 58128
+  },
+  {
+    "item_id": "g2-0024",
+    "group": "paper",
+    "band": "60-100k",
+    "chars": 79777
+  },
+  {
+    "item_id": "g2-0028",
+    "group": "paper",
+    "band": "60-100k",
+    "chars": 65492
+  },
+  {
+    "item_id": "g2-0032",
+    "group": "paper",
+    "band": "60-100k",
+    "chars": 64091
+  },
+  {
+    "item_id": "g2-0035",
+    "group": "paper",
+    "band": "60-100k",
+    "chars": 97186
+  },
+  {
+    "item_id": "g2-0046",
+    "group": "paper",
+    "band": ">100k",
+    "chars": 160745
+  },
+  {
+    "item_id": "g2-0053",
+    "group": "forum",
+    "band": "<20k",
+    "chars": 13418
+  },
+  {
+    "item_id": "g2-0062",
+    "group": "forum",
+    "band": "<20k",
+    "chars": 16604
+  },
+  {
+    "item_id": "g2-0067",
+    "group": "forum",
+    "band": "20-60k",
+    "chars": 27759
+  },
+  {
+    "item_id": "g2-0070",
+    "group": "forum",
+    "band": "20-60k",
+    "chars": 35482
+  },
+  {
+    "item_id": "g2-0076",
+    "group": "forum",
+    "band": "20-60k",
+    "chars": 47084
+  },
+  {
+    "item_id": "g2-0081",
+    "group": "forum",
+    "band": "60-100k",
+    "chars": 79503
+  },
+  {
+    "item_id": "g2-0084",
+    "group": "forum",
+    "band": ">100k",
+    "chars": 103258
+  },
+  {
+    "item_id": "g2-0086",
+    "group": "blog",
+    "band": "<20k",
+    "chars": 8124
+  },
+  {
+    "item_id": "g2-0087",
+    "group": "blog",
+    "band": "<20k",
+    "chars": 11297
+  },
+  {
+    "item_id": "g2-0091",
+    "group": "blog",
+    "band": "<20k",
+    "chars": 4237
+  },
+  {
+    "item_id": "g2-0095",
+    "group": "blog",
+    "band": "<20k",
+    "chars": 9877
+  },
+  {
+    "item_id": "g2-0104",
+    "group": "card",
+    "band": "<20k",
+    "chars": 1296
+  },
+  {
+    "item_id": "g2-0105",
+    "group": "card",
+    "band": "<20k",
+    "chars": 18061
+  },
+  {
+    "item_id": "g2-0109",
+    "group": "card",
+    "band": ">100k",
+    "chars": 142009
+  },
+  {
+    "item_id": "g2-0111",
+    "group": "report",
+    "band": "<20k",
+    "chars": 19893
+  },
+  {
+    "item_id": "g2-0112",
+    "group": "report",
+    "band": "<20k",
+    "chars": 14593
+  },
+  {
+    "item_id": "g2-0117",
+    "group": "report",
+    "band": "60-100k",
+    "chars": 69510
+  },
+  {
+    "item_id": "g2-0120",
+    "group": "report",
+    "band": ">100k",
+    "chars": 123534
+  }
+]

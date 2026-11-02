@@ -1,0 +1,128 @@
+# dev-v2-m4: dev-v2 for the M4 real runs and the end-to-end build on the dev store (track C, D184 (C)).
+# Differs from dev-v2 only in: std-v2's gate shape (one safety_relevance question + std's url rule) with track E's
+# triage pin (D174 (E)) and fetch_on [relevant, borderline] (D184 (C), default taken); screen tier 1 on
+# gpt-6-luna with the screen-v8 quote rule (D179 (C); evals/screen/2026-10-12a README); affiliation on the
+# extract_main role; dev caps on triage/affiliation. dev-v2 itself keeps the M2-M3 sql-only gate: its name is
+# pinned by the synthetic test worlds (check fixtures, CLI, scenarios resolve `plan: dev-v2` for X6/X14).
+# Round 3 (track S, S4/S5; D209: the new prompts pinned, fetch by source): triage pin
+# safety-relevance-v3 on gpt-6-luna (D203 (1)), fetch_on [relevant, borderline] unchanged; the screen gate's
+# source rules frontier_lab_posts, safety_org_posts, zvi_posts (stack/rules.py) before the question clause.
+# acquire.wants gains every channel a rule fetches by (std-v2: alignmentforum, the lab and card channels and the
+# 16 safety-org blogs; dev-v2-m4: the 16 safety-org blogs), so a rule-fetched row has a wanted role.
+# Screen pin screen-v11 (v10's two questions + text usability, one call; records stack_relevance, sr_relevance,
+# text_usability folded) on gpt-6-luna, tier 2 gpt-5.6-terra on the whole text; tier 1 sees [12000, 2000] (D211).
+# Round 4 (track P, D230; LessWrong is left out of link collection only, LW collection stays): the A2
+# collectors as dev-v2 has them: collect.lw_graphql (AI tag + the SR extension tags, D193) with dev-v2's caps, beside
+# collect.forums' keyword sweep (D193 default accepted); the 16 safety-org blogs were already wanted (S5, D195); the SR
+# concept groups reach the arXiv keyword/category families, S2 and forums through the collectors' defaults (D196);
+# OpenAlex keeps dev-v2's two-group dev cap. No link-collection lines (collect.feeds/manual/links, x-lookup).
+plan: dev-v2-m4
+schema_version: 2
+series: dev-v2-m4                     # default series of every line's in/out (configs/plans/README.md)
+prompts:
+  triage.safety-relevance-v3: {name: safety-relevance-v3, model: openai/gpt-6-luna}
+  # screen-v12 (T-SCREEN, D255): v11 + doc_class record; tier 2 = luna on a [48000, 8000] excerpt (the name's default)
+  annotate.screen: {name: screen-v12, model: openai/gpt-6-luna, adjudicate_model: openai/gpt-6-luna}
+  annotate.affiliation: {name: affiliation-v1, role: extract_main}
+gate:
+  screen:
+    # M2-M3: sql-only `abstract IS NOT NULL OR inband_text_sha256 IS NOT NULL OR channel_group = 'url'` (D37).
+    # M4: std-v2's shape; the question for rows with a basis, the url rule for rows without one.
+    # S5: source rules first (stack/rules.py; a rule-fetched row is not asked the question).
+    - {rule: frontier_lab_posts}
+    - {rule: safety_org_posts}
+    - {rule: zvi_posts}
+    - {question: safety_relevance, prompt: triage.safety-relevance-v3, fetch_on: [relevant, borderline]}
+    - {sql: "metadata.abstract IS NULL AND inband_text_sha256 IS NULL AND channel_group = 'url'"}
+  no_basis_fetches: true
+acquire:
+  convert: {config: pymupdf4llm-v1}        # D39: dev plans pin tier 2. docling-v2 qualified as opt-in (T3.5b, D119:
+                                           # median 123 s per PDF on CPU, needs RLIMIT_DATA 48 GB; RUNLOG 2026-10-12)
+  wants:                                   # keyed by channel id of configs/channels.yaml (D11);
+    arxiv: [full_text]                     # blogs/repos are design names, no channels
+    openalex: [full_text, xml]
+    semantic_scholar: [full_text]
+    europepmc: [full_text, xml]
+    lesswrong: [post]
+    alignmentforum: [post]
+    blogs: [page]
+    repos: [readme]
+    anthropic_alignment_blog: [page]       # every url channel of kind scrape/watch (not card_dates)
+    openai_blog: [page]
+    openai_alignment_blog: [page]
+    transformer_circuits: [page]
+    google_research: [page]
+    mistral_blog: [page]
+    deepmind_blog: [page]
+    miri_blog: [page]                  # source rule safety_org_posts (S5): their pages are wanted
+    metr_blog: [page]
+    transluce_blog: [page]
+    goodfire_blog: [page]
+    uk_aisi_blog: [page]
+    redwood_blog: [page]
+    apollo_blog: [page]
+    arc_blog: [page]
+    epoch_blog: [page]
+    forethought_blog: [page]
+    far_ai_blog: [page]
+    timaeus_blog: [page]
+    clr_blog: [page]
+    softmax_blog: [page]
+    meaning_alignment_blog: [page]
+    cooperative_ai_blog: [page]
+    anthropic_cards: [page]
+    openai_cards: [page]
+    deepmind_cards: [page]
+    meta_cards: [page]
+    xai_cards: [page]
+    deepseek_cards: [page]
+    qwen_cards: [page]
+  recheck: {default: weekly}
+versions:
+  compaction: {max_partials: 12, max_partial_rows_ratio: 1.0}
+fold:
+  corpus: {filter: has_text}
+  build: {filter: has_text, annotations_folded: [screen, stack_relevance, sr_relevance, text_usability, doc_class, affiliation]}
+  release: {config: configs/releases/public-v1.yaml}
+  diagnostic: true
+recovery: {dead_run_charge: false}
+stages:
+  # Collector stage names = v3 directories, chains sources.<suffix>/coverage.<suffix> (D92). Real windows per
+  # PLAN T2.2-T2.6; option names are the collectors' (D72), v3 env overrides win when set.
+  - {stage: collect.arxiv_sweep, out: {kind: part}, prior: [sources, coverage], options: {window_days: 21, fraction: 0.1}}
+  - {stage: collect.openalex, out: {kind: part}, prior: [sources, coverage],
+     options: {window_days: 3, window_end_days_ago: 14, max_records: 300,
+              queries: [group:umbrella, group:jailbreak]}}
+  - {stage: collect.semantic_scholar, out: {kind: part}, prior: [sources, coverage], options: {max_pages: 1}}
+  - {stage: collect.forums, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 200}}
+  - {stage: collect.af_graphql, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 200}}
+  - {stage: collect.lw_graphql, out: {kind: part}, prior: [sources, coverage], options: {window_days: 7, max_records: 500,
+     tags: [ai, decision-theory, anthropics, acausal-trade, agent-foundations, embedded-agency, logical-induction,
+            updateless-decision-theory, functional-decision-theory, natural-abstraction, infra-bayesianism,
+            game-theory, logical-uncertainty]}}
+  - {stage: collect.blogs, out: {kind: part}, prior: [sources, coverage], options: {max_channels: 5}}
+  - {stage: collect.cards, out: {kind: part}, prior: [sources, coverage], options: {max_urls: 20}}
+  - {stage: collect.openalex-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, pmid, arxiv], miss_cap: 3,
+     options: {max_records: 200}}
+  - {stage: collect.s2-lookup, out: {kind: part}, prior: [sources, coverage], keys: [doi, arxiv], miss_cap: 3,
+     options: {max_records: 50}}
+  - {stage: collect.card-dates-lookup, out: {kind: part}, prior: [sources, coverage]}   # reads the documents head (T2.6)
+  - {stage: gather}
+  # workers (B6): 16 LLM questions in flight; measured 229/min vs 14-16/min at 1, no 429 (RUNLOG (RUN) B6); not in the triage config_digest
+  - {stage: triage, out: {kind: part}, prior: [triage_evidence], budget: {max_usd: 1.5}, options: {max_rows: 200, workers: 16}}
+  # fetch_workers (B6): lane calls of up to N hosts at once, one per host (pacing unchanged); gain = host mix (store-dev: openai.com is 92%
+  # of due roles, +25%); convert_workers (B6): pymupdf4llm children, 0.6-0.75 GB RSS each, 35 PDFs 223 s at 1, 108 s at 4, 73 s at 8
+  - {stage: acquire, out: {kind: part}, budget: {max_minutes: 20}, repeat: {until: scope_complete, max_runs: 2},
+     options: {max_rows: 50, fetch_workers: 4, convert_workers: 4}}
+  - {stage: fold.corpus}
+  # screen_usd_per_1k: tier 1 + tier 2 at most $3 per 1,000 documents asked (2026-10-13; T-SCREEN, D255)
+  - {stage: annotate.screen, prior: [screen, screen_evidence], budget: {max_usd: 3},
+     options: {max_rows: 50, screen_usd_per_1k: 3.0, workers: 16}}
+  # affiliation reads bylines: papers with a full text only (v3 scope paper/preprint; journal/conference are
+  # doc_type values collectors emit outside enums.yaml); D182 (C)
+  # workers (B6): screen 6.4/min at 1, 38.5 at 8, 69.9 at 16; affiliation 10.1, 72.5, 133.8; no 429 at 16 (RUNLOG (RUN) B6)
+  - {stage: annotate.affiliation, prior: [affiliation, affiliation_evidence], budget: {max_usd: 1.5},
+     options: {max_rows: 20, workers: 16},
+     filter: "metadata.doc_type IN ('paper', 'preprint', 'journal', 'conference') AND content.current_role = 'full_text'"}
+  - {stage: fold.build}
+require_complete: [sources, coverage, documents]

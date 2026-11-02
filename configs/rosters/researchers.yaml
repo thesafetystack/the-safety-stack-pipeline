@@ -1,0 +1,2379 @@
+# researchers.yaml — the researcher roster: names for collect.arxiv_sweep's author family and OpenAlex author
+# ids for collect.openalex's author-id family (`author_ids: true`).
+#
+# PROVENANCE: derived from the v1 pipeline DB (pipeline/data/stack_review.db,
+# meta table key 'people' — the tracked-researcher list v1 accumulated). Names
+# ONLY: the emails / Twitter / LinkedIn / OpenAlex-id fields present in the v1
+# JSON are deliberately dropped, and v1's `arxivName` column (the useless
+# Lastname_Firstinitial form, e.g. "Perez_E") is NOT carried — collect.arxiv_sweep
+# derives the arXiv `au:` query name (Lastname_Firstname) from the full name in
+# code (an initial matches almost nothing on arXiv's author index).
+#
+# This file is the roster the collectors read; no other roster source is read. Names are edited by hand
+# (hygiene below); the `openalex_ids` are written by tools/resolve_openalex_authors.py (`--write-roster`,
+# which keeps the rest of the file as it is) or by hand from its report.
+#
+# Schema-light (not one of the files stack/config.py validates and stamps): parsed by stack/collect/roster.py
+# for collect.arxiv_sweep and collect.openalex (default path <config_dir>/rosters/researchers.yaml, env
+# override STACK_ARXIV_ROSTER). Deterministic + sorted.
+# Hygiene (round 4, track P, D229; docs/design/collection-yield.md §3.2): `Last, First` entries are
+# read as `First Last` by collect.arxiv_sweep (roster_name), so they and their `First Last` twins are
+# one query; dropped: forum-username twins of working entries (Andrew_Critch, Jacob_Hilton,
+# CallumMcDougall, bilalchughtai, james.lucassen), the fragments Dvijotham / Krishnamurthy (of
+# "Krishnamurthy Dvijotham"), "Zhang" (v1 record has no first name) and "Llama Team, AI @ Meta";
+# Stuart_Armstrong -> "Stuart Armstrong". Added (SR scope, D196): Vanessa Kosoy, Caspar Oesterheld,
+# Vincent Conitzer, Daniel Murfet, Adam Shai. Not added, for a later check of whether they post AI
+# work to arXiv at all (LessWrong/Alignment Forum authors, reached by collect.forums/lw_graphql):
+# Steven Byrnes, John Wentworth.
+# OpenAlex author ids (round 5 (RUN) B7b, C4; version 1.2.0): an entry may be a mapping
+# `{name, openalex_ids: [A…], orcid?}` (stack/collect/roster.py). The ids are written by
+# tools/resolve_openalex_authors.py where its rule accepts one profile, or by hand from its report
+# docs/design/openalex-author-ids.md; collect.openalex's author-id family (option `author_ids`) sweeps
+# them. `disambiguate`: the high-volume names of collection-yield.md §3.2 (>= 4 hits in a 21-day
+# sample, mostly namesakes or out-of-scope work): the arXiv author sweep keeps their hits only with a
+# safety stem or a second roster author (C4); with its option `disambiguate_by_id` a listed name that
+# has openalex_ids is swept by id only.
+# 1.3.0 (T-ARX R, 2026-10-13): the resolver's coauthor rule (shared works with resolved roster people)
+# added ids for 286 more names and 128 split profiles of resolved names; several ids = one person.
+# 1.3.1: its merged-profile guard removed 11 ids whose profiles absorbed namesakes (e.g. "Jian Yang"
+# -> A5100404947, 2,571 works in 2026); counts in docs/design/openalex-author-ids.md.
+# 1.4.0 (D655, 2026-10-21): ids for rostered safety names that had none (Stuart Armstrong, Nick
+# Bostrom with a split profile, Vincent Conitzer, Beth Barnes) and new names with ids (Jessica Taylor, Benja
+# Fallenstein, Tsvi Benson-Tilsen, Kaj Sotala, Daniel Dewey, Roman Yampolskiy, Anders Sandberg, Seth Baum, Guy
+# Katz, Patrick LaVictoire, Sam Eisenstat). Each id was checked by hand against a known work of the person
+# (title, year, coauthors); the name search misresolves several of these names. No OpenAlex profile carries
+# the works of Benjamin Hilton, Ryan Carey or James (Jim) Babcock (their authorships are unresolved) or Wei
+# Dai: Carey and Babcock are added as names only. Not used: A5038101556 ("Elizabeth A. Barnes"), a climate
+# scientist's profile that also holds METR papers. Marcus Hutter (as "Marcus Hütter") and János Kramár
+# already had their ids.
+# 1.5.0 (approved 2026-10-30): 16 Chinese AI-safety researchers, the most frequent authors of the Concordia AI
+# Chinese Technical AI Safety Database (2025-07 export; 5-19 papers each) not on the roster, mostly of its key research
+# groups (Shanghai AI Lab, Tsinghua CoAI and TSAIL, Fudan NLP/FVL, Tianjin NLP, SJTU, Beihang, HKUST-GZ, CUHK-SZ,
+# CAS/BIAISG). tools/resolve_openalex_authors.py resolved 3 of 16 (13 ambiguous: common names); every id below was
+# checked by hand instead: the OpenAlex works of up to six of the person's database papers (by arXiv DOI) and the
+# author id they carry under the name, with the institution (Minlie Huang 6 of 6, Tsinghua; Xuanjing Huang 5 of 6,
+# Fudan; Deyi Xiong 5 of 6, Tianjin; Xipeng Qiu 5 of 6, Fudan (the resolver's pick A5000302538, a 13-work
+# profile, not used); Yu-Gang Jiang 6 of 6; Xinlei He 5 of 5; Yinpeng Dong 5 of 5 (A5068755794) plus the resolver's
+# coauthor-linked split profile; Zhuosheng Zhang 6 of 6; Tao Gui 5 of 6; Xingjun Ma 4 of 5; Aishan Liu 3 of 4; Baoyuan
+# Wu 3 of 5). Names only (their papers scatter over several profiles or none): Jing Shao, Yu Qiao, Yingchun Wang,
+# Yi Zeng. `disambiguate` gains the four (common names) and the six prolific generalists (296-522 works each, mostly
+# NLP and vision): their arXiv hits are kept only with a safety stem or a second roster author.
+# 1.5.1 (2026-11-02): comments only (internal labels reworded); no name or id moves.
+version: "1.5.1"
+disambiguate:
+  - "Zheng Zhang"
+  - "Yu Cheng"
+  - "Han Wang"
+  - "Xiaomin Li"
+  - "Hao Sun"
+  - "Yi Dong"
+  - "Pang Wei Koh"
+  - "Anirudh Goyal"
+  - "Jan Kautz"
+  - "Yu Qiao"  # the Chinese-coverage work
+  - "Jing Shao"  # the Chinese-coverage work
+  - "Yingchun Wang"  # the Chinese-coverage work
+  - "Yi Zeng"  # the Chinese-coverage work
+  - "Yu-Gang Jiang"  # the Chinese-coverage work
+  - "Xipeng Qiu"  # the Chinese-coverage work
+  - "Xuanjing Huang"  # the Chinese-coverage work
+  - "Minlie Huang"  # the Chinese-coverage work
+  - "Deyi Xiong"  # the Chinese-coverage work
+  - "Tao Gui"  # the Chinese-coverage work
+names:
+  - {name: "A. Feder Cooper", openalex_ids: [A5064217008]}
+  - {name: "Aaditya K. Singh", openalex_ids: [A5023326486, A5127843090]}
+  # Mononymous on arXiv (Cohere; v1 people record: Cohere 2024-2025, 2 papers), not a
+  # fragment of "Aakanksha Chowdhery" (Google Research): names_match takes the single name.
+  - {name: "Aakanksha", openalex_ids: [A5099670414]}
+  - {name: "Aakanksha Chowdhery", openalex_ids: [A5055969617]}
+  - "Aaron Chan"
+  - "Aaron David Tucker"
+  - {name: "Aaron Grattafiori", openalex_ids: [A5026557666]}
+  - {name: "Aaron Parisi", openalex_ids: [A5113069812]}
+  - "Aaron Tucker"
+  - {name: "Abby D'Cruz", openalex_ids: [A5132802143]}
+  - {name: "Abhay Sheshadri", openalex_ids: [A5093967888]}
+  - {name: "Abhinav Mohanty", openalex_ids: [A5009946743, A5124111754]}
+  - {name: "Abhinav Rastogi", openalex_ids: [A5087687501]}
+  - {name: "Abhishek Jindal", openalex_ids: [A5082678072]}
+  - {name: "Abhradeep Thakurta", openalex_ids: [A5008213441]}
+  - {name: "Abram Demski", openalex_ids: [A5030040243]}
+  - {name: "Adam Bloniarz", openalex_ids: [A5086808614]}
+  - {name: "Adam Fisch", openalex_ids: [A5130381508]}
+  - {name: "Adam Fourney", openalex_ids: [A5071293344]}
+  - {name: "Adam Gleave", openalex_ids: [A5067087948]}
+  - "Adam Jermyn"
+  - {name: "Adam Kaufman", openalex_ids: [A5013691564]}
+  - {name: "Adam Khoja", openalex_ids: [A5094087260]}
+  - {name: "Adam P. Roberts", openalex_ids: [A5105697255]}
+  - {name: "Adam Pearce", openalex_ids: [A5030407613, A5122513752]}
+  - "Adam S. Jermyn"
+  - {name: "Adam Scherlis", openalex_ids: [A5114674285]}
+  - "Adam Shai"
+  - {name: "Adam Tauman Kalai", openalex_ids: [A5086904495]}
+  - {name: "Adina Williams", openalex_ids: [A5062696000]}
+  - {name: "Aditi Raghunathan", openalex_ids: [A5031731960]}
+  - {name: "Aditya Ramesh", openalex_ids: [A5101696375]}
+  - {name: "Aditya Shrivastava", openalex_ids: [A5110701020]}
+  - {name: "Adrien Ecoffet", openalex_ids: [A5033112877]}
+  - {name: "Adrien Morisot", openalex_ids: [A5029898181]}
+  - {name: "Adrià Garriga-alonso", openalex_ids: [A5044945258]}
+  - {name: "Aengus Lynch", openalex_ids: [A5073432009]}
+  - {name: "Ahmad Beirami", openalex_ids: [A5008645615]}
+  - {name: "Ahmed Hassan Awadallah", openalex_ids: [A5021000040, A5122944924]}
+  - {name: "Ahmed Imtiaz Humayun", openalex_ids: [A5046358586]}
+  - {name: "Ahmed Salem", openalex_ids: [A5070409088]}
+  - {name: "Ahmet Üstün", openalex_ids: [A5134158163]}
+  - {name: "Aida Mostafazadeh Davani", openalex_ids: [A5000967986]}
+  - {name: "Aidan Clark", openalex_ids: [A5029924588]}
+  - {name: "Aidan Ewart", openalex_ids: [A5094018626]}
+  - {name: "Aidan Homewood", openalex_ids: [A5123483676]}
+  - {name: "Aidan O’Gara", openalex_ids: [A5092715918]}
+  - {name: "Aidan Peppin", openalex_ids: [A5048780191]}
+  - {name: "Aideen Fay", openalex_ids: [A5102683321]}
+  - {name: "Aishan Liu", openalex_ids: [A5014870180]}
+  - {name: "Aishwarya Verma", openalex_ids: [A5123052317]}
+  - {name: "Ajeya Cotra", openalex_ids: [A5001132690]}
+  - {name: "Akari Asai", openalex_ids: [A5108758733]}
+  - {name: "Akash Bharadwaj", openalex_ids: [A5122355282]}
+  - {name: "Akbir Khan", openalex_ids: [A5084386381]}
+  - {name: "Akhil Mathur", openalex_ids: [A5020784139]}
+  - {name: "Akshay Krishnamurthy", openalex_ids: [A5015082848]}
+  - {name: "Akshay Nambi", openalex_ids: [A5128687825]}
+  - {name: "Alan Chan", openalex_ids: [A5038590380]}
+  - "Alan Cooney"
+  - "Alan Hickey"
+  - {name: "Alan Karthikesalingam", openalex_ids: [A5003509342]}
+  - {name: "Alan Schelten", openalex_ids: [A5092506187]}
+  - {name: "Albert Webson", openalex_ids: [A5056219662]}
+  - {name: "Alec Helyar", openalex_ids: [A5114637221]}
+  - {name: "Alec Radford", openalex_ids: [A5051250767]}
+  - "Alejandro Ortega"
+  - {name: "Alekh Agarwal", openalex_ids: [A5036435487]}
+  - {name: "Aleksandar Petrov", openalex_ids: [A5103052945]}
+  - {name: "Aleksander Madry", openalex_ids: [A5032574693]}
+  - {name: "Aleksandra Faust", openalex_ids: [A5002971435]}
+  - {name: "Alex Alemi", openalex_ids: [A5071615007]}
+  - {name: "Alex Beutel", openalex_ids: [A5080988309]}
+  - {name: "Alex Castro-Ros", openalex_ids: [A5093547781]}
+  - {name: "Alex Cloud", openalex_ids: [A5021811140]}
+  - {name: "Alex Ingerman", openalex_ids: [A5053479641]}
+  - {name: "Alex Irpan", openalex_ids: [A5022032374]}
+  - "Alex Kirillov"
+  - {name: "Alex Makelov", openalex_ids: [A5119789603]}
+  - {name: "Alex Mallen", openalex_ids: [A5025230160]}
+  - {name: "Alex Nichol", openalex_ids: [A5058076181]}
+  - {name: "Alex Ray", openalex_ids: [A5031013142]}
+  - {name: "Alex Rizkowsky", openalex_ids: [A5093272100]}
+  - {name: "Alex Silverstein", openalex_ids: [A5122698545]}
+  - {name: "Alex Tamkin", openalex_ids: [A5081558429]}
+  - {name: "Alexander Bukharin", openalex_ids: [A5053672689]}
+  - {name: "Alexander Hägele", openalex_ids: [A5098954170]}
+  - {name: "Alexander Matt Turner", openalex_ids: [A5049156899]}
+  - {name: "Alexander Meinke", openalex_ids: [A5084032027]}
+  - {name: "Alexander Meulemans", openalex_ids: [A5048262902]}
+  - "Alexander Pan"
+  - {name: "Alexander Sasha Vezhnevets", openalex_ids: [A5030684417]}
+  - {name: "Alexander Turner", openalex_ids: [A5049156899]}
+  - {name: "Alexandra Chouldechova", openalex_ids: [A5057438082]}
+  - {name: "Alexandra Souly", openalex_ids: [A5004786699]}
+  - "Alexandre Passos"
+  - {name: "Alexandre Sablayrolles", openalex_ids: [A5067991583]}
+  - {name: "Alexandre Variengien", openalex_ids: [A5017761207]}
+  - {name: "Alexey Kurakin", openalex_ids: [A5052664531]}
+  - {name: "Alexis Bellot", openalex_ids: [A5038898466]}
+  - {name: "Ali Hatamizadeh", openalex_ids: [A5028525720]}
+  - "Alice Blair"
+  - {name: "Alice Gatti", openalex_ids: [A5033843812]}
+  - {name: "Alice Schoenauer Sebag", openalex_ids: [A5119938791]}
+  - {name: "Alicia Parrish", openalex_ids: [A5082569485]}
+  - {name: "Alina Oprea", openalex_ids: [A5111219674]}
+  - {name: "Allan Dafoe", openalex_ids: [A5054425888]}
+  - {name: "Allison Qi", openalex_ids: [A5125147369]}
+  - {name: "Alon Benhaim", openalex_ids: [A5011785041]}
+  - {name: "Alon Jacovi", openalex_ids: [A5045156755]}
+  - "Alvin Deng"
+  - {name: "Alwin Peng", openalex_ids: [A5114654373]}
+  - {name: "Amanda Askell", openalex_ids: [A5030305998]}
+  - {name: "Amanda McCroskery", openalex_ids: [A5023716074]}
+  - {name: "Amber Ebinama", openalex_ids: [A5086735977]}
+  - {name: "Ambrish Rawat", openalex_ids: [A5050489428]}
+  - {name: "Amelia Glaese", openalex_ids: [A5005117726]}
+  - {name: "Amir Feder", openalex_ids: [A5056266191]}
+  - {name: "Amir Globerson", openalex_ids: [A5047817959]}
+  - {name: "Amir Taubenfeld", openalex_ids: [A5092596481]}
+  - {name: "Amjad Almahairi", openalex_ids: [A5081831578]}
+  - {name: "Amrith Setlur", openalex_ids: [A5062151201]}
+  - "Amy Yang"
+  - {name: "An Yang", openalex_ids: [A5136046664, A5144327500]}
+  - {name: "Anaelia Ovalle", openalex_ids: [A5064234845]}
+  - {name: "Ananda Theertha Suresh", openalex_ids: [A5103890688]}
+  - {name: "Anca D. Dragan", openalex_ids: [A5005997281, A5127782361]}
+  - {name: "Anca Dragan", openalex_ids: [A5005997281, A5127782361]}
+  - {name: "Anders Cairns Woodruff", openalex_ids: [A5138134647]}
+  - {name: "Anders Sandberg", openalex_ids: [A5023259126]}
+  - {name: "Andi Peng", openalex_ids: [A5020921993]}
+  - {name: "Andrea Banino", openalex_ids: [A5019679953]}
+  - {name: "Andrea Tacchetti", openalex_ids: [A5071433151]}
+  - {name: "Andrea Vallone", openalex_ids: [A5114637222]}
+  - {name: "Andreas Terzis", openalex_ids: [A5103331911]}
+  - {name: "Andrei Kapishnikov", openalex_ids: [A5104083050]}
+  - {name: "Andrei Lupu", openalex_ids: [A5007600034]}
+  - {name: "Andrew Cann", openalex_ids: [A5110689589]}
+  - "Andrew Cohen"
+  - {name: "Andrew Critch", openalex_ids: [A5034938018]}
+  - "Andrew Estornell"
+  - {name: "Andrew Garber", openalex_ids: [A5114988507]}
+  - {name: "Andrew K. Lampinen", openalex_ids: [A5030015839, A5127843888]}
+  - {name: "Andrew M. Dai", openalex_ids: [A5029197877]}
+  - "Andrew M. Poulton"
+  - "Andrew Nystrom"
+  - {name: "Andrew Paverd", openalex_ids: [A5010807871]}
+  - {name: "Andrew Strait", openalex_ids: [A5081828500, A5115904422]}
+  - {name: "Andrew Trask", openalex_ids: [A5112521305]}
+  - {name: "Andrey Zhmoginov", openalex_ids: [A5113984302]}
+  - {name: "András György", openalex_ids: [A5041609088]}
+  - {name: "André Barreto", openalex_ids: [A5008592589, A5127814422]}
+  - {name: "Andy Applebaum", openalex_ids: [A5068040638]}
+  - {name: "Andy Arditi", openalex_ids: [A5120790735]}
+  - {name: "Andy Coenen", openalex_ids: [A5069648186]}
+  - {name: "Andy Dau", openalex_ids: [A5116129847]}
+  - "Andy Jones"
+  - {name: "Andy Zhou", openalex_ids: [A5117778774]}
+  - {name: "Andy Zou", openalex_ids: [A5004880532, A5114331404, A5127800014]}
+  - {name: "Aneesh Pappu", openalex_ids: [A5124925013]}
+  - {name: "Angela Fan", openalex_ids: [A5083185771]}
+  - "Angela Jiang"
+  - {name: "Angelica Chen", openalex_ids: [A5034489893, A5043221432, A5044920493]}
+  - {name: "Angelika Romanou", openalex_ids: [A5113161539]}
+  - {name: "Angelos Filos", openalex_ids: [A5054835148]}
+  - {name: "Anian Ruoss", openalex_ids: [A5077124139]}
+  - {name: "Anil Ramakrishna", openalex_ids: [A5072018684, A5124470412, A5139771953]}
+  - {name: "Anirudh Goyal", openalex_ids: [A5016769717]}
+  - {name: "Anirudha Majumdar", openalex_ids: [A5102792178]}
+  - {name: "Anjali Gopal", openalex_ids: [A5014186647]}
+  - {name: "Ankur Taly", openalex_ids: [A5069391199]}
+  - {name: "Ann Yuan", openalex_ids: [A5020034316]}
+  - {name: "Ann-Kathrin Dombrowski", openalex_ids: [A5024985451]}
+  - "Anna Chen"
+  - {name: "Anna Gausen", openalex_ids: [A5126903808]}
+  - {name: "Anna Goldie", openalex_ids: [A5088885573]}
+  - {name: "Anna Gottardi", openalex_ids: [A5068850854]}
+  - {name: "Anna Harutyunyan", openalex_ids: [A5014267939]}
+  - {name: "Anna Rumshisky", openalex_ids: [A5071360545]}
+  - {name: "Anna Soligo", openalex_ids: [A5116078385]}
+  - "Anna Wang"
+  - {name: "Anna-Luisa Brakman", openalex_ids: [A5114619801]}
+  - {name: "Anselm Paulus", openalex_ids: [A5126814875]}
+  - {name: "Ansh Radhakrishnan", openalex_ids: [A5104228508]}
+  - {name: "Anssi Kanervisto", openalex_ids: [A5048689678]}
+  - {name: "Anthony GX-Chen", openalex_ids: [A5035393546]}
+  - "Anthony S. Hartshorn"
+  - {name: "Antonia Calvi", openalex_ids: [A5130759876]}
+  - {name: "Antonia Creswell", openalex_ids: [A5009239144]}
+  - "Aobo Kong"
+  - {name: "Aram Ebtekar", openalex_ids: [A5035944575]}
+  - {name: "Aram Galstyan", openalex_ids: [A5101715504]}
+  - {name: "Arash Ahmadian", openalex_ids: [A5003556123, A5104338915]}
+  - {name: "Archie Sravankumar", openalex_ids: [A5120327477]}
+  - {name: "Arditi, Andy", openalex_ids: [A5120790735]}
+  - {name: "Arian Hosseini", openalex_ids: [A5016112167]}
+  - {name: "Arianna Manzini", openalex_ids: [A5025585747]}
+  - {name: "Ariel Goldstein", openalex_ids: [A5074374901, A5124931918]}
+  - {name: "Ariel Herbert-Voss", openalex_ids: [A5070026510]}
+  - {name: "Ariel Kwiatkowski", openalex_ids: [A5052044346]}
+  - {name: "Arindam Mitra", openalex_ids: [A5101651425]}
+  - {name: "Arman Zharmagambetov", openalex_ids: [A5009367143]}
+  - {name: "Aron Lajko", openalex_ids: [A5114987902]}
+  - {name: "Arslan Chaudhry", openalex_ids: [A5038288567]}
+  - "Artem Korenev"
+  - {name: "Arthur Conmy", openalex_ids: [A5071070679]}
+  - {name: "Arthur Goemans", openalex_ids: [A5114658450]}
+  - {name: "Arthur Szlam", openalex_ids: [A5053145694]}
+  - {name: "Arun Ganesh", openalex_ids: [A5101151090, A5125650660]}
+  - "Arun Rao"
+  - {name: "Arun Sai Suggala", openalex_ids: [A5078446727, A5136791005]}
+  - {name: "Arushi Somani", openalex_ids: [A5120336210]}
+  - {name: "Aryaman Arora", openalex_ids: [A5082261951]}
+  - {name: "Aryan Bhatt", openalex_ids: [A5054799553]}
+  - {name: "Aryo Pradipta Gema", openalex_ids: [A5080213009]}
+  - {name: "Asa Cooper Stickland", openalex_ids: [A5024678824]}
+  - {name: "Ash Fox", openalex_ids: [A5124958539]}
+  - {name: "Asher Trockman", openalex_ids: [A5049077447]}
+  - {name: "Ashish Hooda", openalex_ids: [A5077170899]}
+  - {name: "Aslı Çelikyılmaz", openalex_ids: [A5030468199]}
+  - {name: "Asma Ghandeharioun", openalex_ids: [A5022368228]}
+  - {name: "Aston Zhang", openalex_ids: [A5049841140]}
+  - {name: "Athul Paul Jacob", openalex_ids: [A5016916513]}
+  - {name: "Atoosa Kasirzadeh", openalex_ids: [A5047979305]}
+  - {name: "Atticus Geiger", openalex_ids: [A5002577142]}
+  - {name: "Aurelien Rodriguez", openalex_ids: [A5104286740]}
+  - {name: "Austin Meek", openalex_ids: [A5060917296]}
+  - {name: "Ava Spataru", openalex_ids: [A5095762048]}
+  - {name: "Avery Griffin", openalex_ids: [A5123537037]}
+  - {name: "Avi Caciularu", openalex_ids: [A5077903013]}
+  - {name: "Avi Singh", openalex_ids: [A5071640510]}
+  - "Avinatan Hassidim"
+  - {name: "Aviral Kumar", openalex_ids: [A5102493293, A5125009546]}
+  - {name: "Avital Balwit", openalex_ids: [A5051999059]}
+  - {name: "Aviya Skowron", openalex_ids: [A5031074289]}
+  - {name: "Axel Højmark", openalex_ids: [A5114418465]}
+  - "Ayush Agrawal"
+  - {name: "Azade Nova", openalex_ids: [A5053888839]}
+  - {name: "Azalia Mirhoseini", openalex_ids: [A5070731184]}
+  - "B. X. Yu"
+  - {name: "Badih Ghazi", openalex_ids: [A5102807325]}
+  - {name: "Balaji Lakshminarayanan", openalex_ids: [A5012859570]}
+  - {name: "Baosong Yang", openalex_ids: [A5028040391]}
+  - {name: "Baoyuan Wu", openalex_ids: [A5068027800]}
+  - {name: "Baptiste Roziere", openalex_ids: [A5048065823]}
+  - {name: "Barret Zoph", openalex_ids: [A5026064427]}
+  - {name: "Barun Patra", openalex_ids: [A5076387701]}
+  - {name: "Beat Buesser", openalex_ids: [A5042433331]}
+  - "Becker, Joel"
+  - {name: "Been Kim", openalex_ids: [A5041405652, A5054693573, A5124877897, A5146851397]}
+  - {name: "Behnam Neyshabur", openalex_ids: [A5035369215]}
+  - {name: "Belinda Z. Li", openalex_ids: [A5015729879]}
+  - {name: "Ben Adlam", openalex_ids: [A5048167471]}
+  - {name: "Ben Bariach", openalex_ids: [A5021920265]}
+  - {name: "Ben Garfinkel", openalex_ids: [A5079846844]}
+  - {name: "Ben Goldhaber", openalex_ids: [A5098060256]}
+  - {name: "Ben Laurie", openalex_ids: [A5069096861]}
+  - {name: "Ben Mann", openalex_ids: [A5110949689]}
+  - {name: "Ben Millwood", openalex_ids: [A5120023171]}
+  - {name: "Ben Rossen", openalex_ids: [A5114628472]}
+  - {name: "Ben West", openalex_ids: [A5114987905]}
+  - {name: "Benja Fallenstein", openalex_ids: [A5080437168]}
+  - {name: "Benjamin Arnav", openalex_ids: [A5121230341]}
+  - {name: "Benjamin Edelman", openalex_ids: [A5035088357]}
+  - {name: "Benjamin Plaut", openalex_ids: [A5047043955]}
+  - {name: "Benjamin Van Durme", openalex_ids: [A5075825791]}
+  - "Benjamin Wright"
+  - {name: "Benton, Joe", openalex_ids: [A5056010406]}
+  - {name: "Bernd Bohnet", openalex_ids: [A5066427994]}
+  - {name: "Besmira Nushi", openalex_ids: [A5011998621]}
+  - "Bessie O'Dell"
+  - {name: "Beth Barnes", openalex_ids: [A5145553245]}
+  - {name: "Beyza Ermiş", openalex_ids: [A5057377890]}
+  - {name: "Bhaktipriya Radharapu", openalex_ids: [A5092160641]}
+  - {name: "Bhanukiran Vinzamuri", openalex_ids: [A5017540117]}
+  - {name: "Bhatt, Aryan", openalex_ids: [A5054799553]}
+  - {name: "Bhavana Dalvi Mishra", openalex_ids: [A5087135401]}
+  - {name: "Bhuwan Dhingra", openalex_ids: [A5055033421]}
+  - "Bianca Martin"
+  - "Bilal Chughtai"
+  - {name: "Bilgehan Sel", openalex_ids: [A5017539185]}
+  - "Bin Yu"
+  - {name: "Bin Zhu", openalex_ids: [A5081758219]}
+  - "Binbin Xiong"
+  - "Bing Liu"
+  - {name: "Binh Tang", openalex_ids: [A5033021890]}
+  - "Binhua Li"
+  - {name: "Binyuan Hui", openalex_ids: [A5080628250]}
+  - {name: "Black, Sid", openalex_ids: [A5032649426]}
+  - {name: "Blaise Agüera y Arcas", openalex_ids: [A5044698998]}
+  - {name: "Blake A. Richards", openalex_ids: [A5108982119, A5121281467, A5125546231, A5127832417, A5137738757]}
+  - {name: "Bloom, Joseph", openalex_ids: [A5053271715]}
+  - {name: "Bo Dai", openalex_ids: [A5127845480]}
+  - {name: "Bo Li", openalex_ids: [A5100374448]}
+  - "Bo Liu"
+  - "Bo Wu"
+  - {name: "Bo Zheng", openalex_ids: [A5101622991]}
+  - {name: "Boaz Barak", openalex_ids: [A5102710346]}
+  - {name: "Bobak Shahriari", openalex_ids: [A5013190433]}
+  - {name: "Bolin Ding", openalex_ids: [A5040297543]}
+  - {name: "Boren Zheng", openalex_ids: [A5051860912]}
+  - {name: "Boris Ginsburg", openalex_ids: [A5032957280]}
+  - {name: "Boris Köpf", openalex_ids: [A5085729110]}
+  - {name: "Borja Balle", openalex_ids: [A5085679401]}
+  - {name: "Borong Zhang", openalex_ids: [A5072159736]}
+  - {name: "Bowen Baker", openalex_ids: [A5048522044, A5128478128]}
+  - "Bowen Yu"
+  - {name: "Boyi Deng", openalex_ids: [A5114107429]}
+  - {name: "Boyuan Chen", openalex_ids: [A5005057280]}
+  - "Brad Miller"
+  - {name: "Brandon Amos", openalex_ids: [A5030666794]}
+  - {name: "Brandon Cui", openalex_ids: [A5067671433]}
+  - {name: "Brandon Houghton", openalex_ids: [A5091596210]}
+  - {name: "Brendan McMahan", openalex_ids: [A5040311844]}
+  - {name: "Brendan Murphy", openalex_ids: [A5038871937]}
+  - "Brian Clarke"
+  - "Brian Fuller"
+  - {name: "Brian Goodrich", openalex_ids: [A5017418398]}
+  - {name: "Bryan Catanzaro", openalex_ids: [A5066242985]}
+  - {name: "Buck Shlegeris", openalex_ids: [A5050408969]}
+  - {name: "C. Daniel Freeman", openalex_ids: [A5012702521]}
+  - {name: "Caleb Biddulph", openalex_ids: [A5116014385]}
+  - "Caleb Larson"
+  - {name: "Callum Canavan", openalex_ids: [A5007404168]}
+  - {name: "Callum McDougall", openalex_ids: [A5137338900]}
+  - {name: "Callum Stuart McDougall", openalex_ids: [A5108869919]}
+  - "Calvin Ko"
+  - "Cameron Holmes"
+  - {name: "Cameron McKinnon", openalex_ids: [A5017968952]}
+  - {name: "Cameron Raymond", openalex_ids: [A5069293904]}
+  - {name: "Candace Ross", openalex_ids: [A5082026462]}
+  - {name: "Canfer Akbulut", openalex_ids: [A5095886604]}
+  - {name: "Carlini, Nicholas", openalex_ids: [A5034257647]}
+  - {name: "Carol Chen", openalex_ids: [A5019382510]}
+  - {name: "Carroll L. Wainwright", openalex_ids: [A5022076965]}
+  - {name: "Carson Denison", openalex_ids: [A5079864698]}
+  - {name: "Cary Bassin", openalex_ids: [A5114628484]}
+  - {name: "Cary Hudson", openalex_ids: [A5122330806]}
+  - {name: "Casey Chu", openalex_ids: [A5112527526]}
+  - {name: "Caspar Oesterheld", openalex_ids: [A5008125381]}
+  - {name: "Cassidy Laidlaw", openalex_ids: [A5051435362]}
+  - {name: "Catherine Fist", openalex_ids: [A5120061084]}
+  - {name: "Catherine Olsson", openalex_ids: [A5108225540]}
+  - {name: "Catherine Vance Yeh", openalex_ids: [A5020485827, A5063258480]}
+  - "Celine Smith"
+  - {name: "Cem Anil", openalex_ids: [A5113854698]}
+  - "Cen Chen"
+  - {name: "Chad Atalla", openalex_ids: [A5009096729]}
+  - {name: "Chan Young Park", openalex_ids: [A5100608515]}
+  - {name: "Chan, Jun Shern", openalex_ids: [A5047504721]}
+  - {name: "Chandan Singh", openalex_ids: [A5123296154]}
+  - "Chang Gao"
+  - {name: "Chang Zhou", openalex_ids: [A5101384217]}
+  - {name: "Changsheng Zhao", openalex_ids: [A5125390765, A5130221447]}
+  - {name: "Chankyu Lee", openalex_ids: [A5089891838]}
+  - "Chao Feng"
+  - {name: "Chaohu Liu", openalex_ids: [A5061846588]}
+  - {name: "Chaowei Xiao", openalex_ids: [A5005843046]}
+  - {name: "Charith Peris", openalex_ids: [A5010781829]}
+  - {name: "Charles Arnal", openalex_ids: [A5070265689]}
+  - {name: "Charlie Griffin", openalex_ids: [A5030099788]}
+  - {name: "Charlotte Stix", openalex_ids: [A5089079497]}
+  - {name: "Charu Kalia", openalex_ids: [A5123044387]}
+  - {name: "Charvi Rastogi", openalex_ids: [A5053419988]}
+  - {name: "Chawin Sitawarin", openalex_ids: [A5040461332]}
+  - "Che Chang"
+  - {name: "Chelsea Voss", openalex_ids: [A5051743369]}
+  - "Chen Sun"
+  - "Chen Zhu"
+  - "Chen-Yu Lee"
+  - "Chenglong Wang"
+  - "Cheng‐Peng Li"
+  - {name: "Chenhan Yuan", openalex_ids: [A5034535852]}
+  - {name: "Chentao Ye", openalex_ids: [A5125560731]}
+  - {name: "Chenxi Whitehouse", openalex_ids: [A5047340661]}
+  - "Chenyu Wang"
+  - "Chi Wang"
+  - {name: "Chirag Nagpal", openalex_ids: [A5035844932]}
+  - "Chiyu Ma"
+  - {name: "Chiyuan Zhang", openalex_ids: [A5016054994, A5127809742]}
+  - "Choi, Yejin"
+  - {name: "Chong Ruan", openalex_ids: [A5016017027]}
+  - {name: "Chong Xiang", openalex_ids: [A5030028368]}
+  - "Chong Zhang"
+  - {name: "Chongyang Shi", openalex_ids: [A5003673476]}
+  - {name: "Chris Alberti", openalex_ids: [A5065685274]}
+  - {name: "Chris Cremer", openalex_ids: [A5093992817]}
+  - {name: "Chris Cundy", openalex_ids: [A5034127198]}
+  - {name: "Chris Kedzie", openalex_ids: [A5006374446]}
+  - {name: "Chris Olah", openalex_ids: [A5039751155]}
+  - "Chris Painter"
+  - {name: "Christian Szegedy", openalex_ids: [A5002183320]}
+  - "Christina Kim"
+  - "Christine Ye"
+  - {name: "Christophe Dupuy", openalex_ids: [A5029989351]}
+  - {name: "Christopher A. Choquette-Choo", openalex_ids: [A5063017186]}
+  - {name: "Christopher Hesse", openalex_ids: [A5002922045]}
+  - {name: "Christopher Olah", openalex_ids: [A5027253674]}
+  - {name: "Christopher Parisien", openalex_ids: [A5001562064]}
+  - {name: "Christopher Summerfield", openalex_ids: [A5031878516]}
+  - {name: "Chuan Guo", openalex_ids: [A5104257054, A5127851377]}
+  - {name: "Chuanqi Tan", openalex_ids: [A5065907658]}
+  - {name: "Chujie Zheng", openalex_ids: [A5016924921]}
+  - "Chung-Ching Lin"
+  - "Chunliang Li"
+  - {name: "Chunting Zhou", openalex_ids: [A5110252779]}
+  - "Cindy Wu"
+  - {name: "Cinoo Lee", openalex_ids: [A5051841863]}
+  - {name: "Claire O'Brien Rajkumar", openalex_ids: [A5124136892]}
+  - {name: "Clare Lyle", openalex_ids: [A5089486474]}
+  - {name: "Clare O'Hara", openalex_ids: [A5116129850]}
+  - {name: "Clarisse Simões", openalex_ids: [A5084779845]}
+  - "Claudia Fischer"
+  - {name: "Claudia Shi", openalex_ids: [A5028648992]}
+  - {name: "Claudia van der Salm", openalex_ids: [A5093547836]}
+  - {name: "Clément Crepy", openalex_ids: [A5091982964]}
+  - {name: "Clément Farabet", openalex_ids: [A5023316826]}
+  - {name: "Cody Rushing", openalex_ids: [A5093047611]}
+  - {name: "Cody Wild", openalex_ids: [A5060489272]}
+  - {name: "Colin Raffel", openalex_ids: [A5045077843]}
+  - {name: "Colin Toft", openalex_ids: [A5136486507]}
+  - {name: "Collin Burns", openalex_ids: [A5022381014]}
+  - {name: "Colton Bishop", openalex_ids: [A5114134761]}
+  - {name: "Connor Kissane", openalex_ids: [A5059782634]}
+  - {name: "Connor Leahy", openalex_ids: [A5060025182]}
+  - {name: "Conor Griffin", openalex_ids: [A5048091074]}
+  - {name: "Conrad Stosz", openalex_ids: [A5123507298]}
+  - {name: "Corby Rosset", openalex_ids: [A5026219235]}
+  - {name: "Cory Decareaux", openalex_ids: [A5122307559]}
+  - {name: "Cosmin Păduraru", openalex_ids: [A5056097740]}
+  - {name: "Courtney Biles", openalex_ids: [A5041858762]}
+  - {name: "Cozmin Ududec", openalex_ids: [A5053543585, A5120651795, A5127074109]}
+  - {name: "Craig Boutilier", openalex_ids: [A5036934218, A5145290458]}
+  - {name: "Craig Citro", openalex_ids: [A5133373795]}
+  - {name: "Cristian Canton-­Ferrer", openalex_ids: [A5113511873]}
+  - {name: "Cullen O’Keefe", openalex_ids: [A5075689333]}
+  - {name: "Cundy, Chris", openalex_ids: [A5034127198]}
+  - {name: "Curt Tigges", openalex_ids: [A5092031084]}
+  - {name: "Cynthia Gao", openalex_ids: [A5024347376]}
+  - {name: "Cyrus Nikolaidis", openalex_ids: [A5093470850]}
+  - {name: "D. Sculley", openalex_ids: [A5019844381, A5055928795]}
+  - {name: "Da Young Ju", openalex_ids: [A5024825692]}
+  - {name: "Da Yu", openalex_ids: [A5102141174]}
+  - {name: "Daiyi Peng", openalex_ids: [A5049565925]}
+  - {name: "Dami Choi", openalex_ids: [A5013069517]}
+  - {name: "Dan Bikel", openalex_ids: [A5092506185]}
+  - {name: "Dan Braun", openalex_ids: [A5005760923]}
+  - {name: "Dan Friedman", openalex_ids: [A5102164378]}
+  - {name: "Dan Hendrycks", openalex_ids: [A5020400986]}
+  - {name: "Dan Mossing", openalex_ids: [A5117274031]}
+  - {name: "Dan Vann", openalex_ids: [A5092596088]}
+  - "Dan Zhao"
+  - {name: "Dane Sherburn", openalex_ids: [A5098316662]}
+  - "Daniel D. Johnson"
+  - {name: "Daniel Dewey", openalex_ids: [A5050673241]}
+  - {name: "Daniel D’souza", openalex_ids: [A5036836679]}
+  - {name: "Daniel Egert", openalex_ids: [A5093285949]}
+  - {name: "Daniel Fabian", openalex_ids: [A5124963883]}
+  - {name: "Daniel Filan", openalex_ids: [A5039081500]}
+  - "Daniel Johnson"
+  - {name: "Daniel Kokotajlo", openalex_ids: [A5051966605]}
+  - {name: "Daniel Kroening", openalex_ids: [A5086206346]}
+  - {name: "Daniel M. Roy", openalex_ids: [A5110275739, A5124976395]}
+  - "Daniel M. Ziegler"
+  - {name: "Daniel McDuff", openalex_ids: [A5100681741]}
+  - {name: "Daniel Murfet", openalex_ids: [A5082251796]}
+  - {name: "Daniel Ramage", openalex_ids: [A5071710055]}
+  - {name: "Daniel Song", openalex_ids: [A5111944920]}
+  - "Daniel Zhu"
+  - {name: "Daniela Amodei", openalex_ids: [A5086110112]}
+  - {name: "Daniele Calandriello", openalex_ids: [A5018745259]}
+  - {name: "Danielle Ensign", openalex_ids: [A5022011395]}
+  - {name: "Danny Halawi", openalex_ids: [A5015146433]}
+  - {name: "Danny Hernandez", openalex_ids: [A5030442997]}
+  - "Danqi Chen"
+  - "Daoyuan Chen"
+  - {name: "Daphne Ippolito", openalex_ids: [A5022994077]}
+  - {name: "Dario Amodei", openalex_ids: [A5066197394]}
+  - {name: "Darlene Neal", openalex_ids: [A5027230259]}
+  - {name: "Dashiell Stander", openalex_ids: [A5003444568]}
+  - "Dave Orr"
+  - "David Abel"
+  - {name: "David Acuna", openalex_ids: [A5030331254]}
+  - {name: "David Africa", openalex_ids: [A5127349781]}
+  - {name: "David B. Rein", openalex_ids: [A5060062241]}
+  - {name: "David Bau", openalex_ids: [A5033305045, A5123351846]}
+  - {name: "David Brandfonbrener", openalex_ids: [A5037978510]}
+  - {name: "David Dalrymple", openalex_ids: [A5113206716]}
+  - {name: "David Demitri Africa", openalex_ids: [A5119181839, A5127349781]}
+  - {name: "David Dohan", openalex_ids: [A5069446643]}
+  - {name: "David Duvenaud", openalex_ids: [A5030409494]}
+  - {name: "David Esiobu", openalex_ids: [A5060413371]}
+  - {name: "David Farhi", openalex_ids: [A5059240947]}
+  - "David G. Robinson"
+  - "David Huang"
+  - "David Johnston"
+  - {name: "David K. Elson", openalex_ids: [A5075284188]}
+  - {name: "David Krueger", openalex_ids: [A5029025914, A5127190524]}
+  - {name: "David Lindner", openalex_ids: [A5059597480]}
+  - "David Matolcsi"
+  - "David Rein"
+  - {name: "David Schneider-Joseph", openalex_ids: [A5092119059]}
+  - {name: "David Stutz", openalex_ids: [A5002157796]}
+  - "David Zhang"
+  - {name: "Davide Paglieri", openalex_ids: [A5093796358]}
+  - {name: "Davis Foote", openalex_ids: [A5013940751]}
+  - {name: "Dawn Drain", openalex_ids: [A5059021264]}
+  - {name: "Dawn Song", openalex_ids: [A5102160255, A5127866194]}
+  - {name: "Dayiheng Liu", openalex_ids: [A5062188134, A5144331499]}
+  - {name: "Deep Ganguli", openalex_ids: [A5006294201]}
+  - {name: "Deepak Narayanan", openalex_ids: [A5079514101]}
+  - {name: "Deepak Ramachandran", openalex_ids: [A5111238931]}
+  - "Deli Chen"
+  - {name: "Demis Hassabis", openalex_ids: [A5005349213]}
+  - "Deng Pan"
+  - {name: "Denny Zhou", openalex_ids: [A5061512999]}
+  - {name: "Deqiang Jiang", openalex_ids: [A5016912950]}
+  - {name: "Devamanyu Hazarika", openalex_ids: [A5074760783]}
+  - {name: "Dewi Gould", openalex_ids: [A5122145370]}
+  - {name: "Deyi Xiong", openalex_ids: [A5055232825]}
+  - {name: "Dharshan Kumaran", openalex_ids: [A5048551460]}
+  - {name: "Dhruv Mahajan", openalex_ids: [A5068664439]}
+  - {name: "Di Wang", openalex_ids: [A5075652117]}
+  - "Di Zhang"
+  - {name: "DiJia Su", openalex_ids: [A5041890767]}
+  - {name: "Diana Liskovich", openalex_ids: [A5005549348]}
+  - {name: "Dias, Rachel", openalex_ids: [A5122362555]}
+  - {name: "Dieuwke Hupkes", openalex_ids: [A5018069499]}
+  - {name: "Dilek Hakkani-Tür", openalex_ids: [A5134843929]}
+  - {name: "Dillon Bowen", openalex_ids: [A5111354805]}
+  - {name: "Dimitris Papailiopoulos", openalex_ids: [A5018630988]}
+  - {name: "Ding Wang", openalex_ids: [A5126956296]}
+  - {name: "Dinghuai Zhang", openalex_ids: [A5003913524, A5009435877, A5056849354]}
+  - "Dingkang Yang"
+  - "Diogo Almeida"
+  - {name: "Dipanjan Das", openalex_ids: [A5021055773]}
+  - {name: "Dipika Khullar", openalex_ids: [A5069259130]}
+  - {name: "Dmitry Kalashnikov", openalex_ids: [A5052190303]}
+  - {name: "Dmitry Lepikhin", openalex_ids: [A5049203448]}
+  - {name: "Doina Precup", openalex_ids: [A5065836447, A5127784613]}
+  - {name: "Dominik Moritz", openalex_ids: [A5006087928]}
+  - {name: "Dongfu Jiang", openalex_ids: [A5031172849]}
+  - {name: "Donghai Hong", openalex_ids: [A5111238960]}
+  - {name: "Donghao Ren", openalex_ids: [A5086732355, A5102533397]}
+  - {name: "Dongmei Zhang", openalex_ids: [A5129728480, A5139773764]}
+  - {name: "Doron Kukliansky", openalex_ids: [A5038443297]}
+  - {name: "Doug Fritz", openalex_ids: [A5032389053]}
+  - {name: "Douglas Eck", openalex_ids: [A5055592482]}
+  - {name: "Douwe Kiela", openalex_ids: [A5016956470]}
+  - {name: "Drew Proud", openalex_ids: [A5106276321]}
+  - {name: "Dror Marcus", openalex_ids: [A5110310019]}
+  - {name: "Dustin Li", openalex_ids: [A5077427160]}
+  - {name: "Dustin Tran", openalex_ids: [A5081819708]}
+  - {name: "Dylan Hadfield-Menell", openalex_ids: [A5076757561]}
+  - {name: "Dylan Slack", openalex_ids: [A5012515310]}
+  - {name: "Ece Kamar", openalex_ids: [A5028114802]}
+  - {name: "Ed H.", openalex_ids: [A5028125399]}
+  - "Eddie Zhang"
+  - {name: "Edgar A. Duéñez‐Guzmán", openalex_ids: [A5061221525]}
+  - "Edmund Lau"
+  - {name: "Edoardo Debenedetti", openalex_ids: [A5003889714]}
+  - {name: "Edward Grefenstette", openalex_ids: [A5023508792]}
+  - {name: "Edward Hughes", openalex_ids: [A5006947993]}
+  - {name: "Edward Rees", openalex_ids: [A5137327007]}
+  - {name: "Edwin Chen", openalex_ids: [A5126224959]}
+  - {name: "Edwin Zhang", openalex_ids: [A5054661138]}
+  - {name: "Eghbal A. Hosseini", openalex_ids: [A5027482938]}
+  - {name: "Eileen Long", openalex_ids: [A5129666994]}
+  - {name: "Ekin Akyürek", openalex_ids: [A5071734030]}
+  - {name: "Ekin Zorer", openalex_ids: [A5126709349]}
+  - {name: "Elena Gribovskaya", openalex_ids: [A5040145850]}
+  - {name: "Eleni Triantafillou", openalex_ids: [A5073728630, A5091334872]}
+  - {name: "Eli Tran-Johnson", openalex_ids: [A5070050208]}
+  - {name: "Eliezer Yudkowsky", openalex_ids: [A5002095767]}
+  - "Elizabeth A. Barnes"
+  - {name: "Elizabeth Proehl", openalex_ids: [A5115003670]}
+  - {name: "Elle Najt", openalex_ids: [A5133038899]}
+  - {name: "Ellie Evans", openalex_ids: [A5104621957]}
+  - {name: "Elliot Catt", openalex_ids: [A5020795308]}
+  - {name: "Elvis Hsieh", openalex_ids: [A5093957481]}
+  - {name: "Emily Dinan", openalex_ids: [A5061347220]}
+  - {name: "Emily Reif", openalex_ids: [A5019880413]}
+  - {name: "Emily Sheng", openalex_ids: [A5079812247]}
+  - {name: "Emma Bluemke", openalex_ids: [A5071500568]}
+  - {name: "Emmanuel Ameisen", openalex_ids: [A5133647610]}
+  - {name: "Emre Kıcıman", openalex_ids: [A5079458476]}
+  - "Eran Ofek"
+  - "Eric Chu"
+  - {name: "Eric Easley", openalex_ids: [A5091978618]}
+  - {name: "Eric Gan", openalex_ids: [A5043793139]}
+  - "Eric H. Christiansen"
+  - {name: "Eric Hambro", openalex_ids: [A5048121353]}
+  - {name: "Eric Horvitz", openalex_ids: [A5043228682]}
+  - "Eric Langlois"
+  - "Eric M. Smith"
+  - {name: "Eric Michaud", openalex_ids: [A5071048251]}
+  - {name: "Eric Neyman", openalex_ids: [A5078362852]}
+  - {name: "Eric Wallace", openalex_ids: [A5110564361, A5136035439]}
+  - {name: "Eric Winsor", openalex_ids: [A5014258495]}
+  - {name: "Erik Brinkman", openalex_ids: [A5026942224]}
+  - {name: "Erik Jenner", openalex_ids: [A5029945192]}
+  - "Erik Jones"
+  - {name: "Erin van Liemt", openalex_ids: [A5094168390, A5120308880]}
+  - {name: "Esha Ghosh", openalex_ids: [A5053661277]}
+  - {name: "Eshika Saxena", openalex_ids: [A5009594573]}
+  - {name: "Esin Durmus", openalex_ids: [A5001994692]}
+  - {name: "Ethan Dyer", openalex_ids: [A5010086803, A5127790119]}
+  - {name: "Ethan Perez", openalex_ids: [A5091112967]}
+  - {name: "Euan McLean", openalex_ids: [A5057429364]}
+  - {name: "Euan Ong", openalex_ids: [A5113258457]}
+  - {name: "Eugene Bagdasarian", openalex_ids: [A5114402613]}
+  - {name: "Eugene Bagdasaryan", openalex_ids: [A5076433934]}
+  - {name: "Evan Hubinger", openalex_ids: [A5025461840]}
+  - {name: "Evan Mays", openalex_ids: [A5114245168]}
+  - {name: "Evgenia Nitishinskaya", openalex_ids: [A5143404680]}
+  - {name: "Evgeniia Razumovskaia", openalex_ids: [A5072788083]}
+  - {name: "Eyal Ben David", openalex_ids: [A5038080229]}
+  - "Eyal Ben‐David"
+  - {name: "Fabien Roger", openalex_ids: [A5028042353]}
+  - "Faizan Ali"
+  - "Fandong Meng"
+  - "Fang Liu"
+  - {name: "Fangzhao Wu", openalex_ids: [A5076423724]}
+  - {name: "Fantine Huot", openalex_ids: [A5080734082]}
+  - {name: "Fanzhi Zeng", openalex_ids: [A5136057465]}
+  - {name: "Fatemehsadat Mireshghallah", openalex_ids: [A5018043043]}
+  - {name: "Fazl Barez", openalex_ids: [A5050436152]}
+  - {name: "Federico Barbero", openalex_ids: [A5104314513]}
+  - "Fei Huang"
+  - "Feiyu Chen"
+  - {name: "Felix Hofstätter", openalex_ids: [A5143413803]}
+  - {name: "Felix Juefei-Xu", openalex_ids: [A5034751153]}
+  - "Feng Yang"
+  - {name: "Fengxiang Wang", openalex_ids: [A5114644763]}
+  - {name: "Fereshte Khani", openalex_ids: [A5039473897]}
+  - {name: "Fernanda Viegas", openalex_ids: [A5059594867]}
+  - {name: "Feryal Behbahani", openalex_ids: [A5002098080]}
+  - {name: "Filippo Raso", openalex_ids: [A5097839737]}
+  - "Florian Hartmann"
+  - {name: "Florian Tramer", openalex_ids: [A5006851333]}
+  - {name: "Foivos Tsimpourlas", openalex_ids: [A5056327775]}
+  - "Four Flynn"
+  - {name: "Francesco Barbieri", openalex_ids: [A5102984496]}
+  - "Francesco Mosconi"
+  - {name: "Francesco Pinto", openalex_ids: [A5115592337]}
+  - {name: "Francis Rhys Ward", openalex_ids: [A5087069967]}
+  - {name: "Francis Song", openalex_ids: [A5031035504]}
+  - {name: "Franklin, Matija", openalex_ids: [A5030262115]}
+  - {name: "Fred Hohman", openalex_ids: [A5034842879]}
+  - {name: "Fred von Lohmann", openalex_ids: [A5114628361]}
+  - {name: "Freddie Sulit", openalex_ids: [A5114628362]}
+  - {name: "Frederick Liu", openalex_ids: [A5015466440, A5033750922, A5061681120]}
+  - {name: "Fry, Corey", openalex_ids: [A5035791261]}
+  - "Furu Wei"
+  - {name: "G. Edward Suh", openalex_ids: [A5024329178, A5082331629]}
+  - {name: "Gabriel Goh", openalex_ids: [A5108118480]}
+  - {name: "Gabriel Synnaeve", openalex_ids: [A5041907084]}
+  - "Gabriel Wu"
+  - {name: "Gagan Bansal", openalex_ids: [A5052918302]}
+  - {name: "Gal Yona", openalex_ids: [A5037714222]}
+  - {name: "Galen Andrew", openalex_ids: [A5039644814]}
+  - {name: "Gamaleldin F. Elsayed", openalex_ids: [A5043002930]}
+  - "Gang Li"
+  - {name: "Gang Zhang", openalex_ids: [A5100363241]}
+  - "Gaurav Mishra"
+  - {name: "Gaurav Singh Tomar", openalex_ids: [A5101554423]}
+  - {name: "Ge Zhang", openalex_ids: [A5044203241]}
+  - {name: "Gemini Team", openalex_ids: [A5113077259]}
+  - {name: "Gemma Team", openalex_ids: [A5094155825]}
+  - {name: "Geoff Keeling", openalex_ids: [A5020476329]}
+  - {name: "Geoffrey Hinton", openalex_ids: [A5108093963]}
+  - {name: "Geoffrey Irving", openalex_ids: [A5029611587, A5114658452]}
+  - {name: "George Lee", openalex_ids: [A5069155531]}
+  - {name: "George Tucker", openalex_ids: [A5048032272]}
+  - {name: "Georgina Evans", openalex_ids: [A5013721961, A5047018753]}
+  - {name: "Georgios Kaissis", openalex_ids: [A5000554104, A5133217955]}
+  - "Georgios Piliouras"
+  - {name: "Ghassen Jerfel", openalex_ids: [A5048204767]}
+  - {name: "Gillian K. Hadfield", openalex_ids: [A5000711679, A5124970802]}
+  - {name: "Gintare Karolina Dziugaite", openalex_ids: [A5021062973]}
+  - {name: "Giorgi Giglemiani", openalex_ids: [A5114412483]}
+  - {name: "Giorgio Severi", openalex_ids: [A5054966546]}
+  - {name: "Giovanni Cherubin", openalex_ids: [A5037747591]}
+  - {name: "Girish Sastry", openalex_ids: [A5059260582]}
+  - {name: "Giulio Starace", openalex_ids: [A5014595992]}
+  - {name: "Giulio Zhou", openalex_ids: [A5039263158]}
+  - {name: "Golechha, Satvik", openalex_ids: [A5056640803]}
+  - {name: "Gonçalo Paulo", openalex_ids: [A5149744284]}
+  - {name: "Greg Brockman", openalex_ids: [A5116367404]}
+  - {name: "Gregory Farquhar", openalex_ids: [A5127820264]}
+  - {name: "Gretchen Krueger", openalex_ids: [A5064685592]}
+  - {name: "Grégoire Delétang", openalex_ids: [A5059962909]}
+  - {name: "Guan Pang", openalex_ids: [A5101768740]}
+  - {name: "Guangchen Lan", openalex_ids: [A5060130166]}
+  - {name: "Guanting Dong", openalex_ids: [A5008320336, A5107506932]}
+  - {name: "Guillaume Lajoie", openalex_ids: [A5043037494]}
+  - {name: "Guillem Cucurull", openalex_ids: [A5069420168]}
+  - {name: "Guillermo Ortiz-Jiménez", openalex_ids: [A5016056842]}
+  - {name: "Guoyin Wang", openalex_ids: [A5091299759]}
+  - "Guo‐qing Zheng"
+  - {name: "Guy Katz", openalex_ids: [A5102986148]}
+  - {name: "Guy Tennenholtz", openalex_ids: [A5049376842]}
+  - {name: "H. Brendan McMahan", openalex_ids: [A5040311844]}
+  - {name: "Hado van Hasselt", openalex_ids: [A5033135596]}
+  - {name: "Hailey Schoelkopf", openalex_ids: [A5080237064]}
+  - "Haiwen Hong"
+  - {name: "Haiyang Yu", openalex_ids: [A5080937507]}
+  - {name: "Hakan Inan", openalex_ids: [A5071606441]}
+  - {name: "Hamed Firooz", openalex_ids: [A5043413179]}
+  - {name: "Hamid Palangi", openalex_ids: [A5033846851]}
+  - "Han Wang"
+  - {name: "Hanchao Yu", openalex_ids: [A5028988765]}
+  - "Hang Li"
+  - {name: "Hanie Sedghi", openalex_ids: [A5045805879]}
+  - "Hanlin Wu"
+  - {name: "Hanna Wallach", openalex_ids: [A5046348432, A5143221026]}
+  - "Hannah Korevaar"
+  - {name: "Hannah Rose Kirk", openalex_ids: [A5051050719, A5098821006]}
+  - {name: "Hannah Sheahan", openalex_ids: [A5045424407]}
+  - {name: "Hannah Washington", openalex_ids: [A5114730238]}
+  - "Hannah Wong"
+  - {name: "Hanshen Xiao", openalex_ids: [A5101702107]}
+  - {name: "Hantao Lou", openalex_ids: [A5112107091]}
+  - "Hao Cheng"
+  - {name: "Hao Jiang", openalex_ids: [A5082485594]}
+  - {name: "Hao Lang", openalex_ids: [A5100618393]}
+  - "Hao Sun"
+  - "Hao Wang"
+  - "Hao Wen"
+  - {name: "Hao Zhou", openalex_ids: [A5022574607]}
+  - "Haoming Meng"
+  - {name: "Haonan Zhang", openalex_ids: [A5100705310]}
+  - "Haoxing Du"
+  - {name: "Haoxuan Ma", openalex_ids: [A5101363870]}
+  - "Haoyu Cao"
+  - "Haozhu Wang"
+  - {name: "Harri Edwards", openalex_ids: [A5090678609]}
+  - {name: "Harry Coppock", openalex_ids: [A5087769785]}
+  - {name: "Harry Law", openalex_ids: [A5073235268]}
+  - {name: "Harry R. Lloyd", openalex_ids: [A5027293026]}
+  - {name: "Harsh Chaudhari", openalex_ids: [A5045507972]}
+  - {name: "Harsha Nori", openalex_ids: [A5050672320]}
+  - {name: "Harshay Shah", openalex_ids: [A5017216665]}
+  - {name: "He He", openalex_ids: [A5104345556]}
+  - "Heidi Howard"
+  - {name: "Heidy Khlaaf", openalex_ids: [A5057529586]}
+  - {name: "Helen Toner", openalex_ids: [A5011967325]}
+  - {name: "Helena Casademunt", openalex_ids: [A5059790121]}
+  - {name: "Heng-Tze Cheng", openalex_ids: [A5054880622]}
+  - {name: "Henk Tillman", openalex_ids: [A5042249044]}
+  - {name: "Henry Davidson", openalex_ids: [A5126689517]}
+  - {name: "Henry Sleight", openalex_ids: [A5094579744]}
+  - {name: "Herbie Bradley", openalex_ids: [A5033325361]}
+  - "Hilton, Benjamin"
+  - {name: "Himanshu Jain", openalex_ids: [A5144031385]}
+  - {name: "Hjalmar Wijk", openalex_ids: [A5091015047]}
+  - {name: "Hoagy Cunningham", openalex_ids: [A5104170748]}
+  - {name: "Hongkun Yu", openalex_ids: [A5100537890]}
+  - {name: "Hongli Yu", openalex_ids: [A5100610655]}
+  - "Hongli Zhou"
+  - {name: "Honglu Fan", openalex_ids: [A5112952142]}
+  - {name: "Hongrae Lee", openalex_ids: [A5081157085]}
+  - {name: "Hongxu Yin", openalex_ids: [A5002444694, A5108868459]}
+  - {name: "Hongyi Yuan", openalex_ids: [A5124099501]}
+  - "Hongyu Lin"
+  - {name: "Hongyuan Zhan", openalex_ids: [A5064285315]}
+  - {name: "Hong‐Yu Ren", openalex_ids: [A5101912684]}
+  - {name: "Hosein Hasanbeig", openalex_ids: [A5033668003]}
+  - "Hou–Yong Yu"
+  - {name: "Hritik Bansal", openalex_ids: [A5112428050]}
+  - {name: "Hsien-Hsin S. Lee", openalex_ids: [A5072539515]}
+  - {name: "Huaixiu Zheng", openalex_ids: [A5003807260]}
+  - "Huan-ang Gao"
+  - {name: "Hugo Larochelle", openalex_ids: [A5019862529]}
+  - {name: "Hugo Touvron", openalex_ids: [A5032644449]}
+  - "Hui Huang"
+  - "Hui Xue"
+  - {name: "Hunter Lang", openalex_ids: [A5041547937]}
+  - {name: "Hunter Lightman", openalex_ids: [A5092070318]}
+  - {name: "Huseyin A. Inan", openalex_ids: [A5071827392]}
+  - {name: "Hussein Hazimeh", openalex_ids: [A5066834365]}
+  - {name: "Hussein Mozannar", openalex_ids: [A5004148354]}
+  - "HyunJin Kim"
+  - {name: "Hyung Won Chung", openalex_ids: [A5051828575]}
+  - {name: "Hyunwoo Kim", openalex_ids: [A5124776296]}
+  - {name: "Ian Goodfellow", openalex_ids: [A5004271128]}
+  - {name: "Ian Kivlichan", openalex_ids: [A5015180445]}
+  - {name: "Ian R. McKenzie", openalex_ids: [A5015269815]}
+  - {name: "Ian Tenney", openalex_ids: [A5082431329]}
+  - {name: "Iason Gabriel", openalex_ids: [A5032814084]}
+  - {name: "Ida Momennejad", openalex_ids: [A5059293348]}
+  - {name: "Idan Szpektor", openalex_ids: [A5026091724]}
+  - "Igor Fedorov"
+  - {name: "Igor Gitman", openalex_ids: [A5038012674]}
+  - {name: "Igor Molybog", openalex_ids: [A5041560478]}
+  - {name: "Igor Mordatch", openalex_ids: [A5014193325]}
+  - {name: "Igor Shilov", openalex_ids: [A5093939613]}
+  - {name: "Igor Tufanov", openalex_ids: [A5092690839]}
+  - {name: "Ilia Kulikov", openalex_ids: [A5103110668]}
+  - {name: "Ilia Shumailov", openalex_ids: [A5069844959, A5139445612]}
+  - {name: "Ilias Leontiadis", openalex_ids: [A5066833626]}
+  - {name: "Iliyan Zarov", openalex_ids: [A5134971971]}
+  - {name: "Ilya Mironov", openalex_ids: [A5068648893]}
+  - {name: "Ilya Sutskever", openalex_ids: [A5006446297]}
+  - {name: "Ioannis Mitliagkas", openalex_ids: [A5088076429]}
+  - {name: "Ippolito, Daphne", openalex_ids: [A5022994077]}
+  - {name: "Irene Solaiman", openalex_ids: [A5041785132]}
+  - {name: "Irina Higgins", openalex_ids: [A5018830387]}
+  - {name: "Isaac Kauvar", openalex_ids: [A5138709767]}
+  - {name: "Isabel Papadimitriou", openalex_ids: [A5023621106]}
+  - {name: "Isabelle Barrass", openalex_ids: [A5094087259]}
+  - {name: "Isabelle Simpson", openalex_ids: [A5120678827]}
+  - "Isha Gupta"
+  - {name: "Ishita Mediratta", openalex_ids: [A5010085477]}
+  - {name: "Ismail Labiad", openalex_ids: [A5125231151]}
+  - {name: "Itay Laish", openalex_ids: [A5043948840]}
+  - {name: "Itay Yona", openalex_ids: [A5093903005]}
+  - {name: "Ivan Evtimov", openalex_ids: [A5021932110, A5024013900, A5121333553]}
+  - {name: "Ivan Moshkov", openalex_ids: [A5057717130]}
+  - {name: "Iván Arcuschin", openalex_ids: [A5107619598]}
+  - {name: "I‐Hsin Chung", openalex_ids: [A5108479300]}
+  - {name: "J. Dmitri Gallow", openalex_ids: [A5033934410]}
+  - "J. William Brennan"
+  - {name: "J. Zico Kolter", openalex_ids: [A5075035644]}
+  - {name: "JD Co-Reyes", openalex_ids: [A5093272099]}
+  - {name: "JJ Allaire", openalex_ids: [A5061795112]}
+  - {name: "Jack A. Clark", openalex_ids: [A5031107879]}
+  - {name: "Jack Clark", openalex_ids: [A5031107879]}
+  - {name: "Jack Lanchantin", openalex_ids: [A5016503379]}
+  - {name: "Jack Lindsey", openalex_ids: [A5137019053]}
+  - {name: "Jack Parker-Holder", openalex_ids: [A5083828420]}
+  - "Jackie Kay"
+  - {name: "Jackson Kernion", openalex_ids: [A5057116059]}
+  - {name: "Jacob Andreas", openalex_ids: [A5070829652, A5130392524]}
+  - {name: "Jacob Austin", openalex_ids: [A5014400463]}
+  - {name: "Jacob Devlin", openalex_ids: [A5057457287]}
+  - {name: "Jacob Eisenstein", openalex_ids: [A5047699861]}
+  - {name: "Jacob Goldman-Wetzler", openalex_ids: [A5093836223]}
+  - {name: "Jacob Hilton", openalex_ids: [A5150400279]}
+  - {name: "Jacob Menick", openalex_ids: [A5088720016]}
+  - {name: "Jacob Merizian", openalex_ids: [A5030909388]}
+  - {name: "Jacob Pfau", openalex_ids: [A5120337395]}
+  - {name: "Jacob Steinhardt", openalex_ids: [A5060196069, A5127845368]}
+  - {name: "Jade Leung", openalex_ids: [A5041819739]}
+  - "Jae-Hun Jung"
+  - {name: "Jaehoon Lee", openalex_ids: [A5100420195]}
+  - {name: "Jaehun Jung", openalex_ids: [A5119967810]}
+  - {name: "Jake Mendel", openalex_ids: [A5109645986]}
+  - {name: "Jakob Foerster", openalex_ids: [A5059094093, A5123081485, A5130091962]}
+  - {name: "Jakub Pachocki", openalex_ids: [A5011053473]}
+  - {name: "James A. Evans", openalex_ids: [A5123328638, A5138265427]}
+  - {name: "James Aung", openalex_ids: [A5109819214]}
+  - "James Babcock"
+  - {name: "James Chua", openalex_ids: [A5050685525]}
+  - {name: "James Cohan", openalex_ids: [A5110985418]}
+  - "James Harrison"
+  - "James L. McClelland"
+  - {name: "James Lucassen", openalex_ids: [A5107507834]}
+  - {name: "James Manyika", openalex_ids: [A5055157793, A5136482397]}
+  - "James T. Bradbury"
+  - {name: "James Wexler", openalex_ids: [A5081809692]}
+  - {name: "James Zou", openalex_ids: [A5136571769]}
+  - {name: "Jamie Hayes", openalex_ids: [A5020715720, A5104083546, A5146822264]}
+  - {name: "Jamie Kerr", openalex_ids: [A5081035645]}
+  - {name: "Jamila Smith-Loud", openalex_ids: [A5010827180]}
+  - "Jan H. Kirchner"
+  - "Jan Hendrik Kirchner"
+  - {name: "Jan Kautz", openalex_ids: [A5063511312, A5138788943]}
+  - {name: "Jan Kulveit", openalex_ids: [A5031843089]}
+  - {name: "Jan Leike", openalex_ids: [A5090592321]}
+  - {name: "Janardhan Kulkarni", openalex_ids: [A5043137436]}
+  - {name: "Jane Dwivedi-Yu", openalex_ids: [A5022730878]}
+  - {name: "Jane Polak Scowcroft", openalex_ids: [A5093285950]}
+  - {name: "Janice Lan", openalex_ids: [A5000075355]}
+  - {name: "Jannis Bulian", openalex_ids: [A5089402969]}
+  - {name: "Jared Kaplan", openalex_ids: [A5053213601]}
+  - {name: "Jared Mueller", openalex_ids: [A5070762421]}
+  - {name: "Jascha Sohl‐Dickstein", openalex_ids: [A5064986566]}
+  - {name: "Jasmijn Bastings", openalex_ids: [A5077391471]}
+  - "Jasmine Wang"
+  - {name: "Jason Eisner", openalex_ids: [A5052467896]}
+  - "Jason Hausenloy"
+  - {name: "Jason Phang", openalex_ids: [A5047763717]}
+  - {name: "Jason Wei", openalex_ids: [A5051536708, A5078446912]}
+  - {name: "Jason Weston", openalex_ids: [A5076635608, A5130251995]}
+  - {name: "Jasper Snoek", openalex_ids: [A5112347601]}
+  - {name: "Javier Rando", openalex_ids: [A5004646269]}
+  - {name: "Jay Baxter", openalex_ids: [A5108747244]}
+  - {name: "Jayd Matyas", openalex_ids: [A5031117989]}
+  - {name: "Jean Garcia-Gathright", openalex_ids: [A5022239852]}
+  - {name: "Jean-François Ton", openalex_ids: [A5069983126]}
+  - {name: "Jeeyoon Hyun", openalex_ids: [A5070615024]}
+  - {name: "Jeff Clune", openalex_ids: [A5112191507]}
+  - {name: "Jeff Dean", openalex_ids: [A5011889606]}
+  - {name: "Jeff Wu", openalex_ids: [A5007570707]}
+  - {name: "Jeffrey Ladish", openalex_ids: [A5051962352]}
+  - {name: "Jeffrey Pennington", openalex_ids: [A5010225522]}
+  - {name: "Jeffrey Wu", openalex_ids: [A5081413425]}
+  - {name: "Jen-tse Huang", openalex_ids: [A5139747334]}
+  - {name: "Jennifer Wortman Vaughan", openalex_ids: [A5043117896, A5106306824]}
+  - "Jenny Bao"
+  - {name: "Jenya Lee", openalex_ids: [A5104145657]}
+  - {name: "Jeremiah Zhe Liu", openalex_ids: [A5031419128, A5073573091]}
+  - {name: "Jeremy Fu", openalex_ids: [A5111279824]}
+  - {name: "Jeremy Nixon", openalex_ids: [A5110890879]}
+  - {name: "Jeremy Reizenstein", openalex_ids: [A5082867662]}
+  - {name: "Jerome Wynne", openalex_ids: [A5114331401]}
+  - {name: "Jerry Wei", openalex_ids: [A5064735227, A5122518503]}
+  - {name: "Jesse Dodge", openalex_ids: [A5008013895]}
+  - {name: "Jesse Mu", openalex_ids: [A5060578216, A5127805553]}
+  - {name: "Jessica D. Hoffmann", openalex_ids: [A5039879684]}
+  - {name: "Jessica Taylor", openalex_ids: [A5078386507]}
+  - "Jessica Wang"
+  - "Jesús Navarro"
+  - {name: "Jia-Chen Gu", openalex_ids: [A5005572782]}
+  - {name: "Jiaheng Liu", openalex_ids: [A5137840025]}
+  - "Jiali Zeng"
+  - {name: "Jialin Song", openalex_ids: [A5125423991]}
+  - {name: "Jialing Tao", openalex_ids: [A5115843913]}
+  - {name: "Jiamang Wang", openalex_ids: [A5025403631]}
+  - "Jiaming Ji"
+  - {name: "Jian Hu", openalex_ids: [A5141147878, A5143696442]}
+  - "Jian Lou"
+  - "Jian Yang"
+  - {name: "Jian Yu", openalex_ids: [A5027501725]}
+  - {name: "Jianfeng Chi", openalex_ids: [A5111524272]}
+  - "Jianfeng Gao"
+  - "Jiang Bian"
+  - "Jianhong Tu"
+  - "Jianwei Chi"
+  - {name: "Jianxun Lian", openalex_ids: [A5087106517]}
+  - "Jiao Sun"
+  - {name: "Jiaqi Zeng", openalex_ids: [A5080796063]}
+  - "Jiashu Xu"
+  - {name: "Jiashun Liu", openalex_ids: [A5124214531]}
+  - "Jiawei Chen"
+  - "Jiawei Zhang"
+  - "Jiaxin Wen"
+  - "Jiayi Liu"
+  - {name: "Jiayu Li", openalex_ids: [A5100435411]}
+  - {name: "Jide Alaga", openalex_ids: [A5092998357]}
+  - "Jie Ren"
+  - "Jie Tang"
+  - "Jie Wu"
+  - "Jie Zhou"
+  - "Jieping Ye"
+  - "Jiexi Liu"
+  - "Jifan Zhang"
+  - {name: "Jilin Chen", openalex_ids: [A5033428202]}
+  - {name: "Jimit Majmudar", openalex_ids: [A5081637454]}
+  - {name: "Jimmy Ba", openalex_ids: [A5012276327]}
+  - "Jin Zhou"
+  - {name: "Jina Suh", openalex_ids: [A5072651383]}
+  - "Jinda Lu"
+  - {name: "Jindong Gu", openalex_ids: [A5055994909]}
+  - "Jindong Wang"
+  - {name: "Jinfeng Li", openalex_ids: [A5103325722]}
+  - "Jing Shao"
+  - "Jing Xu"
+  - {name: "Jing Yao", openalex_ids: [A5084847804]}
+  - {name: "Jingbo Shang", openalex_ids: [A5039500313]}
+  - {name: "Jinghan Jia", openalex_ids: [A5137782078]}
+  - "Jinghao Lin"
+  - "Jingjing Fu"
+  - "Jingren Zhou"
+  - {name: "Jingtong Su", openalex_ids: [A5070994153, A5113354567]}
+  - {name: "Jingya Chen", openalex_ids: [A5031477562]}
+  - {name: "Jingyu Zhang", openalex_ids: [A5132940400]}
+  - {name: "Jinsung Yoon", openalex_ids: [A5124862101, A5133228254, A5135987043]}
+  - {name: "Jiri Hron", openalex_ids: [A5081096634]}
+  - "Joanne Jang"
+  - {name: "Joe Benton", openalex_ids: [A5056010406]}
+  - {name: "Joe Carlsmith", openalex_ids: [A5093278291]}
+  - {name: "Joe Skinner", openalex_ids: [A5038680624]}
+  - {name: "Joel Burget", openalex_ids: [A5093547743]}
+  - "Joel Parish"
+  - {name: "Joel Veness", openalex_ids: [A5060709021]}
+  - {name: "Joel Z. Leibo", openalex_ids: [A5054808675]}
+  - {name: "Johannes Gasteiger", openalex_ids: [A5080021785]}
+  - {name: "Johannes Heidecke", openalex_ids: [A5095848427]}
+  - {name: "Johannes Treutlein", openalex_ids: [A5047456114]}
+  - {name: "Johannes Welbl", openalex_ids: [A5067022550]}
+  - {name: "Johannes von Oswald", openalex_ids: [A5103956420]}
+  - {name: "John Agapiou", openalex_ids: [A5017056095]}
+  - {name: "John Aslanides", openalex_ids: [A5029807267]}
+  - {name: "John D. Co-Reyes", openalex_ids: [A5007992087]}
+  - {name: "John Dang", openalex_ids: [A5111250631]}
+  - "John Hewitt"
+  - {name: "John Hughes", openalex_ids: [A5033583291]}
+  - "John Mellor"
+  - {name: "John Quan", openalex_ids: [A5018191427]}
+  - {name: "John Schulman", openalex_ids: [A5009037058, A5102168278]}
+  - "John W. Mellor"
+  - {name: "Jon Ander Campos", openalex_ids: [A5099010529]}
+  - {name: "Jon Kutasov", openalex_ids: [A5135450843]}
+  - {name: "Jonah Brown-Cohen", openalex_ids: [A5050009197]}
+  - {name: "Jonas Buchli", openalex_ids: [A5077279214]}
+  - {name: "Jonas Schuett", openalex_ids: [A5016424652]}
+  - {name: "Jonathan Berant", openalex_ids: [A5045872048]}
+  - "Jonathan Cook"
+  - {name: "Jonathan G. Richens", openalex_ids: [A5033150985]}
+  - {name: "Jonathan Hayase", openalex_ids: [A5085103734]}
+  - {name: "Jonathan Herzig", openalex_ids: [A5071893787]}
+  - "Jonathan Marcus"
+  - "Jonathan NG"
+  - {name: "Jonathan Richens", openalex_ids: [A5033150985]}
+  - {name: "Jonathan Uesato", openalex_ids: [A5059226057]}
+  - "Jonathan Ward"
+  - {name: "Jonathon Shlens", openalex_ids: [A5032356827]}
+  - "Jones, Erik"
+  - "Jong Wook Kim"
+  - {name: "Joongwon Kim", openalex_ids: [A5050832932]}
+  - {name: "Joost Huizinga", openalex_ids: [A5018598100]}
+  - "Jordan Taylor"
+  - {name: "Jordi Grau-Moya", openalex_ids: [A5026686188]}
+  - "Josef Dai"
+  - {name: "Joseph Bloom", openalex_ids: [A5053271715]}
+  - "Joseph M. Miller"
+  - {name: "Joseph, Sonia", openalex_ids: [A5124153233]}
+  - {name: "Josh Engels", openalex_ids: [A5126886304]}
+  - "Josh Jacobson"
+  - {name: "Joshua Achiam", openalex_ids: [A5032275803]}
+  - {name: "Joshua Batson", openalex_ids: [A5029631340]}
+  - {name: "Joshua Clymer", openalex_ids: [A5094186781]}
+  - "Joshua D. Landau"
+  - {name: "Joshua Engels", openalex_ids: [A5104313316]}
+  - "Joshua Lane"
+  - {name: "Joshua Maynez", openalex_ids: [A5021334672]}
+  - {name: "Josip Djolonga", openalex_ids: [A5010814788]}
+  - {name: "Joslyn Barnhart", openalex_ids: [A5008993719]}
+  - {name: "João G. M. Araújo", openalex_ids: [A5009941798]}
+  - {name: "João Sacramento", openalex_ids: [A5030804320]}
+  - {name: "Joëlle Barral", openalex_ids: [A5043862316]}
+  - {name: "Joëlle Pineau", openalex_ids: [A5080591144]}
+  - {name: "Ju Huang", openalex_ids: [A5121640256, A5129964288]}
+  - {name: "Juan Felipe Cerón Uribe", openalex_ids: [A5099881265]}
+  - "Juan Gu"
+  - "Juan Mateos-García"
+  - "Juan Rocamonde"
+  - {name: "Jude Fernandes", openalex_ids: [A5026363324]}
+  - {name: "Judy Hanwen Shen", openalex_ids: [A5020734965]}
+  - "Julia Haas"
+  - {name: "Julia Kempe", openalex_ids: [A5051933322]}
+  - {name: "Julia Kreutzer", openalex_ids: [A5048307591]}
+  - {name: "Julian Hazell", openalex_ids: [A5013747546]}
+  - {name: "Julian Michael", openalex_ids: [A5072681909]}
+  - "Julian Schulz"
+  - {name: "Julian Stastny", openalex_ids: [A5025141623]}
+  - {name: "Julius Tarng", openalex_ids: [A5122414842]}
+  - {name: "Jun Shern Chan", openalex_ids: [A5047504721]}
+  - {name: "Jun Yan", openalex_ids: [A5123944167]}
+  - {name: "Jun Zhou", openalex_ids: [A5045140292]}
+  - "Junfeng He"
+  - {name: "Junhyuk Oh", openalex_ids: [A5051181433]}
+  - {name: "Junsol Kim", openalex_ids: [A5109657860]}
+  - {name: "Juntao Dai", openalex_ids: [A5110937622]}
+  - {name: "Junyang Lin", openalex_ids: [A5100612233, A5121558038, A5127946404, A5139797305, A5146776515]}
+  - {name: "Justin Svegliato", openalex_ids: [A5080873677]}
+  - {name: "Jwala Dhamala", openalex_ids: [A5035068572]}
+  - {name: "János Kramár", openalex_ids: [A5027979882]}
+  - {name: "Jérémy Scheurer", openalex_ids: [A5064744991]}
+  - {name: "Jörg Bornschein", openalex_ids: [A5041213674]}
+  - {name: "K.S. Meier-Hellstern", openalex_ids: [A5066835782]}
+  - {name: "Kai Chen", openalex_ids: [A5100438001]}
+  - {name: "Kai Dang", openalex_ids: [A5114418953]}
+  - {name: "Kai Fronsdal", openalex_ids: [A5115028723]}
+  - "Kai Hu"
+  - {name: "Kai Xiao", openalex_ids: [A5101973322]}
+  - {name: "Kai-Wei Chang", openalex_ids: [A5139838595]}
+  - "Kaijie Zhu"
+  - "Kaile Wang"
+  - "Kaiwen Zhou"
+  - {name: "Kaj Sotala", openalex_ids: [A5090878628]}
+  - {name: "Kamal Ndousse", openalex_ids: [A5028970835]}
+  - {name: "Kamalika Chaudhuri", openalex_ids: [A5010790447]}
+  - {name: "Kamil Ciosek", openalex_ids: [A5043239539]}
+  - {name: "Kamilė Lukošiūtė", openalex_ids: [A5025573579]}
+  - {name: "Karan Singhal", openalex_ids: [A5027454515]}
+  - {name: "Karen Hambardzumyan", openalex_ids: [A5061387148]}
+  - {name: "Karen Ullrich", openalex_ids: [A5058031547]}
+  - {name: "Karim Abdel Sadek", openalex_ids: [A5120440466]}
+  - {name: "Karina Nguyen", openalex_ids: [A5032805177]}
+  - {name: "Karl Cobbe", openalex_ids: [A5040657467]}
+  - {name: "Karla Barrios Ramos", openalex_ids: [A5139574489]}
+  - {name: "Karthik Narasimhan", openalex_ids: [A5025205227]}
+  - {name: "Kartikeya Upasani", openalex_ids: [A5019445300]}
+  - {name: "Katarina Slama", openalex_ids: [A5151386717]}
+  - {name: "Kate Larson", openalex_ids: [A5105978897]}
+  - {name: "Kate Olszewska", openalex_ids: [A5093547771]}
+  - {name: "Kate Plawiak", openalex_ids: [A5106276444]}
+  - {name: "Katharyn Garcia", openalex_ids: [A5114987900]}
+  - {name: "Katherine Heller", openalex_ids: [A5014018142, A5130626834]}
+  - {name: "Katherine L. Hermann", openalex_ids: [A5030195779]}
+  - {name: "Katherine Lee", openalex_ids: [A5101561897, A5139403126]}
+  - {name: "Kathleen Kenealy", openalex_ids: [A5009962014]}
+  - {name: "Kathrin Grosse", openalex_ids: [A5018930655]}
+  - {name: "Katie Mayer", openalex_ids: [A5042208401]}
+  - {name: "Katja Filippova", openalex_ids: [A5037657908]}
+  - {name: "Katja Hofmann", openalex_ids: [A5027441885]}
+  - {name: "Katrin Tomanek", openalex_ids: [A5002347902]}
+  - "Ke Li"
+  - {name: "Kei Nishimura-Gasparian", openalex_ids: [A5120338931]}
+  - {name: "Keith Coleman", openalex_ids: [A5063820323]}
+  - {name: "Kelley Rivoire", openalex_ids: [A5133363102]}
+  - {name: "Kellin Pelrine", openalex_ids: [A5057950507]}
+  - {name: "Kelly Marchisio", openalex_ids: [A5098901827]}
+  - {name: "Kelvin Guu", openalex_ids: [A5076669462]}
+  - {name: "Kelvin Xu", openalex_ids: [A5060717631]}
+  - {name: "Keming Lu", openalex_ids: [A5110849478]}
+  - {name: "Ken Ziyu Liu", openalex_ids: [A5010274201]}
+  - "Kenneth Li"
+  - {name: "Keren Gu-Lemberg", openalex_ids: [A5098577641]}
+  - {name: "Kevin Button", openalex_ids: [A5011602093]}
+  - "Kevin Lin"
+  - "Kevin Liu"
+  - "Kevin Meng"
+  - {name: "Kevin R. McKee", openalex_ids: [A5013841168]}
+  - {name: "Kevin Robinson", openalex_ids: [A5143901435]}
+  - {name: "Kevin Swersky", openalex_ids: [A5026208886]}
+  - "Kevin Troy"
+  - "Kevin Wang"
+  - {name: "Kexin Huang", openalex_ids: [A5125060582]}
+  - {name: "Khaled Saab", openalex_ids: [A5061240205, A5125133239]}
+  - {name: "Khawaja Shams", openalex_ids: [A5104351514]}
+  - {name: "Khimya Khetarpal", openalex_ids: [A5028021826]}
+  - {name: "Khyathi Raghavi Chandu", openalex_ids: [A5007169600]}
+  - {name: "Kilian Q. Weinberger", openalex_ids: [A5006380227]}
+  - {name: "Kimberly Mai", openalex_ids: [A5000101956, A5126679033]}
+  - {name: "Kimin Lee", openalex_ids: [A5033571780]}
+  - {name: "Kit Fraser-Taliente", openalex_ids: [A5120864622]}
+  - {name: "Klaus Greff", openalex_ids: [A5082808731]}
+  - {name: "Klaus‐Robert Müller", openalex_ids: [A5107838719]}
+  - {name: "Kobi Hackenburg", openalex_ids: [A5068726494]}
+  - {name: "Kola Ayonrinde", openalex_ids: [A5114336088]}
+  - "Kongtao Chen"
+  - {name: "Koray Kavukcuoglu", openalex_ids: [A5090341705]}
+  - {name: "Krishna Pillutla", openalex_ids: [A5016535318]}
+  - {name: "Krishnamurthy Dvijotham", openalex_ids: [A5050954769]}
+  - "Kristian Lum"
+  - {name: "Kristina Toutanova", openalex_ids: [A5053947885]}
+  - {name: "Kshiteej Mahajan", openalex_ids: [A5088110132]}
+  - {name: "Kshitij Sachan", openalex_ids: [A5084231398]}
+  - {name: "Kunal Handa", openalex_ids: [A5036181983]}
+  - {name: "Kurt Shuster", openalex_ids: [A5048651878]}
+  - {name: "Kutasov, Jon", openalex_ids: [A5135450843]}
+  - "Kwang-Ting Cheng"
+  - {name: "Kyle Fish", openalex_ids: [A5123209938]}
+  - {name: "Kyle O'Brien", openalex_ids: [A5123246929]}
+  - {name: "Kyle O’Brien", openalex_ids: [A5057239077]}
+  - {name: "L. Lawrence Ho", openalex_ids: [A5110204573]}
+  - {name: "Lama Ahmad", openalex_ids: [A5061889846]}
+  - {name: "Landon Goldberg", openalex_ids: [A5015730722]}
+  - {name: "Larisa Markeeva", openalex_ids: [A5003799439]}
+  - {name: "Laura Culp", openalex_ids: [A5108136269]}
+  - {name: "Laura Rimell", openalex_ids: [A5059804251]}
+  - {name: "Laura Weidinger", openalex_ids: [A5056575786]}
+  - {name: "Laurent Orseau", openalex_ids: [A5110938957]}
+  - {name: "Lauro Langosco", openalex_ids: [A5020285189]}
+  - {name: "Lawrence Chan", openalex_ids: [A5127854142]}
+  - {name: "Le Hou", openalex_ids: [A5101315776]}
+  - {name: "Lean Wang", openalex_ids: [A5034611488]}
+  - {name: "Lechao Xiao", openalex_ids: [A5113791670]}
+  - {name: "Lee Sharkey", openalex_ids: [A5002207803]}
+  - {name: "Lei Zhang", openalex_ids: [A5029628981]}
+  - {name: "Leitian Tao", openalex_ids: [A5057628501]}
+  - {name: "Lennart Heim", openalex_ids: [A5035147412]}
+  - {name: "Lennart Luettgau", openalex_ids: [A5006888957]}
+  - {name: "Leo Gao", openalex_ids: [A5057062066]}
+  - {name: "Leon Derczynski", openalex_ids: [A5024746221]}
+  - {name: "Leon Maksin", openalex_ids: [A5109819215]}
+  - {name: "Leonard Berrada", openalex_ids: [A5049231060]}
+  - {name: "Leonard Tang", openalex_ids: [A5067697394]}
+  - {name: "Leonie Koessler", openalex_ids: [A5056270531]}
+  - {name: "Leopold Aschenbrenner", openalex_ids: [A5114736710]}
+  - {name: "Lesly Miculicich", openalex_ids: [A5016284564]}
+  - {name: "Lester Mackey", openalex_ids: [A5018151279]}
+  - {name: "Lev McKinney", openalex_ids: [A5020044660]}
+  - {name: "Levent Sagun", openalex_ids: [A5071931582]}
+  - "Lewis Ho"
+  - {name: "Lexin Zhou", openalex_ids: [A5034619858]}
+  - "Li Erran Li"
+  - "Li, Dong"
+  - {name: "Li, Xian", openalex_ids: [A5100767220]}
+  - {name: "Liane Lovitt", openalex_ids: [A5047846683]}
+  - {name: "Liang Tan", openalex_ids: [A5031865317]}
+  - {name: "Liangchen Luo", openalex_ids: [A5061709723]}
+  - {name: "Licheng Yu", openalex_ids: [A5036418431]}
+  - "Lijuan Liu"
+  - "Lijuan Wang"
+  - {name: "Lilian Weng", openalex_ids: [A5103810699]}
+  - {name: "Lin Zi", openalex_ids: [A5103777591]}
+  - {name: "Linda Petrini", openalex_ids: [A5027936662]}
+  - {name: "Lindsey, Jack", openalex_ids: [A5137019053]}
+  - {name: "Ling Zhang", openalex_ids: [A5038765418]}
+  - {name: "Lingjiao Chen", openalex_ids: [A5003134390]}
+  - "Linjie Li"
+  - {name: "Linus Luu", openalex_ids: [A5114988509]}
+  - {name: "Lisa Alazraki", openalex_ids: [A5001337463]}
+  - {name: "Lisa Anne Hendricks", openalex_ids: [A5020758501]}
+  - {name: "Lisa Thiergart", openalex_ids: [A5114761035]}
+  - "Liyuan Liu"
+  - {name: "Logan Cross", openalex_ids: [A5023994435]}
+  - {name: "Logan Graham", openalex_ids: [A5041121552]}
+  - {name: "Logan Riggs", openalex_ids: [A5086695019]}
+  - "Logan Smith"
+  - {name: "Long Ouyang", openalex_ids: [A5068949174]}
+  - "Long Phan"
+  - "Long T. Le"
+  - "Longtao Huang"
+  - {name: "Lora Aroyo", openalex_ids: [A5016381010, A5020832912, A5126963282]}
+  - {name: "Loughridge, Chloe", openalex_ids: [A5038730512]}
+  - {name: "Louis Castricato", openalex_ids: [A5004714414]}
+  - {name: "Louis Jaburi", openalex_ids: [A5119823551]}
+  - "Louis Martin"
+  - {name: "Lovish Madaan", openalex_ids: [A5099173851]}
+  - "Lu Han"
+  - "Luca Righetti"
+  - {name: "Lucas Dixon", openalex_ids: [A5103159534, A5128701600]}
+  - {name: "Lucas Jun Koba Sato", openalex_ids: [A5086588947]}
+  - {name: "Lucia Quirke", openalex_ids: [A5092912338]}
+  - {name: "Lucius Bushnaq", openalex_ids: [A5032905139]}
+  - {name: "Lucy Campbell-Gillingham", openalex_ids: [A5000926540]}
+  - {name: "Ludwig Schubert", openalex_ids: [A5013097665]}
+  - {name: "Lujain Ibrahim", openalex_ids: [A5088109643]}
+  - {name: "Lukas Blecher", openalex_ids: [A5112963469]}
+  - {name: "Lukas Haas", openalex_ids: [A5030647147]}
+  - {name: "Lukas Muttenthaler", openalex_ids: [A5045569491]}
+  - {name: "Lukas Struppek", openalex_ids: [A5060332657]}
+  - {name: "Lukas Wutschitz", openalex_ids: [A5057803811]}
+  - "Luke Harold Miles"
+  - "Luke Hewitt"
+  - {name: "Luke Zettlemoyer", openalex_ids: [A5067919401]}
+  - "Lun Wang"
+  - "M. L. Chen"
+  - {name: "M. Pawan Kumar", openalex_ids: [A5000629699, A5043586636]}
+  - {name: "M. Sandler", openalex_ids: [A5076173089]}
+  - {name: "Maciej Wołczyk", openalex_ids: [A5025503042]}
+  - {name: "Maddie Simens", openalex_ids: [A5011719782]}
+  - {name: "Madeleine Grunde-McLaughlin", openalex_ids: [A5019815997]}
+  - {name: "Madeline G. Reinecke", openalex_ids: [A5061578972]}
+  - {name: "Madhurima Maji", openalex_ids: [A5013758033]}
+  - {name: "Madian Khabsa", openalex_ids: [A5054253075]}
+  - {name: "Magda Dubois", openalex_ids: [A5055765010]}
+  - "Magdalena Wache"
+  - {name: "Mahesh Babu Pasupuleti", openalex_ids: [A5010699741]}
+  - {name: "Maia Hamin", openalex_ids: [A5067201111]}
+  - {name: "Maja Trębacz", openalex_ids: [A5033339425]}
+  - {name: "Makesh Narsimhan Sreedhar", openalex_ids: [A5111090196]}
+  - {name: "Manas Joglekar", openalex_ids: [A5050060224]}
+  - {name: "Mani Malek", openalex_ids: [A5060956498, A5071050983]}
+  - {name: "Manish Bhatt", openalex_ids: [A5005446798]}
+  - {name: "Manon Revel", openalex_ids: [A5032319392]}
+  - {name: "Mantas Mazeika", openalex_ids: [A5058254793]}
+  - {name: "Manzil Zaheer", openalex_ids: [A5102824470]}
+  - {name: "Marcin Kardas", openalex_ids: [A5112392207]}
+  - {name: "Marco Gruteser", openalex_ids: [A5078160983]}
+  - {name: "Marco Túlio Ribeiro", openalex_ids: [A5019726734]}
+  - {name: "Marcus Hütter", openalex_ids: [A5073944062]}
+  - {name: "Marcus Williams", openalex_ids: [A5109484915]}
+  - {name: "Margaret Li", openalex_ids: [A5001224830, A5135330018]}
+  - {name: "Marian Croak", openalex_ids: [A5125953256]}
+  - {name: "Maribeth Rauh", openalex_ids: [A5080160770, A5139157098]}
+  - {name: "Marie Davidsen Buhl", openalex_ids: [A5114633490]}
+  - {name: "Marie Pellat", openalex_ids: [A5059267294]}
+  - {name: "Marie-Anne Lachaux", openalex_ids: [A5050998809]}
+  - {name: "Marika Swanberg", openalex_ids: [A5030421945]}
+  - {name: "Marina Favaro", openalex_ids: [A5069116837]}
+  - {name: "Mario Giulianelli", openalex_ids: [A5013040086]}
+  - {name: "Marissa A. Weis", openalex_ids: [A5102837696]}
+  - {name: "Maritza Johnson", openalex_ids: [A5085824259]}
+  - {name: "Marius Hobbhahn", openalex_ids: [A5034914617]}
+  - {name: "Marjan Ghazvininejad", openalex_ids: [A5011974509]}
+  - {name: "Mark Bedaywi", openalex_ids: [A5135982465]}
+  - "Mark Chen"
+  - {name: "Mark Díaz", openalex_ids: [A5012652561, A5126956651]}
+  - {name: "Mark Ibrahim", openalex_ids: [A5030917007, A5121657673]}
+  - {name: "Mark Rowland", openalex_ids: [A5108379405]}
+  - {name: "Mark Russinovich", openalex_ids: [A5072995225]}
+  - "Mark Xu"
+  - {name: "Marks, Samuel", openalex_ids: [A5032071922]}
+  - {name: "Markus Anderljung", openalex_ids: [A5005250335]}
+  - {name: "Markus Kunesch", openalex_ids: [A5043562314]}
+  - {name: "Martin J. Chadwick", openalex_ids: [A5110853890]}
+  - {name: "Martin Wattenberg", openalex_ids: [A5039276358, A5133573658]}
+  - {name: "Martín Soto", openalex_ids: [A5115997005]}
+  - {name: "Marwan Aljubeh", openalex_ids: [A5114628399]}
+  - {name: "Mary L. Gray", openalex_ids: [A5055422172]}
+  - {name: "Mary Phuong", openalex_ids: [A5034739012, A5120261722]}
+  - {name: "Maryam Fazel-Zarandi", openalex_ids: [A5053471950]}
+  - {name: "Marzena Karpinska", openalex_ids: [A5023457348]}
+  - {name: "Marzieh Fadaee", openalex_ids: [A5070153551]}
+  - {name: "María Pérez‐Ortiz", openalex_ids: [A5065093980]}
+  - {name: "Mateusz Piotrowski", openalex_ids: [A5116167218]}
+  - {name: "Mathurin Videau", openalex_ids: [A5085779886]}
+  - {name: "Matija Franklin", openalex_ids: [A5030262115]}
+  - {name: "Matt Fredrikson", openalex_ids: [A5057424614]}
+  - {name: "Matteo Memelli", openalex_ids: [A5120340044]}
+  - {name: "Matteo Pistillo", openalex_ids: [A5115012454]}
+  - {name: "Matthew Botvinick", openalex_ids: [A5083771180, A5140883909]}
+  - {name: "Matthew Jagielski", openalex_ids: [A5054655342]}
+  - {name: "Matthew Kowal", openalex_ids: [A5033145377]}
+  - "Matthew M. Nour"
+  - {name: "Matthew Rahtz", openalex_ids: [A5045163381]}
+  - {name: "Matthew S. Lamm", openalex_ids: [A5005471354]}
+  - {name: "Matthias Galle", openalex_ids: [A5074485795]}
+  - {name: "Matthieu Geist", openalex_ids: [A5110482875]}
+  - {name: "Matthieu Meeus", openalex_ids: [A5068554561]}
+  - {name: "Maty Bohacek", openalex_ids: [A5022473578]}
+  - {name: "Max Bartolo", openalex_ids: [A5018864006]}
+  - {name: "Max Hasin", openalex_ids: [A5108887840]}
+  - "Max Kaufmann"
+  - {name: "Max Nadeau", openalex_ids: [A5074918225]}
+  - {name: "Max Tegmark", openalex_ids: [A5091601455]}
+  - {name: "Max Vladymyrov", openalex_ids: [A5067411442]}
+  - {name: "Maxim Krikun", openalex_ids: [A5014055962]}
+  - {name: "Maximilian Mozes", openalex_ids: [A5038732160]}
+  - {name: "Maximilian Nickel", openalex_ids: [A5000667901]}
+  - {name: "Maxwell L. Bileschi", openalex_ids: [A5076745446]}
+  - {name: "Maya Murad", openalex_ids: [A5126472532]}
+  - "Maya Pavlova"
+  - {name: "Maziar Sanjabi", openalex_ids: [A5046195860]}
+  - {name: "Meg Tong", openalex_ids: [A5111092720]}
+  - {name: "Megan Kinniment", openalex_ids: [A5033065178]}
+  - {name: "Megan Ung", openalex_ids: [A5067335278]}
+  - {name: "Megha Srivastava", openalex_ids: [A5043099018]}
+  - {name: "Meghan Shah", openalex_ids: [A5114619802]}
+  - {name: "Mel Vecerík", openalex_ids: [A5032877928]}
+  - {name: "Melanie Kambadur", openalex_ids: [A5024510591]}
+  - {name: "Melanie Sclar", openalex_ids: [A5039472047]}
+  - {name: "Melissa Chase", openalex_ids: [A5016806686]}
+  - {name: "Melody Y. Guan", openalex_ids: [A5035970318]}
+  - {name: "Menglin Xia", openalex_ids: [A5111082345]}
+  - {name: "Mengru Wang", openalex_ids: [A5139840892]}
+  - {name: "Meredith Ringel Morris", openalex_ids: [A5062285844]}
+  - {name: "Mia Glaese", openalex_ids: [A5012637989]}
+  - {name: "Micah Carroll", openalex_ids: [A5039815972]}
+  - {name: "Michael A. Lepori", openalex_ids: [A5005190532]}
+  - {name: "Michael C. Mozer", openalex_ids: [A5047726287]}
+  - "Michael Chen"
+  - {name: "Michael Henry Tessler", openalex_ids: [A5070066678]}
+  - {name: "Michael J. Collins", openalex_ids: [A5111220663]}
+  - {name: "Michael J. Dennis", openalex_ids: [A5128588158]}
+  - {name: "Michael K. Cohen", openalex_ids: [A5027690597]}
+  - "Michael Lampe"
+  - {name: "Michael Petrov", openalex_ids: [A5110883303]}
+  - {name: "Michael Saxon", openalex_ids: [A5034254782]}
+  - {name: "Michael Schmatz", openalex_ids: [A5123685026]}
+  - {name: "Michael Sellitto", openalex_ids: [A5085932648]}
+  - {name: "Michael Tessler", openalex_ids: [A5070066678]}
+  - {name: "Michael W. Dusenberry", openalex_ids: [A5050114946]}
+  - {name: "Michal Valko", openalex_ids: [A5075820176, A5141384874]}
+  - {name: "Michał Zając", openalex_ids: [A5031048017]}
+  - {name: "Michel Galley", openalex_ids: [A5107838508]}
+  - {name: "Michela Paganini", openalex_ids: [A5105786699]}
+  - {name: "Michiel A. Bakker", openalex_ids: [A5035791917]}
+  - {name: "Michiel Bakker", openalex_ids: [A5035791917]}
+  - {name: "Michihiro Yasunaga", openalex_ids: [A5005898634]}
+  - {name: "Mihai Christodorescu", openalex_ids: [A5050855162]}
+  - {name: "Mihir Parmar", openalex_ids: [A5106524687, A5136204638]}
+  - {name: "Mikayel Samvelyan", openalex_ids: [A5016880022]}
+  - {name: "Mike Lambert", openalex_ids: [A5103219799]}
+  - "Mike Lewis"
+  - {name: "Mike Schaekermann", openalex_ids: [A5025626087]}
+  - {name: "Mikel Rodríguez", openalex_ids: [A5071229914]}
+  - {name: "Mikita Balesni", openalex_ids: [A5092825639]}
+  - {name: "Milad Nasr", openalex_ids: [A5059480732]}
+  - {name: "Milan Gandhi", openalex_ids: [A5113315412]}
+  - {name: "Miles Brundage", openalex_ids: [A5066559387]}
+  - {name: "Miles McCain", openalex_ids: [A5029616530]}
+  - {name: "Miles Turpin", openalex_ids: [A5113139169]}
+  - {name: "Miles Wang", openalex_ids: [A5121186914]}
+  - {name: "Miljan Martic", openalex_ids: [A5025651820]}
+  - "Miller, Nolan Andrew"
+  - "Min-Hung Chen"
+  - "Minbeom Kim"
+  - "Ming Li"
+  - {name: "Ming Yan", openalex_ids: [A5100452477]}
+  - {name: "Mingchen Zhuge", openalex_ids: [A5030077358]}
+  - {name: "Mingjie Liu", openalex_ids: [A5136552002]}
+  - "Mingyi Hong"
+  - "Mingze Li"
+  - "Minh Le"
+  - "Minki Kang"
+  - {name: "Minlie Huang", openalex_ids: [A5044042138]}
+  - {name: "Minqi Jiang", openalex_ids: [A5017949957]}
+  - {name: "Minsuk Chang", openalex_ids: [A5084721447]}
+  - {name: "Minsuk Kahng", openalex_ids: [A5042350842]}
+  - {name: "Mintong Kang", openalex_ids: [A5029251926]}
+  - {name: "Minzhou Pan", openalex_ids: [A5054374869]}
+  - {name: "Mirac Suzgun", openalex_ids: [A5009980324]}
+  - {name: "Mirella Lapata", openalex_ids: [A5041024491]}
+  - {name: "Misha Wagner", openalex_ids: [A5060876604]}
+  - {name: "Mitchell Gordon", openalex_ids: [A5026198819]}
+  - {name: "Mitchell Wortsman", openalex_ids: [A5001590363]}
+  - {name: "Mohammad Aflah Khan", openalex_ids: [A5100601166]}
+  - {name: "Mohammad Bavarian", openalex_ids: [A5043772703]}
+  - {name: "Mohammad Hamdaqa", openalex_ids: [A5042033117]}
+  - {name: "Mohammad Shoeybi", openalex_ids: [A5072436307, A5134170569]}
+  - {name: "Mohammad Taufeeque", openalex_ids: [A5012070866]}
+  - {name: "Mojtaba Komeili", openalex_ids: [A5002287536]}
+  - "Molly Lin"
+  - "Mona Diab"
+  - {name: "Monte MacDiarmid", openalex_ids: [A5084608104]}
+  - {name: "Mor Geva", openalex_ids: [A5065717258]}
+  - {name: "Moran Ambar", openalex_ids: [A5107077661]}
+  - {name: "Morteza Behrooz", openalex_ids: [A5013060615]}
+  - {name: "Mostafa Dehghani", openalex_ids: [A5102906366]}
+  - {name: "Mostofa Patwary", openalex_ids: [A5031170568]}
+  - {name: "Moya Chen", openalex_ids: [A5008230088, A5057089836, A5076843841]}
+  - {name: "Mrinank Sharma", openalex_ids: [A5003223014]}
+  - {name: "Mukund Sundararajan", openalex_ids: [A5008661612]}
+  - {name: "Murray Shanahan", openalex_ids: [A5072322524]}
+  - {name: "Myra Cheng", openalex_ids: [A5012939002, A5133452127]}
+  - {name: "Nahema Marchal", openalex_ids: [A5036582258]}
+  - {name: "Najoung Kim", openalex_ids: [A5071542832]}
+  - {name: "Naman Goyal", openalex_ids: [A5073215837]}
+  - {name: "Naomi Saphra", openalex_ids: [A5010251681, A5114331421]}
+  - {name: "Nat McAleese", openalex_ids: [A5003470218]}
+  - {name: "Natalia Ponomareva", openalex_ids: [A5102899387]}
+  - {name: "Natalie Cone", openalex_ids: [A5114628406]}
+  - {name: "Natalie Harris", openalex_ids: [A5135125628]}
+  - {name: "Natasha Jaques", openalex_ids: [A5046953322]}
+  - {name: "Nate Rush", openalex_ids: [A5119791472]}
+  - {name: "Nate Soares", openalex_ids: [A5021340967]}
+  - {name: "Nate Thomas", openalex_ids: [A5079829345]}
+  - {name: "Nathalie Rauschmayr", openalex_ids: [A5061365153]}
+  - "Nathan Hu"
+  - {name: "Nathaniel Li", openalex_ids: [A5026554940]}
+  - {name: "Neel Alex", openalex_ids: [A5007276377]}
+  - {name: "Neel Nanda", openalex_ids: [A5044489746]}
+  - {name: "Neev Parikh", openalex_ids: [A5046930792]}
+  - {name: "Negar Rostamzadeh", openalex_ids: [A5072851389]}
+  - {name: "Neil Chowdhury", openalex_ids: [A5053186663]}
+  - {name: "Neil Perry", openalex_ids: [A5102954205]}
+  - {name: "Neil Rathi", openalex_ids: [A5064963915]}
+  - {name: "Nelson Elhage", openalex_ids: [A5020683620]}
+  - {name: "Nenad Tomašev", openalex_ids: [A5057195145]}
+  - {name: "Nevan Wichers", openalex_ids: [A5082749951]}
+  - {name: "Newton Cheng", openalex_ids: [A5058959806]}
+  - {name: "Nguyen, Karina", openalex_ids: [A5032805177]}
+  - {name: "Nicholas Carlini", openalex_ids: [A5034257647]}
+  - {name: "Nicholas Dufour", openalex_ids: [A5066345819]}
+  - {name: "Nicholas Goldowsky-Dill", openalex_ids: [A5026166476]}
+  - {name: "Nicholas Joseph", openalex_ids: [A5032088236, A5063374092]}
+  - {name: "Nicholas Schiefer", openalex_ids: [A5050348824]}
+  - "Nicholas Sofroniew"
+  - {name: "Nick Bostrom", openalex_ids: [A5027943191, A5139109693]}
+  - {name: "Nick Gabrieli", openalex_ids: [A5107489491]}
+  - {name: "Nick Turley", openalex_ids: [A5114628410]}
+  - "Nick Wu"
+  - {name: "Nicola Cancedda", openalex_ids: [A5004751764]}
+  - {name: "Nicolas Heess", openalex_ids: [A5062951341]}
+  - {name: "Nicolas Papernot", openalex_ids: [A5018809423]}
+  - {name: "Nicolas Sonnerat", openalex_ids: [A5033070893]}
+  - {name: "Nicolas Usunier", openalex_ids: [A5084360449]}
+  - {name: "Nicolas Zucchet", openalex_ids: [A5052814959]}
+  - {name: "Nicole Mitchell", openalex_ids: [A5115087478, A5138346730]}
+  - "Nikhil Saxena"
+  - {name: "Nikola Jurkovic", openalex_ids: [A5116473097]}
+  - {name: "Nikolaos Tsilivis", openalex_ids: [A5027137668]}
+  - {name: "Nikolaus H. R. Howe", openalex_ids: [A5073146801]}
+  - {name: "Nikolay Bashlykov", openalex_ids: [A5092506191]}
+  - {name: "Niladri S. Chatterji", openalex_ids: [A5033738047]}
+  - {name: "Nina Panickssery", openalex_ids: [A5114449312]}
+  - {name: "Ninareh Mehrabi", openalex_ids: [A5056269049]}
+  - {name: "Nino Scherrer", openalex_ids: [A5023054628]}
+  - {name: "Nisan Stiennon", openalex_ids: [A5019575601]}
+  - {name: "Nithum Thain", openalex_ids: [A5084311372]}
+  - {name: "Noa Nabeshima", openalex_ids: [A5091353084]}
+  - {name: "Noah Constant", openalex_ids: [A5090701958]}
+  - {name: "Noah D. Goodman", openalex_ids: [A5001961716, A5127823961]}
+  - {name: "Noah Fiedel", openalex_ids: [A5087591662]}
+  - {name: "Noah Goodman", openalex_ids: [A5127823961]}
+  - {name: "Noah Siegel", openalex_ids: [A5065489996]}
+  - {name: "Noah Y. Siegel", openalex_ids: [A5100258054]}
+  - {name: "Noemi Dreksler", openalex_ids: [A5050563911]}
+  - {name: "Noemi Mercado", openalex_ids: [A5068229464]}
+  - {name: "Nora Belrose", openalex_ids: [A5088767744]}
+  - {name: "Nora Kassner", openalex_ids: [A5019973471]}
+  - {name: "Nouha Dziri", openalex_ids: [A5049618494]}
+  - {name: "Nova DasSarma", openalex_ids: [A5072660054]}
+  - {name: "Oana-Maria Camburu", openalex_ids: [A5001965971]}
+  - {name: "Oleksii Kuchaiev", openalex_ids: [A5048403564]}
+  - {name: "Olga Golovneva", openalex_ids: [A5004624282]}
+  - {name: "Oliver Daniels-Koch", openalex_ids: [A5052035673]}
+  - {name: "Oliver Jaffe", openalex_ids: [A5109819213]}
+  - {name: "Oliver Makins", openalex_ids: [A5120843932]}
+  - "Oliver Rausch"
+  - {name: "Oliver Sourbut", openalex_ids: [A5121795157]}
+  - {name: "Oliver Zhang", openalex_ids: [A5016395520]}
+  - {name: "Olivia Watkins", openalex_ids: [A5058976886]}
+  - {name: "Olivia Wiles", openalex_ids: [A5051904433]}
+  - {name: "Olivier Bachem", openalex_ids: [A5089890773]}
+  - {name: "Olivier Delalleau", openalex_ids: [A5065423636]}
+  - "Olli Järviniemi"
+  - {name: "Om Thakkar", openalex_ids: [A5077162569]}
+  - {name: "Omer Levy", openalex_ids: [A5024311574]}
+  - {name: "Omri Feldman", openalex_ids: [A5125993208]}
+  - {name: "Onassis Matthews", openalex_ids: [A5053264577]}
+  - {name: "Or Honovich", openalex_ids: [A5014555745]}
+  - {name: "Orhan Fırat", openalex_ids: [A5035914396]}
+  - {name: "Ori Ram", openalex_ids: [A5058640064]}
+  - {name: "Oscar Chang", openalex_ids: [A5073775071]}
+  - {name: "Osindero, Simon", openalex_ids: [A5052435039]}
+  - {name: "Oskar J. Hollinsworth", openalex_ids: [A5114617734]}
+  - {name: "Owain Evans", openalex_ids: [A5089789418]}
+  - {name: "Owen Lewis", openalex_ids: [A5128239812]}
+  - {name: "Oyvind Tafjord", openalex_ids: [A5071250061]}
+  - {name: "P. Alex Dow", openalex_ids: [A5052688958]}
+  - {name: "Pablo A. M. Casares", openalex_ids: [A5020521767]}
+  - {name: "Pablo Samuel Castro", openalex_ids: [A5068291173, A5141714127]}
+  - {name: "Paige Bailey", openalex_ids: [A5075066352]}
+  - {name: "Palash Goyal", openalex_ids: [A5011797382]}
+  - {name: "Pamela Mishkin", openalex_ids: [A5028772381]}
+  - {name: "Pang Wei Koh", openalex_ids: [A5079904764, A5127834907]}
+  - {name: "Panupong Pasupat", openalex_ids: [A5035867340]}
+  - {name: "Parag Jain", openalex_ids: [A5121670031]}
+  - {name: "Paria Rashidinejad", openalex_ids: [A5016597745]}
+  - {name: "Parshin Shojaee", openalex_ids: [A5065006965]}
+  - {name: "Pascale Fung", openalex_ids: [A5019636504, A5065856469]}
+  - {name: "Pasin Manurangsi", openalex_ids: [A5001520779]}
+  - {name: "Patrick Chao", openalex_ids: [A5016959489]}
+  - {name: "Patrick LaVictoire", openalex_ids: [A5054955634]}
+  - {name: "Paul C. Bogdan", openalex_ids: [A5067351021]}
+  - {name: "Paul Christiano", openalex_ids: [A5037736834]}
+  - {name: "Paul F. Christiano", openalex_ids: [A5037736834]}
+  - {name: "Paul Röttger", openalex_ids: [A5050023117]}
+  - {name: "Pavel Izmailov", openalex_ids: [A5069234607]}
+  - {name: "Pavlo Molchanov", openalex_ids: [A5066945976, A5145831202]}
+  - {name: "Payal Motwani", openalex_ids: [A5119968412]}
+  - {name: "Pedro A. Ortega", openalex_ids: [A5035060247]}
+  - {name: "Pei Zhang", openalex_ids: [A5100415705]}
+  - {name: "Peidong Wang", openalex_ids: [A5062250845]}
+  - "Peng Li"
+  - {name: "Pengchuan Zhang", openalex_ids: [A5059735251]}
+  - "Pengfei He"
+  - "Pengfei Liu"
+  - {name: "Pengjun Xie", openalex_ids: [A5005535444]}
+  - {name: "Petar Velickovic", openalex_ids: [A5008869927]}
+  - "Peter Barnett"
+  - {name: "Peter Hase", openalex_ids: [A5013096489]}
+  - {name: "Peter J. Liu", openalex_ids: [A5076683869]}
+  - {name: "Peter Kairouz", openalex_ids: [A5064699160]}
+  - "Peter R. Wills"
+  - {name: "Peter Shaw", openalex_ids: [A5106185324]}
+  - {name: "Peter Sunehag", openalex_ids: [A5046100176]}
+  - {name: "Peter Welinder", openalex_ids: [A5010674841]}
+  - {name: "Phil Blunsom", openalex_ids: [A5014309771, A5036811894]}
+  - "Philip Quirke"
+  - {name: "Phillip Guo", openalex_ids: [A5094018625]}
+  - {name: "Phillip Wallis", openalex_ids: [A5136251120]}
+  - {name: "Pierre Clavier", openalex_ids: [A5125303736]}
+  - {name: "Pierre Sermanet", openalex_ids: [A5066544075]}
+  - {name: "Pierre Stock", openalex_ids: [A5066603292]}
+  - {name: "Pieter Abbeel", openalex_ids: [A5049349154, A5146614553]}
+  - "Pin-Yu Chen"
+  - "Ping Yu"
+  - {name: "Ping, Wei", openalex_ids: [A5101241909, A5127805995, A5133758917]}
+  - {name: "Pinyi Zhang", openalex_ids: [A5007551857]}
+  - {name: "Pin‐Yu Chen", openalex_ids: [A5050344371]}
+  - {name: "Piyush Kumar", openalex_ids: [A5101212428]}
+  - {name: "Po-Sen Huang", openalex_ids: [A5076474156]}
+  - {name: "Polina Zablotskaia", openalex_ids: [A5021254448]}
+  - {name: "Prajjwal Bhargava", openalex_ids: [A5028858668]}
+  - {name: "Pranav Khadpe", openalex_ids: [A5052318783]}
+  - {name: "Praneeth Netrapalli", openalex_ids: [A5007012613]}
+  - {name: "Pranjal Aggarwal", openalex_ids: [A5045442167]}
+  - {name: "Prasoon Goyal", openalex_ids: [A5072713291, A5113307651]}
+  - "Prateek Jain"
+  - {name: "Price, Sara", openalex_ids: [A5042913858]}
+  - {name: "Prithviraj Ammanabrolu", openalex_ids: [A5029637639]}
+  - {name: "Pritish Kamath", openalex_ids: [A5112312033]}
+  - "Priyanka Agrawal"
+  - {name: "Priyanka Suresh", openalex_ids: [A5085336652]}
+  - {name: "Punit Singh Koura", openalex_ids: [A5051808640]}
+  - {name: "Pushkar Mishra", openalex_ids: [A5002745343]}
+  - {name: "Pushmeet Kohli", openalex_ids: [A5013834379]}
+  - {name: "Puxin Xu", openalex_ids: [A5048354069]}
+  - {name: "Q. Vera Liao", openalex_ids: [A5024320659]}
+  - {name: "Qazi Mamunur Rashid", openalex_ids: [A5020446219]}
+  - "Qian Chen"
+  - "Qian Hu"
+  - "Qifan Wang"
+  - "Qinan Yu"
+  - "Qingwei Lin"
+  - {name: "Qingyu Yin", openalex_ids: [A5100610166]}
+  - "Qingyuan Lu"
+  - {name: "Qinlin Zhao", openalex_ids: [A5104331798]}
+  - {name: "Quentin Anthony", openalex_ids: [A5015153122, A5134909211]}
+  - {name: "Quoc V. Le", openalex_ids: [A5088551093, A5127835223]}
+  - "R. J. Edgar"
+  - {name: "R. Zimmermann", openalex_ids: [A5074921673]}
+  - {name: "Rachad Alao", openalex_ids: [A5007605588]}
+  - "Rachael Somerville"
+  - {name: "Rachel A. Freedman", openalex_ids: [A5078302436]}
+  - {name: "Rachel Dias", openalex_ids: [A5122362555]}
+  - {name: "Rachel Freedman", openalex_ids: [A5078302436]}
+  - {name: "Raghuraman Krishnamoorthi", openalex_ids: [A5039488725]}
+  - {name: "Rahil Parikh", openalex_ids: [A5026929017]}
+  - {name: "Rahul Gupta", openalex_ids: [A5075937808, A5135571194, A5137683787, A5139815283, A5140887917]}
+  - "Raj Agarwal"
+  - {name: "Rajai Nasser", openalex_ids: [A5054758065]}
+  - "Rajarshi Roy"
+  - {name: "Raluca Ada Popa", openalex_ids: [A5015782472]}
+  - {name: "Ram Potham", openalex_ids: [A5138184978]}
+  - {name: "Ramakanth Pasunuru", openalex_ids: [A5075564427]}
+  - {name: "Ramana Kumar", openalex_ids: [A5082761102]}
+  - {name: "Ramona Comanescu", openalex_ids: [A5065212897]}
+  - {name: "Randall Balestriero", openalex_ids: [A5047293370]}
+  - {name: "Ranjan Subramanian", openalex_ids: [A5102536560]}
+  - {name: "Ranjie Duan", openalex_ids: [A5043909623]}
+  - {name: "Raphaël Koster", openalex_ids: [A5082942104]}
+  - {name: "Rasmi Elasmar", openalex_ids: [A5082780418]}
+  - {name: "Raul Puri", openalex_ids: [A5041667198]}
+  - {name: "Ravi Kumar", openalex_ids: [A5100554516, A5101772779, A5126464272]}
+  - {name: "Razvan Pascanu", openalex_ids: [A5043910056]}
+  - {name: "Rebecca Anselmetti", openalex_ids: [A5120061087]}
+  - {name: "Rebecca Roelofs", openalex_ids: [A5008334918, A5070231262]}
+  - {name: "Reihaneh Rabbany", openalex_ids: [A5043159673]}
+  - "Reiichiro Nakano"
+  - {name: "Ren Yi", openalex_ids: [A5114159516]}
+  - "Renee Shelby"
+  - {name: "Renjie Pi", openalex_ids: [A5028182071]}
+  - {name: "Reshmi Ghosh", openalex_ids: [A5019507987]}
+  - {name: "Reza Aghajani", openalex_ids: [A5120590337]}
+  - {name: "Reza Shokri", openalex_ids: [A5084892128]}
+  - {name: "Rich Caruana", openalex_ids: [A5083893060]}
+  - {name: "Richard Moulange", openalex_ids: [A5093038741]}
+  - {name: "Richard Ngo", openalex_ids: [A5019855116]}
+  - {name: "Richard Ren", openalex_ids: [A5043150501]}
+  - {name: "Richard S. Zemel", openalex_ids: [A5000111344]}
+  - {name: "Richard Yuanzhe Pang", openalex_ids: [A5103936332]}
+  - {name: "Rif A. Saurous", openalex_ids: [A5026650852]}
+  - {name: "Rishabh Agarwal", openalex_ids: [A5070953294]}
+  - {name: "Rishub Jain", openalex_ids: [A5019154965]}
+  - {name: "Rishub Tamirisa", openalex_ids: [A5092272965]}
+  - "Rob Friel"
+  - {name: "Rob Gilson", openalex_ids: [A5116129848]}
+  - {name: "Rob Reich", openalex_ids: [A5017349449]}
+  - {name: "Robert B. Sim", openalex_ids: [A5090308773]}
+  - {name: "Robert Geirhos", openalex_ids: [A5043113119]}
+  - {name: "Robert Kirk", openalex_ids: [A5134766128]}
+  - "Robert Lasenby"
+  - {name: "Robert Stanforth", openalex_ids: [A5076040849]}
+  - {name: "Robert Trager", openalex_ids: [A5053047897, A5134905479]}
+  - {name: "Roberta Raileanu", openalex_ids: [A5018702533]}
+  - "Robin J. Larson"
+  - {name: "Robin Jia", openalex_ids: [A5041906762]}
+  - {name: "Roee Aharoni", openalex_ids: [A5027223654]}
+  - {name: "Roger Grosse", openalex_ids: [A5067036768, A5143351859]}
+  - {name: "Roger, Fabien", openalex_ids: [A5028042353]}
+  - {name: "Rohan Anil", openalex_ids: [A5104083306]}
+  - {name: "Rohan Subramani", openalex_ids: [A5104198742]}
+  - {name: "Rohin Shah", openalex_ids: [A5012971694]}
+  - {name: "Roland S. Zimmermann", openalex_ids: [A5102706612]}
+  - {name: "Roma Patel", openalex_ids: [A5102461951, A5140357323]}
+  - {name: "Roman Novak", openalex_ids: [A5059899470]}
+  - {name: "Roman Ring", openalex_ids: [A5089972944]}
+  - {name: "Roman Yampolskiy", openalex_ids: [A5060472193]}
+  - {name: "Rong Zhang", openalex_ids: [A5100451786]}
+  - {name: "Rory Greig", openalex_ids: [A5080010257]}
+  - {name: "Rosanne Liu", openalex_ids: [A5062174486]}
+  - {name: "Rosie Campbell", openalex_ids: [A5101490409]}
+  - "Ross Taylor"
+  - "Rowan Wang"
+  - {name: "Ruan Silva", openalex_ids: [A5000326689]}
+  - {name: "Rudy Bunel", openalex_ids: [A5004223779]}
+  - {name: "Rui Hou", openalex_ids: [A5103219508]}
+  - "Rui Wang"
+  - "Rui Zhang"
+  - "Ruibo Liu"
+  - {name: "Ruiqi Zhong", openalex_ids: [A5046116522]}
+  - {name: "Rujun Han", openalex_ids: [A5025334096, A5123947326]}
+  - {name: "Runji Lin", openalex_ids: [A5003991609]}
+  - {name: "Runjin Chen", openalex_ids: [A5021606299]}
+  - {name: "Runxin Xu", openalex_ids: [A5023594937]}
+  - "Ruobing Xie"
+  - {name: "Ruoxi Cheng", openalex_ids: [A5095767615]}
+  - {name: "Rusheb Shah", openalex_ids: [A5109653798]}
+  - {name: "Ruslan Salakhutdinov", openalex_ids: [A5071983998]}
+  - {name: "Russ Howes", openalex_ids: [A5050499858]}
+  - {name: "Ryan A. Chi", openalex_ids: [A5093932076]}
+  - {name: "Ryan Bloom", openalex_ids: [A5120757787]}
+  - {name: "Ryan Burnell", openalex_ids: [A5049033662]}
+  - "Ryan Carey"
+  - {name: "Ryan Greenblatt", openalex_ids: [A5037548279]}
+  - "Ryan Kim"
+  - {name: "Ryan Lowe", openalex_ids: [A5004295653]}
+  - {name: "Ryan Mullins", openalex_ids: [A5001517374]}
+  - {name: "Rylan Schaeffer", openalex_ids: [A5058188131]}
+  - {name: "Ryland Shaw", openalex_ids: [A5115460454]}
+  - {name: "Rémi Munos", openalex_ids: [A5006533777]}
+  - "S Wang"
+  - {name: "Saachi Jain", openalex_ids: [A5102487928]}
+  - {name: "Saeed Mahloujifar", openalex_ids: [A5049153799]}
+  - {name: "Saffron Huang", openalex_ids: [A5040949100]}
+  - {name: "Safoora Yousefi", openalex_ids: [A5103092774]}
+  - {name: "Saghar Hosseini", openalex_ids: [A5080012348]}
+  - {name: "Sahar Abdelnabi", openalex_ids: [A5040674721]}
+  - {name: "Sahil Singla", openalex_ids: [A5078010312]}
+  - {name: "Sahra Ghalebikesabi", openalex_ids: [A5052472139]}
+  - {name: "Sainbayar Sukhbaatar", openalex_ids: [A5060255128]}
+  - {name: "Saiyong Yang", openalex_ids: [A5027918344]}
+  - {name: "Saleema Amershi", openalex_ids: [A5057541630]}
+  - {name: "Salman Rahman", openalex_ids: [A5133843543]}
+  - {name: "Sam Altman", openalex_ids: [A5130545290]}
+  - {name: "Sam Bell", openalex_ids: [A5129731155]}
+  - {name: "Sam Bowman", openalex_ids: [A5018067914]}
+  - {name: "Sam Deverett", openalex_ids: [A5129064055]}
+  - {name: "Sam Devlin", openalex_ids: [A5048451922]}
+  - {name: "Sam Eisenstat", openalex_ids: [A5115012478]}
+  - {name: "Sam Manning", openalex_ids: [A5071349675, A5116082996]}
+  - {name: "Sam Marks", openalex_ids: [A5058088298]}
+  - "Sam Martin"
+  - {name: "Sam McCandlish", openalex_ids: [A5054887773]}
+  - {name: "Sam Ringer", openalex_ids: [A5017610025]}
+  - {name: "Sam Toyer", openalex_ids: [A5085124552]}
+  - {name: "Sami Jawhar", openalex_ids: [A5114987906]}
+  - {name: "Samrat Phatale", openalex_ids: [A5010505040]}
+  - {name: "Samuel Albanie", openalex_ids: [A5102018867]}
+  - {name: "Samuel Cahyawijaya", openalex_ids: [A5084836777, A5124034746]}
+  - {name: "Samuel D. Marks", openalex_ids: [A5032071922, A5058088298]}
+  - {name: "Samuel Marks", openalex_ids: [A5032071922]}
+  - {name: "Samuel Miserendino", openalex_ids: [A5114628440]}
+  - {name: "Samuel R. Bowman", openalex_ids: [A5112713734]}
+  - {name: "Sana Pandey", openalex_ids: [A5101304599]}
+  - {name: "Sandhini Agarwal", openalex_ids: [A5057289323]}
+  - {name: "Sandipan Kundu", openalex_ids: [A5010007563]}
+  - {name: "Sang Michael Xie", openalex_ids: [A5069097726]}
+  - "Sanghyun Hong"
+  - {name: "Sanjay Kariyappa", openalex_ids: [A5060352379]}
+  - {name: "Sanmi Koyejo", openalex_ids: [A5127835800]}
+  - {name: "Santiago Zanella-Béguelin", openalex_ids: [A5088954009]}
+  - {name: "Sara Hooker", openalex_ids: [A5078850040]}
+  - "Sarah Chen"
+  - {name: "Sarah Cogan", openalex_ids: [A5102595466]}
+  - "Sarah Haas"
+  - {name: "Sarah Schwettmann", openalex_ids: [A5074026640]}
+  - {name: "Sarah Shoker", openalex_ids: [A5085573712]}
+  - "Sarah Young"
+  - {name: "Saravan Rajmohan", openalex_ids: [A5070722259]}
+  - {name: "Sarenne Wallbridge", openalex_ids: [A5042248416]}
+  - {name: "Sasha Brown", openalex_ids: [A5067401687]}
+  - {name: "Sasha Goldshtein", openalex_ids: [A5051059576, A5099056956]}
+  - "Satinder Singh"
+  - {name: "Sattvik Sahai", openalex_ids: [A5030667720]}
+  - {name: "Satvik Golechha", openalex_ids: [A5056640803]}
+  - {name: "Satyapriya Krishna", openalex_ids: [A5043084302, A5114026120, A5139810075]}
+  - {name: "Saurabh Dash", openalex_ids: [A5102681552]}
+  - {name: "Saurav Kadavath", openalex_ids: [A5061506488]}
+  - {name: "Sayna Ebrahimi", openalex_ids: [A5022946616, A5112856244]}
+  - {name: "Scott Emmons", openalex_ids: [A5051005226]}
+  - "Scott G. Johnston"
+  - {name: "Scott Garrabrant", openalex_ids: [A5042115323]}
+  - "Scott Goodfriend"
+  - {name: "Scott Yih", openalex_ids: [A5027596907, A5143442668]}
+  - {name: "Sean Ó hÉigeartaigh", openalex_ids: [A5048674271]}
+  - {name: "Seb Krier", openalex_ids: [A5095912645]}
+  - {name: "Sebastian Farquhar", openalex_ids: [A5051690066]}
+  - {name: "Sebastian Gehrmann", openalex_ids: [A5026789962]}
+  - {name: "Sebastian Riedel", openalex_ids: [A5101404695]}
+  - {name: "Sebastian Ruder", openalex_ids: [A5037310413]}
+  - {name: "Seijin Kobayashi", openalex_ids: [A5030838773, A5101188118, A5127849646]}
+  - {name: "Selena Zhang", openalex_ids: [A5136530201]}
+  - {name: "Seliem El-Sayed", openalex_ids: [A5016317870]}
+  - {name: "Senthooran Rajamanoharan", openalex_ids: [A5095900488]}
+  - {name: "Seraphina Goldfarb-Tarrant", openalex_ids: [A5030858516]}
+  - {name: "Seraphina Nix", openalex_ids: [A5114987903]}
+  - {name: "Sergei Vassilvitskii", openalex_ids: [A5070795618]}
+  - {name: "Sergey Edunov", openalex_ids: [A5016113002]}
+  - {name: "Seth Baum", openalex_ids: [A5086782075]}
+  - "Seth Lazar"
+  - {name: "Seungju Han", openalex_ids: [A5119967809]}
+  - {name: "Sewoong Oh", openalex_ids: [A5125059013, A5125552868, A5127839352]}
+  - {name: "Shan Carter", openalex_ids: [A5087762412]}
+  - {name: "Shane Legg", openalex_ids: [A5008987732]}
+  - {name: "Shangbin Feng", openalex_ids: [A5039166924, A5140861593]}
+  - {name: "Shannon Yang", openalex_ids: [A5037725211]}
+  - "Shantanu Jain"
+  - {name: "Shaokun Zhang", openalex_ids: [A5124804302, A5140640487, A5151718543]}
+  - {name: "Shaoliang Nie", openalex_ids: [A5018913504, A5114634597]}
+  - {name: "Shaona Ghosh", openalex_ids: [A5027156022]}
+  - {name: "Sharad Vikram", openalex_ids: [A5045680105]}
+  - {name: "Sharan Maiya", openalex_ids: [A5119934293]}
+  - {name: "Sharan Narang", openalex_ids: [A5079540764]}
+  - "Sharon Lin"
+  - {name: "Shashir Reddy", openalex_ids: [A5108883804]}
+  - {name: "Shashwat Goel", openalex_ids: [A5030450290]}
+  - {name: "Shauna Kravec", openalex_ids: [A5009112681]}
+  - {name: "Shayegan Omidshafiei", openalex_ids: [A5052169592]}
+  - {name: "Shayne Longpre", openalex_ids: [A5001884064]}
+  - {name: "Sheer El Showk", openalex_ids: [A5049068767]}
+  - {name: "Sheer El-Showk", openalex_ids: [A5049068767]}
+  - {name: "Shehzaad Dhuliawala", openalex_ids: [A5022845285]}
+  - {name: "Sheng Zhang", openalex_ids: [A5100394046]}
+  - {name: "Shengyu Mao", openalex_ids: [A5027273132]}
+  - "Shenzhi Wang"
+  - {name: "Sherol Chen", openalex_ids: [A5062246483]}
+  - "Shi Feng"
+  - "Shidong Yang"
+  - {name: "Shih-Yang Liu", openalex_ids: [A5016722419]}
+  - "Shilong Li"
+  - "Shiqi Wang"
+  - {name: "Shirong Ma", openalex_ids: [A5057030499]}
+  - {name: "Shishir G. Patil", openalex_ids: [A5022259826]}
+  - {name: "Shivam Garg", openalex_ids: [A5123880883]}
+  - {name: "Shixiang Shane Gu", openalex_ids: [A5061613634]}
+  - {name: "Shixuan Liu", openalex_ids: [A5144402151]}
+  - {name: "Shizhe Diao", openalex_ids: [A5058966093]}
+  - {name: "Shlegeris, Buck", openalex_ids: [A5050408969]}
+  - {name: "Shlomi Hod", openalex_ids: [A5033514058]}
+  - {name: "Sholto Douglas", openalex_ids: [A5110253521]}
+  - {name: "Shreyas Padhy", openalex_ids: [A5083251455]}
+  - {name: "Shrimai Prabhumoye", openalex_ids: [A5000188096]}
+  - {name: "Shruti Bhosale", openalex_ids: [A5065321401]}
+  - {name: "Shruti Tople", openalex_ids: [A5076686201]}
+  - "Shuang Li"
+  - {name: "Shuang Song", openalex_ids: [A5100731559]}
+  - "Shuang Yang"
+  - {name: "Shubham Toshniwal", openalex_ids: [A5073890145]}
+  - "Shuo Yang"
+  - {name: "Shuyue Stella Li", openalex_ids: [A5022934996, A5077166378]}
+  - {name: "Siamak Shakeri", openalex_ids: [A5034084374]}
+  - {name: "Sid Wang", openalex_ids: [A5085705723]}
+  - "Siddharth Mishra-Sharma"
+  - {name: "Siddhartha Brahma", openalex_ids: [A5047714914]}
+  - {name: "Simon C. Marshall", openalex_ids: [A5076055011]}
+  - {name: "Simon Geisler", openalex_ids: [A5000184599]}
+  - {name: "Simon Goldstein", openalex_ids: [A5054881971]}
+  - {name: "Simon Kornblith", openalex_ids: [A5042760897]}
+  - {name: "Simon Osindero", openalex_ids: [A5052435039]}
+  - {name: "Sinong Wang", openalex_ids: [A5046036366, A5049450075, A5054850293]}
+  - {name: "Sivakanth Gopi", openalex_ids: [A5038687630]}
+  - {name: "Slav Petrov", openalex_ids: [A5062886906]}
+  - {name: "Smitha Milli", openalex_ids: [A5070509173]}
+  - {name: "Soham De", openalex_ids: [A5036322364]}
+  - {name: "Solon Barocas", openalex_ids: [A5074825066]}
+  - {name: "Somesh Jha", openalex_ids: [A5088826068, A5103835847, A5119897565]}
+  - {name: "Song Jiang", openalex_ids: [A5114601789]}
+  - {name: "Song, Kaisong", openalex_ids: [A5078512486]}
+  - {name: "Sonia Joseph", openalex_ids: [A5124153233]}
+  - {name: "Sophie Bridgers", openalex_ids: [A5074597914]}
+  - {name: "Soumya Batra", openalex_ids: [A5008979133]}
+  - {name: "Spyros Matsoukas", openalex_ids: [A5034173999]}
+  - "Sridhar Thiagarajan"
+  - {name: "Stanislav Fort", openalex_ids: [A5082696325]}
+  - {name: "Stefan Heimersheim", openalex_ids: [A5114412487]}
+  - {name: "Stella Biderman", openalex_ids: [A5068115835, A5076733732]}
+  - "Stepan Shabalin"
+  - {name: "Stephanie Chan", openalex_ids: [A5101543629, A5127785021]}
+  - {name: "Stephen Casper", openalex_ids: [A5099024522, A5125687123]}
+  - {name: "Stephen Clare", openalex_ids: [A5118595876]}
+  - {name: "Stephen Pfohl", openalex_ids: [A5021812637]}
+  - {name: "Steve Chien", openalex_ids: [A5078367630]}
+  - {name: "Steven Adler", openalex_ids: [A5110211174]}
+  - {name: "Steven Basart", openalex_ids: [A5058647826]}
+  - "Steven Bills"
+  - {name: "Steven H. Wang", openalex_ids: [A5009805584]}
+  - {name: "Stevie Bergman", openalex_ids: [A5000039831]}
+  - {name: "Stewart Slocum", openalex_ids: [A5026484447]}
+  - {name: "Stuart Armstrong", openalex_ids: [A5005897864]}
+  - {name: "Stuart D. Russell", openalex_ids: [A5007305440, A5061945489, A5104083277]}
+  - "Stuart J. Ritchie"
+  - {name: "Stuart Russell", openalex_ids: [A5007305440, A5061945489, A5104083277]}
+  - {name: "Subhash Kantamneni", openalex_ids: [A5097335930]}
+  - {name: "Suchin Gururangan", openalex_ids: [A5075783850]}
+  - {name: "Suchir Balaji", openalex_ids: [A5082224513]}
+  - {name: "Sumanth Dathathri", openalex_ids: [A5049998479]}
+  - {name: "Summer Yue", openalex_ids: [A5050610019]}
+  - {name: "Sunayana Sitaram", openalex_ids: [A5005513786]}
+  - {name: "Sungpil Shin", openalex_ids: [A5102166182]}
+  - {name: "Susan Hao", openalex_ids: [A5092160639]}
+  - {name: "Susannah Young", openalex_ids: [A5029669552]}
+  - {name: "Sushant Prakash", openalex_ids: [A5034500430]}
+  - {name: "Sven Gowal", openalex_ids: [A5059632022]}
+  - {name: "Swarnadeep Saha", openalex_ids: [A5057314288]}
+  - {name: "Sydney Levine", openalex_ids: [A5126301189]}
+  - {name: "Sydney Von Arx", openalex_ids: [A5009828979]}
+  - {name: "Syeda Nahida Akter", openalex_ids: [A5112924096]}
+  - {name: "Sébastien Krier", openalex_ids: [A5095912645]}
+  - {name: "Sören Mindermann", openalex_ids: [A5012960540]}
+  - "T. B. Brown"
+  - {name: "T. Maxwell", openalex_ids: [A5108519631]}
+  - {name: "Taco Cohen", openalex_ids: [A5083922034]}
+  - {name: "Taesung Lee", openalex_ids: [A5010085296]}
+  - {name: "Tamera Lanham", openalex_ids: [A5022793124]}
+  - {name: "Tantum Collins", openalex_ids: [A5047927530]}
+  - "Tao Feng"
+  - {name: "Tao Gui", openalex_ids: [A5058353652]}
+  - "Tao Lin"
+  - "Tao Zhang"
+  - {name: "Ted Moskovitz", openalex_ids: [A5034132308]}
+  - "Teddy Lee"
+  - {name: "Tejal Patwardhan", openalex_ids: [A5109819212]}
+  - {name: "Tengyu Xu", openalex_ids: [A5013771140]}
+  - {name: "Teun van der Weij", openalex_ids: [A5092401144]}
+  - {name: "Tharindu Kumarage", openalex_ids: [A5052563955]}
+  - "The Sora team"
+  - {name: "Theodore R. Sumers", openalex_ids: [A5047918106]}
+  - {name: "Thibault Sellam", openalex_ids: [A5069698101]}
+  - {name: "Thibaut Lavril", openalex_ids: [A5090457109]}
+  - {name: "Thomas Broadley", openalex_ids: [A5114987908]}
+  - {name: "Thomas Degry", openalex_ids: [A5114628453]}
+  - {name: "Thomas I. Liao", openalex_ids: [A5058639265]}
+  - {name: "Thomas Kwa", openalex_ids: [A5120529313]}
+  - "Thomas Leung"
+  - {name: "Thomas McGrath", openalex_ids: [A5135340762]}
+  - "Thomas Märshall"
+  - {name: "Thomas Mésnard", openalex_ids: [A5115021923]}
+  - "Thomas Read"
+  - {name: "Thomas Steinke", openalex_ids: [A5090438638, A5127778022]}
+  - {name: "Thomas Unterthiner", openalex_ids: [A5083016682]}
+  - {name: "Thomas Woodside", openalex_ids: [A5073684062]}
+  - {name: "Thomas, Drake", openalex_ids: [A5099282226]}
+  - {name: "Thore Graepel", openalex_ids: [A5051619646]}
+  - {name: "Tian Huey Teh", openalex_ids: [A5038517086]}
+  - "Tianhao Wu"
+  - {name: "Tianle Cai", openalex_ids: [A5083555133]}
+  - {name: "Tianlu Wang", openalex_ids: [A5026227210]}
+  - "Tianshu Yu"
+  - "Tianyi Qiu"
+  - "Tianyi Tang"
+  - "Tiffany Shih"
+  - "Tiffany Tzeng"
+  - {name: "Tim Belonax", openalex_ids: [A5115560878]}
+  - {name: "Tim Genewein", openalex_ids: [A5013602545]}
+  - {name: "Tim Hua", openalex_ids: [A5048626828]}
+  - {name: "Tim Maxwell", openalex_ids: [A5108519631]}
+  - {name: "Tim Rocktäschel", openalex_ids: [A5079315903]}
+  - {name: "Timon Willi", openalex_ids: [A5041285498]}
+  - {name: "Timothy Lillicrap", openalex_ids: [A5066294254]}
+  - {name: "Timothy Telleen-Lawton", openalex_ids: [A5001194068]}
+  - {name: "Ting-En Lin", openalex_ids: [A5069007219, A5127166731]}
+  - "Tobi Ijitoye"
+  - {name: "Toby Shevlane", openalex_ids: [A5006060802]}
+  - {name: "Todor Markov", openalex_ids: [A5081692949]}
+  - {name: "Todor Mihaylov", openalex_ids: [A5052408504]}
+  - {name: "Tolga Bolukbasi", openalex_ids: [A5082178510]}
+  - "Tom Brown"
+  - {name: "Tom Conerly", openalex_ids: [A5059073226]}
+  - "Tom Dupré la Tour"
+  - {name: "Tom Everitt", openalex_ids: [A5020224050]}
+  - {name: "Tom Henighan", openalex_ids: [A5049786610, A5110225167]}
+  - "Tom Lenaerts"
+  - {name: "Tom Lieberum", openalex_ids: [A5026856356]}
+  - {name: "Tom McGrath", openalex_ids: [A5035693801]}
+  - "Tom Reed"
+  - {name: "Tom Schaul", openalex_ids: [A5081322018]}
+  - {name: "Tom Stepleton", openalex_ids: [A5046305893]}
+  - {name: "Tom Tseng", openalex_ids: [A5087045282, A5110064941, A5137975662]}
+  - {name: "Tomas Pfister", openalex_ids: [A5092595935, A5101265241]}
+  - {name: "Tomasz Korbak", openalex_ids: [A5002211679]}
+  - {name: "Tomek Korbak", openalex_ids: [A5114338125]}
+  - "Tong Mu"
+  - "Tong Wang"
+  - "Tong Xiao"
+  - {name: "Tracy, Tyler", openalex_ids: [A5125209120]}
+  - {name: "Traian Rebedea", openalex_ids: [A5077365712]}
+  - {name: "Tramèr, Florian", openalex_ids: [A5006851333]}
+  - {name: "Trenton Bricken", openalex_ids: [A5090423795]}
+  - {name: "Trevor Cai", openalex_ids: [A5049117133, A5051582703]}
+  - {name: "Trevor Cohn", openalex_ids: [A5078530959]}
+  - {name: "Tris Warkentin", openalex_ids: [A5093219820]}
+  - {name: "Tristan Hume", openalex_ids: [A5026832201]}
+  - {name: "Troy Peterson", openalex_ids: [A5050969761]}
+  - {name: "Tsvi Benson-Tilsen", openalex_ids: [A5055712858]}
+  - "Tu Trinh"
+  - {name: "Tulsee Doshi", openalex_ids: [A5030125352]}
+  - {name: "Tusher Chakraborty", openalex_ids: [A5043473455]}
+  - "Tyler Payne"
+  - {name: "Tyler Tracy", openalex_ids: [A5125209120]}
+  - {name: "Tyna Eloundou", openalex_ids: [A5065917408]}
+  - {name: "USVSN Sai Prashanth", openalex_ids: [A5033799563]}
+  - {name: "Udari Madhushani Sehwag", openalex_ids: [A5111397041]}
+  - {name: "Ujjwal Karn", openalex_ids: [A5064766871]}
+  - {name: "Ulrich Paquet", openalex_ids: [A5111896742]}
+  - {name: "Usman Anwar", openalex_ids: [A5127423234]}
+  - {name: "Vaishnavi Shrivastava", openalex_ids: [A5120841878]}
+  - {name: "Vanessa Kosoy", openalex_ids: [A5001296817]}
+  - {name: "Vasilis Kontonis", openalex_ids: [A5058764710]}
+  - {name: "Vedanuj Goswami", openalex_ids: [A5035752789]}
+  - {name: "Verena Rieser", openalex_ids: [A5076593865]}
+  - {name: "Victor Cărbune", openalex_ids: [A5079740254]}
+  - {name: "Victor Dibia", openalex_ids: [A5047676499]}
+  - {name: "Victor Gillioz", openalex_ids: [A5053292294]}
+  - {name: "Victor Lecomte", openalex_ids: [A5071078769]}
+  - {name: "Victor Rühle", openalex_ids: [A5049145726]}
+  - {name: "Victor Veitch", openalex_ids: [A5077406767]}
+  - {name: "Victoria Krakovna", openalex_ids: [A5052300917]}
+  - {name: "Vidhisha Balachandran", openalex_ids: [A5012491878]}
+  - {name: "Vijay Bolina", openalex_ids: [A5092031122]}
+  - {name: "Vik Goel", openalex_ids: [A5050639937]}
+  - {name: "Vikas Chandra", openalex_ids: [A5122588895]}
+  - {name: "Vikas Sindhwani", openalex_ids: [A5058073838]}
+  - {name: "Vikash Sehwag", openalex_ids: [A5011437254]}
+  - {name: "Vikrant Varma", openalex_ids: [A5052084048]}
+  - {name: "Viktor Kerkez", openalex_ids: [A5081114983]}
+  - {name: "Vincent Cohen-Addad", openalex_ids: [A5074251728]}
+  - {name: "Vincent Conitzer", openalex_ids: [A5050903632]}
+  - {name: "Vincent Dumoulin", openalex_ids: [A5085748370]}
+  - "Vincent Huang"
+  - {name: "Vincent Zhao", openalex_ids: [A5016423432, A5045803583]}
+  - {name: "Vincent Zhuang", openalex_ids: [A5068788467]}
+  - {name: "Vineet Kosaraju", openalex_ids: [A5065338363]}
+  - {name: "Vinh Q. Tran", openalex_ids: [A5102435043, A5127822194]}
+  - {name: "Vinnie Monaco", openalex_ids: [A5038788524]}
+  - {name: "Vinodkumar Prabhakaran", openalex_ids: [A5019297976]}
+  - {name: "Viorica Patraucean", openalex_ids: [A5077765073]}
+  - {name: "Virginie Do", openalex_ids: [A5004484776]}
+  - {name: "Vishrav Chaudhary", openalex_ids: [A5053028004]}
+  - {name: "Vivek Hebbar", openalex_ids: [A5114988334]}
+  - {name: "Vivek Natarajan", openalex_ids: [A5103234563, A5103951772]}
+  - {name: "Vivien Cabannes", openalex_ids: [A5059273291]}
+  - {name: "Vlad Feinberg", openalex_ids: [A5091982965]}
+  - "Vlad Mikulik"
+  - {name: "Vladimir Mikulik", openalex_ids: [A5047554131]}
+  - {name: "Volkan Cevher", openalex_ids: [A5027059837]}
+  - {name: "W. Bradley Knox", openalex_ids: [A5056649746, A5151869463]}
+  - {name: "Wagner, Misha", openalex_ids: [A5060876604]}
+  - "Wang, Atticus"
+  - "Wang, Rowan"
+  - "Wang, Xiang"
+  - {name: "Wassim Bouaziz", openalex_ids: [A5114331453]}
+  - "Wei Dai"
+  - "Wei Liu"
+  - "Wei, Cheng"
+  - {name: "Wei-Hung Weng", openalex_ids: [A5034420885]}
+  - {name: "Wei-Ying Ma", openalex_ids: [A5140209393]}
+  - "Weichen Yu"
+  - "Weijia Shi"
+  - "Weijie Liu"
+  - {name: "Weijie Shi", openalex_ids: [A5133204769]}
+  - {name: "Weitong Ruan", openalex_ids: [A5088482938]}
+  - {name: "Weiwei Yang", openalex_ids: [A5124753886]}
+  - {name: "Weixuan Ou", openalex_ids: [A5109649991]}
+  - {name: "Weixun Wang", openalex_ids: [A5082417441, A5121095866, A5124005698, A5140958978]}
+  - "Weiyan Shi"
+  - {name: "Weizhe Yuan", openalex_ids: [A5055933325, A5114159551]}
+  - {name: "Wen-tau Yih", openalex_ids: [A5066873932, A5134393930]}
+  - {name: "Wenbo Su", openalex_ids: [A5113392255]}
+  - "Wenhao Zhang"
+  - "Wenjie Xiong"
+  - "Wenjun Zeng"
+  - {name: "Wenkai Yang", openalex_ids: [A5129652014]}
+  - "Wenmeng Zhou"
+  - {name: "Wenxin Hou", openalex_ids: [A5071195234]}
+  - "Wenxuan Wang"
+  - {name: "Wenyin Fu", openalex_ids: [A5108399988]}
+  - {name: "Wes Gurnee", openalex_ids: [A5036313350]}
+  - {name: "Will Dabney", openalex_ids: [A5037981481]}
+  - {name: "Will Hawkins", openalex_ids: [A5103131863]}
+  - "William A. Cunningham"
+  - {name: "William Fedus", openalex_ids: [A5004353092, A5029678131]}
+  - {name: "William H. Saunders", openalex_ids: [A5128808543]}
+  - {name: "William Isaac", openalex_ids: [A5048272174]}
+  - {name: "William M. Isaac", openalex_ids: [A5048272174]}
+  - {name: "William Ngan", openalex_ids: [A5008298032]}
+  - {name: "William S. Saunders", openalex_ids: [A5128808543]}
+  - {name: "William Saunders", openalex_ids: [A5128808543]}
+  - {name: "William W. Cohen", openalex_ids: [A5051617344]}
+  - {name: "Winnie Street", openalex_ids: [A5095912641]}
+  - {name: "Wojciech Zaremba", openalex_ids: [A5076651586]}
+  - {name: "Xander Davies", openalex_ids: [A5145865735]}
+  - {name: "Xavier Martinet", openalex_ids: [A5033356379]}
+  - {name: "Xia Song", openalex_ids: [A5101027890, A5127859423]}
+  - {name: "Xian Li", openalex_ids: [A5100767220]}
+  - {name: "Xian Wu", openalex_ids: [A5100352418]}
+  - {name: "Xiangming Gu", openalex_ids: [A5133256776]}
+  - {name: "Xiangxiang Chu", openalex_ids: [A5101512474]}
+  - {name: "Xiangyu Qi", openalex_ids: [A5064279600]}
+  - {name: "Xianjun Yang", openalex_ids: [A5021257899]}
+  - "Xiao Zhou"
+  - {name: "Xiaochang Peng", openalex_ids: [A5100908682]}
+  - {name: "Xiaocheng Tang", openalex_ids: [A5103947918]}
+  - {name: "Xiaodong Liu", openalex_ids: [A5124859070]}
+  - "Xiaojie Li"
+  - {name: "Xiaojun Xu", openalex_ids: [A5103278144]}
+  - {name: "Xiaolong Li", openalex_ids: [A5139819026]}
+  - {name: "Xiaomin Li", openalex_ids: [A5120405738]}
+  - {name: "Xiaoqing Ellen Tan", openalex_ids: [A5104238116, A5109301242]}
+  - {name: "Xiaoyang Li", openalex_ids: [A5100606921]}
+  - {name: "Xiaoying Zhang", openalex_ids: [A5100449449]}
+  - "Xiaoyong Zhu"
+  - "Xiaoyu Tan"
+  - "Xiaoyuan Yi"
+  - {name: "Xilun Chen", openalex_ids: [A5065674779]}
+  - {name: "Ximing Lu", openalex_ids: [A5102930940, A5109681664, A5138767415]}
+  - "Xin Dong"
+  - {name: "Xin Li", openalex_ids: [A5100354039]}
+  - {name: "Xin Liu", openalex_ids: [A5100352321]}
+  - {name: "Xinchi Qiu", openalex_ids: [A5040821950]}
+  - "Xing Sun"
+  - "Xing Xie"
+  - {name: "Xingjun Ma", openalex_ids: [A5078711649]}
+  - "Xingwu Sun"
+  - {name: "Xingyu Chen", openalex_ids: [A5139774318]}
+  - {name: "Xingyuan Bu", openalex_ids: [A5039569339]}
+  - {name: "Xinlei He", openalex_ids: [A5074889369]}
+  - "Xinxin Yi"
+  - "Xinyi Bai"
+  - {name: "Xinying Song", openalex_ids: [A5102246878, A5108138075]}
+  - {name: "Xinyu Hu", openalex_ids: [A5124193402]}
+  - "Xinyun Chen"
+  - {name: "Xiong, Shaopan", openalex_ids: [A5121685541]}
+  - {name: "Xiong-Hui Chen", openalex_ids: [A5138916907]}
+  - {name: "Xipeng Qiu", openalex_ids: [A5044665993]}
+  - {name: "Xiting Wang", openalex_ids: [A5048879367]}
+  - "Xu Jiang"
+  - "Xu Sun"
+  - {name: "Xuanjing Huang", openalex_ids: [A5088834359]}
+  - {name: "Xuanli He", openalex_ids: [A5060320196]}
+  - {name: "Xuanming Zhang", openalex_ids: [A5056367146]}
+  - {name: "Xuehai Pan", openalex_ids: [A5001682354]}
+  - {name: "Xuewei Wang", openalex_ids: [A5100684659]}
+  - {name: "Xuezhi Wang", openalex_ids: [A5127857043]}
+  - "Xuwang Yin"
+  - {name: "Xuxi Chen", openalex_ids: [A5043602228]}
+  - "Xuyao Wang"
+  - {name: "Y-Lan Boureau", openalex_ids: [A5070477596]}
+  - "Y. H. Tan"
+  - {name: "Ya-Qin Zhang", openalex_ids: [A5140165258]}
+  - {name: "YaGuang Li", openalex_ids: [A5003109386]}
+  - {name: "Yafu Li", openalex_ids: [A5032649444]}
+  - {name: "Yaliang Li", openalex_ids: [A5046576694]}
+  - "Yancheng He"
+  - "Yanda Chen"
+  - {name: "Yanfei Chen", openalex_ids: [A5135695486]}
+  - "Yang Chen"
+  - "Yang Li"
+  - {name: "Yang Liu", openalex_ids: [A5063685742]}
+  - "Yang Zhang"
+  - "Yang, Li"
+  - {name: "Yang, Mick", openalex_ids: [A5126646463]}
+  - {name: "Yangsibo Huang", openalex_ids: [A5082426637]}
+  - "Yangyi Chen"
+  - {name: "Yanjun Qi", openalex_ids: [A5101887931]}
+  - "Yankai Lin"
+  - {name: "Yann Ollivier", openalex_ids: [A5068018936]}
+  - {name: "Yannick Assogba", openalex_ids: [A5069654367]}
+  - {name: "Yanping Huang", openalex_ids: [A5104102021, A5127853119]}
+  - "Yantao Liu"
+  - {name: "Yao Lu", openalex_ids: [A5100594691]}
+  - {name: "Yao Ma", openalex_ids: [A5134777887]}
+  - {name: "Yao Zhao", openalex_ids: [A5100567448]}
+  - "Yaodong Yang"
+  - "Yaodong Yu"
+  - {name: "Yarin Gal", openalex_ids: [A5029186201]}
+  - {name: "Yash Pandya", openalex_ids: [A5119934695]}
+  - {name: "Yasmine Babaei", openalex_ids: [A5092506189]}
+  - "Yefeng Zheng"
+  - {name: "Yejin Bang", openalex_ids: [A5038748527, A5113851214]}
+  - "Yejin Choi"
+  - {name: "Yeming Wen", openalex_ids: [A5027760899]}
+  - {name: "Yeskendir Koishekenov", openalex_ids: [A5065062387]}
+  - "Yi Dong"
+  - "Yi Su"
+  - {name: "Yi Tay", openalex_ids: [A5103069680]}
+  - "Yi Zeng"
+  - "Yichang Zhang"
+  - "Yifan Ding"
+  - {name: "Yifei Shen", openalex_ids: [A5114889635]}
+  - "Yifei Xu"
+  - "Yijia Luo"
+  - "Yijin Liu"
+  - {name: "Yike Wang", openalex_ids: [A5140876448]}
+  - "Yilun Huang"
+  - "Yin, Bing"
+  - {name: "Yingcheng Shi", openalex_ids: [A5123604350]}
+  - "Yingchun Wang"
+  - {name: "Yinghai Lu", openalex_ids: [A5027861933]}
+  - {name: "Yingshui Tan", openalex_ids: [A5100551756]}
+  - "Yining Chen"
+  - {name: "Yinlam Chow", openalex_ids: [A5039948454]}
+  - {name: "Yinpeng Dong", openalex_ids: [A5068755794, A5139424245]}
+  - {name: "Yinxiao Liu", openalex_ids: [A5109012562]}
+  - {name: "Yiran Mao", openalex_ids: [A5110536678]}
+  - {name: "Yitian Huang", openalex_ids: [A5128776798]}
+  - {name: "Yiwen Song", openalex_ids: [A5051239073, A5124761206, A5133160606]}
+  - "Yixin Liu"
+  - {name: "Yixin Nie", openalex_ids: [A5066141653, A5102506185]}
+  - {name: "Yonadav Shavit", openalex_ids: [A5024244335]}
+  - {name: "Yonatan Belinkov", openalex_ids: [A5051184573]}
+  - {name: "Yonatan Bisk", openalex_ids: [A5041302228]}
+  - {name: "Yonatan Bitton", openalex_ids: [A5068580969]}
+  - "Yong Jiang"
+  - {name: "Yong Wang", openalex_ids: [A5100424366]}
+  - "Yongbin Li"
+  - {name: "Yongyu Mu", openalex_ids: [A5024348709]}
+  - {name: "Yoram Bachrach", openalex_ids: [A5062949033]}
+  - {name: "Yoshua Bengio", openalex_ids: [A5086198262]}
+  - {name: "Yossi Matias", openalex_ids: [A5065128060]}
+  - {name: "Yu Cheng", openalex_ids: [A5101580521]}
+  - "Yu Gai"
+  - "Yu Liu"
+  - "Yu Qiao"
+  - {name: "Yu-Chiang Frank Wang", openalex_ids: [A5090045508]}
+  - {name: "Yu-Gang Jiang", openalex_ids: [A5047962986]}
+  - {name: "Yuandong Tian", openalex_ids: [A5145011090]}
+  - {name: "Yuanshun Yao", openalex_ids: [A5014146843]}
+  - {name: "Yuanzhong Xu", openalex_ids: [A5081428852]}
+  - "Yubo Wang"
+  - "Yuchen Shi"
+  - "Yuchi Liu"
+  - "Yuchuan Wu"
+  - "Yue Yu"
+  - "Yuefeng Chen"
+  - {name: "Yuexiang Xie", openalex_ids: [A5064794276]}
+  - {name: "Yuhuai Wu", openalex_ids: [A5024901763, A5127805553]}
+  - "Yulan Hu"
+  - {name: "Yulei Qin", openalex_ids: [A5051703382]}
+  - {name: "Yulia Tsvetkov", openalex_ids: [A5062910836, A5114482527, A5140801212]}
+  - {name: "Yun He", openalex_ids: [A5101467216]}
+  - "Yun Liu"
+  - "Yun Zhu"
+  - {name: "Yundi Qian", openalex_ids: [A5003241968, A5112235930]}
+  - {name: "Yunhao Feng", openalex_ids: [A5103258005]}
+  - {name: "Yunhao Tang", openalex_ids: [A5002692470, A5127785638]}
+  - {name: "Yuning Mao", openalex_ids: [A5012370787]}
+  - "Yunlong Liang"
+  - {name: "Yuntao Bai", openalex_ids: [A5091860006]}
+  - {name: "Yuntian Deng", openalex_ids: [A5088888805]}
+  - {name: "Yunxuan Li", openalex_ids: [A5107646464]}
+  - "Yuqiong Liu"
+  - {name: "Yura Burda", openalex_ids: [A5031242492]}
+  - "Yushi Hu"
+  - {name: "Yushuo Chen", openalex_ids: [A5008293262]}
+  - "Yutian Chen"
+  - {name: "Yuxiang Ji", openalex_ids: [A5122826961]}
+  - "Yuxuan Chen"
+  - {name: "Yuxuan Li", openalex_ids: [A5133272699]}
+  - {name: "Yuxuan Liu", openalex_ids: [A5040821260]}
+  - {name: "Zac Hatfield-Dodds", openalex_ids: [A5070402589]}
+  - {name: "Zac Kenton", openalex_ids: [A5065666918]}
+  - {name: "Zach Furman", openalex_ids: [A5051571237]}
+  - {name: "Zacharie Delpierre Coudert", openalex_ids: [A5095785541]}
+  - {name: "Zachary Ankner", openalex_ids: [A5024750873]}
+  - {name: "Zachary Kenton", openalex_ids: [A5069438696]}
+  - {name: "Zachary Nado", openalex_ids: [A5016611202]}
+  - {name: "Zeb Kurth-Nelson", openalex_ids: [A5034618143]}
+  - {name: "Zeb Kurth‐Nelson", openalex_ids: [A5034618143]}
+  - {name: "Zechun Liu", openalex_ids: [A5133336776]}
+  - {name: "Zehao Dou", openalex_ids: [A5020541874]}
+  - {name: "Zexu Sun", openalex_ids: [A5124447857]}
+  - "Zhaofeng Wu"
+  - {name: "Zhaopeng Tu", openalex_ids: [A5110579339]}
+  - "Zhe Wang"
+  - {name: "Zhendong Liu", openalex_ids: [A5088262967]}
+  - {name: "Zheng Pan", openalex_ids: [A5122916902]}
+  - "Zheng Wang"
+  - {name: "Zheng Xu", openalex_ids: [A5101184440, A5109781363]}
+  - "Zheng Yan"
+  - "Zheng Yuan"
+  - "Zheng Zhang"
+  - "Zhengping Zhou"
+  - "Zhengxing Chen"
+  - {name: "Zhengxuan Wu", openalex_ids: [A5102822963]}
+  - "Zhengyuan Yang"
+  - {name: "Zhengzhe Yang", openalex_ids: [A5102365265]}
+  - {name: "Zhenru Zhang", openalex_ids: [A5032572801, A5045476473]}
+  - "Zhenwen Liang"
+  - "Zhifeng Chen"
+  - {name: "Zhilin Wang", openalex_ids: [A5053747215]}
+  - {name: "Zhilong Zhang", openalex_ids: [A5130553646]}
+  - {name: "Zhiqi Bu", openalex_ids: [A5020028434]}
+  - "Zhiyuan Zhang"
+  - "Zhu Chen"
+  - {name: "Zhu, Xuekai", openalex_ids: [A5135414422]}
+  - {name: "Zhuolin Yang", openalex_ids: [A5130249387]}
+  - {name: "Zhuosheng Zhang", openalex_ids: [A5070962435]}
+  - {name: "Zhuyun Dai", openalex_ids: [A5062633736]}
+  - "Zi Wang"
+  - {name: "Zico Kolter", openalex_ids: [A5075035644]}
+  - {name: "Zifan Wang", openalex_ids: [A5127847727]}
+  - {name: "Zifeng Wang", openalex_ids: [A5124003050]}
+  - "Zihan Wang"
+  - "Zihan Xu"
+  - "Zihao Wang"
+  - "Ziming Liu"
+  - "Zinan Lin"
+  - {name: "Ziran Yang", openalex_ids: [A5108946224]}
+  - {name: "Zitao Li", openalex_ids: [A5007262312]}
+  - {name: "Ziteng Sun", openalex_ids: [A5001128596]}
+  - {name: "Ziwei Ji", openalex_ids: [A5010444468]}
+  - "Ziwen Xu"
+  - "Ziyu Ma"
+  - {name: "Zoe C. Ashwood", openalex_ids: [A5090778094]}
+  - {name: "Zongqi Wang", openalex_ids: [A5122911622]}
+  - {name: "Zorik Gekhman", openalex_ids: [A5087260801]}
+  - {name: "lewis smith", openalex_ids: [A5103811636]}
+  - {name: "van der Weij, Teun", openalex_ids: [A5092401144]}
+  - {name: "İzzeddin Gür", openalex_ids: [A5048764935]}
+  - {name: "Γεώργιος Κόλλιας", openalex_ids: [A5103198773]}
+  - "А. В. Иванов"
+  - {name: "А.В. Куракин", openalex_ids: [A5052664531]}

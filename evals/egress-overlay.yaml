@@ -1,0 +1,11 @@
+# Eval-only egress additions (D173 (E)). `stack eval` applies this to an in-memory copy of the
+# loaded llm.yaml; production egress (configs/llm.yaml) is unchanged and never written.
+# deepseek/* is routed to DeepInfra (OpenRouter provider slug `deepinfra`; endpoint checked
+# 2026-10-12: fp8, structured outputs) and permitted for the `open` and `public_web` licence
+# classes only; data_collection stays `deny` (the class rule's). Items of other classes are
+# rows `skipped[egress]` for deepseek models, never sent.
+# 2026-10-18 (techpipe D628): qwen/* to Alibaba (OpenRouter slug `alibaba`; the only provider listing
+# qwen3.8-flash, structured outputs, prompt caching) and z-ai/* to DeepInfra (glm-5.3-flash, structured outputs,
+# prompt caching), for the same two licence classes; endpoints read from the public listing 2026-10-18.
+provider_prefixes: {deepseek: deepinfra, qwen: alibaba, z-ai: deepinfra}
+add_providers: {open: [deepinfra, alibaba], public_web: [deepinfra, alibaba]}

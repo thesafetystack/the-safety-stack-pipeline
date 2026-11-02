@@ -1,0 +1,127 @@
+# v3 collect-side in-band text decision table, mined from tests/test_collect_inband.py at v3
+# commit 9312c8c (T1.8, D40). The v3 test ran stack.collect.inband.store_inband_text /
+# InbandSink against Postgres snapshots; the file is retired with the DB. Consumer: T2.1
+# (collector harness, in-band mint to blobs/raw; M2), whose inband scenarios come from here.
+# No test reads this file yet.
+#
+# v3 behaviour: an in-band body (arXiv Atom <summary>, de-inverted OpenAlex abstract, forum
+# search body) is minted as a raw-less `partial` snapshot (converter collect-inband@1,
+# fetch_meta {via: inband, origin}) ONLY when the source has no snapshot at all (the mint rule,
+# so an abstract never regresses a full document). MIN_CHARS = 30 after normalization.
+# Sink breaker: 3 CONSECUTIVE store errors disable the sink; a success resets the count.
+
+mint:
+  - id: fresh_source_minted
+    v3_test: test_inband_mint_fresh_source
+    existing_snapshots: []
+    text: "This is a sufficiently long abstract about scalable oversight. <nonce>"
+    origin: arxiv-atom-summary
+    quality_meta: {abstract_only: true}
+    observed_at: "2024-01-15"
+    expect:
+      minted: true
+      raw_group: null            # raw_digest, raw_bytes, media_type all null
+      text_quality: partial
+      converter: collect-inband@1
+      fetch_meta: {via: inband, origin: arxiv-atom-summary}
+      quality_meta: {abstract_only: true}
+      text_cp: len(text)
+      text_digest: hashes.text_digest(text)
+      redundant: false
+      text_roundtrips_from_blobs: true
+      corpus_visible_at: partial
+
+  - id: refused_when_full_snapshot_exists
+    v3_test: test_inband_refused_when_full_snapshot_exists
+    existing_snapshots: [{text_quality: complete, via: manual, converter: "c@1", observed_at: "2024-01-01"}]
+    text: "An abstract-only stem that must be refused for this source. <nonce>"
+    origin: arxiv-atom-summary
+    observed_at: "2023-06-01"
+    expect:
+      minted: false
+      snapshot_count_unchanged: true
+      latest_and_corpus: the existing complete snapshot
+
+  - id: second_call_is_noop
+    v3_test: test_inband_second_call_is_noop
+    existing_snapshots: []
+    calls: 2                     # identical text and origin twice in one run
+    origin: openalex-inverted-index
+    expect:
+      first_minted: true
+      second_minted: false
+      snapshot_count: 1
+
+  - id: short_text_rejected
+    v3_test: test_inband_short_text_rejected
+    existing_snapshots: []
+    text: "too short"
+    origin: forummagnum-search
+    quality_meta: {search_body: true}
+    expect:
+      minted: false
+      snapshot_count: 0
+
+normalization:
+  - id: paragraphs_preserved
+    v3_test: test_inband_normalization_preserves_paragraphs
+    input: "First paragraph line one.\r\nFirst paragraph line two.\n\n\n\n\nSecond paragraph here.   \n"
+    expect: "First paragraph line one.\nFirst paragraph line two.\n\nSecond paragraph here."
+    rules: [CRLF -> LF, strip trailing per-line whitespace, 3+ newlines -> one blank line, strip outer whitespace]
+
+batch_prefilter:
+  - id: sources_without_snapshots_mixed_batch
+    v3_test: test_sources_without_snapshots_mixed_batch
+    batch: [{id: with_snap, has_snapshot: true}, {id: without_a, has_snapshot: false}, {id: without_b, has_snapshot: false}]
+    expect: [without_a, without_b]
+  - id: empty_batch
+    v3_test: test_sources_without_snapshots_mixed_batch
+    batch: []
+    expect: []
+
+import_via:
+  - {id: inband_accepted, v3_test: test_writer_accepts_inband_via_rejects_unknown, fetch_meta: {via: inband, origin: arxiv-atom-summary}, expect: accepted}
+  - {id: unknown_via_rejected, v3_test: test_writer_accepts_inband_via_rejects_unknown, fetch_meta: {via: bogus_via}, expect: ValidationFailed}
+  - {id: live_via_rejected, v3_test: test_writer_accepts_inband_via_rejects_unknown, fetch_meta: {via: live}, expect: ValidationFailed}
+
+sink:
+  # counts keys: minted, backfill, skipped, absent, errors (+ disabled = first error string once tripped)
+  - id: mint_path_counts
+    v3_test: test_sink_mint_path_counts
+    offers:
+      - {source: fresh_a, text: long, expect: minted}
+      - {source: fresh_b, text: long, backfill: true, expect: minted}
+    expect_counts: {minted: 2, backfill: 1, skipped: 0, absent: 0, errors: 0}
+    expect_disabled: false
+
+  - id: absent_text
+    v3_test: test_sink_absent_text_counts_absent
+    offers:
+      - {source: s, text: null, expect: none}
+      - {source: s, text: "", expect: none}
+    expect_counts: {minted: 0, backfill: 0, skipped: 0, absent: 2, errors: 0}
+
+  - id: skip_when_snapshot_exists
+    v3_test: test_sink_skip_counts_when_snapshot_exists
+    offers:
+      - {source: s, text: long, expect: minted}
+      - {source: s, text: long, expect: none}
+    expect_counts: {minted: 1, backfill: 0, skipped: 1, absent: 0, errors: 0}
+
+  - id: breaker_trips_on_third_consecutive_error
+    v3_test: test_sink_error_counting_and_breaker_trip
+    store_script: [error "blob store down", error, error, error, error]
+    offers:
+      - {text: long, expect: none, expect_counts: {minted: 0, backfill: 0, skipped: 0, absent: 0, errors: 1}}
+      - {text: long, expect: none, expect_counts: {minted: 0, backfill: 0, skipped: 0, absent: 0, errors: 2}}
+      - {text: long, expect: none, expect_errors: 3, expect_disabled: "blob store down"}
+      - {text: long, expect: none}          # disabled: no-op, counts nothing
+      - {text: null, expect: none}          # disabled: not even absent
+    expect_final: {errors: 3, absent: 0, disabled: "blob store down"}
+
+  - id: success_resets_consecutive_errors
+    v3_test: test_sink_success_resets_consecutive_error_run
+    store_script: [error e1, error e2, ok snap-ok, error e3, error e4]
+    expect_returns: [null, null, snap-ok, null, null]
+    expect_counts_subset: {minted: 1, errors: 4}
+    expect_disabled: false

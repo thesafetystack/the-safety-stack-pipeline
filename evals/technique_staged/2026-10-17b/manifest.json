@@ -1,0 +1,77 @@
+{
+  "task": "technique_staged",
+  "set_id": "2026-10-17b",
+  "source": "evals/technique_staged/2026-10-17a (items.jsonl and texts byte-identical; gold derived by scripts/derive.py from 17a's gold and the blind audit in adjudication/audit/)",
+  "items": 36,
+  "items_sha256": "2a4238c405cda87c1252fa7cfe90f865f977962437cbe038f40f35c3b8b1c9bc",
+  "splits": {
+    "dev": 20,
+    "test": 16
+  },
+  "gold": {
+    "file": "gold.jsonl",
+    "sha256": "0211d5ff7a9ebec6c84569f4083e6e81b6e812a2c1f01139b1c0723b42edf2ef",
+    "from": "2026-10-17a gold.jsonl + adjudication/audit/",
+    "rows": 431,
+    "candidate_rows": 8,
+    "dont_care_rows": 15,
+    "group_node_rows": 20,
+    "scored_rows": 388,
+    "scored_high": 147,
+    "scored_both_labellers": 277,
+    "extra_techniques": 16,
+    "menu_gaps": 68
+  },
+  "derivation": {
+    "from_set": "2026-10-17a",
+    "from_gold_sha256": "60524d0428c01618f618fbce6996edae580a8a535b04d6fe5ffb298c39817115",
+    "audit": "blind-audit-2026-10-17",
+    "audit_items": 90,
+    "verdicts": {
+      "A:borderline": 8,
+      "A:no": 5,
+      "A:yes": 17,
+      "B-single:borderline": 2,
+      "B-single:no": 3,
+      "B-single:yes": 10,
+      "B-staged:borderline": 5,
+      "B-staged:no": 12,
+      "B-staged:yes": 13,
+      "C:yes": 15
+    },
+    "rows_removed": 5,
+    "rows_dont_care": 8,
+    "rows_added": 23,
+    "rows_added_dont_care": 7,
+    "roles_fallback": [],
+    "quotes_not_found": [],
+    "known_bias": "Only false positives of the two arms sampled in the audit (staged gpt-6-luna with prompt set technique-staged-v1, single gpt-6-luna) could be credited: 17b raises those arms' precision slightly relative to any other arm, whose distinct false positives were never audited. Pool A removals and dont_care rows apply to every arm alike."
+  },
+  "frozen_with": {
+    "taxonomy_path": "taxonomy/taxonomy-v0.9.yaml",
+    "taxonomy_sha256": "52815d3bdebf0fccfa5ffc8f31190dc4ca4ab40f27df9d5b7dcdd5466fe71cf2",
+    "taxonomy_version": "0.9",
+    "rubric": "rubric-v0.9-a",
+    "rubric_digest": "c1551b8bf0283591ea318f535d20ad6e9e5468cdee2b39a7f122c15fbe6b3e52",
+    "prompt_set": "technique-staged-v1",
+    "prompt_digests": {
+      "single": {
+        "single": "20de8cdf8a87098766aeb2a029c8b52e51f9f95ab45b4a474a49aa03f2d1d716"
+      },
+      "sweep": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "sweep": "3a9d1d8067fa2355032ed5d9abc6c3a4e964df411ef994deb008eabc4a72fc91"
+      },
+      "staged": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "select": "3b26b5dded7c3b161d0a7acbde858c0eefa5f68575c3dd39204669d33ddd8ede",
+        "grade": "d4d5568ad2d80d0c092c4ee41898f35073d9a04020036e2f1dba5a4fb3694af4"
+      },
+      "lexical": {
+        "grade": "d4d5568ad2d80d0c092c4ee41898f35073d9a04020036e2f1dba5a4fb3694af4"
+      }
+    },
+    "segmenter_version": "seg-v1",
+    "lexical_version": "lex-v2"
+  }
+}

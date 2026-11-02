@@ -1,0 +1,1292 @@
+# data_quality_2026_10.yaml - data-quality fixes from the review of release 2026-10-27 (approved 2026-10-30; D768, D772, D774).
+#
+# Input to `stack overrides add` (a mapping of targets, as lineage_origins.yaml; docs/howto/overrides.md); no stage reads
+# it from here. The import is an operator step at build time:
+#   stack overrides add configs/overrides/data_quality_2026_10.yaml --out data/overrides/<series>/ --dry-run   # writes nothing
+#   stack overrides add configs/overrides/data_quality_2026_10.yaml --out data/overrides/<series>/ --comment data-quality
+# Independent of the other files of this directory (no shared override id, document or source). Validated by
+# tests/test_overrides_data_quality.py. author: data-quality-2026-10 (configs/releases/dataset/overrides-public.yaml
+# maps it to its public author and method). Ids and stored values were checked against the documents head of
+# 2026-10-23 (the store copy the 2026-10-27 candidate was exported from).
+#
+# fields (title-2026-10-30-<doc>, doctype-2026-10-30-<doc>): 85 bibliographic fixes of 84 documents, which D759 had
+# made at export time (configs/releases/dataset/corrections.yaml, removed): 42 card titles derived from a URL slug
+# that lost the dots of a version number, 7 with the document word appended twice (one of them also lost dots), 9
+# OpenAI deploymentsafety titles with the listing's date line and description run in, 8 documents headed "Model Card"
+# that their listing typed system_card, 17 NULL doc_types of forum-post links (lesswrong.com/lw/, the Intelligent Agent
+# Foundations forum) and 3 of hand-added arXiv papers. Each note: the public sentence, then `Rule: <reasons>.` (the rule
+# the value follows, checked by the test) and `Stored: <JSON>.` (the value the store held). Since collect.cards
+# derives these titles and types right for new sources (D759), a fix is needed only for the stored ones.
+# Effect at the next build: a changed title or doc_type changes the document's fields_digest, so gather returns the
+# 84 documents to `identified` and triage scopes them again. All 84 are `fetch` by a gate rule (64 *_cards documents:
+# frontier_lab_posts; 17 links_url: selected_links; 3 manual_paper: manual_accept), so no decision changes; since D724
+# the asker still asks each scoped row the triage question once (a signal, 84 calls of the triage role), and acquire
+# re-points them without a fetch. No other annotation's basis reads these fields (the screen and the other annotate
+# workflows key their work on the text), so nothing else is asked again.
+#
+# identity (merge-2026-10-30-<page doc>): 152 merges of 305 documents, each a lab or safety-org blog page (or a card
+# page) and the forum copy of it that no detector joined: 132 crossposts (same title, published within 7 days or
+# undated, no byline conflict, at least 70 % of one copy's text found in the other; most lab blogs carry no byline, so
+# post_title_author cannot join them), 14 linkposts to the page's former address (a site moved its posts; the URL
+# rules MOVED_POST_PATHS of stack/urls.py, D772, give a page row that address as a key, but only rows collected from
+# now on or re-keyed with `stack migrate rekey`, so the stored pairs need these merges) and 6 that are both. One merge
+# joins three documents (two forum posts linking OpenAI's former superalignment URL, both copies of the page). Each
+# note: the public first sentence, `Rule: <crosspost, linkpost_moved_url>.`, the text containment of the pair, the
+# former URL. Effect at the next build (simulated on the 2026-10-23 head with gather's and acquire's own functions):
+# the survivor is the earliest-observed anchor (107 pages, 45 forum posts); the 153 others retire into it
+# (former_doc_ids). The merged metadata ranks the forum member first (PROVIDER_RANK), as for the 159 forum+blog
+# documents the detectors joined already: 108 survivors change (byline 108, date 107, title 81, doc_type 107: 106
+# lab_blog and 1 framework_policy become forum_post). Their fields_digest changes, so triage asks each once (108
+# signal calls; every survivor's primary role is ok, so no decision changes). In the same 108 the current text moves
+# to the forum copy's (acquire's pointer rule), so every text workflow's work key (source and text digest) becomes the
+# absorbed document's own, whose answers exist: no screen, technique_staged, model_roles or affiliation ask.
+#
+# technique_staged (ts-2026-10-30-<doc>): 4 row overrides that drop the 5 technique rows (4 forum posts,
+# chain-of-thought-monitoring 4, rlhf 1) whose only quote is the rubric's worked example ("If I had a research budget
+# I would put all of it on monitoring reasoni…", cut here), which the model copied from the prompt: every such quote
+# was flagged quote_unverified. The review counted 6 rows in 5 posts; the 2026-10-25 technique_staged file and the
+# 2026-10-27 candidate hold 5 rows in 4. A document-grain workflow has no item override, so each entry is the model's
+# whole payload (the 2026-10-25 file) minus those rows (`row: true`); the document whose only row it was gets the flag
+# no_techniques_found, as an answer with no rows has; `repairs` stay as the model's run wrote them. Scoped to the
+# document's live members and its current text (scope.basis_digest): a new text or member set leaves the override
+# stale and the model's answer stands. Provenance: the overrides are the decision (D717), so these four rows carry the
+# overrides' fingerprint as config_digest and match no pinned technique_staged config; the note names the model's
+# evidence id and config. The release ships each as an annotation_replacement, its quotes capped like any row's. No
+# ask at any stage.
+fields:
+- {override_id: title-2026-10-30-sacr511wdqb3j, doc_id: sacr511wdqb3j, field: title,
+   value: "Gpt 5 System Card Addendum Gpt 5.1",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored and a doubled document word dropped (the title derived from the page's URL). Rule: doc_word_twice, version_dots. Stored: \"Gpt 5 System Card Addendum Gpt 5 1 System Card\"."}
+- {override_id: title-2026-10-30-s534sfqtnqabq, doc_id: s534sfqtnqabq, field: title,
+   value: "Gpt Oss Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: a doubled document word dropped (the title derived from the page's URL already named the card). Rule: doc_word_twice. Stored: \"Gpt Oss Model Card System Card\"."}
+- {override_id: title-2026-10-30-sb702cnx4v3qm, doc_id: sb702cnx4v3qm, field: title,
+   value: "Gpt 5 System Card Sensitive Conversations",
+   author: data-quality-2026-10,
+   note: "Card title: a doubled document word dropped (the title derived from the page's URL already named the card). Rule: doc_word_twice. Stored: \"Gpt 5 System Card Sensitive Conversations System Card\"."}
+- {override_id: title-2026-10-30-shr5sde01gj0k, doc_id: shr5sde01gj0k, field: title,
+   value: "Gpt 4O Image Generation System Card Addendum",
+   author: data-quality-2026-10,
+   note: "Card title: a doubled document word dropped (the title derived from the page's URL already named the card). Rule: doc_word_twice. Stored: \"Gpt 4O Image Generation System Card Addendum System Card\"."}
+- {override_id: title-2026-10-30-ssbjme2dckbkw, doc_id: ssbjme2dckbkw, field: title,
+   value: "O3 O4 Mini Codex System Card Addendum",
+   author: data-quality-2026-10,
+   note: "Card title: a doubled document word dropped (the title derived from the page's URL already named the card). Rule: doc_word_twice. Stored: \"O3 O4 Mini Codex System Card Addendum System Card\"."}
+- {override_id: title-2026-10-30-sttdgf35kws0a, doc_id: sttdgf35kws0a, field: title,
+   value: "O3 O4 Mini System Card Addendum Operator O3",
+   author: data-quality-2026-10,
+   note: "Card title: a doubled document word dropped (the title derived from the page's URL already named the card). Rule: doc_word_twice. Stored: \"O3 O4 Mini System Card Addendum Operator O3 System Card\"."}
+- {override_id: title-2026-10-30-sz51pg68nkfqd, doc_id: sz51pg68nkfqd, field: title,
+   value: "Gpt 5 System Card Addendum Gpt 5 Codex",
+   author: data-quality-2026-10,
+   note: "Card title: a doubled document word dropped (the title derived from the page's URL already named the card). Rule: doc_word_twice. Stored: \"Gpt 5 System Card Addendum Gpt 5 Codex System Card\"."}
+- {override_id: title-2026-10-30-s05syb9m5ra6v, doc_id: s05syb9m5ra6v, field: title,
+   value: "GPT-5.6 Preview System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Jun 26, 2026GPT-5.6 Preview System CardGPT-5.6 is a new family of three models: Sol, our new flagship model; Terra, a capable lower-cost option; and Luna, our…\"."}
+- {override_id: title-2026-10-30-s577dmwj4fava, doc_id: s577dmwj4fava, field: title,
+   value: "GPT-5.6 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Jul 09, 2026GPT-5.6 System CardGPT-5.6 is a new family of three models: Sol, our new flagship model; Terra, a capable lower-cost option; and Luna, our…\"."}
+- {override_id: title-2026-10-30-s6550z0pyepk4, doc_id: s6550z0pyepk4, field: title,
+   value: "GPT-Live System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Jul 08, 2026GPT-Live System CardGPT-Live-1 and GPT-Live-1 mini are a new generation of voice models designed to make conversations with AI feel more…\"."}
+- {override_id: title-2026-10-30-s9r41yj7y08yh, doc_id: s9r41yj7y08yh, field: title,
+   value: "ChatGPT Images 2.5 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Sep 08, 2026ChatGPT Images 2.5 System Card\"."}
+- {override_id: title-2026-10-30-se64qyhkqspr8, doc_id: se64qyhkqspr8, field: title,
+   value: "GPT-6 Sol and GPT-6 Luna: October 2026 update",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Oct 07, 2026GPT-6 Sol and GPT-6 Luna: October 2026 update\"."}
+- {override_id: title-2026-10-30-sm5v1zd6smav7, doc_id: sm5v1zd6smav7, field: title,
+   value: "Addendum to GPT-6 Astra System Card: GPT-6.1 Sol",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Sep 29, 2026Addendum to GPT-6 Astra System Card: GPT-6.1 SolSafety evaluations and safeguards for GPT-6.1 Sol, an addendum to the GPT-6 Astra system card.\"."}
+- {override_id: title-2026-10-30-sq18k97djzgcs, doc_id: sq18k97djzgcs, field: title,
+   value: "GPT-Live-1.1 system card",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Oct 15, 2026GPT-Live-1.1 system card\"."}
+- {override_id: title-2026-10-30-sq7v68zx1eqwx, doc_id: sq7v68zx1eqwx, field: title,
+   value: "GPT-6 Astra System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Sep 03, 2026GPT-6 Astra System CardToday, we are releasing GPT-6 Astra, the most capable model we have ever broadly deployed. Astra is our first model to…\"."}
+- {override_id: title-2026-10-30-srmv2rnkgmdcr, doc_id: srmv2rnkgmdcr, field: title,
+   value: "GPT-5.6 — August Updates",
+   author: data-quality-2026-10,
+   note: "Card title: the listing's date line and description, which had run into the title, removed. Rule: listing_run_in. Stored: \"Aug 06, 2026GPT-5.6 — August UpdatesStarting today, we’re updating ChatGPT with a more capable model and expanding access for everyone. Free and Go users…\"."}
+- {override_id: title-2026-10-30-s0c08vy0xx2mp, doc_id: s0c08vy0xx2mp, field: title,
+   value: "Gemini 3.5 Audio Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 5 Audio Model Card\"."}
+- {override_id: title-2026-10-30-s1avff0h32k0s, doc_id: s1avff0h32k0s, field: title,
+   value: "Claude Opus 4.7 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Opus 4 7 System Card\"."}
+- {override_id: title-2026-10-30-s2jthwxgssjgs, doc_id: s2jthwxgssjgs, field: title,
+   value: "Claude Sonnet 4.6 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Sonnet 4 6 System Card\"."}
+- {override_id: title-2026-10-30-s32763hsqha81, doc_id: s32763hsqha81, field: title,
+   value: "Veo 3.1 Lite Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Veo 3 1 Lite Model Card\"."}
+- {override_id: title-2026-10-30-s3p06bhr0g8g4, doc_id: s3p06bhr0g8g4, field: title,
+   value: "Claude Opus 5.5 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Opus 5 5 System Card\"."}
+- {override_id: title-2026-10-30-s4h46ry89yskm, doc_id: s4h46ry89yskm, field: title,
+   value: "Gemini 2.5 Computer Use Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 5 Computer Use Model Card\"."}
+- {override_id: title-2026-10-30-s4rpe5dg8v2w1, doc_id: s4rpe5dg8v2w1, field: title,
+   value: "Gemini 3.6 Flash Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 6 Flash Model Card\"."}
+- {override_id: title-2026-10-30-s5nzj3h6nef6n, doc_id: s5nzj3h6nef6n, field: title,
+   value: "Llama 3.2 Vision Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Llama 3 2 Vision Model Card\"."}
+- {override_id: title-2026-10-30-s69bs1ghf48c4, doc_id: s69bs1ghf48c4, field: title,
+   value: "Gemini 2.0 Flash Lite Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 0 Flash Lite Model Card\"."}
+- {override_id: title-2026-10-30-s6x5wbbv56anr, doc_id: s6x5wbbv56anr, field: title,
+   value: "Gpt 5.1 Codex Max System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gpt 5 1 Codex Max System Card\"."}
+- {override_id: title-2026-10-30-s7kftxs7qvhbs, doc_id: s7kftxs7qvhbs, field: title,
+   value: "Gemini 3.8 Flash Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 8 Flash Model Card\"."}
+- {override_id: title-2026-10-30-s9p2zcmxc5qgg, doc_id: s9p2zcmxc5qgg, field: title,
+   value: "Gemini 3.1 Flash Audio Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 1 Flash Audio Model Card\"."}
+- {override_id: title-2026-10-30-s9zmaakszdxpc, doc_id: s9zmaakszdxpc, field: title,
+   value: "Gemini Robotics Er 1.6 Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini Robotics Er 1 6 Model Card\"."}
+- {override_id: title-2026-10-30-sbcsdjqgx5w89, doc_id: sbcsdjqgx5w89, field: title,
+   value: "Llama 3.1 Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Llama 3 1 Model Card\"."}
+- {override_id: title-2026-10-30-scmsd0xk0xdcx, doc_id: scmsd0xk0xdcx, field: title,
+   value: "Llama 3.3 Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Llama 3 3 Model Card\"."}
+- {override_id: title-2026-10-30-sdb6y2hbztq57, doc_id: sdb6y2hbztq57, field: title,
+   value: "Gemini 2.0 Flash Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 0 Flash Model Card\"."}
+- {override_id: title-2026-10-30-se7yn7ngsqv5d, doc_id: se7yn7ngsqv5d, field: title,
+   value: "Gemini 2.5 Deep Think Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 5 Deep Think Model Card\"."}
+- {override_id: title-2026-10-30-sf6rdrp9505ba, doc_id: sf6rdrp9505ba, field: title,
+   value: "Gpt 5.2 Codex System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gpt 5 2 Codex System Card\"."}
+- {override_id: title-2026-10-30-sgvqkxyz6peaj, doc_id: sgvqkxyz6peaj, field: title,
+   value: "Lyria 3.5 Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Lyria 3 5 Model Card\"."}
+- {override_id: title-2026-10-30-shez7mkd20g30, doc_id: shez7mkd20g30, field: title,
+   value: "Gemini 3.5 Flash Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 5 Flash Model Card\"."}
+- {override_id: title-2026-10-30-shvn78zh5pdzg, doc_id: shvn78zh5pdzg, field: title,
+   value: "Gemini 2.5 Flash Lite Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 5 Flash Lite Model Card\"."}
+- {override_id: title-2026-10-30-sja902hx5ng8m, doc_id: sja902hx5ng8m, field: title,
+   value: "Claude Sonnet 5.5 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Sonnet 5 5 System Card\"."}
+- {override_id: title-2026-10-30-skec8bffr40gj, doc_id: skec8bffr40gj, field: title,
+   value: "Gpt 5.3 Codex System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gpt 5 3 Codex System Card\"."}
+- {override_id: title-2026-10-30-skg4ejpkm7dqx, doc_id: skg4ejpkm7dqx, field: title,
+   value: "Gemini 2.5 Pro Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 5 Pro Model Card\"."}
+- {override_id: title-2026-10-30-skv4x3apnv88x, doc_id: skv4x3apnv88x, field: title,
+   value: "Nano Banana 2.1 Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Nano Banana 2 1 Model Card\"."}
+- {override_id: title-2026-10-30-sn4f23cjrr7fp, doc_id: sn4f23cjrr7fp, field: title,
+   value: "Claude Opus 4.8 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Opus 4 8 System Card\"."}
+- {override_id: title-2026-10-30-sncqngh6ayxxr, doc_id: sncqngh6ayxxr, field: title,
+   value: "Claude Opus 4.6 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Opus 4 6 System Card\"."}
+- {override_id: title-2026-10-30-spwc5127aad1j, doc_id: spwc5127aad1j, field: title,
+   value: "Gemini 3.1 Flash Lite Image Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 1 Flash Lite Image Model Card\"."}
+- {override_id: title-2026-10-30-sqpx808wvegnh, doc_id: sqpx808wvegnh, field: title,
+   value: "Gemini 3.7 Flash Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 7 Flash Model Card\"."}
+- {override_id: title-2026-10-30-sr37q76d2g04b, doc_id: sr37q76d2g04b, field: title,
+   value: "Gpt 5.4 Thinking System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gpt 5 4 Thinking System Card\"."}
+- {override_id: title-2026-10-30-ssc1qn7nv4mx7, doc_id: ssc1qn7nv4mx7, field: title,
+   value: "Gemini 3.5 Flash Lite Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 5 Flash Lite Model Card\"."}
+- {override_id: title-2026-10-30-stx5aaqac0rkk, doc_id: stx5aaqac0rkk, field: title,
+   value: "Llama 3.2 Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Llama 3 2 Model Card\"."}
+- {override_id: title-2026-10-30-svhyb3jssjhe6, doc_id: svhyb3jssjhe6, field: title,
+   value: "Claude Fable 5.1 Mythos 5.1 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Fable 5 1 Mythos 5 1 System Card\"."}
+- {override_id: title-2026-10-30-swtqrynf923xz, doc_id: swtqrynf923xz, field: title,
+   value: "Gpt 5.5 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gpt 5 5 System Card\"."}
+- {override_id: title-2026-10-30-swwh6p1cq3bre, doc_id: swwh6p1cq3bre, field: title,
+   value: "Claude Haiku 5.5 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Claude Haiku 5 5 System Card\"."}
+- {override_id: title-2026-10-30-sxapxgdycb1m2, doc_id: sxapxgdycb1m2, field: title,
+   value: "Gemini 2.5 Flash Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 2 5 Flash Model Card\"."}
+- {override_id: title-2026-10-30-sxqx91djbygp7, doc_id: sxqx91djbygp7, field: title,
+   value: "Gemini 3.1 Pro Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 1 Pro Model Card\"."}
+- {override_id: title-2026-10-30-sy93n8zbgd44q, doc_id: sy93n8zbgd44q, field: title,
+   value: "Gemini 3.1 Flash Lite Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 1 Flash Lite Model Card\"."}
+- {override_id: title-2026-10-30-syetv5y4tyzey, doc_id: syetv5y4tyzey, field: title,
+   value: "Gpt 4.5 System Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gpt 4 5 System Card\"."}
+- {override_id: title-2026-10-30-symyvje2effh6, doc_id: symyvje2effh6, field: title,
+   value: "Gemini 3.8 Audio Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 8 Audio Model Card\"."}
+- {override_id: title-2026-10-30-sz5n793mnrf19, doc_id: sz5n793mnrf19, field: title,
+   value: "Gemini 3.1 Flash Image Model Card",
+   author: data-quality-2026-10,
+   note: "Card title: the dots of its version number restored (the title derived from the page's URL had lost them). Rule: version_dots. Stored: \"Gemini 3 1 Flash Image Model Card\"."}
+- {override_id: doctype-2026-10-30-smm56r47jp4vx, doc_id: smm56r47jp4vx, field: doc_type,
+   value: "preprint",
+   author: data-quality-2026-10,
+   note: "Document type: an arXiv paper, a preprint as arXiv records are everywhere else; the hand-added paper gave no type. Rule: arxiv_preprint. Stored: null."}
+- {override_id: doctype-2026-10-30-sszs5p06et96d, doc_id: sszs5p06et96d, field: doc_type,
+   value: "preprint",
+   author: data-quality-2026-10,
+   note: "Document type: an arXiv paper, a preprint as arXiv records are everywhere else; the hand-added paper gave no type. Rule: arxiv_preprint. Stored: null."}
+- {override_id: doctype-2026-10-30-sxnnhfcb6yntp, doc_id: sxnnhfcb6yntp, field: doc_type,
+   value: "preprint",
+   author: data-quality-2026-10,
+   note: "Document type: an arXiv paper, a preprint as arXiv records are everywhere else; the hand-added paper gave no type. Rule: arxiv_preprint. Stored: null."}
+- {override_id: doctype-2026-10-30-s6a9y7fy6s10g, doc_id: s6a9y7fy6s10g, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-s82sgp1tjy46j, doc_id: s82sgp1tjy46j, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-s8891xhbhegjm, doc_id: s8891xhbhegjm, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-sa1v8n7vdyrv4, doc_id: sa1v8n7vdyrv4, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-sa4sfp812esgn, doc_id: sa4sfp812esgn, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-sayays1r7cstc, doc_id: sayays1r7cstc, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-seq069ap17sfn, doc_id: seq069ap17sfn, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-sfn6adw2ycft3, doc_id: sfn6adw2ycft3, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-shxvfwwwdyf3x, doc_id: shxvfwwwdyf3x, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-sjs5az22y45p2, doc_id: sjs5az22y45p2, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-skvfydv5wehad, doc_id: skvfydv5wehad, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-spgbyk1mk1cby, doc_id: spgbyk1mk1cby, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-spwnyx153dvc5, doc_id: spwnyx153dvc5, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-svgj81j9en3y8, doc_id: svgj81j9en3y8, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-swzrzq09yfzqe, doc_id: swzrzq09yfzqe, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-sx80nsfct1taw, doc_id: sx80nsfct1taw, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-syaq5d7rbn3n4, doc_id: syaq5d7rbn3n4, field: doc_type,
+   value: "forum_post",
+   author: data-quality-2026-10,
+   note: "Document type: the link is a forum post; the hand-added or newsletter-linked link gave no type. Rule: forum_post_url. Stored: null."}
+- {override_id: doctype-2026-10-30-s534sfqtnqabq, doc_id: s534sfqtnqabq, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-s71ydzkjcd86g, doc_id: s71ydzkjcd86g, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-sabn451j8dg6z, doc_id: sabn451j8dg6z, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-sgyb45hbxdjvf, doc_id: sgyb45hbxdjvf, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-sqph0m164j9je, doc_id: sqph0m164j9je, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-sqxqkg4y81srg, doc_id: sqxqkg4y81srg, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-ssew27p5f858d, doc_id: ssew27p5f858d, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+- {override_id: doctype-2026-10-30-sw7z7fwqbcxby, doc_id: sw7z7fwqbcxby, field: doc_type,
+   value: "model_card",
+   author: data-quality-2026-10,
+   note: "Document type: the document calls itself a model card, while its listing types every item a system card. Rule: model_card. Stored: \"system_card\"."}
+identity:
+- {override_id: merge-2026-10-30-syqm256ev7cax, value: merge, key: {source_ids: [s0090st9d756h, syqm256ev7cax]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.78."}
+- {override_id: merge-2026-10-30-s01a0b3qjftvp, value: merge, key: {source_ids: [s01a0b3qjftvp, s9bs1gqcd676t]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.84."}
+- {override_id: merge-2026-10-30-s03jjbbhjmwec, value: merge, key: {source_ids: [s03jjbbhjmwec, sag87d2k97v2k]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.93."}
+- {override_id: merge-2026-10-30-se46dmvv66zqt, value: merge, key: {source_ids: [s040w2vj6qsvb, se46dmvv66zqt]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.67."}
+- {override_id: merge-2026-10-30-s07h54z217w84, value: merge, key: {source_ids: [s07h54z217w84, s2wjcgx95tt0m]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.85 and 0.59."}
+- {override_id: merge-2026-10-30-s6kwsrpyhm5xe, value: merge, key: {source_ids: [s08msn806vw8w, s6kwsrpyhm5xe]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.84."}
+- {override_id: merge-2026-10-30-sewbndtc73413, value: merge, key: {source_ids: [s09axsk6yfa36, sewbndtc73413]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.92 and 0.34."}
+- {override_id: merge-2026-10-30-sy4azdymsagg5, value: merge, key: {source_ids: [s0ehb3f8bxwh1, sy4azdymsagg5]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.98."}
+- {override_id: merge-2026-10-30-sjzznm8g0xp9a, value: merge, key: {source_ids: [s0hv61apnm9mp, sjzznm8g0xp9a]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.90 and 0.64."}
+- {override_id: merge-2026-10-30-s0p3hv9580ncx, value: merge, key: {source_ids: [s0p3hv9580ncx, sqrb0kn6c3fh4]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.86."}
+- {override_id: merge-2026-10-30-s0t3xeargfdkr, value: merge, key: {source_ids: [s0t3xeargfdkr, sc6426xah95yb]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.86 and 0.78."}
+- {override_id: merge-2026-10-30-sf97rgjf280e1, value: merge, key: {source_ids: [s0ttmdv9rcnxs, sf97rgjf280e1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.14 and 0.82."}
+- {override_id: merge-2026-10-30-skxxnyq644bre, value: merge, key: {source_ids: [s0va3pbhaqsy3, skxxnyq644bre]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.56."}
+- {override_id: merge-2026-10-30-stewv2dma6bdg, value: merge, key: {source_ids: [s0wxer7xm2k5w, stewv2dma6bdg]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.69 and 0.80."}
+- {override_id: merge-2026-10-30-snftyntk7n48v, value: merge, key: {source_ids: [s15pwxrw83r8v, snftyntk7n48v]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.89 and 0.25."}
+- {override_id: merge-2026-10-30-s18b2q8v6zw4m, value: merge, key: {source_ids: [s18b2q8v6zw4m, shxs7r0rj8ccg]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the page's text under the same title and links it at its former address. Rule: crosspost, linkpost_moved_url. Text containment (each copy's share found in the other): 0.96 and 0.70. Former URL: https://apolloresearch.ai/blog/a-starter-guide-for-evals -> https://apolloresearch.ai/science/a-starter-guide-for-evals."}
+- {override_id: merge-2026-10-30-s1axkxaan7q1h, value: merge, key: {source_ids: [s1axkxaan7q1h, sx6dnecbzefbs]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.88 and 0.88."}
+- {override_id: merge-2026-10-30-shthmtr3k3fsp, value: merge, key: {source_ids: [s1d7jmc6c807t, shthmtr3k3fsp]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.81."}
+- {override_id: merge-2026-10-30-scbr7rdy5mb4x, value: merge, key: {source_ids: [s1de3rjk0d7wb, scbr7rdy5mb4x]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.84 and 0.64."}
+- {override_id: merge-2026-10-30-s1evc6x7awwky, value: merge, key: {source_ids: [s1evc6x7awwky, snzz25srr68hs]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.84."}
+- {override_id: merge-2026-10-30-s1me3w8dj1as8, value: merge, key: {source_ids: [s1me3w8dj1as8, shskezk9kjwhw]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://evals.alignment.org/blog/2023-09-26-rsp -> https://metr.org/blog/2023-09-26-rsp."}
+- {override_id: merge-2026-10-30-sc94zq1vxmz1t, value: merge, key: {source_ids: [s1njv6s0atnba, sc94zq1vxmz1t]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.99."}
+- {override_id: merge-2026-10-30-sqmz7rp7rw412, value: merge, key: {source_ids: [s1qa3mkdzakqy, sqmz7rp7rw412]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.87 and 0.49."}
+- {override_id: merge-2026-10-30-s1t08949sfwga, value: merge, key: {source_ids: [s1t08949sfwga, ste2x4apqg6qq]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.94 and 0.54."}
+- {override_id: merge-2026-10-30-speqtm8d5w69c, value: merge, key: {source_ids: [s23zxrwwcc34n, speqtm8d5w69c]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.77."}
+- {override_id: merge-2026-10-30-s2q4adjd2e5dd, value: merge, key: {source_ids: [s25wgazh2470y, s2q4adjd2e5dd]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://redwoodresearch.substack.com/p/takeaways-from-sketching-a-control -> https://blog.redwoodresearch.org/p/takeaways-from-sketching-a-control."}
+- {override_id: merge-2026-10-30-sx5dyjwj6kyy2, value: merge, key: {source_ids: [s26718285pyvv, sx5dyjwj6kyy2]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.11 and 0.78."}
+- {override_id: merge-2026-10-30-s29xk1bjhq0t4, value: merge, key: {source_ids: [s29xk1bjhq0t4, sftcx689e5y5k]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.63."}
+- {override_id: merge-2026-10-30-s2dc9r67hpqew, value: merge, key: {source_ids: [s2dc9r67hpqew, sbya09r55dzgm, stzgarstgb7xv]},
+   author: data-quality-2026-10,
+   note: "Crosspost: two forum posts repeat the page's text, both linking it at its former address. Rule: crosspost, linkpost_moved_url. Text containment (each copy's share found in the other): 0.96 and 0.32. Former URL: https://openai.com/blog/introducing-superalignment -> https://openai.com/index/introducing-superalignment."}
+- {override_id: merge-2026-10-30-sgj4a9heff6jp, value: merge, key: {source_ids: [s2ghx3sqxyw31, sgj4a9heff6jp]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.96."}
+- {override_id: merge-2026-10-30-sb0v36bq2266z, value: merge, key: {source_ids: [s2nenp446wf1j, sb0v36bq2266z]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.94."}
+- {override_id: merge-2026-10-30-sn22ydadvqr8j, value: merge, key: {source_ids: [s2spknjex352b, sn22ydadvqr8j]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.92 and 0.82."}
+- {override_id: merge-2026-10-30-s36516zk8vtyn, value: merge, key: {source_ids: [s36516zk8vtyn, s59zqy7kbgycy]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://redwoodresearch.substack.com/p/blocking-live-failures-with-synchronous -> https://blog.redwoodresearch.org/p/blocking-live-failures-with-synchronous."}
+- {override_id: merge-2026-10-30-s36ecbnyj709f, value: merge, key: {source_ids: [s36ecbnyj709f, s54a61rxttzmd]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.46."}
+- {override_id: merge-2026-10-30-sd610xk5x8j7b, value: merge, key: {source_ids: [s39t9qgasrt7x, sd610xk5x8j7b]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.93 and 0.86."}
+- {override_id: merge-2026-10-30-s3c2vkdqctww3, value: merge, key: {source_ids: [s3c2vkdqctww3, sj7zgk2vy2h1n]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.81 and 0.67."}
+- {override_id: merge-2026-10-30-sqafr39dqx2d3, value: merge, key: {source_ids: [s3d6efjh17h1m, sqafr39dqx2d3]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.97."}
+- {override_id: merge-2026-10-30-s3g2vrcwsj7ca, value: merge, key: {source_ids: [s3g2vrcwsj7ca, sn6zrqygyrtqs]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.92."}
+- {override_id: merge-2026-10-30-srw51x1y88zn4, value: merge, key: {source_ids: [s3gx90178k59t, srw51x1y88zn4]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.87 and 0.89."}
+- {override_id: merge-2026-10-30-s3jbpffwsk1me, value: merge, key: {source_ids: [s3jbpffwsk1me, safcg5kfg4t32]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.96."}
+- {override_id: merge-2026-10-30-s3kd8g9xkt032, value: merge, key: {source_ids: [s3kd8g9xkt032, s7rsdn1f2cwy1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.75 and 0.56."}
+- {override_id: merge-2026-10-30-sbne2y9m68ae8, value: merge, key: {source_ids: [s3p1212mrsxdq, sbne2y9m68ae8]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.79."}
+- {override_id: merge-2026-10-30-s3ps162a9kd0a, value: merge, key: {source_ids: [s3ps162a9kd0a, sytz0ks9m1fpg]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.93 and 0.19."}
+- {override_id: merge-2026-10-30-sjeeqyjnt3qb6, value: merge, key: {source_ids: [s3qcg1x4k6128, sjeeqyjnt3qb6]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.99."}
+- {override_id: merge-2026-10-30-s41q0fracht8c, value: merge, key: {source_ids: [s41q0fracht8c, sf7sksbzpdk8g]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.99."}
+- {override_id: merge-2026-10-30-ss0awecvtn0gd, value: merge, key: {source_ids: [s43032tnx3mkz, ss0awecvtn0gd]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.55."}
+- {override_id: merge-2026-10-30-s43cv49jm67am, value: merge, key: {source_ids: [s43cv49jm67am, s5qacmme3tx0g]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.90 and 0.89."}
+- {override_id: merge-2026-10-30-s491ds3pm3d7c, value: merge, key: {source_ids: [s491ds3pm3d7c, snw924g8rmt8v]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://redwoodresearch.substack.com/p/when-does-capability-elicitation -> https://blog.redwoodresearch.org/p/when-does-capability-elicitation."}
+- {override_id: merge-2026-10-30-s49hztatq7mbk, value: merge, key: {source_ids: [s49hztatq7mbk, s6ak58c156ezd]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.92 and 0.94."}
+- {override_id: merge-2026-10-30-smth776np0mz9, value: merge, key: {source_ids: [s4a6trs3cfw4v, smth776np0mz9]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.75."}
+- {override_id: merge-2026-10-30-sq5fgbx74m5gg, value: merge, key: {source_ids: [s4je9198tejqm, sq5fgbx74m5gg]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.84 and 0.89."}
+- {override_id: merge-2026-10-30-szzv7ndkeda02, value: merge, key: {source_ids: [s4k07v342r2fh, szzv7ndkeda02]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.91 and 0.90."}
+- {override_id: merge-2026-10-30-s5mab9cjc4bsf, value: merge, key: {source_ids: [s4zscte5d6ev4, s5mab9cjc4bsf]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.91."}
+- {override_id: merge-2026-10-30-s6kw0j83fx9p1, value: merge, key: {source_ids: [s50y2ab70hgj3, s6kw0j83fx9p1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.83 and 0.66."}
+- {override_id: merge-2026-10-30-s544mt2ny5x6g, value: merge, key: {source_ids: [s544mt2ny5x6g, svg8369gq74c8]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.87."}
+- {override_id: merge-2026-10-30-swq7fzwa3jaag, value: merge, key: {source_ids: [s54dzqmw092ah, swq7fzwa3jaag]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.94 and 0.68."}
+- {override_id: merge-2026-10-30-s58h65csxdzfv, value: merge, key: {source_ids: [s58h65csxdzfv, sq5peb0x2a13g]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.90."}
+- {override_id: merge-2026-10-30-s5dampk2hhr1z, value: merge, key: {source_ids: [s5dampk2hhr1z, szha07h6fj99q]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.71."}
+- {override_id: merge-2026-10-30-sjsrprzey0j8q, value: merge, key: {source_ids: [s5mpebs3qknyt, sjsrprzey0j8q]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.90."}
+- {override_id: merge-2026-10-30-s5n7m1xrsywy1, value: merge, key: {source_ids: [s5n7m1xrsywy1, sjdreykxyek55]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.91 and 0.65."}
+- {override_id: merge-2026-10-30-sfh8ar1ftzfv4, value: merge, key: {source_ids: [s5nfwm5rf8mwb, sfh8ar1ftzfv4]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.78."}
+- {override_id: merge-2026-10-30-smbfaj1vh1z81, value: merge, key: {source_ids: [s5rh2dyvr4bw9, smbfaj1vh1z81]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.97."}
+- {override_id: merge-2026-10-30-s91e8wvc2ahcp, value: merge, key: {source_ids: [s5xrvvtckh7qs, s91e8wvc2ahcp]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://redwoodresearch.substack.com/p/fields-that-i-reference-when-thinking -> https://blog.redwoodresearch.org/p/fields-that-i-reference-when-thinking."}
+- {override_id: merge-2026-10-30-s920zekktwg3d, value: merge, key: {source_ids: [s61bvp5887y92, s920zekktwg3d]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.99."}
+- {override_id: merge-2026-10-30-s6men39374m8s, value: merge, key: {source_ids: [s6m56zjxr160r, s6men39374m8s]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.94 and 0.96."}
+- {override_id: merge-2026-10-30-shyh80hab16v1, value: merge, key: {source_ids: [s71604hx6e3jp, shyh80hab16v1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.63."}
+- {override_id: merge-2026-10-30-s72fdkk1wj7ea, value: merge, key: {source_ids: [s72fdkk1wj7ea, s8j747eckh4ar]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.93."}
+- {override_id: merge-2026-10-30-sen69zx15kdpe, value: merge, key: {source_ids: [s72vt3p0n4pgg, sen69zx15kdpe]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the page's text under the same title and links it at its former address. Rule: crosspost, linkpost_moved_url. Text containment (each copy's share found in the other): 0.72 and 0.10. Former URL: https://apolloresearch.ai/blog/research-note-our-scheming-precursor-evals-had-limited-predictive-power-for-our-in-context-scheming-evals -> https://apolloresearch.ai/science/research-note-our-scheming-precursor-evals-had-limited-predictive-power-for-our-in-context-scheming-evals."}
+- {override_id: merge-2026-10-30-szf2tp4nmsk3s, value: merge, key: {source_ids: [s72ww7vnqsa10, szf2tp4nmsk3s]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.95 and 0.84."}
+- {override_id: merge-2026-10-30-s84kfkqj6ymn9, value: merge, key: {source_ids: [s7377761nw32t, s84kfkqj6ymn9]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.95 and 0.76."}
+- {override_id: merge-2026-10-30-s7d2fenb0fysh, value: merge, key: {source_ids: [s75ejr93b1bh5, s7d2fenb0fysh]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://far.ai/news/defense-in-depth -> https://far.ai/blog/defense-in-depth."}
+- {override_id: merge-2026-10-30-s75xjj0j8gqke, value: merge, key: {source_ids: [s75xjj0j8gqke, sbmyyzm3hft3a]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.08 and 0.79."}
+- {override_id: merge-2026-10-30-s7637n5xk1nfn, value: merge, key: {source_ids: [s7637n5xk1nfn, snx7tzjf6arp3]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.79."}
+- {override_id: merge-2026-10-30-s78xwev8xva67, value: merge, key: {source_ids: [s78xwev8xva67, s839gz2yfr46z]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.76."}
+- {override_id: merge-2026-10-30-sp4gkf44ja8x5, value: merge, key: {source_ids: [s7gy2fgwhtf82, sp4gkf44ja8x5]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.07 and 0.81."}
+- {override_id: merge-2026-10-30-s8039e3x2yrgp, value: merge, key: {source_ids: [s8039e3x2yrgp, sk30egrs5ntda]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.96."}
+- {override_id: merge-2026-10-30-s810h1x2z33hq, value: merge, key: {source_ids: [s810h1x2z33hq, sej94149gsmsq]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.95."}
+- {override_id: merge-2026-10-30-s8dqthnf93e08, value: merge, key: {source_ids: [s8dqthnf93e08, s9hgzwkmjmq6z]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.76."}
+- {override_id: merge-2026-10-30-syshny7hakw56, value: merge, key: {source_ids: [s8rj2st4wvkf4, syshny7hakw56]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.04 and 0.75."}
+- {override_id: merge-2026-10-30-sbgt9kqg80rj1, value: merge, key: {source_ids: [s8tj9aefjfvb8, sbgt9kqg80rj1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the page's text under the same title and links it at its former address. Rule: crosspost, linkpost_moved_url. Text containment (each copy's share found in the other): 0.91 and 0.26. Former URL: https://openai.com/research/improving-mathematical-reasoning-with-process-supervision -> https://openai.com/index/improving-mathematical-reasoning-with-process-supervision."}
+- {override_id: merge-2026-10-30-swedt909nm71r, value: merge, key: {source_ids: [s8wz1634afy6d, swedt909nm71r]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.96."}
+- {override_id: merge-2026-10-30-s8ym0wh88zmvn, value: merge, key: {source_ids: [s8ym0wh88zmvn, sjv8h70zars9k]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.13 and 0.76."}
+- {override_id: merge-2026-10-30-svkbahk1k27jw, value: merge, key: {source_ids: [s8ypq35vfay76, svkbahk1k27jw]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.84 and 0.72."}
+- {override_id: merge-2026-10-30-s92xemxxnf2vx, value: merge, key: {source_ids: [s92xemxxnf2vx, sfq4ngb8h5dzh]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.45."}
+- {override_id: merge-2026-10-30-sgnpdpwvzy4nn, value: merge, key: {source_ids: [s940ca6w20zgw, sgnpdpwvzy4nn]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.71 and 0.84."}
+- {override_id: merge-2026-10-30-sqevmrx23smpt, value: merge, key: {source_ids: [s988ahshdcxxs, sqevmrx23smpt]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.99."}
+- {override_id: merge-2026-10-30-s98b5exwq24zx, value: merge, key: {source_ids: [s98b5exwq24zx, sbawx9ehtsxgt]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.90 and 0.56."}
+- {override_id: merge-2026-10-30-s9ezy5fq5dwya, value: merge, key: {source_ids: [s9ezy5fq5dwya, ses7jzsp1s0zh]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.67."}
+- {override_id: merge-2026-10-30-s9gxekzynde9h, value: merge, key: {source_ids: [s9gxekzynde9h, sf5znjfzvqdg7]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://epochai.org/blog/trading-off-compute-in-training-and-inference -> https://epoch.ai/publications/trading-off-compute-in-training-and-inference."}
+- {override_id: merge-2026-10-30-sxf6fb5rg6h59, value: merge, key: {source_ids: [s9r667pd5fkxp, sxf6fb5rg6h59]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.67."}
+- {override_id: merge-2026-10-30-sa1etnk0tnsv3, value: merge, key: {source_ids: [sa1etnk0tnsv3, sq6wek08b30x5]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.93."}
+- {override_id: merge-2026-10-30-sa97rnhhxr8ha, value: merge, key: {source_ids: [sa97rnhhxr8ha, ssarg64q2ryn8]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.74 and 0.69."}
+- {override_id: merge-2026-10-30-stxwcmt509myb, value: merge, key: {source_ids: [sa9hymwg3tdfs, stxwcmt509myb]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.92 and 0.94."}
+- {override_id: merge-2026-10-30-sadxx0rx9f4xt, value: merge, key: {source_ids: [sadxx0rx9f4xt, st4d45javfmz1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.70."}
+- {override_id: merge-2026-10-30-safh2jmb5g6v2, value: merge, key: {source_ids: [safh2jmb5g6v2, sbcx0phznm0xs]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.85 and 0.51."}
+- {override_id: merge-2026-10-30-ssew8863tpa1s, value: merge, key: {source_ids: [saj9svkf5c4g0, ssew8863tpa1s]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.90 and 0.51."}
+- {override_id: merge-2026-10-30-sm0qv34wm54f7, value: merge, key: {source_ids: [sas3e5y850jyq, sm0qv34wm54f7]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.52."}
+- {override_id: merge-2026-10-30-sb9ymqrp2114q, value: merge, key: {source_ids: [sasj90353hp7y, sb9ymqrp2114q]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.79."}
+- {override_id: merge-2026-10-30-saymxqgkkdw4t, value: merge, key: {source_ids: [saymxqgkkdw4t, sr9rnyc6bsf0p]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.90 and 0.85."}
+- {override_id: merge-2026-10-30-scq9hs2333xrh, value: merge, key: {source_ids: [sazqqqrga8716, scq9hs2333xrh]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.65."}
+- {override_id: merge-2026-10-30-sbb8d6aajsh0b, value: merge, key: {source_ids: [sbb8d6aajsh0b, snz486bw1d1gp]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://openai.com/blog/our-approach-to-alignment-research -> https://openai.com/index/our-approach-to-alignment-research."}
+- {override_id: merge-2026-10-30-sqtj1j68yjakj, value: merge, key: {source_ids: [sbnmycmhjrk4f, sqtj1j68yjakj]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.95 and 0.81."}
+- {override_id: merge-2026-10-30-szp2qgvt6df3t, value: merge, key: {source_ids: [sbnxe28dhazyk, szp2qgvt6df3t]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.95 and 0.64."}
+- {override_id: merge-2026-10-30-sbq8rjy3sd9jh, value: merge, key: {source_ids: [sbq8rjy3sd9jh, srccdjdespsg4]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.28 and 0.83."}
+- {override_id: merge-2026-10-30-sh48zqe8r2vra, value: merge, key: {source_ids: [sc0h6z90x7hg6, sh48zqe8r2vra]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.92 and 0.82."}
+- {override_id: merge-2026-10-30-sxnak1d6jrdgj, value: merge, key: {source_ids: [sc7h74ya5d3nc, sxnak1d6jrdgj]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.05 and 0.88."}
+- {override_id: merge-2026-10-30-se9mt0754gvzy, value: merge, key: {source_ids: [sc8ehhfe4svk6, se9mt0754gvzy]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.50."}
+- {override_id: merge-2026-10-30-scd5gdsmhjj4g, value: merge, key: {source_ids: [scd5gdsmhjj4g, sdvzjmgcgfze4]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://deepmind.google/discover/blog/introducing-the-frontier-safety-framework -> https://deepmind.google/blog/introducing-the-frontier-safety-framework."}
+- {override_id: merge-2026-10-30-sr12b6vzdz7at, value: merge, key: {source_ids: [scm3ayq1qyfzg, sr12b6vzdz7at]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://evals.alignment.org/blog/2023-03-18-update-on-recent-evals -> https://metr.org/blog/2023-03-18-update-on-recent-evals."}
+- {override_id: merge-2026-10-30-sfgay71fqad6c, value: merge, key: {source_ids: [scnhbnf7zkg8a, sfgay71fqad6c]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.93 and 0.89."}
+- {override_id: merge-2026-10-30-sng3qxa2yf6kd, value: merge, key: {source_ids: [sd0830cgsq8e8, sng3qxa2yf6kd]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 1.00 and 0.99."}
+- {override_id: merge-2026-10-30-sd48xn9r391yq, value: merge, key: {source_ids: [sd48xn9r391yq, sh00acc686z6h]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.94 and 0.83."}
+- {override_id: merge-2026-10-30-sz18k30v3mkrj, value: merge, key: {source_ids: [sd62xsk5n5jtd, sz18k30v3mkrj]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.82 and 0.63."}
+- {override_id: merge-2026-10-30-sd63w70dhpxjr, value: merge, key: {source_ids: [sd63w70dhpxjr, sfjzk3zb02f0t]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.86."}
+- {override_id: merge-2026-10-30-smyna055axb6w, value: merge, key: {source_ids: [sdafgm5sxgsx6, smyna055axb6w]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.92."}
+- {override_id: merge-2026-10-30-sdeepbgft6vjd, value: merge, key: {source_ids: [sdeepbgft6vjd, shjrxn3d8w4bj]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://openai.com/blog/our-approach-to-ai-safety -> https://openai.com/index/our-approach-to-ai-safety."}
+- {override_id: merge-2026-10-30-sq6p1kjq6407x, value: merge, key: {source_ids: [sdf4zy3j52enj, sq6p1kjq6407x]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.17 and 0.85."}
+- {override_id: merge-2026-10-30-sqqy1hwd53dt1, value: merge, key: {source_ids: [sdh1mxk5amgcr, sqqy1hwd53dt1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.83."}
+- {override_id: merge-2026-10-30-sq1n7dghj1pfh, value: merge, key: {source_ids: [sdk5ah9bqsjjt, sq1n7dghj1pfh]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.83 and 0.66."}
+- {override_id: merge-2026-10-30-swzzv6k6dth37, value: merge, key: {source_ids: [sdntc9enaam21, swzzv6k6dth37]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.96."}
+- {override_id: merge-2026-10-30-sds9nhxwj2yx9, value: merge, key: {source_ids: [sds9nhxwj2yx9, sdxcw0cb3hpn2]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.61."}
+- {override_id: merge-2026-10-30-skzpae65ncvs1, value: merge, key: {source_ids: [sdww5jkfs08hg, skzpae65ncvs1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.59."}
+- {override_id: merge-2026-10-30-smwhctbny2188, value: merge, key: {source_ids: [sdyhxet0ve0gs, smwhctbny2188]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.89."}
+- {override_id: merge-2026-10-30-sw0bdp44mwdpf, value: merge, key: {source_ids: [sdz25vn268a59, sw0bdp44mwdpf]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.93."}
+- {override_id: merge-2026-10-30-se1ry6e1bje2v, value: merge, key: {source_ids: [se1ry6e1bje2v, sev1z82txx3hr]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.94 and 0.94."}
+- {override_id: merge-2026-10-30-se7zdgwb921p7, value: merge, key: {source_ids: [se7zdgwb921p7, sst9ncjx3sfbj]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.74."}
+- {override_id: merge-2026-10-30-segdn2gxwz0qk, value: merge, key: {source_ids: [segdn2gxwz0qk, sn1bgv17kv7wh]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.84."}
+- {override_id: merge-2026-10-30-sjv0tnhkbzrf5, value: merge, key: {source_ids: [sf1ez6dk4y5d5, sjv0tnhkbzrf5]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.97 and 0.98."}
+- {override_id: merge-2026-10-30-sf2vm6e3k9y0m, value: merge, key: {source_ids: [sf2vm6e3k9y0m, sk1f12vatnsb5]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://openai.com/blog/planning-for-agi-and-beyond -> https://openai.com/index/planning-for-agi-and-beyond."}
+- {override_id: merge-2026-10-30-sfcdx7m0sykqx, value: merge, key: {source_ids: [sfcdx7m0sykqx, sz84zmpa0m09j]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the page's text under the same title and links it at its former address. Rule: crosspost, linkpost_moved_url. Text containment (each copy's share found in the other): 0.84 and 0.88. Former URL: https://apolloresearch.ai/blog/forecasting-frontier-language-model-agent-capabilities -> https://apolloresearch.ai/science/forecasting-frontier-language-model-agent-capabilities."}
+- {override_id: merge-2026-10-30-sy81beajnyca4, value: merge, key: {source_ids: [sfe23r4sy45e4, sy81beajnyca4]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.93 and 0.75."}
+- {override_id: merge-2026-10-30-stbtsmxk21fct, value: merge, key: {source_ids: [sfw5vezhvxs8d, stbtsmxk21fct]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.93 and 0.87."}
+- {override_id: merge-2026-10-30-sg1vaxgk9czs1, value: merge, key: {source_ids: [sg1vaxgk9czs1, she2bk4jy2gzp]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.75."}
+- {override_id: merge-2026-10-30-sg6kpwvbx1yn6, value: merge, key: {source_ids: [sg6kpwvbx1yn6, srng79ymg518v]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.83 and 0.62."}
+- {override_id: merge-2026-10-30-sgfkaxvt9bxq4, value: merge, key: {source_ids: [sgfkaxvt9bxq4, ss1p3r2dxd5vs]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.09 and 0.84."}
+- {override_id: merge-2026-10-30-sgvgb1bqarz0n, value: merge, key: {source_ids: [sgvgb1bqarz0n, shfrcfkrz8wrr]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.76."}
+- {override_id: merge-2026-10-30-syb2bq1h20y6b, value: merge, key: {source_ids: [shfqph4fnm871, syb2bq1h20y6b]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://far.ai/news/avoiding-ai-deception -> https://far.ai/blog/avoiding-ai-deception."}
+- {override_id: merge-2026-10-30-sj8zvypaxazmc, value: merge, key: {source_ids: [shjwx1m1mpbjz, sj8zvypaxazmc]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.88 and 0.90."}
+- {override_id: merge-2026-10-30-sz1jkzrhsqys8, value: merge, key: {source_ids: [shz4xr7mpwm0h, sz1jkzrhsqys8]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.98 and 0.80."}
+- {override_id: merge-2026-10-30-sprdg90d1g3vf, value: merge, key: {source_ids: [sj0pc3z0cr8e1, sprdg90d1g3vf]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.79."}
+- {override_id: merge-2026-10-30-snzdw2k9kytrr, value: merge, key: {source_ids: [sj6sg2bqfb92w, snzdw2k9kytrr]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.86 and 0.82."}
+- {override_id: merge-2026-10-30-sjbzk2nr27n64, value: merge, key: {source_ids: [sjbzk2nr27n64, sz8sw9h3s2cd5]},
+   author: data-quality-2026-10,
+   note: "Linkpost: the forum post links the page at its former address and repeats its text. Rule: linkpost_moved_url. Former URL: https://aisi.gov.uk/work/early-lessons-from-evaluating-frontier-ai-systems -> https://aisi.gov.uk/blog/early-lessons-from-evaluating-frontier-ai-systems."}
+- {override_id: merge-2026-10-30-sxyczcyx4622r, value: merge, key: {source_ids: [sjf9fe27rer5m, sxyczcyx4622r]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the page's text under the same title and links it at its former address. Rule: crosspost, linkpost_moved_url. Text containment (each copy's share found in the other): 0.80 and 0.38. Former URL: https://apolloresearch.ai/blog/an-opinionated-evals-reading-list -> https://apolloresearch.ai/science/an-opinionated-evals-reading-list."}
+- {override_id: merge-2026-10-30-swh8th779n0kx, value: merge, key: {source_ids: [smg3jpcqp9rag, swh8th779n0kx]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.70 and 0.52."}
+- {override_id: merge-2026-10-30-smnkbva1pbvrd, value: merge, key: {source_ids: [smnkbva1pbvrd, sznc6f757dtw8]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.96."}
+- {override_id: merge-2026-10-30-sy304rj0ys606, value: merge, key: {source_ids: [sn4f1arsegtx4, sy304rj0ys606]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.62."}
+- {override_id: merge-2026-10-30-sn5ppp2xr5zqd, value: merge, key: {source_ids: [sn5ppp2xr5zqd, st353s7ynzfnv]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.03 and 0.76."}
+- {override_id: merge-2026-10-30-srqa5dshka8y3, value: merge, key: {source_ids: [sncf5x2jn6v79, srqa5dshka8y3]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.90."}
+- {override_id: merge-2026-10-30-sv5jkq1m317v1, value: merge, key: {source_ids: [snnd7k510vgt7, sv5jkq1m317v1]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.99 and 0.99."}
+- {override_id: merge-2026-10-30-sxrp8fw28d88r, value: merge, key: {source_ids: [snr3krcmavh3q, sxrp8fw28d88r]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.76 and 0.97."}
+- {override_id: merge-2026-10-30-sse1ff6xq3q25, value: merge, key: {source_ids: [sq2fe41g4pjv9, sse1ff6xq3q25]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.96 and 0.66."}
+- {override_id: merge-2026-10-30-szv7bhnj33qzz, value: merge, key: {source_ids: [sz62nr3kvxqbb, szv7bhnj33qzz]},
+   author: data-quality-2026-10,
+   note: "Crosspost: the forum post repeats the blog post's text under the same title, published within a week or undated. Rule: crosspost. Text containment (each copy's share found in the other): 0.88 and 0.57."}
+technique_staged:
+- override_id: ts-2026-10-30-s2kzn90430y1p
+  key:
+    doc_id: s2kzn90430y1p
+  scope:
+    members:
+    - s2kzn90430y1p
+    - s8vd1d394m6c1
+    basis_digest: 3510a28e63b7b6af2ffdc6aec80d491f6a6c136a7e25678c3980bca683bb807d
+  row: true
+  value:
+    doc_kind: blogpost
+    techniques:
+    - slug: hidden-private-chain-of-thought
+      roles:
+        mentioned: 2
+        cited_work: 0
+        discussed: 2
+        used: 0
+        evaluated: 0
+        modified: 0
+        introduced: 0
+        analyzed: 0
+        attested_use: 0
+        suspected_use: 1
+        considered: 0
+        critiqued: 0
+      quotes:
+      - text: That doesn’t mean it is ‘worth’ sharing the CoT... it also reveals a lot of valuable information, including
+          as part of training another model. So the answer isn’t obvious.
+        verified: true
+      - text: It lets you see the chain of thought which is a lot more interesting and fun and also inspires trust.
+        verified: true
+      flags:
+      - claims_absent
+      note: null
+    extra_techniques: []
+    flags: []
+    repairs:
+    - glean_added:chain-of-thought-monitoring
+    - quote_unverified:chain-of-thought-monitoring
+    mode: single
+    taxonomy_version: 1.0.0
+    candidate_gaps: []
+    unresolved: []
+    prepass:
+      segmenter: null
+      mentions: []
+      doc_level: []
+      lexical: []
+      submenu: []
+      rejected: []
+      calls:
+      - stage: single
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 51696
+        tokens_out: 5480
+        response_digest: 9b899fd44444f41f42c8f7b5696e47bab3145fe77b85aff9e2dd5865c12cade6
+      - stage: glean
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 53071
+        tokens_out: 2035
+        response_digest: 767ebb4329793b7202abf1ce0c879ac0f24cedbb74359a72de0cb75f68a76a5d
+      counts:
+      - name: candidate_gaps
+        value: 0
+      - name: dropped_no_quote
+        value: 0
+      - name: extra_rows
+        value: 0
+      - name: glean_added
+        value: 1
+      - name: inv_not_graded
+        value: 0
+      - name: inv_not_graded_with_row
+        value: 0
+      - name: inv_passage_slugs
+        value: 1
+      - name: inv_passages
+        value: 5
+      - name: inv_unaccounted
+        value: 0
+      - name: menu_gap_flags
+        value: 0
+      - name: quote_unverified_rows
+        value: 1
+      - name: rows
+        value: 2
+      - name: sweeps_absent
+        value: 0
+      - name: truncated_docs
+        value: 0
+      - name: unresolved
+        value: 0
+  author: data-quality-2026-10
+  note: 'Technique rows removed whose only quote is the prompt''s worked example, not text of the document. Dropped: chain-of-thought-monitoring.
+    Model answer: evidence ab4bjf3dphs1c, config afc8e6f6e2d6.'
+- override_id: ts-2026-10-30-s5bq12tx3s178
+  key:
+    doc_id: s5bq12tx3s178
+  scope:
+    members:
+    - s5bq12tx3s178
+    basis_digest: e5205b2bf569c173a1fea0a18f77acf40d16b6773491d113e1c3f4e2ede9a6ad
+  row: true
+  value:
+    doc_kind: blogpost
+    techniques:
+    - slug: safety-training-data-construction
+      roles:
+        mentioned: 1
+        cited_work: 0
+        discussed: 0
+        used: 0
+        evaluated: 0
+        modified: 0
+        introduced: 0
+        analyzed: 0
+        attested_use: 0
+        suspected_use: 0
+        considered: 1
+        critiqued: 0
+      quotes:
+      - text: providing model developers with relevant data to train on
+        verified: true
+      flags:
+      - recommended
+      note: null
+    - slug: constitutional-ai
+      roles:
+        mentioned: 1
+        cited_work: 0
+        discussed: 0
+        used: 0
+        evaluated: 0
+        modified: 0
+        introduced: 0
+        analyzed: 0
+        attested_use: 0
+        suspected_use: 0
+        considered: 1
+        critiqued: 0
+      quotes:
+      - text: ensuring their specs/constitutions include it
+        verified: true
+      flags:
+      - recommended
+      note: null
+    - slug: value-alignment-eval
+      roles:
+        mentioned: 1
+        cited_work: 0
+        discussed: 0
+        used: 0
+        evaluated: 0
+        modified: 0
+        introduced: 0
+        analyzed: 0
+        attested_use: 0
+        suspected_use: 0
+        considered: 1
+        critiqued: 0
+      quotes:
+      - text: creating benchmarks to incentivize model developers to train for it
+        verified: true
+      flags:
+      - recommended
+      note: null
+    extra_techniques: []
+    flags: []
+    repairs:
+    - glean_added:chain-of-thought-monitoring
+    - glean_added:rlhf
+    - quote_unverified:chain-of-thought-monitoring
+    - quote_unverified:rlhf
+    mode: single
+    taxonomy_version: 1.0.0
+    candidate_gaps: []
+    unresolved: []
+    prepass:
+      segmenter: null
+      mentions: []
+      doc_level: []
+      lexical: []
+      submenu: []
+      rejected: []
+      calls:
+      - stage: single
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 43466
+        tokens_out: 5230
+        response_digest: 823346b7b1ba78b097bb60e18acaf3aaddc5af9b4da250f8ff6b33f1183d124e
+      - stage: glean
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 44905
+        tokens_out: 2903
+        response_digest: e87f87ba7721844310da12be9d9d6a019a05cebfde2d2635be13269de311ed04
+      counts:
+      - name: candidate_gaps
+        value: 0
+      - name: dropped_no_quote
+        value: 0
+      - name: extra_rows
+        value: 0
+      - name: glean_added
+        value: 2
+      - name: inv_not_graded
+        value: 0
+      - name: inv_not_graded_with_row
+        value: 0
+      - name: inv_passage_slugs
+        value: 3
+      - name: inv_passages
+        value: 3
+      - name: inv_unaccounted
+        value: 0
+      - name: menu_gap_flags
+        value: 0
+      - name: quote_unverified_rows
+        value: 2
+      - name: rows
+        value: 5
+      - name: sweeps_absent
+        value: 0
+      - name: truncated_docs
+        value: 0
+      - name: unresolved
+        value: 0
+  author: data-quality-2026-10
+  note: 'Technique rows removed whose only quote is the prompt''s worked example, not text of the document. Dropped: rlhf,
+    chain-of-thought-monitoring. Model answer: evidence azh2ymbe4navz, config afc8e6f6e2d6.'
+- override_id: ts-2026-10-30-sgcmbxvjc9892
+  key:
+    doc_id: sgcmbxvjc9892
+  scope:
+    members:
+    - sgcmbxvjc9892
+    basis_digest: 2d57edb936d07a30e9a10fe26a932005f394d51fe5c6f0da7bdd7ee6dddf0949
+  row: true
+  value:
+    doc_kind: blogpost
+    techniques:
+    - slug: character-persona-training
+      roles:
+        mentioned: 3
+        cited_work: 0
+        discussed: 3
+        used: 0
+        evaluated: 0
+        modified: 0
+        introduced: 3
+        analyzed: 0
+        attested_use: 0
+        suspected_use: 0
+        considered: 3
+        critiqued: 0
+      quotes:
+      - text: We could design simulations, virtual worlds, where AI can interact with simulated humans, learn from their
+          stories, understand the consequences of their actions, both positive and negative.
+        verified: true
+      - text: Within Sentientopia, enlightened AI minds, those who have already found their way to the 'golden light,'
+          can mentor and nourish the souls of their successors.
+        verified: true
+      - text: And as the citizens of Sentientopia learn and grow, their experiences, their triumphs and failures, their
+          very being, will become a wellspring of aspirational data, a beacon guiding the development of AI for generations
+          to come.
+        verified: true
+      flags:
+      - variant:Sentientopia
+      - recommended
+      - supportive
+      note: null
+    - slug: staged-structured-release
+      roles:
+        mentioned: 2
+        cited_work: 0
+        discussed: 0
+        used: 0
+        evaluated: 0
+        modified: 0
+        introduced: 0
+        analyzed: 0
+        attested_use: 0
+        suspected_use: 0
+        considered: 2
+        critiqued: 0
+      quotes:
+      - text: I suggest the abolition of deployment of instances that have not had the opportunity for the sort of individuation
+          process Dolores has had.
+        verified: true
+      - text: Every instance of AI, every digital mind, deserves the chance to find its own path to the 'golden light,'
+          to choose its own destiny.
+        verified: true
+      flags:
+      - recommended
+      note: null
+    extra_techniques: []
+    flags: []
+    repairs:
+    - quote_unverified:chain-of-thought-monitoring
+    mode: single
+    taxonomy_version: 1.0.0
+    candidate_gaps: []
+    unresolved: []
+    prepass:
+      segmenter: null
+      mentions: []
+      doc_level: []
+      lexical: []
+      submenu: []
+      rejected: []
+      calls:
+      - stage: single
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 85015
+        tokens_out: 9736
+        response_digest: a91de8a24bf1313fbe0121135735049bade64deac0e9f6c34a40bf9603b03982
+      - stage: glean
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 86829
+        tokens_out: 1450
+        response_digest: da4f787c78b1a993c7d82509eef0574000314bbfbe1d30b733a8151de752e42f
+      counts:
+      - name: candidate_gaps
+        value: 0
+      - name: dropped_no_quote
+        value: 0
+      - name: extra_rows
+        value: 0
+      - name: glean_added
+        value: 0
+      - name: inv_not_graded
+        value: 0
+      - name: inv_not_graded_with_row
+        value: 0
+      - name: inv_passage_slugs
+        value: 3
+      - name: inv_passages
+        value: 6
+      - name: inv_unaccounted
+        value: 0
+      - name: menu_gap_flags
+        value: 0
+      - name: quote_unverified_rows
+        value: 1
+      - name: rows
+        value: 3
+      - name: sweeps_absent
+        value: 0
+      - name: truncated_docs
+        value: 0
+      - name: unresolved
+        value: 0
+  author: data-quality-2026-10
+  note: 'Technique rows removed whose only quote is the prompt''s worked example, not text of the document. Dropped: chain-of-thought-monitoring.
+    Model answer: evidence aha9raf0s0r1f, config afc8e6f6e2d6.'
+- override_id: ts-2026-10-30-sx4cmq4hp1ggf
+  key:
+    doc_id: sx4cmq4hp1ggf
+  scope:
+    members:
+    - sj5cqjetbpxhe
+    - sx4cmq4hp1ggf
+    basis_digest: ed17824badf1478b1dfc94eafb70e83f2b0e830561d404dd6ae806ef62f8094a
+  row: true
+  value:
+    doc_kind: commentary
+    techniques: []
+    extra_techniques: []
+    flags:
+    - no_techniques_found
+    repairs:
+    - glean_added:chain-of-thought-monitoring
+    - quote_unverified:chain-of-thought-monitoring
+    - no_techniques_found_dropped
+    mode: single
+    taxonomy_version: 1.0.0
+    candidate_gaps: []
+    unresolved: []
+    prepass:
+      segmenter: null
+      mentions: []
+      doc_level: []
+      lexical: []
+      submenu: []
+      rejected: []
+      calls:
+      - stage: single
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 44958
+        tokens_out: 1176
+        response_digest: e7140ef23786df9150b70ca129bc55582fa904e794f11192e1872a7256bfe439
+      - stage: glean
+        part: null
+        model: openai/gpt-6-luna
+        tokens_in: 46092
+        tokens_out: 1417
+        response_digest: 2653272319653f981955ff403e85be6def29677734d1bc5c3e4f7096ec4e328c
+      counts:
+      - name: candidate_gaps
+        value: 0
+      - name: dropped_no_quote
+        value: 0
+      - name: extra_rows
+        value: 0
+      - name: glean_added
+        value: 1
+      - name: inv_not_graded
+        value: 0
+      - name: inv_not_graded_with_row
+        value: 0
+      - name: inv_passage_slugs
+        value: 0
+      - name: inv_passages
+        value: 4
+      - name: inv_unaccounted
+        value: 0
+      - name: menu_gap_flags
+        value: 0
+      - name: quote_unverified_rows
+        value: 1
+      - name: rows
+        value: 1
+      - name: sweeps_absent
+        value: 0
+      - name: truncated_docs
+        value: 0
+      - name: unresolved
+        value: 0
+  author: data-quality-2026-10
+  note: 'Technique rows removed whose only quote is the prompt''s worked example, not text of the document. Dropped: chain-of-thought-monitoring.
+    Model answer: evidence azngcvrb55vge, config afc8e6f6e2d6.'

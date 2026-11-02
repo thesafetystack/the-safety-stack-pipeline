@@ -1,0 +1,367 @@
+{
+  "task": "technique_staged",
+  "set_id": "2026-10-18b",
+  "source": "a read-only store copy (sources/mirror-docs.jsonl, texts staged by scripts/stage.py; sampling in sources/sampling.json and scripts/sampling/); gold v2 labelled and reconciled outside the repository (adjudication/)",
+  "items": 120,
+  "items_sha256": "fa4912e8a1a0a7dca03451de01c57d9504579c3cbdf0cdfeaea5e2ec4559ce78",
+  "splits": {
+    "dev": 60,
+    "test": 60
+  },
+  "strata": {
+    "group": {
+      "blog": 18,
+      "card": 8,
+      "forum": 32,
+      "paper": 52,
+      "report": 10
+    },
+    "band": {
+      "20-60k": 33,
+      "60-100k": 21,
+      "<20k": 41,
+      ">100k": 25
+    },
+    "channel_group": {
+      "forum": 31,
+      "paper": 64,
+      "url": 25
+    }
+  },
+  "gold": {
+    "file": "gold.jsonl",
+    "sha256": "2a5edce50f12d226475a4f87e8536a303cc62ec28fd0cd0372ade905b13b4e35",
+    "from": "adjudication/final.jsonl (labels of record: final)",
+    "items": 120,
+    "rows": 1189,
+    "dont_care_rows": 41,
+    "group_node_rows": 66,
+    "scored_rows": 1082,
+    "scored_high": 846,
+    "scored_both_labellers": 939,
+    "level_alternative_rows": 10,
+    "verified_items": 30,
+    "adjudicators": {
+      "astra-reconciler": 25,
+      "merge-rule": 95
+    },
+    "row_sources": {
+      "A": 72,
+      "A+B": 1007,
+      "B": 78,
+      "opus": 29,
+      "reconciler": 3
+    },
+    "extra_techniques": 162,
+    "menu_gaps": 317,
+    "checks": {
+      "quote_case_insensitive": [],
+      "quote_not_found": [],
+      "role_above_mentioned": [],
+      "level_alternative_not_linked": [],
+      "alt_slug_unknown": [],
+      "doc_kind_unknown": []
+    }
+  },
+  "frozen_with": {
+    "taxonomy_path": "taxonomy/taxonomy-v0.9-234.yaml",
+    "taxonomy_sha256": "07017821efe1a5d04d5cbf0b52f516c28a094f00870fd5d8d2f1726a6d7617a8",
+    "taxonomy_version": "0.9",
+    "rubric": "rubric-v0.9-c",
+    "rubric_digest": "fce34ffd0a3e06272e26ec167e45f512bf7a7573dbc8494ccb677ec8a84bd325",
+    "prompt_set": "technique-staged-v3",
+    "prompt_digests": {
+      "single": {
+        "single": "70c2a74f1c4b87f4e545ab771c6d3cde3678accdd38ceb92ea6401a64bda3c93"
+      },
+      "sweep": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "sweep": "3a9d1d8067fa2355032ed5d9abc6c3a4e964df411ef994deb008eabc4a72fc91"
+      },
+      "staged": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "select": "377dba6e877d223ade4fcb2e33159bb6362e951474a6eb0aea1e2f9a0d8d6d42",
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      },
+      "lexical": {
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      }
+    },
+    "option_prompt_digests": {
+      "window": "ff9bcfc3adc8625d3380ee560877e8e9794c448404fd2589e38e5cdc11acd839",
+      "glean": "33c13c4ee693b3c5502341ee295eeac0cccdcd3b3006749f7e4e5ad8ec15eb5c"
+    },
+    "segmenter_version": "seg-v1",
+    "lexical_version": "lex-v2",
+    "labelling_packet": {
+      "guide": {
+        "file": "GOLD-GUIDE.md",
+        "sha256": "6e0d5f5aded8c9e0a07dc2b779bdcc8b7f816b1e305f0b4a04f5aceebfbfb6e2"
+      },
+      "rulings": {
+        "file": "RULINGS.md",
+        "sha256": "d08458edd77b70aaa364a8d61fa6b2942f9a8f3116d591ab5815c39d938e56be"
+      },
+      "rubric": {
+        "file": "rubric-v0.4.0.md",
+        "sha256": "858092e8ed156baaf7ca3e87aa0550bbc81021889d795030e4375d5237d666e8"
+      },
+      "menu": {
+        "file": "menu-v0.9-234.md",
+        "sha256": "80563422aa11faac3d684117dc3bee4473d9a7216af7ff940884a79825a19393",
+        "is": "MENU_HEADER + menu_text(taxonomy/taxonomy-v0.9-234.yaml)"
+      },
+      "prompts": {
+        "L1": "7ae3d8c94ab322dc2eccd88ff565b2725d4ec7f2a742dad36579b113fdd2f6dd",
+        "L2": "dcc1fd8999786234fb80888fa6c57cb0ce3ddb96020b6f8a583d48ae2620f087",
+        "RECONCILE": "2957831df4efd72235e4b848cf3ff0ad52d40b0b3975c3d1e8d77d99c2338c26",
+        "VERIFY-ADJ": "9254dc375bdbb964f12a4748c5f90cc4bdbfd81dab0639837b1233d5e85e1577"
+      },
+      "labelling_scripts": {
+        "merge.py": {
+          "sha256": "497abc9384f47f89b17f12e7dc8c02fc5fb4e82fafb381e2aa23f1230bb72306",
+          "staged_sha256": "497abc9384f47f89b17f12e7dc8c02fc5fb4e82fafb381e2aa23f1230bb72306"
+        },
+        "verify_sample.py": {
+          "sha256": "3e82cccc7176657574c6917ab12348f880e2209fc9710f568cfc5217c0f34544",
+          "staged_sha256": "3e82cccc7176657574c6917ab12348f880e2209fc9710f568cfc5217c0f34544"
+        },
+        "disputes.py": {
+          "sha256": "c26f632833c2dc65edd341735f86b8838ac92af8b695adc028349bee6cc96f10",
+          "staged_sha256": "95907604b077a08a1f085be33d4d2fd2a4d82c064f31dd36acb341fb422769f6"
+        },
+        "verify_apply.py": {
+          "sha256": "80bf40e42914c991792748464e2efcb66397fa00cf2e63c77517465cd0bf92f7",
+          "staged_sha256": "80bf40e42914c991792748464e2efcb66397fa00cf2e63c77517465cd0bf92f7"
+        }
+      }
+    }
+  },
+  "sampling": {
+    "seed": 20261018,
+    "bands": [
+      "<20k",
+      "20-60k",
+      "60-100k",
+      ">100k"
+    ],
+    "quotas": {
+      "paper": [
+        8,
+        15,
+        14,
+        15
+      ],
+      "forum": [
+        14,
+        10,
+        5,
+        3
+      ],
+      "blog": [
+        14,
+        3,
+        0,
+        1
+      ],
+      "card": [
+        3,
+        2,
+        0,
+        3
+      ],
+      "report": [
+        2,
+        3,
+        2,
+        3
+      ]
+    },
+    "doc_type_groups": {
+      "preprint": "paper",
+      "paper": "paper",
+      "forum_post": "forum",
+      "lab_blog": "blog",
+      "system_card": "card",
+      "model_card": "card",
+      "eval_report": "report",
+      "framework_policy": "report",
+      "critique": "report",
+      "other": "report"
+    },
+    "pool": {
+      "rows": 11752,
+      "sha256": "599b41ae4e2f9451cf147250f32415cec56513d73729176bf969b44dabbc82eb",
+      "bytes": 4238417,
+      "copied": false,
+      "reproduced_from_store": true
+    },
+    "selected": {
+      "rows": 120,
+      "sha256": "50b24fe1c07b16fb64013950c04567eebe98e5ef63850f5907a878c67b6cded0",
+      "reproduced_by_select_py": true
+    },
+    "store_heads": {
+      "corpus": "20261017T175503Z_rz3vvhk92wt9r",
+      "stack_relevance": "20261017T175521Z_rah6b8pyfs0e9",
+      "text_usability": "20261017T175521Z_rah6b8pyfs0e9",
+      "doc_class": "20261017T175521Z_rah6b8pyfs0e9"
+    },
+    "exclusion": "the documents of evals/technique_staged/2026-10-17a (items.jsonl doc_id) and their same_raw_doc_ids",
+    "procedure": "scripts/sampling/pool.py (candidate pool) then scripts/sampling/select.py (stratified sample); both take paths as arguments"
+  },
+  "verification": {
+    "sample": "adjudication/verify-sample.json",
+    "verifier": "opus (blind labels)",
+    "adjudicator": "sonnet (disputed slugs, labellers blinded as P / Q)",
+    "estimates": {
+      "g": {
+        "P": 0.942,
+        "P_ci": [
+          0.914,
+          0.966
+        ],
+        "R": 0.976,
+        "R_ci": [
+          0.96,
+          0.993
+        ],
+        "tp": 290,
+        "fp": 18,
+        "fn": 7,
+        "P_high": [
+          0.98,
+          246
+        ],
+        "P_med": [
+          0.79,
+          62
+        ],
+        "P_low": [
+          0.0,
+          0
+        ],
+        "P_str1": [
+          0.89,
+          73
+        ],
+        "P_str2": [
+          0.957,
+          141
+        ],
+        "P_str3": [
+          0.957,
+          70
+        ],
+        "P_str4": [
+          0.958,
+          24
+        ]
+      },
+      "o": {
+        "P": 0.953,
+        "P_ci": [
+          0.918,
+          0.979
+        ],
+        "R": 0.896,
+        "R_ci": [
+          0.854,
+          0.927
+        ],
+        "tp": 266,
+        "fp": 13,
+        "fn": 31,
+        "P_high": [
+          1.0,
+          114
+        ],
+        "P_med": [
+          0.991,
+          112
+        ],
+        "P_low": [
+          0.774,
+          53
+        ],
+        "P_str1": [
+          0.913,
+          115
+        ],
+        "P_str2": [
+          0.98,
+          100
+        ],
+        "P_str3": [
+          0.98,
+          49
+        ],
+        "P_str4": [
+          1.0,
+          15
+        ]
+      },
+      "g0_misses_by_opus_confidence": {
+        "low": 3,
+        "med": 4
+      },
+      "g_long": {
+        "P": 0.947,
+        "R": 0.979,
+        "tp": 142,
+        "fp": 8,
+        "fn": 3
+      },
+      "g_short": {
+        "P": 0.937,
+        "R": 0.974,
+        "tp": 148,
+        "fp": 10,
+        "fn": 4
+      },
+      "dont_care_slugs": 37
+    }
+  },
+  "staging": {
+    "labels_of_record": "final",
+    "partial": false,
+    "reconciled_items": [
+      "g2-0002",
+      "g2-0009",
+      "g2-0010",
+      "g2-0021",
+      "g2-0031",
+      "g2-0033",
+      "g2-0035",
+      "g2-0046",
+      "g2-0048",
+      "g2-0051",
+      "g2-0055",
+      "g2-0060",
+      "g2-0061",
+      "g2-0067",
+      "g2-0070",
+      "g2-0082",
+      "g2-0083",
+      "g2-0084",
+      "g2-0085",
+      "g2-0092",
+      "g2-0098",
+      "g2-0102",
+      "g2-0109",
+      "g2-0118",
+      "g2-0120"
+    ],
+    "missing": {},
+    "counts": {
+      "adj-X": 120,
+      "adj-Y": 120,
+      "astra-reconciler": 25,
+      "pre-verification": 120,
+      "final": 120,
+      "opus": 30,
+      "verification": 30,
+      "verification_first_run": 8
+    }
+  }
+}

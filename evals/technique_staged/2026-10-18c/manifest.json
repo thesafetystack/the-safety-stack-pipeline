@@ -1,0 +1,377 @@
+{
+  "task": "technique_staged",
+  "set_id": "2026-10-18c",
+  "source": "evals/technique_staged/2026-10-18b (items.jsonl and texts byte-identical; gold derived by scripts/derive.py from adjudication/, staged by scripts/stage.py: the Astra reconciliation of all 120 items with two verification rounds applied)",
+  "items": 120,
+  "items_sha256": "fa4912e8a1a0a7dca03451de01c57d9504579c3cbdf0cdfeaea5e2ec4559ce78",
+  "splits": {
+    "dev": 60,
+    "test": 60
+  },
+  "strata": {
+    "group": {
+      "blog": 18,
+      "card": 8,
+      "forum": 32,
+      "paper": 52,
+      "report": 10
+    },
+    "band": {
+      "20-60k": 33,
+      "60-100k": 21,
+      "<20k": 41,
+      ">100k": 25
+    },
+    "channel_group": {
+      "forum": 31,
+      "paper": 64,
+      "url": 25
+    }
+  },
+  "gold": {
+    "file": "gold.jsonl",
+    "sha256": "57e7173f73851746a95c16feb1c12eb79631517eeda8be433db7bed30519a272",
+    "from": "adjudication/final.jsonl",
+    "items": 120,
+    "rows": 1130,
+    "dont_care_rows": 3,
+    "group_node_rows": 63,
+    "scored_rows": 1064,
+    "scored_high": 829,
+    "scored_both_labellers": 947,
+    "level_alternative_rows": 8,
+    "verified_items": 30,
+    "adjudicators": {
+      "astra-reconciler": 120
+    },
+    "row_sources": {
+      "A": 54,
+      "A+B": 1000,
+      "B": 51,
+      "opus": 12,
+      "reconciler": 12,
+      "verification": 1
+    },
+    "extra_techniques": 141,
+    "menu_gaps": 257,
+    "checks": {
+      "quote_case_insensitive": [],
+      "quote_not_found": [],
+      "role_above_mentioned": [],
+      "level_alternative_not_linked": [],
+      "alt_slug_unknown": [],
+      "doc_kind_unknown": []
+    }
+  },
+  "derivation": {
+    "from_set": "2026-10-18b",
+    "from_gold_sha256": "2a5edce50f12d226475a4f87e8536a303cc62ec28fd0cd0372ade905b13b4e35",
+    "reconciliation_rounds": {
+      "1": {
+        "batches": "R01-R08",
+        "when": "2026-10-18 01:59-02:13 UTC",
+        "items": 25
+      },
+      "2": {
+        "batches": "R09-R30",
+        "when": "2026-10-18 09:05-09:45 UTC (after the Codex credit reset)",
+        "items": 95
+      }
+    },
+    "merge_to_astra_round2": {
+      "items": 95,
+      "group_nodes_in_row_counts": true,
+      "rows_removed": 49,
+      "rows_added": 10,
+      "confidence_changed": 76,
+      "rows_roles_changed": 158,
+      "role_cells_changed": 275,
+      "slug_f1_merge_vs_astra_no_group_nodes": 0.97
+    },
+    "verification_round2": {
+      "items": 30,
+      "disputed_slugs": 122,
+      "to_codex": 63,
+      "to_codex_why": {
+        "new": 12,
+        "sonnet_borderline": 41,
+        "sonnet_unstable": 10
+      },
+      "codex_answers_by_side": {
+        "gold:borderline": 1,
+        "gold:no": 7,
+        "gold:yes": 22,
+        "opus:borderline": 2,
+        "opus:no": 25,
+        "opus:yes": 6
+      },
+      "kept_sonnet": 59
+    },
+    "gold_vs_18b": {
+      "rows_added": 12,
+      "rows_removed": 71,
+      "rows_kept": 1118,
+      "dont_care_18b": 41,
+      "dont_care_18c": 3
+    }
+  },
+  "frozen_with": {
+    "taxonomy_path": "taxonomy/taxonomy-v0.9-234.yaml",
+    "taxonomy_sha256": "07017821efe1a5d04d5cbf0b52f516c28a094f00870fd5d8d2f1726a6d7617a8",
+    "taxonomy_version": "0.9",
+    "rubric": "rubric-v0.9-c",
+    "rubric_digest": "fce34ffd0a3e06272e26ec167e45f512bf7a7573dbc8494ccb677ec8a84bd325",
+    "prompt_set": "technique-staged-v3",
+    "prompt_digests": {
+      "single": {
+        "single": "70c2a74f1c4b87f4e545ab771c6d3cde3678accdd38ceb92ea6401a64bda3c93"
+      },
+      "sweep": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "sweep": "3a9d1d8067fa2355032ed5d9abc6c3a4e964df411ef994deb008eabc4a72fc91"
+      },
+      "staged": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "select": "377dba6e877d223ade4fcb2e33159bb6362e951474a6eb0aea1e2f9a0d8d6d42",
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      },
+      "lexical": {
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      }
+    },
+    "option_prompt_digests": {
+      "window": "ff9bcfc3adc8625d3380ee560877e8e9794c448404fd2589e38e5cdc11acd839",
+      "glean": "33c13c4ee693b3c5502341ee295eeac0cccdcd3b3006749f7e4e5ad8ec15eb5c"
+    },
+    "segmenter_version": "seg-v1",
+    "lexical_version": "lex-v2",
+    "labelling_packet": {
+      "guide": {
+        "file": "GOLD-GUIDE.md",
+        "sha256": "6e0d5f5aded8c9e0a07dc2b779bdcc8b7f816b1e305f0b4a04f5aceebfbfb6e2"
+      },
+      "rulings": {
+        "file": "RULINGS.md",
+        "sha256": "d08458edd77b70aaa364a8d61fa6b2942f9a8f3116d591ab5815c39d938e56be"
+      },
+      "rubric": {
+        "file": "rubric-v0.4.0.md",
+        "sha256": "858092e8ed156baaf7ca3e87aa0550bbc81021889d795030e4375d5237d666e8"
+      },
+      "menu": {
+        "file": "menu-v0.9-234.md",
+        "sha256": "80563422aa11faac3d684117dc3bee4473d9a7216af7ff940884a79825a19393",
+        "is": "MENU_HEADER + menu_text(taxonomy/taxonomy-v0.9-234.yaml)"
+      },
+      "prompts": {
+        "L1": "7ae3d8c94ab322dc2eccd88ff565b2725d4ec7f2a742dad36579b113fdd2f6dd",
+        "L2": "dcc1fd8999786234fb80888fa6c57cb0ce3ddb96020b6f8a583d48ae2620f087",
+        "RECONCILE": "2957831df4efd72235e4b848cf3ff0ad52d40b0b3975c3d1e8d77d99c2338c26",
+        "VERIFY-ADJ": "9254dc375bdbb964f12a4748c5f90cc4bdbfd81dab0639837b1233d5e85e1577"
+      },
+      "labelling_scripts": {
+        "merge.py": {
+          "sha256": "497abc9384f47f89b17f12e7dc8c02fc5fb4e82fafb381e2aa23f1230bb72306",
+          "staged_sha256": "497abc9384f47f89b17f12e7dc8c02fc5fb4e82fafb381e2aa23f1230bb72306"
+        },
+        "verify_sample.py": {
+          "sha256": "3e82cccc7176657574c6917ab12348f880e2209fc9710f568cfc5217c0f34544",
+          "staged_sha256": "3e82cccc7176657574c6917ab12348f880e2209fc9710f568cfc5217c0f34544"
+        },
+        "disputes.py": {
+          "sha256": "c26f632833c2dc65edd341735f86b8838ac92af8b695adc028349bee6cc96f10",
+          "staged_sha256": "95907604b077a08a1f085be33d4d2fd2a4d82c064f31dd36acb341fb422769f6"
+        },
+        "verify_apply.py": {
+          "sha256": "80bf40e42914c991792748464e2efcb66397fa00cf2e63c77517465cd0bf92f7",
+          "staged_sha256": "80bf40e42914c991792748464e2efcb66397fa00cf2e63c77517465cd0bf92f7"
+        }
+      }
+    }
+  },
+  "sampling": {
+    "seed": 20261018,
+    "bands": [
+      "<20k",
+      "20-60k",
+      "60-100k",
+      ">100k"
+    ],
+    "quotas": {
+      "paper": [
+        8,
+        15,
+        14,
+        15
+      ],
+      "forum": [
+        14,
+        10,
+        5,
+        3
+      ],
+      "blog": [
+        14,
+        3,
+        0,
+        1
+      ],
+      "card": [
+        3,
+        2,
+        0,
+        3
+      ],
+      "report": [
+        2,
+        3,
+        2,
+        3
+      ]
+    },
+    "doc_type_groups": {
+      "preprint": "paper",
+      "paper": "paper",
+      "forum_post": "forum",
+      "lab_blog": "blog",
+      "system_card": "card",
+      "model_card": "card",
+      "eval_report": "report",
+      "framework_policy": "report",
+      "critique": "report",
+      "other": "report"
+    },
+    "pool": {
+      "rows": 11752,
+      "sha256": "599b41ae4e2f9451cf147250f32415cec56513d73729176bf969b44dabbc82eb",
+      "bytes": 4238417,
+      "copied": false,
+      "reproduced_from_store": true
+    },
+    "selected": {
+      "rows": 120,
+      "sha256": "50b24fe1c07b16fb64013950c04567eebe98e5ef63850f5907a878c67b6cded0",
+      "reproduced_by_select_py": true
+    },
+    "store_heads": {
+      "corpus": "20261017T175503Z_rz3vvhk92wt9r",
+      "stack_relevance": "20261017T175521Z_rah6b8pyfs0e9",
+      "text_usability": "20261017T175521Z_rah6b8pyfs0e9",
+      "doc_class": "20261017T175521Z_rah6b8pyfs0e9"
+    },
+    "exclusion": "the documents of evals/technique_staged/2026-10-17a (items.jsonl doc_id) and their same_raw_doc_ids",
+    "procedure": "scripts/sampling/pool.py (candidate pool) then scripts/sampling/select.py (stratified sample); both take paths as arguments"
+  },
+  "verification": {
+    "sample": "../2026-10-18b/adjudication/verify-sample.json",
+    "verifier": "opus (blind labels, ../2026-10-18b/adjudication/opus.jsonl)",
+    "adjudicators": "sonnet (round 1, ../2026-10-18b/adjudication/verification.jsonl); codex gpt-6-sol (round 2, adjudication/verification2.jsonl)",
+    "estimates": {
+      "g": {
+        "P": 0.935,
+        "P_ci": [
+          0.908,
+          0.961
+        ],
+        "R": 0.974,
+        "R_ci": [
+          0.958,
+          0.991
+        ],
+        "tp": 302,
+        "fp": 21,
+        "fn": 8,
+        "P_high": [
+          0.972,
+          252
+        ],
+        "P_med": [
+          0.803,
+          71
+        ],
+        "P_low": [
+          0.0,
+          0
+        ],
+        "P_str1": [
+          0.88,
+          83
+        ],
+        "P_str2": [
+          0.946,
+          147
+        ],
+        "P_str3": [
+          0.971,
+          70
+        ],
+        "P_str4": [
+          0.957,
+          23
+        ]
+      },
+      "o": {
+        "P": 0.882,
+        "P_ci": [
+          0.826,
+          0.926
+        ],
+        "R": 0.842,
+        "R_ci": [
+          0.786,
+          0.884
+        ],
+        "tp": 261,
+        "fp": 35,
+        "fn": 49,
+        "P_high": [
+          0.991,
+          114
+        ],
+        "P_med": [
+          0.957,
+          115
+        ],
+        "P_low": [
+          0.567,
+          67
+        ],
+        "P_str1": [
+          0.795,
+          127
+        ],
+        "P_str2": [
+          0.924,
+          105
+        ],
+        "P_str3": [
+          0.98,
+          49
+        ],
+        "P_str4": [
+          1.0,
+          15
+        ]
+      },
+      "g0_misses_by_opus_confidence": {
+        "low": 3,
+        "med": 5
+      },
+      "g_long": {
+        "P": 0.937,
+        "R": 0.98,
+        "tp": 148,
+        "fp": 10,
+        "fn": 3
+      },
+      "g_short": {
+        "P": 0.933,
+        "R": 0.969,
+        "tp": 154,
+        "fp": 11,
+        "fn": 5
+      },
+      "dont_care_slugs": 3
+    }
+  }
+}

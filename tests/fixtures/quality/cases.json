@@ -1,0 +1,101 @@
+{
+ "arxiv-abs-landing": {
+  "doc_id": "svsp8kqtxzrs1",
+  "source": "https://arxiv.org/abs/2503.07660",
+  "role": "full_text",
+  "media_type": "text/html",
+  "excerpt": "4026 of 4025 chars",
+  "note": "arXiv abs page stored as full_text (OA lane, before T3.6-f3a)",
+  "raw_bytes": 43025
+ },
+ "sci-reports-article": {
+  "doc_id": "sbkp3dcezxtvn",
+  "source": "https://www.nature.com/articles/s41598-026-72982-1_reference.pdf",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "11502 of 78215 chars",
+  "note": "first 9,000 chars + first 2,500 of the references: a full article, not a reference list"
+ },
+ "sci-reports-references": {
+  "doc_id": "sbkp3dcezxtvn",
+  "source": "https://www.nature.com/articles/s41598-026-72982-1_reference.pdf",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "6000 of 78215 chars",
+  "note": "the reference section alone (6,000 chars): what a reference-list-only body looks like"
+ },
+ "sci-reports-running-headers": {
+  "doc_id": "sbkp3dcezxtvn",
+  "source": "https://www.nature.com/articles/s41598-026-72982-1_reference.pdf",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "12000 of 78215 chars",
+  "note": "12,000 chars from the body: 'Scientific Reports', 'Article in press' and the DOI repeat on every page"
+ },
+ "indonesian-paper": {
+  "doc_id": "sxamdf62nt1gh",
+  "source": "https://ejournal.itn.ac.id/jati/article/download/19084/10051",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "5000 of 37363 chars",
+  "note": "Indonesian-language paper via OA"
+ },
+ "japanese-abstract": {
+  "doc_id": "snbht6f0vjd4m",
+  "source": "https://doi.org/10.5281/zenodo.23004262",
+  "role": "abstract",
+  "media_type": "text/plain",
+  "excerpt": "3472 of 3472 chars",
+  "note": "in-band abstract in Japanese"
+ },
+ "latex-residue-page": {
+  "doc_id": "sn37wygjn8ctz",
+  "source": "https://transformer-circuits.pub/2021/exercises/index.html",
+  "role": "page",
+  "media_type": "text/html",
+  "excerpt": "6000 of 10044 chars",
+  "note": "transformer-circuits exercises page: KaTeX source left as raw LaTeX"
+ },
+ "toc-dot-leaders": {
+  "doc_id": "sy7pxwmsrvdwa",
+  "source": "https://arxiv.org/pdf/2609.28603v1",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "5000 of 87561 chars",
+  "note": "pymupdf4llm table of contents with dot leaders"
+ },
+ "figure-text": {
+  "doc_id": "smfv6c1fp0zs4",
+  "source": "https://arxiv.org/pdf/2609.34933v1",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "3000 of 115703 chars",
+  "note": "pymupdf4llm picture-text block around a figure"
+ },
+ "openai-short-post": {
+  "doc_id": "sx317dhtm7vqj",
+  "source": "https://openai.com/index/openai-acquires-software-applications-incorporated",
+  "role": "page",
+  "media_type": "text/html",
+  "excerpt": "1825 of 1824 chars",
+  "note": "a short but complete company blog post",
+  "raw_bytes": 370893
+ },
+ "openai-abstract-page": {
+  "doc_id": "szewq4nxxmxzv",
+  "source": "https://openai.com/index/transfer-of-adversarial-robustness-between-perturbation-types",
+  "role": "page",
+  "media_type": "text/html",
+  "excerpt": "1020 of 1019 chars",
+  "note": "a research page that is only an abstract and a link (1,019 chars from 371 KB of HTML)",
+  "raw_bytes": 371259
+ },
+ "replacement-chars-pdf": {
+  "doc_id": "stqydzf9j6mm3",
+  "source": "https://arxiv.org/pdf/2610.08966v2",
+  "role": "full_text",
+  "media_type": "application/pdf",
+  "excerpt": "4000 of 112794 chars",
+  "note": "arXiv PDF text with the most U+FFFD of the store (9.9 per 1,000 chars over the whole text)"
+ }
+}

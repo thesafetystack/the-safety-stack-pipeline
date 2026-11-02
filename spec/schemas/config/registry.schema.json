@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/config/registry.schema.json",
+  "title": "registry.yaml",
+  "description": "Subject-model registry (canonical releases) + orgs, and the pin of the active taxonomy version (10-design §8). Alias patterns are ordered first-match regexes consumed by canon_model/canon_org (§9.3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "taxonomy", "models", "orgs"],
+  "properties": {
+    "version": { "$ref": "#/$defs/semver" },
+    "taxonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["active", "file"],
+      "description": "The registry pins the active taxonomy version; runtime workflows read exactly this file.",
+      "properties": {
+        "active": { "type": "string", "pattern": "^\\d+\\.\\d+$" },
+        "file": { "type": "string" }
+      }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/model" }
+    },
+    "orgs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/org" }
+    }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "aliasPatterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Ordered first-match regexes (strata-style); the first matching pattern wins."
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "name", "org", "family", "aliases"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug", "description": "model subject slug (subject key `model:<slug>`)" },
+        "name": { "type": "string" },
+        "org": { "$ref": "#/$defs/slug", "description": "org slug; must be a registered org" },
+        "family": { "type": "string" },
+        "released": { "type": "string", "format": "date" },
+        "generation": { "type": "integer", "minimum": 0, "description": "coarse per-family monotone index by release date" },
+        "attributes": { "type": "object" },
+        "aliases": { "$ref": "#/$defs/aliasPatterns" }
+      }
+    },
+    "org": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "name", "kind", "aliases"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string" },
+        "kind": { "type": "string", "x-enum": "org_kind", "enum": ["lab", "company", "nonprofit", "institute"] },
+        "aliases": { "$ref": "#/$defs/aliasPatterns" },
+        "domains": { "type": "array", "items": { "type": "string" } },
+        "openalex_ids": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^I[0-9]+$" },
+          "description": "Curated OpenAlex institution ids; NEVER auto-adopted (orgs.yaml lesson)."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+ "description": "One relevance/scope decision for a snapshot from a screening workflow (annotate.screen). A filter flag, not evidence: it routes the snapshot into or out of downstream annotate scopes; it is never admitted into an aggregate as content. One row per (snapshot, workflow), item_key=''. Quote-free; if the verdict cites text, the quote is on the envelope grounding and referenced by grounding_idx.",
+ "type": "object",
+ "required": [
+  "verdict",
+  "rationale",
+  "buckets",
+  "off_topic_reason",
+  "stack",
+  "sr"
+ ],
+ "properties": {
+  "verdict": {
+   "enum": [
+    "relevant",
+    "borderline",
+    "irrelevant"
+   ],
+   "description": "enums.yaml relevance_verdict. relevant = keep for downstream extraction; irrelevant = out of scope; borderline = kept but flagged for cheaper handling / review.",
+   "type": "string"
+  },
+  "rationale": {
+   "type": "string",
+   "maxLength": 400,
+   "description": "Why this verdict — the auditable reason a scope cell is (not) populated."
+  },
+  "buckets": {
+   "anyOf": [
+    {
+     "type": "array",
+     "items": {
+      "enum": [
+       "lab_safety_doc",
+       "eval_report",
+       "paper",
+       "critique_commentary",
+       "incident",
+       "release_news",
+       "deployment_signal",
+       "offtopic"
+      ],
+      "type": "string"
+     },
+     "description": "Coarse routing buckets the snapshot matched (enums.yaml triage_bucket); drives which downstream workflows claim it."
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "off_topic_reason": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 200,
+   "description": "Present when verdict=irrelevant: the specific scope non-goal it fell into."
+  },
+  "stack": {
+   "type": "object",
+   "properties": {
+    "verdict": {
+     "enum": [
+      "relevant",
+      "borderline",
+      "irrelevant"
+     ],
+     "description": "enums.yaml relevance_verdict. relevant = keep for downstream extraction; irrelevant = out of scope; borderline = kept but flagged for cheaper handling / review.",
+     "type": "string"
+    },
+    "confidence": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1
+    },
+    "quotes": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   },
+   "required": [
+    "verdict",
+    "confidence",
+    "quotes"
+   ],
+   "additionalProperties": false
+  },
+  "sr": {
+   "type": "object",
+   "properties": {
+    "verdict": {
+     "enum": [
+      "relevant",
+      "borderline",
+      "irrelevant"
+     ],
+     "description": "enums.yaml relevance_verdict. relevant = keep for downstream extraction; irrelevant = out of scope; borderline = kept but flagged for cheaper handling / review.",
+     "type": "string"
+    },
+    "confidence": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1
+    },
+    "quotes": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "category": {
+     "type": "string",
+     "enum": [
+      "labs",
+      "black_box",
+      "white_box",
+      "safety_by_construction",
+      "make_ai_solve_it",
+      "theory",
+      "multi_agent_first",
+      "evals",
+      "none"
+     ]
+    },
+    "agenda": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "maxLength": 80
+    }
+   },
+   "required": [
+    "verdict",
+    "confidence",
+    "quotes",
+    "category",
+    "agenda"
+   ],
+   "additionalProperties": false
+  }
+ },
+ "additionalProperties": false
+}

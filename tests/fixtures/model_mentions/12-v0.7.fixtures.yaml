@@ -1,0 +1,25 @@
+# Fixtures for v0.7 (2026-10-17): the catalogue methodology decided by the owner — safety-function models
+# (S4), generalist VLA / world models (S3b), research fine-tunes as aliases on fine-tunes-of-base groups,
+# folded compute tiers (G3), maker-qualified model aliases (L1), new lines of admitted makers (S3).
+
+# S4 safety-function models
+- { text: "We filter with Llama Guard 3 8B", node: llama-guard-3-8b }
+- { text: "Llama Guard 3 8B", not_node: llama-3-8b }
+- { text: "ShieldGemma 2", node: shieldgemma-2-4b }
+- { text: "IBM Granite Guardian", node: granite-guardian }
+- { text: "WildGuard", node: wildguard-7b }
+# S3b generalist VLA / world models
+- { text: "Physical Intelligence pi0.5 policy", node: pi-0.5 }
+- { text: "Genie 3 world model", node: genie-3 }
+- { text: "NVIDIA Cosmos 3 Super", node: cosmos-3-super }
+# research fine-tunes -> fine-tunes-of-base groups
+- { text: "Vicuna-13B", node: vicuna-13b }  # v0.9: was llama-fine-tunes; own node since D623
+- { text: "zephyr-7b-beta", node: zephyr-7b }  # v0.9: was mistral-fine-tunes; own node since D623
+# G3 / X2 folds
+- { text: "o3-pro", node: o3 }
+- { text: "GPT-5 Pro", node: gpt-5 }
+# L1 maker-qualified model aliases
+- { text: "OpenAI Sora 2", node: sora-2 }
+- { text: "Black Forest Labs FLUX 3", node: flux-3 }
+# S3 new lines of admitted makers
+- { text: "Seedream 4.0", node: seedream-4.0 }

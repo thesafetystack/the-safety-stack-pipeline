@@ -1,0 +1,56 @@
+# Fixtures for the v0.5 additions (v4 R6, 2026-10-13; NOT from v3's _build/ like 01-09): the surface forms
+# of the 2026-10-13a annotator eval set (evals/model_roles/2026-10-13a/gold.jsonl, mentions_out_of_vocab),
+# each resolving to its new node and no longer to the older sibling it used to match by graceful
+# degradation (v0.4: "Opus 5.5" -> claude-opus-5, "GLM-5.3" -> glm-5, "Qwen3.8-27B" -> qwen3.8-max).
+
+# Anthropic
+- { text: "The best model, Opus 5.5, significantly exceeds", node: claude-opus-5.5 }
+- { text: "Opus 5.5", not_node: claude-opus-5 }
+- { text: "Opus-5.5-chosen distractors give similar results", node: claude-opus-5.5 }
+- { text: "Claude Opus 5.5", node: claude-opus-5.5 }
+- { text: "Opus 5", node: claude-opus-5 }
+- { text: "Claude Haiku 5.5 exists.", node: claude-haiku-5.5 }
+- { text: "the cost of Sonnet 5.5 cache reads", node: claude-sonnet-5.5 }
+- { text: "Sonnet 5.5", not_node: claude-sonnet-5 }
+- { text: "both Mythos/Fable 5.1 and Opus 5.5", node: claude-fable-5.1 }
+- { text: "Fable 5.1", not_node: claude-fable-5 }
+- { text: "Fable 5", node: claude-fable-5 }
+
+# OpenAI
+- { text: "here is GPT-6 and Intelligent UI in ChatGPT", node: gpt-6 }
+- { text: "I recently asked my GPT-6 Astra to find", node: gpt-6-astra }
+- { text: "GPT-6 Astra", not_node: gpt-6 }
+- { text: "GPT-6.1 Sol and Luna have strong pricing", node: gpt-6.1-sol }
+- { text: "GPT 6.1 Sol data is taken from", node: gpt-6.1-sol }
+- { text: "GPT-6.1 Luna", node: gpt-6.1 }  # v0.9: was gpt-6.1-luna (undated stub removed to the watch list, alias moved to gpt-6.1)
+- { text: "GPT-5.6 Sol", node: gpt-5.6-sol }
+
+# Google
+- { text: "We are still waiting for Gemini 4 Argon.", node: gemini-4-argon }
+- { text: "Nano Banana 2.1 Exists.", node: nano-banana }  # v0.9: was nano-banana-2.1 (undated stub removed to the watch list, alias moved to nano-banana)
+- { text: "Nano Banana 2.1", not_node: nano-banana-2 }
+- { text: "EmbeddingGemma 2 exists", node: gemma }  # v0.9: was embeddinggemma-2 (undated stub removed to the watch list, alias moved to gemma)
+- { text: "EmbeddingGemma 2", not_node: embeddinggemma }
+
+# others
+- { text: "GLM-5.3, Grok 4.6, and Claude Code", node: glm-5.3 }
+- { text: "both from GLM 5.3 (2 of its 56 flips)", node: glm-5.3 }
+- { text: "GLM 5.3", not_node: glm-5 }
+- { text: "GLM 5.2", node: glm-5.2 }
+- { text: "Grok 4.6", node: grok-4.6 }
+- { text: "Grok 4.6", not_node: grok-4 }
+- { text: "DeepSeek v4.1-Flash, GLM-5.3", node: deepseek-v4.1-flash }
+- { text: "DeepSeek v4.1-Flash", not_node: deepseek-v4 }
+- { text: "Mistral Large 4 exists.", node: mistral-large-4 }
+- { text: "Mistral Large 4", not_node: mistral-large }
+- { text: "while Qwen3.8-27B and", node: qwen3.8 }  # v0.9: was qwen3.8-27b (undated stub removed to the watch list, alias moved to qwen3.8)
+- { text: "Qwen3.8-27B", not_node: qwen3.8-max }
+- { text: "Nemotron-3.5-Lightning-30B-A3B almost never do", node: nemotron-3.5-lightning-30b-a3b }
+- { text: "Nemotron-3.5-Lightning-30B-A3B", not_node: nemotron-3 }
+- { text: "Kimi K2.6 and K3 Swarm could evade", node: kimi-k3 }  # v0.7: was node kimi-k3-swarm; compute tier / serving mode folded into its model (method G3/X2)
+- { text: "K3 Swarm", node: kimi-k3 }  # v0.7: was not_node kimi-k3; K3 Swarm folded into Kimi K3 (method X2)
+- { text: "Kimi K3", node: kimi-k3 }
+- { text: "Inkling-Small overrides its CoT", node: inkling-small }
+- { text: "Inkling (Thinking Machines Lab, 2026)", node: inkling }
+- { text: "We ran Jev 1.13 — TypeSafe's non-autoregressive model", node: jev-1.13 }
+- { text: "Jev's NCRI depends", node: jev }

@@ -1,0 +1,42 @@
+{
+  "labels_of_record": "final",
+  "partial": false,
+  "reconciled_items": [
+    "g2-0002",
+    "g2-0009",
+    "g2-0010",
+    "g2-0021",
+    "g2-0031",
+    "g2-0033",
+    "g2-0035",
+    "g2-0046",
+    "g2-0048",
+    "g2-0051",
+    "g2-0055",
+    "g2-0060",
+    "g2-0061",
+    "g2-0067",
+    "g2-0070",
+    "g2-0082",
+    "g2-0083",
+    "g2-0084",
+    "g2-0085",
+    "g2-0092",
+    "g2-0098",
+    "g2-0102",
+    "g2-0109",
+    "g2-0118",
+    "g2-0120"
+  ],
+  "missing": {},
+  "counts": {
+    "adj-X": 120,
+    "adj-Y": 120,
+    "astra-reconciler": 25,
+    "pre-verification": 120,
+    "final": 120,
+    "opus": 30,
+    "verification": 30,
+    "verification_first_run": 8
+  }
+}

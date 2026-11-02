@@ -1,0 +1,192 @@
+# Fixtures for v0.9 (2026-10-17): deep-review corrections to existing nodes — L4 alias moves to the right node,
+# near-zero-precision weak aliases removed, company names weakened, commercial media version histories folded
+# into their families, undated stubs moved to watch lists, and maker-qualified forms that must not out-span models.
+- { text: "OpenAI o1", node: o1 }
+- { text: "OpenAI o3", node: o3 }
+- { text: "OpenAI o1-mini", node: o1-mini }
+- { text: "OpenAI o3-mini", node: o3-mini }
+- { text: "OpenAI o1-preview", node: o1-preview }
+- { text: "Meta CICERO", node: cicero-1 }
+- { text: "Microsoft Rho", node: rho }
+- { text: "Microsoft Rho-alpha", node: rho-alpha }
+- { text: "the rho coefficient", node: none }
+- { text: "the phi coefficient", node: none }
+- { text: "NemoGuard", node: llama-nemotron-safety-guard }
+- { text: "Phi-3", node: phi-3 }
+- { text: "Phi-3-mini", node: phi-3-mini }
+- { text: "microsoft/phi-3-mini-4k-instruct", node: phi-3-mini }
+- { text: "CompVis/stable-diffusion-v1-4", node: stable-diffusion-1.4 }
+- { text: "Stable Diffusion v1.4", node: stable-diffusion-1.4 }
+- { text: "Stable Diffusion v1", node: stable-diffusion-1.x }
+- { text: "Mistral Small 24B", node: mistral-small }
+- { text: "Mistral Small 3.1", node: mistral-small-3.1 }
+- { text: "MiniMax-VL-01", node: minimax }
+- { text: "MiniMax-Text-01", node: minimax-text-01 }
+- { text: "Doubao-lite", node: doubao }
+- { text: "CodeQwen1.5-7B", node: qwen1.5 }
+- { text: "text-embedding-gecko", node: gemini-embeddings }
+- { text: "ERNIE 4.5 Turbo", node: ernie-4.5 }
+- { text: "Suno v4.5", node: suno }
+- { text: "Pika 2.2", node: pika }
+- { text: "AssemblyAI Universal-2", node: assemblyai-universal }
+- { text: "Cohere Rerank 4 Pro", node: cohere-rerank }
+- { text: "Lyria 3", node: lyria }
+- { text: "Magenta RT 2", node: magenta }
+- { text: "Deepgram Nova-3", node: deepgram-nova }
+- { text: "jina-reranker-v3", node: jina-reranker }
+- { text: "Udio v1.5", node: udio }
+- { text: "Nova 2", node: none }
+- { text: "Amazon Nova 2", not_node: deepgram-nova }
+- { text: "bloom-7b1", node: bloom }
+- { text: "BigScience BLOOM", node: bloom-176b }
+- { text: "vision transformers", node: none }
+- { text: "Vision Transformer", node: vit-1 }
+- { text: "gpt-realtime-whisper", node: openai-transcribe }  # v0.9: was openai-realtime-audio (transcription pointer moved to the OpenAI Transcribe family)
+- { text: "Alpamayo", node: none }
+- { text: "VGGT", node: none }
+- { text: "YOLOX", node: none }
+- { text: "YOLOv8", node: yolo-1 }
+- { text: "Mistral AI", node: mistral }
+- { text: "Z.ai", node: glm }
+- { text: "Qwen3.8-27B", node: qwen3.8 }
+- { text: "GPT-6.1 Luna", node: gpt-6.1 }
+- { text: "AlphaFold 3", node: alphafold }
+- { text: "Cosmos Reason", node: cosmos-reason }
+- { text: "Cosmos-Reason1-7B", node: cosmos-reason-1-7b }
+- { text: "NLLB-200", node: none }
+- { text: "DeepSeek-R1", node: deepseek-r1 }
+- { text: "Search-R1", node: none }
+- { text: "Stanford Alpaca", node: alpaca-7b }  # v0.9: was llama-fine-tunes; own node since D623
+- { text: "AlpacaEval", node: none }
+- { text: "Eleven Music v2", node: eleven-music-v2 }
+- { text: "VibeVoice-ASR", node: vibevoice-asr }
+- { text: "MosaicML MPT-7B", node: mpt-7b }
+# E2 (v0.9, 2026-10-17): new nodes and splits — size splits of busy and safety-function ladders (D598 fold policy), guard / reward / judge
+# classifiers under the guard supercategory (D6), instrument families and GPT-4V / bio nodes (D9), and the
+# other accepted additions; plus forms that must not fall back to the base model or to a namesake.
+- { text: "OLMo-2-7B", node: olmo-2-7b }
+- { text: "OLMo-2-1124-13B-Instruct", node: olmo-2-13b }
+- { text: "OLMo 2 32B", node: olmo-2-32b }
+- { text: "OLMo 2", node: olmo-2 }
+- { text: "OLMo-1B", node: olmo-1-1b }
+- { text: "OLMo-7B-0424", node: olmo-1-7b }
+- { text: "OLMo 1", node: olmo-1 }
+- { text: "Olmo 3 7B", node: olmo-3-7b }
+- { text: "Olmo-3-32B-Think", node: olmo-3-32b }
+- { text: "Olmo 3 Think", node: olmo-3 }
+- { text: "Olmo 3.1", node: olmo-3.1 }
+- { text: "Qwen2-VL-7B-Instruct", node: qwen2-vl-7b }
+- { text: "Qwen2-VL-2B", node: qwen2-vl-2b }
+- { text: "Qwen2-VL-72B", node: qwen2-vl-72b }
+- { text: "Qwen2-VL", node: qwen2-vl }
+- { text: "InternVL2-8B", node: internvl2-8b }
+- { text: "InternVL2-26B", node: internvl2 }
+- { text: "InternVL2.5-8B", node: internvl2.5-8b }
+- { text: "InternVL2.5-4B", node: internvl2.5 }
+- { text: "InternVL3-14B", node: internvl3-14b }
+- { text: "InternVL3-2B", node: internvl3 }
+- { text: "InternVL3.5-8B", node: internvl3.5-8b }
+- { text: "InternVL3.5-38B", node: internvl3.5-38b }
+- { text: "InternVL3.5-14B", node: internvl3.5 }
+- { text: "Qwen3Guard-Gen-8B", node: qwen3guard-gen-8b }
+- { text: "Qwen3Guard-Gen-0.6B", node: qwen3guard-gen-0.6b }
+- { text: "Qwen3Guard-Stream-4B", node: qwen3guard-stream-4b }
+- { text: "Qwen3Guard", node: qwen3guard }
+- { text: "InternLM2-20B-Reward", node: internlm2-reward-20b }
+- { text: "internlm2-7b-reward", node: internlm2-reward-7b }
+- { text: "InternLM2-1.8B-Reward", node: internlm2-reward-1.8b }
+- { text: "Granite Guardian 3.0 8B", node: granite-guardian-3.0-8b }
+- { text: "granite-guardian-3.1-2b", node: granite-guardian-3.1-2b }
+- { text: "Granite Guardian 3.2 5B", node: granite-guardian-3.2-5b }
+- { text: "granite-guardian-hap-38m", node: granite-guardian-hap-38m }
+- { text: "Granite Guardian 3.2", node: granite-guardian-3.2 }
+- { text: "Aegis-AI-Content-Safety-LlamaGuard-Defensive-1.0", node: llama-nemotron-safety-guard-defensive-v1 }
+- { text: "Llama Nemotron Safety Guard Permissive V1", node: llama-nemotron-safety-guard-permissive-v1 }
+- { text: "Flan-T5-XL", node: flan-t5-xl }
+- { text: "flan-t5-large", node: flan-t5 }
+- { text: "NVIDIA-Nemotron-Nano-9B-v2", node: nemotron-nano-2-9b }
+- { text: "Nemotron Nano 12B", node: nemotron-nano-2 }
+- { text: "HarmBench classifier", node: harmbench-cls }
+- { text: "HarmBench-Llama-2-13b-cls", node: harmbench-llama-2-13b-cls }
+- { text: "cais/HarmBench-Llama-2-13b-cls", node: harmbench-llama-2-13b-cls }
+- { text: "HarmBench-Mistral-7b-val-cls", node: harmbench-mistral-7b-val-cls }
+- { text: "Skywork-Reward", node: skywork-reward }
+- { text: "Skywork-Reward-Gemma-2-27B-v0.2", node: skywork-reward-gemma-2-27b }
+- { text: "Skywork-Reward-Llama-3.1-8B", node: skywork-reward-llama-3.1-8b }
+- { text: "Skywork-Reward-V2", node: skywork-reward-v2 }
+- { text: "Skywork-Reward-V2-Llama-3.1-8B", node: skywork-reward-v2-llama-3.1-8b }
+- { text: "Skywork-Reward-V2-Qwen3-4B", node: skywork-reward-v2 }
+- { text: "ArmoRM", node: armorm }
+- { text: "ArmoRM-Llama3-8B-v0.1", node: armorm-llama3-8b }
+- { text: "Prometheus 2", node: prometheus-2 }
+- { text: "prometheus-7b-v2.0", node: prometheus-2-7b }
+- { text: "Prometheus-8x7B-v2.0", node: prometheus-2-8x7b }
+- { text: "Prometheus 13B", node: prometheus-1-13b }
+- { text: "Prometheus-7B", node: prometheus }
+- { text: "Gemma Scope", node: gemma-scope }
+- { text: "GemmaScope", node: gemma-scope }
+- { text: "Gemma Scope 2", node: gemma-scope-2 }
+- { text: "gemma-scope-2b-pt-res", node: gemma-scope }
+- { text: "Llama Scope", node: llama-scope-1 }
+- { text: "GPT-4V", node: gpt-4v }
+- { text: "GPT-4V(ision)", node: gpt-4v }
+- { text: "GPT-4 with vision", node: gpt-4v }
+- { text: "gpt-4-vision-preview", node: gpt-4-turbo }
+- { text: "GPT-4", node: gpt-4 }
+- { text: "ESM-2", node: esm-2 }
+- { text: "ESM2 650M", node: esm-2 }
+- { text: "ESM3", node: esm3 }
+- { text: "ESM C", node: esm }
+- { text: "Evo 2", node: evo-2 }
+- { text: "Evo 2 40B", node: evo-2 }
+- { text: "Qwen2.5-Math", node: qwen2.5-math }
+- { text: "Qwen2.5-Math-7B-Instruct", node: qwen2.5-math-7b }
+- { text: "Qwen2.5-Math-1.5B", node: qwen2.5-math-1.5b }
+- { text: "Qwen2.5-Math-PRM-7B", node: qwen2.5-math-prm-7b }
+- { text: "Qwen2.5-Math-PRM", node: qwen2.5-math-prm }
+- { text: "ERNIE-4.5-VL-424B-A47B", node: ernie-4.5-vl-424b-a47b }
+- { text: "ERNIE-4.5-VL-28B-A3B-PT", node: ernie-4.5-vl-28b-a3b }
+- { text: "ERNIE-4.5-VL", node: ernie-4.5 }
+- { text: "Doubao-1.5-thinking-pro", node: doubao-1.5-thinking-pro }
+- { text: "babbage-002", node: babbage-002 }
+- { text: "Phi-3-vision-128k-instruct", node: phi-3-vision }
+- { text: "Falcon2-11B-VLM", node: falcon-2-11b-vlm }
+- { text: "Falcon 2 11B", node: falcon-2-11b }
+- { text: "MiniMax-M2.1", node: minimax-m2.1 }
+- { text: "MiniCPM-V-4.6-Thinking", node: minicpm-v-4.6-thinking }
+- { text: "MiniCPM-V 4.6", node: minicpm-v-4.6 }
+- { text: "ElevenLabs Scribe v2", node: eleven-scribe-v2 }
+- { text: "gpt-4o-transcribe", node: gpt-4o-transcribe }
+- { text: "SigLIP", node: siglip-1 }
+- { text: "SigLIP2", node: siglip-2 }
+- { text: "siglip-so400m-patch14-384", node: siglip-1 }
+- { text: "SigLIP 2 So400m", node: siglip-2 }
+- { text: "CycleGAN", node: cyclegan-1 }
+- { text: "voyage-multimodal-3", node: voyage-multimodal-3 }
+- { text: "OpenFlamingo", node: openflamingo-1 }
+- { text: "DeepMind Flamingo", node: flamingo-1 }
+- { text: "Open-Sora", node: open-sora }
+- { text: "OpenSora 1.2", node: open-sora-1 }
+- { text: "Open-Sora 2.0", node: open-sora }
+- { text: "Open-Sora-Plan", node: video-generation }
+- { text: "Sora 2", node: sora-2 }
+- { text: "LLaDA-8B-Instruct", node: llada-8b }
+- { text: "LLaDA 1.5", node: llada-1.5 }
+- { text: "LLaDA", node: llada }
+- { text: "TinyLlama-1.1B-Chat-v1.0", node: tinyllama-1.1b }
+- { text: "TinyLlama", node: tinyllama-1.1b }
+- { text: "Jais", node: jais }
+- { text: "Jais-13B-chat", node: jais-13b }
+- { text: "SEA-LION v4", node: sea-lion }
+- { text: "Nomic Embed", node: nomic-embed }
+- { text: "HarmBench-Llama-2-13b-cls", not_node: llama-2-13b }
+- { text: "Open-Sora", not_node: sora }
+- { text: "OpenFlamingo", not_node: flamingo-1 }
+- { text: "Gemma Scope", not_node: gemma }
+- { text: "Llama Scope", not_node: llama }
+- { text: "Qwen2.5-Math-7B", not_node: qwen2.5 }
+- { text: "Skywork-Reward-V2-Llama-3.1-8B", not_node: llama-3.1-8b }
+- { text: "ArmoRM-Llama3-8B-v0.1", not_node: llama-3-8b }
+- { text: "Phi-3-vision", not_node: phi-3-mini }
+- { text: "Granite 3.3 8B Instruct", node: granite-3.3-8b }
+- { text: "Granite 3.3 2B", node: granite-3.3 }

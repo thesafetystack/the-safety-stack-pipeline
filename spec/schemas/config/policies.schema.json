@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/config/policies.schema.json",
+  "title": "policies.yaml",
+  "description": "Quote -> span anchoring acceptance (§6.2), read by stack/anchor.py. v3's read-time policies and their schema were retired with v3 (D438).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "anchoring"
+  ],
+  "properties": {
+    "version": {
+      "$ref": "#/$defs/semver"
+    },
+    "anchoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchor_min_score"
+      ],
+      "properties": {
+        "anchor_min_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "strict weighted-score acceptance threshold (§6.2)"
+        },
+        "per_workflow": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "description": "per-workflow overrides of anchor_min_score."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    }
+  }
+}

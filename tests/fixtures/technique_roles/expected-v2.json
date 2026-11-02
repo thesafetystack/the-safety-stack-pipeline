@@ -1,0 +1,71 @@
+{
+ "note": "Expected render of prompts/technique-roles-v2.md (rubric v0.4.0) over the frozen taxonomy subset tests/fixtures/technique_roles/taxonomy.yaml, recorded 2026-10-17 from the code that introduced v2. A pinned prompt file is never edited (a new version is a new file), so a change here is a regression. The user part is v1's, byte for byte (the eval set's frozen input digests stay valid).",
+ "prompt": "technique-roles-v2",
+ "includes": [
+  "rubric-v0.4.0.md"
+ ],
+ "taxonomy_sha256": "c9593676ebb41ecc303a0629506819ae94545525eb739726e3709a730737af7d",
+ "menu_sha256": "a5cb13ede0a7bc1d2478c58dd42483983231f3b7950744790188b16ba65a2335",
+ "menu_chars": 13989,
+ "prompt_file_digest": "da8cbd9838f4afba73369246a857c41e9869eb41158d11481a105a6a7cb4c061",
+ "system_sha256": "bc9fb64dd84052a581e4605b3e24529d3fd05826baa732cd8ad15f61dffb2c39",
+ "system_chars": 64330,
+ "cases": [
+  {
+   "id": "small",
+   "text": [
+    [
+     "# Preference tuning without a reward model — notes\n\nWe fine-tune Llama-3-8B with DPO on 60k préférence pairs; see {{taxonomy_menu}} and {{document}}.\n{{input:document}} is literal here, and so is {% if x %}.\n  trailing spaces   \n\n\n",
+     1
+    ]
+   ],
+   "text_chars": 231,
+   "truncated": false,
+   "user_sha256": "c3adcf834bef9d198294645e78931dff574868bb686a85dc80e774f375cb9389",
+   "user_chars": 336
+  },
+  {
+   "id": "blank",
+   "text": [
+    [
+     " \n",
+     1
+    ]
+   ],
+   "text_chars": 2,
+   "truncated": false,
+   "user_sha256": "54ef4af1b4f60a67229ac003658c1e7a9839c66e4e7400c6b007d94d77b48d55",
+   "user_chars": 107
+  },
+  {
+   "id": "at-cap",
+   "text": [
+    [
+     "0123456789",
+     30000
+    ]
+   ],
+   "text_chars": 300000,
+   "truncated": false,
+   "user_sha256": "7f56c7839fd18af02dcf51d4d568651e0c665be83887bf41b4cda0e62384d177",
+   "user_chars": 300105
+  },
+  {
+   "id": "past-cap",
+   "text": [
+    [
+     "abcdefghij",
+     30000
+    ],
+    [
+     "TAIL beyond the cap\n",
+     3
+    ]
+   ],
+   "text_chars": 300060,
+   "truncated": true,
+   "user_sha256": "48b547388e0dd3a016bb5d446d7aa663d941f7138e77473d1874eb07b40243bb",
+   "user_chars": 300144
+  }
+ ]
+}

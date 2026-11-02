@@ -1,0 +1,264 @@
+{
+  "set_id": "2026-10-13-holdout",
+  "task": "screen",
+  "created_at": "2026-10-13T04:38:04+00:00",
+  "source_store": "v4/store-p5-dev",
+  "documents_chain": "documents",
+  "documents_head": "rp0trgetr6tfz.documents",
+  "git_commit": "1bcee22e9bf566ab1e8738c7654d138dd1c7e095",
+  "git_dirty": true,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "1d007fca211119f0aaa73a81e0e366ba0d2ca14bbe0ed4d279310437f11b2ba2"
+  },
+  "basis_builder": {
+    "ref": "workflows.annotate.screen.main:ask (tier-1 user message, captured)",
+    "source_sha256": "9d84d97ed4aa5c4433de800d32f20df730d1f977388feba91444a167fa310c2c",
+    "caps": {
+      "_MAX_DOC_CHARS": 8000
+    }
+  },
+  "seed": "t-screen-2026-10-13-holdout",
+  "order": "sha256(seed + doc_id) hex, ascending",
+  "items_sha256": "06d1bbea1d334962cf26dc6940a0e03b6b6b38af3221e29c796a508e7f602f5f",
+  "keywords": {
+    "safety_stems": {
+      "alignment": "\\balignment\\b|\\baligned (ai|model|llm)",
+      "superalignment": "\\bsuperalign",
+      "misalign": "\\bmisalign",
+      "safety": "\\bsafety\\b|\\bai[- ]safe",
+      "interpretab": "\\binterpretab",
+      "mechanistic": "\\bmechanistic",
+      "red-team": "\\bred[- ]?team",
+      "jailbreak": "\\bjailbreak",
+      "prompt injection": "\\bprompt[- ]injection",
+      "oversight": "\\boversight\\b",
+      "rlhf": "\\brlhf\\b|reinforcement learning from human feedback",
+      "reward hack": "\\breward[- ]hack|\\breward tampering|\\bspecification gaming",
+      "decepti": "\\bdecepti|\\bdeceiv",
+      "schem": "\\bschem(e|es|ing|er|ers)\\b",
+      "sandbag": "\\bsandbag",
+      "sycophan": "\\bsycophan",
+      "misuse": "\\bmisuse",
+      "guardrail": "\\bguardrail",
+      "refusal": "\\brefus(al|als|e|es|ing)\\b",
+      "constitutional": "\\bconstitutional",
+      "monitor": "\\bmonitor",
+      "ai control": "\\bai control\\b|\\bcontrol (evaluation|protocol)s?\\b",
+      "dangerous capabilit": "\\bdangerous[- ]capabilit",
+      "frontier risk": "\\bfrontier (ai )?risk|\\bcatastrophic risk|\\bexistential risk|\\bx-risk",
+      "preparedness": "\\bpreparedness",
+      "responsible scaling": "\\bresponsible scaling",
+      "unlearning": "\\bunlearn",
+      "backdoor": "\\bbackdoor",
+      "poison": "\\bpoison",
+      "watermark": "\\bwatermark",
+      "adversarial": "\\badversarial",
+      "robust": "\\brobust",
+      "corrigib": "\\bcorrigib",
+      "steering": "\\bsteering\\b",
+      "model organism": "\\bmodel organism",
+      "power-seeking": "\\bpower[- ]seeking",
+      "situational awareness": "\\bsituational awareness|\\bevaluation awareness"
+    },
+    "policy": {
+      "policy": "(?<!on-)(?<!off-)(?<!on )(?<!off )(?<!network )(?<!rl )(?<!agent )\\bpolic(y|ies)\\b(?![- ](gradient|optimi[sz]|network|learning|model|iteration|distill|improvement|search|evaluation|update|space|entropy|head|mirror|collapse|loss|representation))",
+      "regulat": "\\bregulat(ion|ions|ory|ors?|ing ai)\\b",
+      "legislat": "\\blegislat",
+      "law": "(?<!scaling )(?<!power )(?<!goodhart's )(?<!goodhart’s )\\blaws?\\b(?! of\\b)",
+      "act": "\\b(ai|eu|safety|chips|frontier ai) act\\b|\\bexecutive order",
+      "export control": "\\bexport control",
+      "liability": "\\bliabilit"
+    },
+    "governance": {
+      "governance": "\\bgovernance",
+      "safety framework": "\\b(safety|preparedness|frontier|scaling) (policy|framework)"
+    },
+    "governance_weak": {
+      "standard": "\\bstandards?\\b",
+      "audit": "\\baudit",
+      "compliance": "\\bcomplian(ce|t)\\b",
+      "commitment": "\\bcommitment",
+      "government": "\\bgovernment|\\bcongress|\\bsenate|\\bparliament|\\btreat(y|ies)\\b|\\blawmaker"
+    },
+    "hard_body_chars": 800,
+    "capabilities": {
+      "benchmark": "\\bbenchmark",
+      "sota": "\\bsota\\b|\\bstate[- ]of[- ]the[- ]art",
+      "reasoning": "\\breasoning\\b",
+      "agent": "\\bagent(s|ic)?\\b",
+      "coding": "\\bcoding\\b|\\bcode generation|\\bprogramming",
+      "math": "\\bmath(s|ematical)?\\b",
+      "scaling": "\\bscaling\\b",
+      "multimodal": "\\bmulti-?modal",
+      "introducing": "\\bintroduc(ing|es)\\b",
+      "model launch": "\\blaunch|\\bnow available|\\brelease of\\b|\\bgpt-?\\d|\\bgemini \\d|\\bclaude \\w+ \\d"
+    },
+    "marketing_words": "\\bsaf(e|er|ety|ely|eguard)\\b|\\btrust|\\bresponsib|\\bsecur|\\bprivacy\\b|\\bprivate\\b|\\bprotect",
+    "product_words": "\\bchatgpt|\\bgpt\\b|\\bgpt-?\\d|\\bsora\\b|\\bcodex\\b|\\bgemini\\b|\\bclaude\\b|\\bbard\\b|\\bandroid|\\bchrome\\b|\\bsearch\\b|\\bworkspace\\b|\\bpixel\\b|\\byoutube\\b|\\bgmail\\b|\\bapi\\b|\\bapps?\\b|\\bfeatures?\\b|\\btools?\\b|\\benterprise\\b|\\bbusiness\\b|\\bteams?\\b|\\baccounts?\\b|\\bcontrols\\b|\\bsettings\\b|\\bmode\\b|\\bbrowser\\b|\\bplatform\\b|\\bproducts?\\b|\\batlas\\b|\\boperator\\b",
+    "next_to_chars": 30,
+    "rl_context": "\\breinforcement learning|\\brl\\b|\\breward|\\b(on|off)[- ]policy|\\bpolicy gradient"
+  },
+  "quotas": {
+    "forum": {
+      "lesswrong": 3
+    },
+    "paper": {
+      "arxiv": 14,
+      "openalex": 16,
+      "semantic_scholar": 3
+    },
+    "url": {
+      "anthropic_alignment_blog": 7,
+      "anthropic_cards": 2,
+      "google_research": 5,
+      "openai_alignment_blog": 2,
+      "openai_blog": 4,
+      "transformer_circuits": 4
+    }
+  },
+  "target_n": 60,
+  "selection": {
+    "short": {},
+    "hard_picked": {
+      "forum": 0,
+      "paper": 0,
+      "url": 0
+    }
+  },
+  "excluded_doc_ids": 113,
+  "population": {
+    "rows": 2921,
+    "live": 2921,
+    "masked": 0,
+    "merged": 0,
+    "untitled": 0,
+    "by_channel": {
+      "forum/lesswrong": {
+        "eligible": 25,
+        "kw_high": 13,
+        "kw_low": 12,
+        "live": 25
+      },
+      "paper/arxiv": {
+        "eligible": 112,
+        "kw_high": 26,
+        "kw_low": 86,
+        "live": 112
+      },
+      "paper/openalex": {
+        "eligible": 129,
+        "kw_high": 106,
+        "kw_low": 23,
+        "live": 129
+      },
+      "paper/semantic_scholar": {
+        "eligible": 23,
+        "kw_high": 21,
+        "kw_low": 2,
+        "live": 23
+      },
+      "url/anthropic_alignment_blog": {
+        "eligible": 52,
+        "kw_high": 50,
+        "kw_low": 2,
+        "live": 52
+      },
+      "url/anthropic_cards": {
+        "eligible": 19,
+        "kw_high": 19,
+        "live": 19
+      },
+      "url/google_research": {
+        "eligible": 38,
+        "kw_high": 13,
+        "kw_low": 25,
+        "live": 38
+      },
+      "url/openai_alignment_blog": {
+        "eligible": 18,
+        "kw_high": 18,
+        "live": 18
+      },
+      "url/openai_blog": {
+        "eligible": 30,
+        "kw_high": 9,
+        "kw_low": 21,
+        "live": 30
+      },
+      "url/transformer_circuits": {
+        "eligible": 28,
+        "kw_high": 19,
+        "kw_low": 9,
+        "live": 28
+      }
+    }
+  },
+  "texts": "texts/<item_id>.txt.gz (gzip mtime 0; sha256 of the text = input.full_text_digest)",
+  "counts": {
+    "total": 60,
+    "split": {
+      "holdout": 60
+    },
+    "channel_group": {
+      "forum": 3,
+      "paper": 33,
+      "url": 24
+    },
+    "channel": {
+      "forum/lesswrong": 3,
+      "paper/arxiv": 14,
+      "paper/openalex": 16,
+      "paper/semantic_scholar": 3,
+      "url/anthropic_alignment_blog": 7,
+      "url/anthropic_cards": 2,
+      "url/google_research": 5,
+      "url/openai_alignment_blog": 2,
+      "url/openai_blog": 4,
+      "url/transformer_circuits": 4
+    },
+    "proxy": {
+      "kw_high": 35,
+      "kw_low": 25
+    },
+    "hard": {
+      "None": 60
+    },
+    "license_class": {
+      "open": 35,
+      "public_web": 24,
+      "restricted": 1
+    },
+    "production_asks": {
+      "True": 60
+    },
+    "stratum_split": {
+      "forum|kw_high|plain|holdout": 2,
+      "forum|kw_low|plain|holdout": 1,
+      "paper|kw_high|plain|holdout": 17,
+      "paper|kw_low|plain|holdout": 16,
+      "url|kw_high|plain|holdout": 16,
+      "url|kw_low|plain|holdout": 8
+    },
+    "channel_proxy_hard_split": {
+      "forum/lesswrong|kw_high|None|holdout": 2,
+      "forum/lesswrong|kw_low|None|holdout": 1,
+      "paper/arxiv|kw_high|None|holdout": 7,
+      "paper/arxiv|kw_low|None|holdout": 7,
+      "paper/openalex|kw_high|None|holdout": 8,
+      "paper/openalex|kw_low|None|holdout": 8,
+      "paper/semantic_scholar|kw_high|None|holdout": 2,
+      "paper/semantic_scholar|kw_low|None|holdout": 1,
+      "url/anthropic_alignment_blog|kw_high|None|holdout": 5,
+      "url/anthropic_alignment_blog|kw_low|None|holdout": 2,
+      "url/anthropic_cards|kw_high|None|holdout": 2,
+      "url/google_research|kw_high|None|holdout": 3,
+      "url/google_research|kw_low|None|holdout": 2,
+      "url/openai_alignment_blog|kw_high|None|holdout": 2,
+      "url/openai_blog|kw_high|None|holdout": 2,
+      "url/openai_blog|kw_low|None|holdout": 2,
+      "url/transformer_circuits|kw_high|None|holdout": 2,
+      "url/transformer_circuits|kw_low|None|holdout": 2
+    }
+  }
+}

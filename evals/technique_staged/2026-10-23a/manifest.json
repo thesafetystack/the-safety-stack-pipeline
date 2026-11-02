@@ -1,0 +1,114 @@
+{
+  "task": "technique_staged",
+  "set_id": "2026-10-23a",
+  "items": 100,
+  "source": "gold v3 sample (sources/sample.jsonl, scripts/sampling/sample.py) of the 2026-10-23 build's screen_relevant documents; texts = store blobs",
+  "sampling": {
+    "seed": 20261023,
+    "n": 100,
+    "frame": {
+      "corpus": "data/corpus.build/batch-import/20261023T161733Z_rnm6jsz5t2ena.full.parquet",
+      "corpus_sha256": "72ed799ac32ce3e8c1b5952e8faecd8e33b4392c7d09cc9be842dc9d8c8fec31",
+      "screen_relevant_rows": 39267
+    },
+    "eligible": 38521,
+    "excluded": {
+      "in_existing_eval": 468,
+      "no_usable_text": 278
+    },
+    "allocation": {
+      "paper": 60,
+      "forum": 30,
+      "blog": 4,
+      "card": 3,
+      "report": 3
+    },
+    "weights": {
+      "paper": 405.75,
+      "forum": 406.4,
+      "blog": 413.0,
+      "card": 32.6667,
+      "report": 78.0
+    },
+    "sample_sha256": "cfbe6c0953e6fd9648527112dc47ab0ad39c7a002ff29e83525b769f0cc1f20e",
+    "mentions_sha256": "a8cba23ae7048cddfd6a3b03f634421071fb520ce3e006873a45d448816c03d1",
+    "models_yaml_sha256": "ce35fb95729991de3a5cea8d29829d22ed202b236f6a57308140cc23a9643315"
+  },
+  "gold": null,
+  "input_only": true,
+  "items_sha256": "1c82b9fd25c0a755a6100fbcde1f5d24c8e58ac8deaf4ac496219d5955f56e14",
+  "splits": {
+    "dev": 51,
+    "test": 49
+  },
+  "strata": {
+    "group": {
+      "blog": 4,
+      "card": 3,
+      "forum": 30,
+      "paper": 60,
+      "report": 3
+    },
+    "band": {
+      "20-60k": 35,
+      "60-100k": 21,
+      "<20k": 24,
+      ">100k": 20
+    },
+    "channel_group": {
+      "forum": 30,
+      "paper": 63,
+      "url": 7
+    },
+    "year_bucket": {
+      "2020-2023": 19,
+      "2024": 12,
+      "2025": 24,
+      "2026": 36,
+      "<=2019": 6,
+      "none": 3
+    },
+    "mention_bucket": {
+      "0": 27,
+      "1-3": 20,
+      "4+": 53
+    }
+  },
+  "license_class": {
+    "open": 89,
+    "public_web": 7,
+    "restricted": 4
+  },
+  "frozen_with": {
+    "taxonomy_path": "taxonomy/taxonomy-v0.9.1.yaml",
+    "taxonomy_sha256": "09fa7705b7ba6a750eb158fb3808b0d25f4d84764522a055f8abd7b1fe1827db",
+    "taxonomy_version": "0.9",
+    "rubric": "rubric-v0.9-c",
+    "rubric_digest": "fce34ffd0a3e06272e26ec167e45f512bf7a7573dbc8494ccb677ec8a84bd325",
+    "prompt_set": "technique-staged-v3",
+    "prompt_digests": {
+      "single": {
+        "single": "70c2a74f1c4b87f4e545ab771c6d3cde3678accdd38ceb92ea6401a64bda3c93"
+      },
+      "sweep": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "sweep": "3a9d1d8067fa2355032ed5d9abc6c3a4e964df411ef994deb008eabc4a72fc91"
+      },
+      "staged": {
+        "prepass": "41733d2a959a044d08ad4f0a840047ba9d1a8815f367a1e13fd7238625ed3268",
+        "select": "377dba6e877d223ade4fcb2e33159bb6362e951474a6eb0aea1e2f9a0d8d6d42",
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      },
+      "lexical": {
+        "grade": "522b2b81ac73ae9b74034e171f2d68b5cec1f11d66ea01d381e2836a487f9fa7"
+      }
+    },
+    "segmenter_version": "seg-v1",
+    "lexical_version": "lex-v2"
+  },
+  "truncated_items": [
+    "g3-0051",
+    "g3-0100"
+  ],
+  "doc_char_cap": 300000
+}

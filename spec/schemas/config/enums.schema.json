@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/config/enums.schema.json",
+  "title": "enums.yaml",
+  "description": "Every controlled vocabulary with per-value glosses (10-design §8). Enum-valued TEXT columns are validated against this file at write time; there are no enum tables and no CHECK constraints mirroring these (§4.1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "enums"],
+  "properties": {
+    "version": { "$ref": "#/$defs/semver" },
+    "enums": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/vocabulary" },
+      "comment": "Extra vocabularies beyond the required set are permitted (doc_type, phase, ...). The v3 required set's text_quality, evidence_tier, relation, independence, fetch_outcome, subject_kind, change_cause, review_verdict, review_stream and coverage_exhausted retired with v3: configs/enums.yaml (2026-10-14).",
+      "required": ["license_class", "ann_type"]
+    }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "vocabulary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["values"],
+      "properties": {
+        "description": { "type": "string" },
+        "ordered": {
+          "type": "boolean",
+          "description": "True for rank-ordered vocabularies; values are listed best-first."
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "True when the column is allowed to be NULL (absence is meaningful, e.g. sensitivity)."
+        },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string" },
+          "description": "value slug -> one-line gloss"
+        }
+      }
+    }
+  }
+}

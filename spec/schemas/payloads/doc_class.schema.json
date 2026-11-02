@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/payloads/doc_class.schema.json",
+  "title": "DocClass",
+  "description": "The classified genre of a snapshot when it is not mechanically known at collect. One row per (snapshot, workflow), item_key=''. The `corpus` view reads payload->>'doc_type' as the classified half of doc_type_eff = COALESCE(sources.doc_type, doc_class.doc_type) — so `doc_type` is mandatory and its vocabulary must match the mechanical doc_type domain in enums.yaml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["doc_type"],
+  "properties": {
+    "doc_type": {
+      "x-enum": "doc_type",
+      "enum": ["paper", "preprint", "system_card", "model_card", "framework_policy", "lab_blog", "eval_report", "product_doc", "regulatory", "critique", "news", "forum_post", "tweet", "webpage", "dataset", "other"],
+      "description": "Genre of the document (enums.yaml doc_type). Feeds doc_type_eff = COALESCE(sources.doc_type, doc_class.doc_type), which annotate scopes filter on (e.g. screen IN ('paper','preprint','eval_report','lab_blog'))."
+    },
+    "self_published": {
+      "type": "boolean",
+      "description": "Publisher == subject org (the doc is about its own author's work). Mirrors sources.self_published when that could not be set mechanically."
+    },
+    "primary_lang": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "BCP-47 primary language tag of the body, when the classifier reports it."
+    },
+    "rationale": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "Why this genre — brief, for audit."
+    },
+    "grounding_idx": { "$ref": "_core.schema.json#/$defs/grounding_idx" }
+  }
+}

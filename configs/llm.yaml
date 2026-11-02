@@ -1,0 +1,249 @@
+# llm.yaml — provider, roles, egress classes, and budgets (10-design §8, §9.1; 20-technical §8).
+# Secrets never live here: the provider key is read from the env var provider.api_key_env.
+# Validated against llm.schema.json.
+version: "3.9.2"   # 2026-11-02: 3.9.2 rewords a comment (D792); no value moves. 3.9.1 sets `provider.referer` (a request header) to the project's site; no role,
+                   # pin or request body changes, so no digest moves.
+                   # 2026-10-30: 3.9.0 adds role `translate` (annotate.translation, D755: gpt-6-luna, 2,048 output tokens;
+                   # a new role, so no pin's digests move). 2026-10-27: 3.8.0 adds role `extract_staged_openai_high` (extract_staged_openai at reasoning effort
+                   # `high`, for the technique_staged effort arms on gold v3; a new role, so no pin's digests move).
+                   # 2026-10-26: 3.7.0 adds `providers.anthropic` (the Anthropic Messages API, dialect `anthropic`, key
+                   # ANTHROPIC_API_KEY, streamed), `egress_provider` on the direct providers (the counterparty the egress
+                   # gate checks for every model they serve; openai's is what the `openai/` prefix gave), provider-
+                   # qualified model references (`anthropic:claude-opus-5-5`, see "Switching a stage's provider" below)
+                   # and the prices of claude-opus-5-5 / claude-sonnet-5-5 / claude-haiku-5-5 on the Anthropic API (D722).
+                   # No role names Anthropic yet; no existing role, pin or request changes, so no digest moves.
+                   # 2026-10-24: 3.6.0 adds `providers.openai` (the OpenAI API itself, dialect `openai`, key
+                   # OPENAI_API_KEY), roles `extract_main_openai` and `extract_staged_openai` (gpt-6-luna on the OpenAI
+                   # API with no fallback model: a luna failure fails the document, failed_transient, retried by a
+                   # later run; the corpus annotations technique_staged / model_roles name them, D714) and gpt-6-luna's
+                   # cached-input, cache-write and long-context prices (used only for replies without usage.cost, i.e.
+                   # direct OpenAI calls). New roles, so the pins of extract_main / extract_staged, affiliation's among
+                   # them, keep their digests.
+                   # 2026-10-23: 3.5.0 adds role `extract_staged_medium` (extract_staged at an explicit effort `medium`,
+                   # for the effort arms of the gold v3 evals; a new role, so no pin's digests move). 2026-10-21: 3.4.0 moves role `screen` from openai/gpt-5.6-luna to openai/gpt-6-luna (D692): every
+                   # luna a role names is gpt-6-luna. Every plan pins screen's `model` (gpt-6-luna), which replaces the
+                   # role's, so no plan's screen digests change; gpt-5.6-luna keeps its price for historical rows.
+                   # 2026-10-18: 3.3.0 prices qwen/qwen3.8-flash and z-ai/glm-5.3-flash for the techpipe open-model
+                   # annotator trials (eval only; routes in evals/egress-overlay.yaml, D628). No role names them.
+                   # 2026-10-17: 3.2.0 adds the optional role field `reasoning_effort` (sent as OpenRouter's `reasoning: {effort}`;
+                   # in the sampling params, so digests and cache keys, only when set: roles without it hash and send as
+                   # before) and roles `extract_staged_low` / `extract_staged_high` (extract_staged at effort low / high;
+                   # new roles, not an edited extract_staged, so pins that do not name them keep their digests, techpipe D612).
+                   # 2026-10-17: 3.1.0 adds role `extract_staged` (annotate.technique_staged, techpipe D602: luna with a
+                   # luna fallback, 16,000 output tokens; a stage pinned to another model keeps a cheap OpenAI fallback).
+                   # 2026-10-14: 3.0.0 removes the roles `adjudicate` and `synth` and the price of openai/gpt-6.1-sol
+                   # (priced for track E, D177b, never run): read by no v4 code.
+                   # 2026-10-14: 2.0.0 removes `budget.per_sweep_usd`, read by no v4 code (D438).
+                   # 2026-10-14: 1.10.0 adds role `classify_1k` (classify at 1,024 output tokens; the cap raised for the e2e triage; gpt-6-luna spent all 512 tokens on reasoning on 4.8% of rows in a batch test; a new role, not a raised `classify`, so plans that do not name it keep their triage config_digest and priors, D390 (e2e-fix)). 2026-10-13: 1.9.3 removes `ledger` (the host-wide ledger is retired; a run's spend is in its record, T-STORE). 1.9.2 raises ledger.cap_usd 20 -> 150 (the LLM cap set to $150; the ledger moves to the state dir, R6-2). 2026-10-12: 1.9.1 retires anthropic/claude-haiku-4.5 (Haiku 4.5 abandoned; its price stays, `retired: true`, for eval combine's backfill of old cache entries; the client refuses it). 1.9.0 moves every haiku-4.5 role to openai/gpt-6-luna (classify, extract_cheap, extract_main, adjudicate; track E2, D201 (E): eval numbers there). 1.8.2 prices openai/gpt-5.2, extract_main's fallback (M4 real runs, D178 (C)). 1.8.1 prices four stronger eval candidates (D177b (E)). 1.8.0 prices the eval models under test (track E, D173 (E)). 1.7.0: screen_adjudicate back to gpt-5.6-terra, now priced (v4 D170 (C), supersedes D167/D168). 1.6.0: screen_adjudicate → claude-sonnet-4.6 (D167). 1.5.0: pricing table + ledger cap (v4 T4.1). 1.4.0: OpenAI for every license class.
+
+provider:
+  base_url: "https://openrouter.ai/api/v1"
+  api_key_env: OPENROUTER_API_KEY
+  referer: "https://thesafetystack.ai/"
+  title: "The Stack"
+
+# Further transports a role may name (`roles.<r>.provider`, D714); a role without one uses `provider` above.
+#
+# Switching a stage's provider (D722). Two ways, both new-config-only (existing pins keep their digests):
+#   1. a role with `provider:` and the model id AT THAT PROVIDER, named by the stage's pin (`role: <r>`), e.g.
+#        extract_staged_anthropic: {provider: anthropic, model: claude-sonnet-5-5, max_tokens: 16000}
+#      (the D714 pattern; the role's provider is in no digest, the model id is);
+#   2. a provider-qualified model reference `<provider>:<model id>` wherever a model is named: a pin's `model`
+#      (`adjudicate_model`, `prepass_model`, `select_model`), a role's `model` or `fallbacks`, e.g.
+#        annotate.model_roles: {name: model-roles-v3b, role: extract_main_openai, model: "anthropic:claude-opus-5-5"}
+#      (the reference as written is the model in the digests; an unqualified id goes to the role's provider).
+# Model ids are provider-specific: OpenRouter `anthropic/claude-sonnet-4.6` is the Anthropic API's `claude-sonnet-4-6`.
+# The egress gate checks a direct provider's `egress_provider` for every model it serves (so `anthropic` here is gated
+# like `anthropic/...` on OpenRouter: not for `shadow`); a model priced nowhere is reserved at `pricing.fallback`.
+# Batch mode sends only to `provider` above. The deploy needs the provider's key (`api_key_env`).
+providers:
+  openai:
+    base_url: "https://api.openai.com/v1"
+    api_key_env: OPENAI_API_KEY
+    dialect: openai              # max_completion_tokens, reasoning_effort, prompt_cache_key; cost from `pricing`
+    strip_model_prefix: "openai/"
+    timeout_s: 900               # no keepalives before a non-streamed reply: a 64k-token reasoning call runs minutes
+    egress_provider: openai      # D722: the counterparty (the slug the `openai/` prefix gave)
+  anthropic:
+    # D722: the Messages API (/v1/messages, x-api-key, anthropic-version 2026-10-21): output_config.format (the JSON
+    # schema) and .effort, cache_control on the system part (and through the last block unless cache_prefix_only);
+    # no temperature (2026-10-21 refuses it) and no effort `minimal` (refused at load). Cost from `pricing`.
+    base_url: "https://api.anthropic.com/v1"
+    api_key_env: ANTHROPIC_API_KEY
+    dialect: anthropic
+    egress_provider: anthropic
+    stream: true                 # SSE with keepalive pings: a non-streamed long call idles and drops at ~10 minutes
+    timeout_s: 900               # per socket read of the stream (pings normally come far sooner); as openai's
+
+# role -> model config. workflow.llm_role keys must exist here (cross-checked by the validator).
+roles:
+  screen:
+    # Cheap first pass through OpenRouter; borderline cases escalate to screen_adjudicate below.
+    model: "openai/gpt-6-luna"         # was gpt-5.6-luna until 3.4.0 (D692)
+    max_tokens: 512
+  screen_adjudicate:
+    # Borderlines receive the entire stored snapshot plus the first-pass rationale.
+    # A partial snapshot stays partial; this step does not fetch additional text.
+    # OpenAI, so tier 2 follows 1.4.0's "OpenAI for every license class" (incl. `shadow`); priced
+    # below from OpenRouter's listing (D170 (C), supersedes the sonnet-4.6 pin of D167/D168).
+    model: "openai/gpt-5.6-terra"
+    max_tokens: 2048
+  classify:
+    model: "openai/gpt-6-luna"         # was haiku-4.5 (D201 (E): triage evals 2026-10-12a/sr2025-recall)
+    max_tokens: 512
+  classify_1k:
+    # classify with a 1,024-token output cap: a triage pin names it (`role: classify_1k`, std-2026-10-14a).
+    # At 512, gpt-6-luna used the whole cap on reasoning for 4.8% of rows (batch test, 2026-10-14; D390).
+    model: "openai/gpt-6-luna"
+    max_tokens: 1024
+  translate:
+    # annotate.translation (D755): English versions of a non-English document's title and abstract, one call per
+    # document. gpt-6-luna (about $0.0004 a document); the plan pin may name `model: openai/gpt-5.6-terra` instead
+    # (about 20x the price) where luna's translations prove too loose.
+    model: "openai/gpt-6-luna"
+    max_tokens: 2048
+  extract_cheap:                     # reserved: no workflow uses it yet (kept for a future cheap map pass); the eval harness's affiliation default
+    model: "openai/gpt-6-luna"         # was haiku-4.5 (D201 (E))
+    max_tokens: 4096
+  extract_main:
+    # was haiku-4.5 (Jake's L-2, taxman ran everything on haiku). gpt-6-luna since 1.9.0 (D201 (E)):
+    # affiliation evals 2026-10-12a and 2026-10-12b-bylines (haiku-4.5 pairs authors to organisations by position
+    # on marker-less bylines, at ~10x luna's cost).
+    model: "openai/gpt-6-luna"
+    fallbacks: ["openai/gpt-5.2"]
+    max_tokens: 8192
+  extract_main_openai:
+    # extract_main on the OpenAI API directly and without its gpt-5.2 fallback (D714): annotate.model_roles in plan
+    # batch-2026-10a names it. A call that fails on luna fails the document (failed_transient after the client's
+    # attempts, all to luna with backoff; a later run asks it again).
+    model: "openai/gpt-6-luna"
+    provider: openai
+    max_tokens: 8192
+  extract_staged_openai:
+    # extract_staged on the OpenAI API directly and without its luna fallback (D714): annotate.technique_staged in
+    # plan batch-2026-10a names it; failures as extract_main_openai's.
+    model: "openai/gpt-6-luna"
+    provider: openai
+    max_tokens: 16000
+  extract_staged_openai_high:
+    # extract_staged_openai at reasoning effort `high` (eval arms; a technique_staged pin names it:
+    # `role: extract_staged_openai_high`). Effort is in each call's params, so another template digest.
+    model: "openai/gpt-6-luna"
+    provider: openai
+    max_tokens: 16000
+    reasoning_effort: high
+  extract_staged:
+    # annotate.technique_staged (techpipe, D602): every call (pre-pass, selection, grading). The pin's per-stage models
+    # replace the primary and keep this fallback: a cheap OpenAI model for `shadow` documents under an Anthropic-pinned
+    # stage (extract_main's gpt-5.2 fallback costs ~17x luna per input token). The stage sends max_tokens 16,000 itself.
+    model: "openai/gpt-6-luna"
+    fallbacks: ["openai/gpt-6-luna"]
+    max_tokens: 16000
+  extract_staged_low:
+    # extract_staged at reasoning effort `low` (a technique_staged pin names it: `role: extract_staged_low`; D612).
+    model: "openai/gpt-6-luna"
+    fallbacks: ["openai/gpt-6-luna"]
+    max_tokens: 16000
+    reasoning_effort: low
+  extract_staged_medium:
+    # extract_staged at an explicit reasoning effort `medium` (as extract_staged_low / _high; eval arms).
+    model: "openai/gpt-6-luna"
+    fallbacks: ["openai/gpt-6-luna"]
+    max_tokens: 16000
+    reasoning_effort: medium
+  extract_staged_high:
+    # extract_staged at reasoning effort `high` (D612).
+    model: "openai/gpt-6-luna"
+    fallbacks: ["openai/gpt-6-luna"]
+    max_tokens: 16000
+    reasoning_effort: high
+
+# Provider permissions remain explicit and are checked before each model call.
+# Owner policy (2026-09-09): OpenAI may receive every document license class, including
+# restricted, api_tos and shadow. OpenRouter is the transport; data collection stays denied.
+# Permissions for other providers are unchanged; fallbacks are still re-gated.
+# A direct provider (providers.openai / .anthropic, D714 / D722) is gated by its `egress_provider` slug; its requests
+# carry no OpenRouter `data_collection` field (the provider's API terms apply).
+egress:
+  transport: openrouter
+  provider_prefixes:           # model-id prefix -> egress provider slug
+    anthropic: anthropic
+    openai: openai
+    google: google-vertex
+  default:
+    providers: [anthropic, openai, google-vertex]
+    data_collection: deny
+    allow_fallbacks: true
+  by_license_class:
+    open:
+      providers: [anthropic, openai, google-vertex]
+      data_collection: deny
+      allow_fallbacks: true
+    public_web:
+      providers: [anthropic, openai, google-vertex]
+      data_collection: deny
+      allow_fallbacks: true
+    restricted:
+      providers: [anthropic, openai]
+      data_collection: deny
+      allow_fallbacks: true
+    api_tos:
+      providers: [anthropic, openai]
+      data_collection: deny
+      allow_fallbacks: true    # same reasoning as `restricted`
+    shadow:
+      providers: [openai]      # explicit owner authorization; other providers remain excluded
+      data_collection: deny
+      allow_fallbacks: false
+
+# Budgets: `per_run_usd` is the spend cap of an LLM stage run whose plan line sets no `budget.max_usd`
+# (stack/llm/__init__.py; held by the run's in-memory ledger). Excluded from config digests. There is no
+# host-wide cap: the OpenRouter key's own credit limit is the outer bound.
+budget:
+  per_run_usd: 50
+
+# Reservation pricing, USD per 1M tokens (v4 D36): every outbound attempt reserves
+# (prompt-token estimate x in + max_tokens x out) at this price before the request; the actual
+# cost is OpenRouter's usage.cost when present, else tokens x this price.
+# CONSERVATIVE, to be verified against /api/v1/models before real runs (not read live here).
+# A model without an entry is priced at `fallback` (v3's _FALLBACK_PRICING, $3/$15).
+pricing:
+  fallback: {in_usd_per_m: 3.0, out_usd_per_m: 15.0}
+  models:
+    # Retired 1.9.1 (was the test model, D23): prices historical rows only (stack eval combine re-prices
+    # old response-cache entries, v4/evals-store); no role may name it, the client refuses new calls.
+    anthropic/claude-haiku-4.5: {in_usd_per_m: 1.0, out_usd_per_m: 5.0, retired: true}
+    anthropic/claude-sonnet-4.6: {in_usd_per_m: 3.0, out_usd_per_m: 15.0}
+    openai/gpt-5.6-terra: {in_usd_per_m: 2.0, out_usd_per_m: 12.0}         # source: openrouter.ai/api/v1/models, fetched 2026-10-12
+    # Track E (eval models under test, D173 (E)); source: openrouter.ai/api/v1/models, one keyless fetch 2026-10-12
+    # (listing price; deepseek routed to DeepInfra, whose endpoint lists $0.14/$0.42, so the listing price is conservative).
+    openai/gpt-5.6-luna: {in_usd_per_m: 0.2, out_usd_per_m: 1.2}
+    # gpt-6-luna cached input $0.01, 30-minute cache write $0.125; above 272k prompt tokens $0.20 / $0.75 / $0.02 / $0.25
+    # (OpenAI API pricing page, standard tier, read 2026-10-24; the cached and write rates match the 0.1x / 1.25x
+    # that OpenRouter's usage.cost implies on the gold-v3 eval calls). Used only for replies without usage.cost (D714).
+    openai/gpt-6-luna: {in_usd_per_m: 0.1, out_usd_per_m: 0.5, cached_in_usd_per_m: 0.01, cache_write_usd_per_m: 0.125,
+                        long_above_tokens: 272000,
+                        long: {in_usd_per_m: 0.2, out_usd_per_m: 0.75, cached_in_usd_per_m: 0.02, cache_write_usd_per_m: 0.25}}
+    anthropic/claude-haiku-5.5: {in_usd_per_m: 0.1, out_usd_per_m: 0.5}
+    deepseek/deepseek-v4.1-flash: {in_usd_per_m: 0.15, out_usd_per_m: 0.6}
+    google/gemini-3.5-flash-lite: {in_usd_per_m: 0.3, out_usd_per_m: 2.5}
+    # Track E widened round (D177b (E)), same keyless listing 2026-10-12:
+    openai/gpt-6-luna-pro: {in_usd_per_m: 0.1, out_usd_per_m: 0.5}
+    google/gemini-3.8-flash: {in_usd_per_m: 0.75, out_usd_per_m: 3.75}
+    anthropic/claude-sonnet-5.5: {in_usd_per_m: 2.0, out_usd_per_m: 10.0}
+    # M4 real runs (track C): extract_main's fallback, same keyless listing 2026-10-12 (track E's saved copy).
+    openai/gpt-5.2: {in_usd_per_m: 1.75, out_usd_per_m: 14.0}
+    # techpipe open-model trials (D628); source: OpenRouter's public /api/v1/models and /endpoints, 2026-10-18 (the
+    # endpoint the overlay routes to: Alibaba for qwen, DeepInfra for z-ai; cache reads cheaper, billed by OpenRouter).
+    qwen/qwen3.8-flash: {in_usd_per_m: 0.15, out_usd_per_m: 0.47}
+    z-ai/glm-5.3-flash: {in_usd_per_m: 0.075, out_usd_per_m: 0.25}
+    # The Anthropic API directly (providers.anthropic, D722; also prices `anthropic:<id>` references). Source: the
+    # claude-api reference shipped with Claude Code (models / prompt-caching / migration notes), read 2026-10-26, NOT
+    # the live pricing page: verify there before a real run. Cache writes at the 5-minute TTL (1.25x input); cache reads
+    # 0.05x on Opus 5.5, 0.1x on Sonnet / Haiku 5.5. Haiku 5.5 has a second rate card above 100K prompt tokens; no
+    # long-context premium is stated for Opus / Sonnet 5.5 (1M context).
+    claude-opus-5-5: {in_usd_per_m: 4.0, out_usd_per_m: 20.0, cached_in_usd_per_m: 0.2, cache_write_usd_per_m: 5.0}
+    claude-sonnet-5-5: {in_usd_per_m: 2.0, out_usd_per_m: 10.0, cached_in_usd_per_m: 0.2, cache_write_usd_per_m: 2.5}
+    claude-haiku-5-5: {in_usd_per_m: 0.1, out_usd_per_m: 0.5, cached_in_usd_per_m: 0.01, cache_write_usd_per_m: 0.125,
+                       long_above_tokens: 100000,
+                       long: {in_usd_per_m: 0.5, out_usd_per_m: 2.5, cached_in_usd_per_m: 0.05, cache_write_usd_per_m: 0.625}}

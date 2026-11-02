@@ -1,0 +1,43 @@
+# Release config public-v1 (docs/DESIGN.md §3.2, D21, D24; T5.2; D647). Read by `stack fold release --release
+# public-v1` and `stack release --in <corpus.build> --config public-v1`; resolved and embedded in
+# releases/<tag>/release.json. Semantics: stack/fold/release.py's module docstring.
+#
+# Licence is read from the member that supplied the thing (C18): the row rule from the anchor member,
+# the abstract from metadata.field_sources[]'s `abstract` entry, the text and the excerpt cap from
+# content.current_source_id. excerpt_cap_chars from v3 policies.yaml `excerpts:` (now v3's configs/policies.yaml; api_abstract
+# is not listed there and takes its `default: 300`).
+name: public-v1
+# D647: advisory; a public release goes to the store's releases/<tag>/.
+audience: public
+# D705: screen ok and verdict relevant (borderline excluded), as internal-v1; the filter runs over the input
+# rows, before the rules.
+filter: screen_relevant
+# One snapshot per row: the one content.current_snapshot_id names (D647).
+snapshots: current
+# Bytes of the kept snapshots' texts where the supplier's class says `text: ship`; no class does here,
+# so public-v1 ships no bytes (D647: only the layout changed, blobs/<sha256> instead of text/<digest>.md).
+content: {select: text, place: blobs, max_total_bytes: 4294967296, missing: fail, provider_records: false}
+licence_rules:
+  open:         {rows: keep, text: pointer,  abstract: keep, excerpt_cap_chars: 300}
+  public_web:   {rows: keep, text: pointer,  abstract: keep, excerpt_cap_chars: 300}
+  restricted:   {rows: keep, text: withhold, abstract: drop, excerpt_cap_chars: 150}
+  api_tos:      {rows: keep, text: withhold, abstract: drop, excerpt_cap_chars: 150}
+  api_abstract: {rows: keep, text: withhold, abstract: drop, excerpt_cap_chars: 300}
+  shadow:       {rows: drop, text: withhold, abstract: drop, excerpt_cap_chars: 0}
+# A supplying member that is missing from identity.members or has a NULL license_class.
+unknown_class: restricted
+# annotations.other[] (untyped workflows) does not ship.
+other: drop
+# Dotted paths (list levels transparent) or `*.<name>` = that field at any depth.
+# annotations.text_usability.payload.note: the model's free-text note on the extracted text (S1).
+# The members_digest change-detection hashes mean nothing outside the store (D647).
+# D705: the annotation structs no build populates yet (NULL on every row) do not ship until they carry data.
+column_drops: [inband, identity.members_digest, content.members_digest,
+               "*.run_id", "*.evidence_id", annotations.screen.payload.reasoning,
+               annotations.text_usability.payload.note,
+               annotations.model_roles, annotations.model_regexp_matches,
+               annotations.technique_roles, annotations.technique_staged, annotations.affiliation_orgs,
+               annotations.translation]
+# masked, retired, and rows with any metadata.sensitivity tag (pii, legal) do not ship; licence classes
+# drop rows through licence_rules.<class>.rows (shadow).
+row_drops: [masked, retired, sensitivity]

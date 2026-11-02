@@ -1,0 +1,53 @@
+{
+ "note": "Expected renders of prompts/model-roles-v2.md (rubric-v0.6.0.md included) over the frozen vocabulary subset tests/fixtures/model_roles/models.yaml, generated 2026-10-17 by the code they test. A prompt, rubric or menu-rendering edit changes them: regenerate deliberately (tests/test_annotate_model_roles.py says how).",
+ "prompt": "model-roles-v2",
+ "vocab_stamp": "0.5+206cd4a8",
+ "system_sha256": "66eccf434f61c1b425abb6a0d36fed4b7c7edd9814be788c4f691a111bd93443",
+ "cases": [
+  {
+   "id": "small",
+   "text": "# Auditing refusals in deployed assistants\n\nWe study how ChatGPT answers 2,000 borderline requests and compare it with GPT-4.5 and gpt-4o-mini.\nLlama-3.1-70B-Instruct is fine-tuned with LoRA on our refusal data; responses are scored by GPT‑4.5.\nA Magnum Opus of an essay mentions Claude Opus 4.7 once. Nova 1 appears in a table.\n\n## References\n\nTaori et al. Stanford Alpaca 7B: an instruction-following model. 2023.\n",
+   "menu": [
+    [
+     "alpaca-7b",
+     false
+    ],
+    [
+     "claude-opus-4.7",
+     false
+    ],
+    [
+     "gpt-4.5",
+     false
+    ],
+    [
+     "gpt-4o",
+     false
+    ],
+    [
+     "llama-3.1-70b",
+     false
+    ],
+    [
+     "claude-opus",
+     true
+    ],
+    [
+     "gpt",
+     true
+    ]
+   ],
+   "beyond": [],
+   "user_sha256": "fac844dd246e5e8f4714c4a85f619fd55f0d7031678d0b3707c379ab72ffc953",
+   "user_chars": 32552
+  },
+  {
+   "id": "empty-menu",
+   "text": "We argue that context-conditioned refusal policies need a provenance split: context an operator configures and context a user asserts. A frontier model is reported to answer a dual-use request it should refuse. We also ran Zephyrine-9B by Halcyon Labs on the same prompts.\n",
+   "menu": [],
+   "beyond": [],
+   "user_sha256": "fa66c50f730fd5b63c28963883ab4f518c402b5e8fbcbb53dad83e585d3b2ac4",
+   "user_chars": 31129
+  }
+ ]
+}

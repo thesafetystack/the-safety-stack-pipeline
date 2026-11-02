@@ -1,0 +1,157 @@
+[project]
+name = "stack-pipeline"
+version = "0.1.0"
+description = "Stack pipeline v4 — the file-based pipeline and its `stack` engine (docs/DESIGN.md)"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "pydantic>=2",
+    "pyyaml>=6",
+    "typer>=0.12",
+    # The file-based store (v4 design D27): parquet families, chain reads, zstd run records.
+    "pyarrow>=24",
+    # Capped below 2 (D696): duckdb 2.0 (released 2026-10-21) changes the Arrow result API (to_arrow_table may
+    # return None; default batch 131072 rows instead of 1M), untested against the store's chain reads and fold.
+    "duckdb>=1.5,<2",
+    "zstandard",
+    # `stack export --config dataset-*` validates the written bundle's rows against its schema.json
+    # (stack/fold/dataset.py checks). Was only in the dev group, so the image (--no-dev) could not export (D732).
+    "jsonschema>=4.21",
+    # The retrieval engine of acquire's oa lane (workflows/acquire/lanes/oa.py). A BASE dependency, not an extra: acquiring scholarly full text
+    # is part of the pipeline, and an install that silently cannot do it would surface as a
+    # workflow that raises on import rather than as a missing feature anyone chose to skip. (This
+    # is unlike the `convert` group below, which is optional because docling drags torch and a
+    # CUDA stack; fetchpdf's own dependencies are in the same weight class as the four above.)
+    #
+    # THE PUBLIC PACKAGE, DELIBERATELY: it has no last-resort (non-open-access) sources, which makes
+    # the D4 licence posture a property of the dependency rather than of remembering to disable
+    # something at runtime. The oa lane refuses any fetchpdf build that can reach a non-open-access
+    # source: it starts only when the installed build can PROVE no such source is reachable — see
+    # stack/oa_adapter.py::_require_open_access_only — so the pin must be at or after the
+    # commit that adds `last_resorts_enabled()`. Pinned to a commit sha, never a moving ref, because
+    # the bytes it fetches enter the corpus.
+    "fetchpdf[html,text] @ git+https://github.com/The-Metascience-Observatory/fetchpdf@5bef000c8a9fbc2517fecff39da51f3826dc768f",
+]
+
+[project.scripts]
+stack = "stack.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    # -n 2 in the check_all gate (`-n N` to change it); the suite is DB-free since T1.8, so workers share nothing.
+    "pytest-xdist>=3",
+    "mypy>=1.11",
+    "types-pyyaml",
+    # tools/check_configs.py deps — importable in the test suite (it also declares them in its
+    # own PEP-723 script header for standalone `uv run tools/check_configs.py`).
+    "jsonschema>=4.21",
+    "referencing>=0.30",
+    # The S3 backend's tests run on an in-memory fake client but import botocore.
+    {include-group = "s3"},
+]
+# The S3 object backend (stack/store/backend.py, used by stack/store/remote.py for an S3 store, D321;
+# its blobs too, D360). A store uses S3 only when named `--store s3://<bucket>/<prefix>`; a path stays local.
+s3 = [
+    "boto3>=1.34",
+]
+# The conversion ladder's tools (stack/conversion/ladder.py, run by acquire's convert substage,
+# workflows/acquire/convert.py), in two groups. KEPT OUT OF THE BASE INSTALL (v3's `spec/10-design.md` §5.3: docling
+# is heavy — torch + a CUDA stack even on CPU).
+# `convert-pdf`: everything the `pymupdf4llm-v1` convert config uses (PDF tiers 2/3 and the HTML
+# light path); `uv sync --group convert-pdf` is what a run under that config needs.
+# `convert`: `convert-pdf` plus docling (tier 1), for `docling-v2`.
+# Every tool here is in the convert pin (D9), so the venv decides the pin: a run whose plan names a
+# convert config refuses to start (StageError) while any tool of that config is absent, unless the
+# stage line sets `options.allow_degraded_convert: true` (D250; docs/SETUP.md §1). Library callers
+# without a convert config convert nothing. Tests are written to pass either way (the heavy tiers
+# are monkeypatched; the real-subprocess conversion tests importorskip their tools).
+convert-pdf = [
+    "pymupdf>=1.24",
+    "pymupdf4llm>=0.0.17",
+    # Main-content extraction for HTML pages under any config (drops site menus and footers); the
+    # stdlib floor in stack/conversion/ladder.py stays the fallback. In the convert pin (D9).
+    "trafilatura>=2.0,<2.3",
+]
+convert = [
+    {include-group = "convert-pdf"},
+    "docling>=2",
+]
+# The dataset release upload (tools/scheduled_run.py `upload`, docs/DEPLOY-railway.md): the Hugging Face hub client.
+# Already in the lock through docling (`convert`), so this group adds no new package to the resolution.
+release = [
+    "huggingface-hub>=1.30",
+]
+
+[tool.uv]
+# HELD AT THE CONVERT PIN (D696). The convert pin (workflows/acquire/convert.py `pin_document`) hashes the
+# installed versions of the convert config's tools (pymupdf4llm, pymupdf, trafilatura; with options.structured
+# also lxml and fetchpdf), and a plan's `acquire.convert.expect_pin` refuses a run whose pin moved. A routine
+# `uv lock --upgrade` must therefore not move them: a new version re-converts every document at the next build.
+# pymupdf4llm pins pymupdf and pymupdf-layout to its own version, so holding it holds both. onnxruntime runs
+# pymupdf-layout's layout models inside conversion but is NOT in the pin: an upgrade would change texts without
+# re-converting, so it is held with them. trafilatura is capped in the convert-pdf group above. Lift these
+# together, deliberately, with a new expect_pin.
+# playwright (pulled in by fetchpdf) is held for another reason: each release drives ONE Chromium build, which
+# `playwright install chromium` must put into the shared browser cache first, or the browser rung (stack/browser.py)
+# falls back to a system Chrome or is unavailable. Lift it together with that install.
+constraint-dependencies = [
+    "pymupdf4llm==1.28.0",
+    "lxml==6.1.1",
+    "onnxruntime==1.27.0",
+    "playwright==1.62.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# fetchpdf is a direct git reference (see project.dependencies). Hatchling refuses those unless
+# told to allow them, because a direct reference cannot be resolved from an index — which is the
+# point here: the licence posture depends on WHICH build is installed, not merely on a version.
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["stack"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Test tiers (docs/SETUP.md §7, D90, D490): iterate with tools/devtest.py or `-m "not slow"` (the fast tier); the full
+# suite (incl. slow) runs at a sub-project's end and in tools/check_all.py. `slow` is the only tier marker; e2e, checks
+# and evalsets are area markers (orthogonal to the tier): `-m e2e` runs every e2e test of both tiers.
+# --strict-markers: a typo'd marker errors instead of silently selecting nothing.
+addopts = "--strict-markers"
+markers = [
+    "slow: the slow tier, deselected by the fast tier -m 'not slow': a test over ~1.5 s at -n 2 on the shared box unless it is its family's fast representative, crash/restart subprocess tests, scenario worlds; run at the gate and when an area marker says so",
+    "tools: tests of one-off tools outside stack/ and workflows/ (deselect with -m 'not tools'); run in the full suite",
+    "e2e: area, not a tier: drives whole builds, runner chains or scenario worlds (run_build, passes, drain, crash/restart, the stack CLI over a store); run -m e2e after touching stack/build.py, plan.py, stage_runner.py, runs.py, store/job.py, stack/cli/, the build-finish verify or a stage's runner glue",
+    "checks: area, not a tier: the whole check suite or check-equivalence sweeps over the fixture stores of tests/fixtures/checks; run -m checks after touching stack/checks/, stack/store/chain.py, parquet.py, layout.py, stack/schemas/ or tests/fixtures/checks/",
+    "evalsets: area, not a tier: reads the frozen eval sets under evals/ (byte-for-byte freezes, input checks over the real items); run -m evalsets after touching evals/, stack/evals/, an annotator's prompt or menu rendering, or a taxonomy file a set pins",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+# COVERAGE GAP (tracked; see the caveat block in tools/check_all.py): this covers the engine only.
+# `workflows/` and `tools/` — now the bulk of the codebase — are unchecked, and the CI gate is
+# narrower still (it passes an explicit path, which overrides this setting entirely). Adding
+# `workflows` here needs --explicit-package-bases first: the tree has many same-named `main.py`
+# modules and no `__init__.py`, so mypy aborts on duplicate module names.
+# NOTE: run under a real 3.12 interpreter. On 3.13, `python_version = "3.12"` makes mypy report
+# spurious `pathlib` import-not-found errors that are not real.
+files = ["stack"]
+
+[[tool.mypy.overrides]]
+# boto3 ships no inline types and the stubs packages (boto3-stubs) are heavyweight,
+# versioned per-service codegen; the blobstore isolates all boto3 usage behind a
+# typed wrapper, so per-module relaxation here is contained (v3's `spec/30-stack-module.md` §7).
+module = ["boto3", "boto3.*", "botocore", "botocore.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# pyarrow ships no inline types (pyarrow-stubs is third-party and lags releases); the store's
+# parquet code (stack/store, stack/schemas, stack/checks) is typed at its own boundaries.
+module = ["pyarrow", "pyarrow.*"]
+ignore_missing_imports = true

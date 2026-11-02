@@ -1,0 +1,60 @@
+{
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "authors"
+ ],
+ "properties": {
+  "authors": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "author_surface",
+     "email",
+     "affiliations"
+    ],
+    "properties": {
+     "author_surface": {
+      "type": "string"
+     },
+     "email": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "affiliations": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "surface",
+        "marker"
+       ],
+       "properties": {
+        "surface": {
+         "type": "string"
+        },
+        "marker": {
+         "type": [
+          "string",
+          "null"
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "notes": {
+   "type": [
+    "string",
+    "null"
+   ]
+  }
+ }
+}

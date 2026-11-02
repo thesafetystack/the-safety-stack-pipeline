@@ -1,0 +1,20 @@
+{
+  "task": "technique_roles",
+  "set_id": "2026-10-13a",
+  "source": "evals/screen/2026-10-12a (gold-v2 relevant)",
+  "store_head": "rcprvcnepyb1g",
+  "items": 25,
+  "items_sha256": "8c04c369f16842c1a5f02e56094a23cc83d7f5226ebd64afefa0665f9f7b8541",
+  "splits": {
+    "dev": 14,
+    "test": 11
+  },
+  "frozen_with": {
+    "models_yaml_sha256": "bdfc4435a8574345c1a8827ca5af3f43de8177d9ce104861e5f1295918a927fe",
+    "model_roles_rubric_digest": "b0ae7dec777262b7731304248ed005d4c8b6769affe0ec81caf7aa2dae397285",
+    "technique_roles_rubric_digest": "b1e62a58c9633dcffec683fac6dbe3dbac454b586fa2da327979c2912784ffb4",
+    "taxonomy_path": "taxonomy/taxonomy-v0.8.yaml",
+    "taxonomy_sha256": "974abd64f85f1998064bff2fd472aa75d44d7a38d81f969fce535cb6e32fa519",
+    "taxonomy_version": "0.8"
+  }
+}

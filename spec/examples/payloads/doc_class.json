@@ -1,0 +1,7 @@
+{
+  "doc_type": "system_card",
+  "self_published": true,
+  "primary_lang": "en",
+  "rationale": "First-party model release document with a system-card structure.",
+  "grounding_idx": [0]
+}

@@ -1,0 +1,643 @@
+{
+ "scores": {
+  "(author, org slug) [registry match on the surfaces]": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      1.0,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "jaccard": 1.0,
+    "n_items": 100,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 27
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.963,
+      1.0
+     ],
+     "precision": [
+      0.9286,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9811,
+    "fn": 0,
+    "fp": 1,
+    "jaccard": 0.963,
+    "n_items": 100,
+    "precision": 0.963,
+    "recall": 1.0,
+    "tp": 26
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.963,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      0.9286,
+      1.0
+     ]
+    },
+    "consensus_units": 27,
+    "f1": 0.9811,
+    "fn": 1,
+    "fp": 0,
+    "jaccard": 0.963,
+    "n_items": 100,
+    "precision": 1.0,
+    "precision_vs_union": 1.0,
+    "production_units": 26,
+    "recall": 0.963,
+    "recall_on_consensus": 0.963,
+    "tp": 26
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.963,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      0.9286,
+      1.0
+     ]
+    },
+    "f1": 0.9811,
+    "fn": 1,
+    "fp": 0,
+    "jaccard": 0.963,
+    "majority_units": 27,
+    "n_items": 100,
+    "precision": 1.0,
+    "precision_vs_union": 1.0,
+    "production_units": 26,
+    "recall": 0.963,
+    "recall_on_majority": 0.963,
+    "tp": 26
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.963,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      0.9286,
+      1.0
+     ]
+    },
+    "f1": 0.9811,
+    "fn": 1,
+    "fp": 0,
+    "jaccard": 0.963,
+    "n_items": 100,
+    "precision": 1.0,
+    "recall": 0.963,
+    "tp": 26
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.963,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      0.9286,
+      1.0
+     ]
+    },
+    "f1": 0.9811,
+    "fn": 1,
+    "fp": 0,
+    "jaccard": 0.963,
+    "n_items": 100,
+    "precision": 1.0,
+    "recall": 0.963,
+    "tp": 26
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      1.0,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "jaccard": 1.0,
+    "n_items": 100,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 26
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.963,
+      1.0
+     ],
+     "precision": [
+      0.9286,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9811,
+    "fn": 0,
+    "fp": 1,
+    "jaccard": 0.963,
+    "n_items": 100,
+    "precision": 0.963,
+    "recall": 1.0,
+    "tp": 26
+   }
+  },
+  "(author, verbatim surface) [normalised: case, spacing, edge markers]": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.7907,
+      0.994
+     ],
+     "precision": [
+      0.7664,
+      0.9941
+     ],
+     "recall": [
+      0.8098,
+      1.0
+     ]
+    },
+    "f1": 0.9086,
+    "fn": 14,
+    "fp": 20,
+    "jaccard": 0.8325,
+    "n_items": 100,
+    "precision": 0.8942,
+    "recall": 0.9235,
+    "tp": 169
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9866,
+      1.0
+     ],
+     "precision": [
+      0.9735,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9947,
+    "fn": 0,
+    "fp": 2,
+    "jaccard": 0.9894,
+    "n_items": 100,
+    "precision": 0.9894,
+    "recall": 1.0,
+    "tp": 187
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.7114,
+      0.9451
+     ],
+     "precision": [
+      0.6417,
+      0.9177
+     ],
+     "recall": [
+      0.7705,
+      0.9935
+     ]
+    },
+    "consensus_units": 169,
+    "f1": 0.8421,
+    "fn": 17,
+    "fp": 40,
+    "jaccard": 0.7273,
+    "n_items": 100,
+    "precision": 0.7917,
+    "precision_vs_union": 0.8958,
+    "production_units": 192,
+    "recall": 0.8994,
+    "recall_on_consensus": 0.8994,
+    "tp": 152
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.6957,
+      0.9451
+     ],
+     "precision": [
+      0.6881,
+      0.9389
+     ],
+     "recall": [
+      0.7016,
+      0.9551
+     ]
+    },
+    "f1": 0.8316,
+    "fn": 30,
+    "fp": 34,
+    "jaccard": 0.7117,
+    "majority_units": 188,
+    "n_items": 100,
+    "precision": 0.8229,
+    "precision_vs_union": 0.8958,
+    "production_units": 192,
+    "recall": 0.8404,
+    "recall_on_majority": 0.8404,
+    "tp": 158
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      0.6986,
+      0.948
+     ],
+     "precision": [
+      0.6911,
+      0.9458
+     ],
+     "recall": [
+      0.703,
+      0.9553
+     ]
+    },
+    "f1": 0.8346,
+    "fn": 30,
+    "fp": 33,
+    "jaccard": 0.7162,
+    "n_items": 100,
+    "precision": 0.8281,
+    "recall": 0.8413,
+    "tp": 159
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.7571,
+      0.9714
+     ],
+     "precision": [
+      0.7295,
+      0.9637
+     ],
+     "recall": [
+      0.7797,
+      0.9888
+     ]
+    },
+    "f1": 0.88,
+    "fn": 18,
+    "fp": 27,
+    "jaccard": 0.7857,
+    "n_items": 100,
+    "precision": 0.8594,
+    "recall": 0.9016,
+    "tp": 165
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.6972,
+      0.9471
+     ],
+     "precision": [
+      0.6881,
+      0.9389
+     ],
+     "recall": [
+      0.7053,
+      0.9609
+     ]
+    },
+    "f1": 0.8338,
+    "fn": 29,
+    "fp": 34,
+    "jaccard": 0.7149,
+    "n_items": 100,
+    "precision": 0.8229,
+    "recall": 0.8449,
+    "tp": 158
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.7907,
+      0.994
+     ],
+     "precision": [
+      0.8043,
+      0.9949
+     ],
+     "recall": [
+      0.7669,
+      1.0
+     ]
+    },
+    "f1": 0.9081,
+    "fn": 19,
+    "fp": 15,
+    "jaccard": 0.8317,
+    "n_items": 100,
+    "precision": 0.918,
+    "recall": 0.8984,
+    "tp": 168
+   }
+  },
+  "authors with at least one affiliation": {
+   "opus_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.9327,
+      1.0
+     ],
+     "precision": [
+      0.8739,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9782,
+    "fn": 0,
+    "fp": 7,
+    "jaccard": 0.9573,
+    "n_items": 100,
+    "precision": 0.9573,
+    "recall": 1.0,
+    "tp": 157
+   },
+   "opus_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9895,
+      1.0
+     ],
+     "precision": [
+      0.9793,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9969,
+    "fn": 0,
+    "fp": 1,
+    "jaccard": 0.9939,
+    "n_items": 100,
+    "precision": 0.9939,
+    "recall": 1.0,
+    "tp": 163
+   },
+   "production_vs_consensus": {
+    "ci95": {
+     "f1": [
+      0.9327,
+      1.0
+     ],
+     "precision": [
+      0.8739,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "consensus_units": 157,
+    "f1": 0.9782,
+    "fn": 0,
+    "fp": 7,
+    "jaccard": 0.9573,
+    "n_items": 100,
+    "precision": 0.9573,
+    "precision_vs_union": 1.0,
+    "production_units": 164,
+    "recall": 1.0,
+    "recall_on_consensus": 1.0,
+    "tp": 157
+   },
+   "production_vs_majority": {
+    "ci95": {
+     "f1": [
+      0.9895,
+      1.0
+     ],
+     "precision": [
+      0.9793,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9969,
+    "fn": 0,
+    "fp": 1,
+    "jaccard": 0.9939,
+    "majority_units": 163,
+    "n_items": 100,
+    "precision": 0.9939,
+    "precision_vs_union": 1.0,
+    "production_units": 164,
+    "recall": 1.0,
+    "recall_on_majority": 1.0,
+    "tp": 163
+   },
+   "production_vs_opus": {
+    "ci95": {
+     "f1": [
+      1.0,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "jaccard": 1.0,
+    "n_items": 100,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 164
+   },
+   "production_vs_sol": {
+    "ci95": {
+     "f1": [
+      0.9327,
+      1.0
+     ],
+     "precision": [
+      0.8739,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9782,
+    "fn": 0,
+    "fp": 7,
+    "jaccard": 0.9573,
+    "n_items": 100,
+    "precision": 0.9573,
+    "recall": 1.0,
+    "tp": 157
+   },
+   "production_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9895,
+      1.0
+     ],
+     "precision": [
+      0.9793,
+      1.0
+     ],
+     "recall": [
+      1.0,
+      1.0
+     ]
+    },
+    "f1": 0.9969,
+    "fn": 0,
+    "fp": 1,
+    "jaccard": 0.9939,
+    "n_items": 100,
+    "precision": 0.9939,
+    "recall": 1.0,
+    "tp": 163
+   },
+   "sol_vs_sonnet": {
+    "ci95": {
+     "f1": [
+      0.9351,
+      1.0
+     ],
+     "precision": [
+      1.0,
+      1.0
+     ],
+     "recall": [
+      0.8782,
+      1.0
+     ]
+    },
+    "f1": 0.9812,
+    "fn": 6,
+    "fp": 0,
+    "jaccard": 0.9632,
+    "n_items": 100,
+    "precision": 1.0,
+    "recall": 0.9632,
+    "tp": 157
+   }
+  },
+  "note": "production surfaces: items with resolution 'text' (openalex / email-domain fallbacks are not text surfaces); authors keyed by production's name key (norm_author_name)",
+  "window split (consensus surfaces vs luna's header window, 8k head + 2k tail)": {
+   "inside_window": {
+    "consensus_units": 169,
+    "production_recall": 0.8994
+   },
+   "outside_window": {
+    "consensus_units": 0,
+    "production_recall": null
+   }
+  },
+  "window split (majority surfaces vs luna's header window, 8k head + 2k tail)": {
+   "inside_window": {
+    "majority_units": 188,
+    "production_recall": 0.8404
+   },
+   "outside_window": {
+    "majority_units": 0,
+    "production_recall": null
+   }
+  }
+ },
+ "set": "affiliation",
+ "status": {
+  "opus": {
+   "affiliation:valid": 100
+  },
+  "sol": {
+   "affiliation:valid": 100
+  },
+  "sonnet": {
+   "affiliation:valid": 100
+  }
+ }
+}

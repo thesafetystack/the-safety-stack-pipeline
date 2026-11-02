@@ -1,0 +1,123 @@
+{
+ "allocation": {
+  "critique": 0,
+  "dataset": 0,
+  "eval_report": 0,
+  "forum_post": 38,
+  "framework_policy": 0,
+  "lab_blog": 5,
+  "model_card": 0,
+  "other": 0,
+  "paper": 13,
+  "preprint": 44,
+  "regulatory": 0,
+  "system_card": 0,
+  "webpage": 0
+ },
+ "design": "proportional allocation (largest remainder) over strata; systematic sampling within stratum over units sorted by (year bucket, anchor channel, unit key)",
+ "eligible": 72906,
+ "eligible_by_stratum": {
+  "critique": 66,
+  "dataset": 1,
+  "eval_report": 58,
+  "forum_post": 27457,
+  "framework_policy": 45,
+  "lab_blog": 3229,
+  "model_card": 50,
+  "other": 169,
+  "paper": 9590,
+  "preprint": 32155,
+  "regulatory": 2,
+  "system_card": 62,
+  "webpage": 22
+ },
+ "excluded": {
+  "in_existing_eval:doc_id": 333,
+  "in_existing_eval:text_sha256": 35,
+  "in_existing_eval:title": 351
+ },
+ "existing_eval_files": [
+  "evals/affiliation/2026-10-12a/items.jsonl",
+  "evals/affiliation/2026-10-12b-bylines/items.jsonl",
+  "evals/model_roles/2026-10-13a/items.jsonl",
+  "evals/model_roles/2026-10-16a/items.jsonl",
+  "evals/model_roles/2026-10-17a/items.jsonl",
+  "evals/model_roles/2026-10-23a/items.jsonl",
+  "evals/screen/2026-10-12a/items.jsonl",
+  "evals/screen/2026-10-13-holdout/items.jsonl",
+  "evals/screen/2026-10-13-t2pool/items.jsonl",
+  "evals/screen/2026-10-21-p4gate/items.jsonl",
+  "evals/technique_roles/2026-10-13a/items.jsonl",
+  "evals/technique_staged/2026-10-17a/items.jsonl",
+  "evals/technique_staged/2026-10-17b/items.jsonl",
+  "evals/technique_staged/2026-10-18a/items.jsonl",
+  "evals/technique_staged/2026-10-18b/items.jsonl",
+  "evals/technique_staged/2026-10-18c/items.jsonl",
+  "evals/technique_staged/2026-10-23a/items.jsonl",
+  "evals/triage/2026-10-12a/items.jsonl",
+  "evals/triage/2026-10-21-p4gate/items.jsonl",
+  "evals/triage/sr2025-recall/items.jsonl"
+ ],
+ "frame_rows": 73655,
+ "inputs": {
+  "corpus": {
+   "file": "corpus.build/batch-import/20261025T025414Z_rc0b6mt7cr94n.full.parquet",
+   "sha256": "8789d048ca79866982726134945933aebe3850d06e36f110efa68e3fde2cd7bd"
+  },
+  "overrides": {
+   "file": "overrides/batch-import/20261024T130629Z_r6qhm9bg705bm_impl102-claude-refused.full.parquet",
+   "sha256": "bcb0883b1bec3b0f038bee7777c01b48b2e552dce2e48012e6e2de83012be482"
+  }
+ },
+ "n": 100,
+ "not_in_population": {
+  "screen_origin_human": 27,
+  "screen_quarantined": 3
+ },
+ "population": 73625,
+ "population_by_stratum": {
+  "critique": 71,
+  "dataset": 1,
+  "eval_report": 60,
+  "forum_post": 27642,
+  "framework_policy": 52,
+  "lab_blog": 3331,
+  "model_card": 52,
+  "other": 174,
+  "paper": 9657,
+  "preprint": 32483,
+  "regulatory": 2,
+  "system_card": 78,
+  "webpage": 22
+ },
+ "quota_unrounded": {
+  "critique": 0.0905,
+  "dataset": 0.0014,
+  "eval_report": 0.0796,
+  "forum_post": 37.6608,
+  "framework_policy": 0.0617,
+  "lab_blog": 4.429,
+  "model_card": 0.0686,
+  "other": 0.2318,
+  "paper": 13.1539,
+  "preprint": 44.1047,
+  "regulatory": 0.0027,
+  "system_card": 0.085,
+  "webpage": 0.0302
+ },
+ "sample_sha256": "4c3baf94839ec38499af54d2e6efce78075cd37a0ffc92f47861fa5613648219",
+ "seed": 20261025,
+ "set": "screen",
+ "systematic_start": {
+  "forum_post": 418.55872,
+  "lab_blog": 453.856441,
+  "paper": 496.446148,
+  "preprint": 501.179605
+ },
+ "weights": {
+  "forum_post": 722.5526,
+  "lab_blog": 645.8,
+  "paper": 737.6923,
+  "preprint": 730.7955
+ }
+}

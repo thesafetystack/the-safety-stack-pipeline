@@ -1,0 +1,67 @@
+{
+  "set_id": "2026-10-21-p4gate",
+  "task": "triage",
+  "created_at": "2026-10-21T00:44:10+00:00",
+  "source_store": "read-only mirror of the production store",
+  "documents_in": "documents/batch-import",
+  "documents_head": "20261020T133733Z_r1sh6c9jm6de2.full.parquet",
+  "git_commit": "597946a25133fee19e175244dfe21c6a8b9d2716",
+  "git_dirty": false,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "eaddaf9c4c41e68a3cbaff00264d77c813545becad9864a26c3c87211526eb1a"
+  },
+  "basis_builder": {
+    "ref": "workflows.triage.ask:document_text",
+    "source_sha256": "0550b6b740d2e4dc967e0e72852f25d46b27544ed0e1b16c41cb9ca7e791219b",
+    "caps": {
+      "MAX_ABSTRACT_CHARS": 6000,
+      "MAX_EXCERPT_CHARS": 3000,
+      "MAX_AUTHORS": 12
+    }
+  },
+  "seed": "d1-p4gate-2026-10-21",
+  "order": "sha256(seed + doc_id) hex, ascending",
+  "items_sha256": "b592d1371b72dac0a4481a7881bbd69fe1d2fa837de96ea68f3c2266366c6ace",
+  "n_items": 92,
+  "split": "test (all items: a gate set, not for prompt development)",
+  "counts": {
+    "total": 92,
+    "split": {
+      "test": 92
+    },
+    "channel_group": {
+      "paper": 92
+    },
+    "channel": {
+      "paper/arxiv": 2,
+      "paper/openalex": 81,
+      "paper/semantic_scholar": 9
+    },
+    "proxy": {
+      "kw_high": 46,
+      "kw_low": 46
+    },
+    "hard": {
+      "None": 92
+    },
+    "license_class": {
+      "open": 83,
+      "restricted": 9
+    },
+    "production_asks": {
+      "True": 92
+    },
+    "stratum_split": {
+      "paper|kw_high|plain|test": 46,
+      "paper|kw_low|plain|test": 46
+    },
+    "channel_proxy_hard_split": {
+      "paper/arxiv|kw_low|None|test": 2,
+      "paper/openalex|kw_high|None|test": 40,
+      "paper/openalex|kw_low|None|test": 41,
+      "paper/semantic_scholar|kw_high|None|test": 6,
+      "paper/semantic_scholar|kw_low|None|test": 3
+    }
+  }
+}

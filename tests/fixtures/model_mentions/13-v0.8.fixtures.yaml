@@ -1,0 +1,14 @@
+# Fixtures for v0.8 (2026-10-17): supercategory layer and long-tail aliases (owner decisions) — models without
+# an own node resolve to their brand family or to a cross-maker supercategory; long-tail size ladders fold.
+- { text: "Fara1.5 operates the browser", node: computer-use-agents }
+- { text: "TimesFM 2.5", node: timeseries-tabular-models }
+- { text: "Krea 2", node: image-generation }
+- { text: "Mercury Decide", node: decision-models }
+- { text: "Kimi-Dev-72B", node: kimi }
+- { text: "Kanana-2 3B", node: kanana }
+- { text: "YandexGPT-5-Lite-8B", node: yandexgpt }
+- { text: "InternVL3-8B", node: internvl3-8b }  # v0.9: was internvl3 (InternVL3-8B split out, D598 fold policy (69 docs))
+- { text: "LongCat-Flash-Chat", node: longcat }
+- { text: "ESM3", node: esm3 }  # v0.9: was bio-science-models (ESM3 has its own node, D598 added nodes)
+- { text: "Alpamayo 2 Super", node: none }  # v0.9: was robot-foundation-models (single-task driving aliases removed from the robot cluster, S3b)
+- { text: "Cartesia Sonic 3", node: speech-synthesis }

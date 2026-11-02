@@ -1,0 +1,101 @@
+# Public projection of the overrides chain (export policy 1), read by stack/fold/dataset.py: who decided
+# (`author`, `method`) per internal author label, the public `kind` per (target, operation), and how a public `note` is
+# made from the internal one. The internal rows keep their own author and note; the release ships these instead.
+#
+# Notes: the internal note is cut at clause level and every clause (or parenthetical) holding an `internal_markers`
+# match is removed; the first remaining sentence is the public note. When nothing usable is left, the kind's
+# `fallback_note` is used; `note_overrides` sets a note per override id. The build fails if a shipped note still matches
+# a marker or runs past `max_note_chars`.
+export_policy: "1"
+max_note_chars: 400
+
+authors:
+  tomas:
+    author: maintainers
+    method: AI-prepared list, approved by gavento (2026-10-21)
+  scope-r2-d1b:
+    author: maintainers
+    method: List compiled by an AI assistant for a category the maintainers chose; imported after the maintainers approved the category as a whole, not item by item
+  scope-r2-d6:
+    author: maintainers
+    method: List compiled by an AI assistant from sources the maintainers chose; imported after the maintainers approved the sources as a whole, not item by item
+  data-quality-2026-10:
+    author: maintainers
+    method: Prepared by an AI assistant from the records by stated rules (each note says which); the maintainers approved each batch as a whole (2026-10-30), not row by row
+  rev5-runner:
+    author: maintainers
+    method: Prepared by an AI assistant from the records; applied under the maintainers' standing approval for duplicate merges and date fixes, without per-row review
+  china-coverage:
+    author: maintainers
+    method: List compiled by an AI assistant from the Concordia AI Chinese Technical AI Safety Database and a checklist of Chinese frameworks, standards and reports; imported after the maintainers approved the sources as a whole, not item by item
+  # model-made rows: the author is the model id; the method says what the row is
+  "ai:*":
+    author: "{model}"
+    method: model annotation standing in for a failed production annotation; quotes verified against the text
+
+# (target, operation) -> public kind. `annotation` matches any annotation workflow target.
+kinds:
+  - {target: annotation, operation: field, kind: scope_decision}
+  - {target: annotation, operation: row, tier: ai_check, kind: stand_in_annotation}
+  - {target: annotation, operation: row, kind: annotation_replacement}
+  - {target: annotation, operation: quarantine, kind: quarantine}
+  - {target: identity, operation: row, value: merge, kind: identity_merge}
+  - {target: identity, operation: row, value: separate, kind: identity_separation}
+  - {target: fields, operation: field, kind: metadata_fix}
+  - {target: manual_sources, operation: row, kind: manual_source}
+
+fallback_note:
+  stand_in_annotation: "Annotation by {model} standing in for a failed production annotation; quotes verified against the stored text."
+  scope_decision: "Scope decision from the curated list of origin works."
+  identity_merge: "Two source records of the same work merged into one document."
+  identity_separation: "Source records of different works kept apart."
+  metadata_fix: "Bibliographic field corrected by hand."
+  manual_source: "A source added by hand; the papers its page links to are collected."
+  annotation_replacement: "Annotation replaced by hand."
+  quarantine: "Annotation withheld by the maintainers."
+
+# Kinds whose public note is always the fallback (the internal note is operational).
+always_fallback: [stand_in_annotation]
+
+# A clause holding one of these is removed from a public note.
+internal_markers:
+  - '\bms-[a-z0-9-]+'
+  - '\bD\d{2,4}\b'
+  - '\b(?:doc|document) s[0-9a-z]{12}\b'
+  - '\bs(?=[0-9a-z]*[0-9])[0-9a-z]{12}\b'
+  - '\b[Ss]tore\b'
+  - '\bimp[l]/\d+'
+  - '\bScope R2\b'
+  - '\bR2\b'
+  - '[Ll]andmark #\d+'
+  - '\bPre-floor\b'
+  - '\bdeviation \d'
+  - '\brevision[- ]5\b'
+  - '\bcollect\.links\b'
+  - '\bchannel [a-z_]+'
+  - '\bfailed_permanent\b'
+  - '\bquery_invalid\b'
+  - '\bluna\b'
+  - '\bfallback'
+  - '\bacquire\b'
+  - '\bmanual entry\b'
+  - '\bpaywalled\b'
+  - '\bstep 2\b'
+  - '\bOA route\b'
+  - '\bholdout\b'
+  - '\bexpected-drop\b'
+  - '\bvenue gap\b'
+  - '\bunrostered\b'
+  - '\bClaude Code\b'
+  - '\bpacket\b'
+  - '\bsha256\b'
+  - '\battempt\b'
+  - '\bevidence [a-z0-9]{13}\b'
+  - '\bLapuschkin\b'
+  - '\bnow [A-Z][a-z]+\)'
+
+# Plain-language replacements applied to an internal note before the scrub.
+note_replacements:
+  "S relevant": "in the Safety Stack's scope"
+
+note_overrides: {}

@@ -1,0 +1,120 @@
+# enums.yaml — the controlled vocabularies still read, with per-value glosses (10-design §8).
+# Validated against spec/schemas/config/enums.schema.json. v4 code does not check columns against this file (its
+# store vocabularies are stack/schemas/vocab.py). Readers: the prompt menus of the screen templates up to screen-v11
+# ({{ref:enums}}: relevance_verdict, triage_bucket) and the doc_type domain of screen-v12's doc_class question
+# (workflows/annotate/screen/main.py); license_class (stack/config.py cross-check 7, llm.yaml egress keys);
+# tools/check_configs.py's x-enum lint of the kept schemas (spec/schemas/config/*: org_kind, facet_answer_origin;
+# payloads screen_verdict, doc_class) and its spec/types/interfaces.py Literal mirror (run_status, phase,
+# license_class); tests (ann_type). The v3 vocabularies nothing reads any more (26, e.g. text_quality, sensitivity,
+# evidence_tier, relation, the claim/result/proposal/identity vocabularies) are in v3's configs/enums.yaml
+# (the whole file as of 1.1.0).
+# These are OPERATIONAL enums (10-design §8): additive, each value's meaning fixed at
+# introduction; the file `version` covers stamping — contrast taxonomy/registry lineage slugs.
+version: "3.0.1"   # 3.0.1 (2026-11-02): comments only (no paths into removed trees); no value moves.
+                   # 3.0.0 (2026-10-14): evidence_tier, independence, relation, stance (v3 _core.schema.json) and
+                   # subject_kind (v3 workflows.schema.json) were retired with v3, as were those schemas.
+                   # 2.0.0 (2026-10-14): the 21 vocabularies read by nothing but v3 schemas were retired with v3.
+                   # 1.1.0: + ann_type.author_affiliation (additive; no existing value changed).
+
+enums:
+  license_class:
+    description: Mechanically-assigned license class; gates egress, excerpt caps, publishability at read time (DATA-13).
+    values:
+      open: Open license (arXiv, OA papers, CC).
+      public_web: Publicly reachable web content, no explicit open license.
+      restricted: Access-restricted or rights-reserved.
+      shadow: Shadow-sourced; not for publication; LLM access follows configured provider permissions.
+      api_tos: Obtained via an API whose ToS constrains redistribution.
+
+  doc_type:
+    description: >-
+      Document genre; ONE snake_case domain used everywhere (sources.doc_type, doc_class payload
+      via x-enum, annotate scope filters, smoke fixtures). Mechanical where known at collect, else
+      classified by annotate.doc_class into exactly this vocabulary.
+    values:
+      paper: Peer-reviewed paper.
+      preprint: Preprint (arXiv, SSRN).
+      system_card: Model or system card.
+      model_card: Standalone model card / release note.
+      framework_policy: Policy / framework document (RSP, safety framework, governance policy).
+      lab_blog: Lab or org blog / web article.
+      eval_report: Evaluation or benchmark report.
+      product_doc: Product / API / deployment documentation.
+      regulatory: Regulatory or legal filing.
+      critique: Critique, commentary, or negative-result note.
+      news: News / press reporting.
+      forum_post: Forum or discussion-board post.
+      tweet: Microblog / X post.
+      webpage: Generic web page.
+      dataset: Dataset or benchmark release.
+      other: None of the above.
+
+  # ── extraction vocabularies cited by schemas/payloads/* (x-enum) ────────────
+  # Facet menus and facet slugs are NOT here: they live in the pinned taxonomy
+  # (taxonomy-vX.Y.yaml), validated at write time (facet_observation, D-S9).
+  triage_bucket:
+    description: Coarse routing buckets a screen assigns (screen_verdict.buckets).
+    values:
+      lab_safety_doc: Lab safety / governance document.
+      eval_report: Evaluation report.
+      paper: Research paper.
+      critique_commentary: Critique or commentary.
+      incident: Incident / failure report.
+      release_news: Release news.
+      deployment_signal: Deployment signal.
+      offtopic: Off-topic.
+
+  relevance_verdict:
+    description: Relevance screen include/exclude decision (screen_verdict.verdict).
+    values:
+      relevant: Keep for downstream extraction.
+      borderline: Kept but flagged for cheaper handling / review.
+      irrelevant: Out of scope.
+
+  facet_answer_origin:
+    description: How a taxonomy/aggregate facet answer was set (taxonomy facetAnswer.origin, aggregate.facet_answers).
+    values:
+      initial_pass: Set by the taxonomy's initial authoring pass.
+      source_confirmed: Confirmed against source evidence.
+      human_set: Set or overridden by a human.
+      escalated: Observations disagreed; the conflict was surfaced, not silently resolved.
+
+  ann_type:
+    description: Annotation record families (annotations.ann_type). `claim` names a family, never a table.
+    values:
+      receipt: Mandatory processing receipt, one per (snapshot, workflow).
+      screen_verdict: Relevance screen include/exclude flag.
+      doc_class: Document-type classification.
+      author_affiliation: One byline author's affiliation(s) as printed in the source, per (snapshot, author).
+      tech_index_row: Per-snapshot technique index row.
+      claim: An extracted factual claim about a subject.
+      result: An extracted quantitative result / measurement.
+      facet_observation: A per-(subject, snapshot) facet answer with evidence.
+      support_check: Quote-sufficiency check emitting override copies.
+      identity_observation: An unresolved model/org identity observation.
+      proposal: A novelty proposed for human adjudication (never a new slug at runtime).
+
+  run_status:
+    description: Lifecycle status of a run.
+    values:
+      running: In progress.
+      ok: Completed successfully.
+      failed: Aborted with an error.
+      halted: Stopped resumably (e.g. budget cap).
+
+  phase:
+    description: The five contracted phases.
+    values:
+      collect: Discover and register sources.
+      fetch: Acquire bytes (v4 stage `acquire`; the scholarly metadata lookups are the collect.openalex-lookup and collect.s2-lookup stages).
+      convert: Produce canonical text with a parse-health verdict.
+      annotate: Map — per-source AI filtering and extraction.
+      aggregate: Reduce — cross-source computation, exports, publications.
+
+  org_kind:
+    description: Organization kind (registry.orgs.kind).
+    values:
+      lab: Frontier AI lab.
+      company: Other company / research arm.
+      nonprofit: Nonprofit or dedicated safety org.
+      institute: Government or public institute.

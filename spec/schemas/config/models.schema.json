@@ -1,0 +1,927 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/config/models.schema.json",
+  "title": "models.yaml",
+  "description": "The model/family mention vocabulary: a flat map of family/group/model nodes with parent pointers and per-node mention patterns (doc/model-collection/schema.md v0.3). GENERATED from stack.modelvocab.ModelVocab by tools/gen_models_schema.py \u2014 edit the pydantic model, not this file.",
+  "$defs": {
+    "Lifecycle": {
+      "additionalProperties": false,
+      "description": "All dates of a model's life; each optional, ``released`` is the canonical anchor.\n\nVocabulary 0.9 PREPARES (does not yet fill; to be filled in a later pass) an availability\nstage: ``status`` at ``status_as_of``, and ``first_public`` (first public availability in any\nform, preview included) kept distinct from ``ga`` (general availability). Until that pass,\n``released`` stays the anchor and is the first public date by catalogue convention.",
+      "properties": {
+        "announced": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Announced"
+        },
+        "preview": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Preview"
+        },
+        "released": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Released"
+        },
+        "deprecated": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deprecated"
+        },
+        "retired": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retired"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "enum": [
+                "announced",
+                "preview",
+                "ga",
+                "restricted",
+                "retired",
+                "unknown"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status"
+        },
+        "status_as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status As Of"
+        },
+        "first_public": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Public"
+        },
+        "ga": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ga"
+        }
+      },
+      "title": "Lifecycle",
+      "type": "object"
+    },
+    "Links": {
+      "additionalProperties": false,
+      "description": "Primary sources for the entry (URLs, never verified for liveness here).",
+      "properties": {
+        "announcement": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Announcement"
+        },
+        "paper": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Paper"
+        },
+        "model_card": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Card"
+        }
+      },
+      "title": "Links",
+      "type": "object"
+    },
+    "Modalities": {
+      "additionalProperties": false,
+      "description": "What the model consumes and emits. ``in`` is a Python keyword, hence the alias.",
+      "properties": {
+        "in": {
+          "items": {
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "music",
+              "embedding",
+              "code",
+              "3d",
+              "action"
+            ],
+            "type": "string"
+          },
+          "title": "In",
+          "type": "array"
+        },
+        "out": {
+          "items": {
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "music",
+              "embedding",
+              "code",
+              "3d",
+              "action"
+            ],
+            "type": "string"
+          },
+          "title": "Out",
+          "type": "array"
+        }
+      },
+      "title": "Modalities",
+      "type": "object"
+    },
+    "OrgRef": {
+      "additionalProperties": false,
+      "description": "A reference into the organisation vocabulary: ``id`` (an entry id of ``meta.references.orgs``) and ``name``\n(the display string; a maker's is the menu's maker name). ``id`` is None only on a ``lab`` read from a file\nbefore 1.1.0, which had no lab ids.",
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Id"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "OrgRef",
+      "type": "object"
+    },
+    "Params": {
+      "additionalProperties": false,
+      "description": "Parameter count in MILLIONS, and its provenance. ``source`` is required for ``estimate``.\n\nFractional values are legal and are not a rounding artefact: the pre-llm section (09) revokes\nthe vocabulary's ~100M floor, so LeNet-5 (~60k params) is ``total_m: 0.06`` and SqueezeNet\n``1.25``. ``int | float`` rather than plain ``float`` so the frontier-scale counts stay ints\non the validated model instead of being coerced to ``1600000.0``.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "official",
+            "estimate",
+            "undisclosed"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "total_m": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total M"
+        },
+        "active_m": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Active M"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "Params",
+      "type": "object"
+    },
+    "VocabMeta": {
+      "additionalProperties": false,
+      "description": "``meta:`` of the envelope (:mod:`stack.catalogue`): the schema name, status, date, description and the\norganisation vocabulary version the references resolve in. A file read through :func:`from_legacy` has\n``schema`` ``models-1`` (its ``schema_version`` and maker facets are not carried) and no status.",
+      "properties": {
+        "schema": {
+          "title": "Schema",
+          "type": "string"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "enum": [
+                "draft",
+                "released"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status"
+        },
+        "updated": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            }
+          ],
+          "title": "Updated"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "sources": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sources"
+        },
+        "references": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "References",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema",
+        "updated"
+      ],
+      "title": "VocabMeta",
+      "type": "object"
+    },
+    "VocabNode": {
+      "additionalProperties": false,
+      "description": "One vocabulary node: a family, an intermediate group, or a concrete model.\n\nField applicability is kind-dependent (families/groups carry no release metadata) but is\nNOT enforced here \u2014 ``vocab_tool.validate_nodes`` owns that rule set, and duplicating it\nwould give two places to keep in sync. This model's job is the field vocabulary and the\nvalue types.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "family",
+            "group",
+            "model"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "level": {
+          "anyOf": [
+            {
+              "enum": [
+                "line",
+                "series",
+                "generation"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Level"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent"
+        },
+        "maker": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OrgRef"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/OrgRef"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maker"
+        },
+        "lab": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OrgRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "lifecycle": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Lifecycle"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "links": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Links"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "params": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Params"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "modalities": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Modalities"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mentions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mentions"
+        },
+        "weak_mentions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weak Mentions"
+        },
+        "mentions_verbatim": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mentions Verbatim"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "enum": [
+                "verified",
+                "weak",
+                "stub"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "checked": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked"
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tags"
+        },
+        "gloss": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gloss"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "uncertainties": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainties"
+        },
+        "variant_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Variant Of"
+        },
+        "variant_kind": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Variant Kind"
+        },
+        "based_on": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Based On"
+        },
+        "distilled_from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distilled From"
+        },
+        "same_weights_as": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Same Weights As"
+        },
+        "model_class": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "language-model",
+                  "vision-language",
+                  "text-encoder",
+                  "embedding",
+                  "reranker",
+                  "guard-classifier",
+                  "reward-model",
+                  "judge-model",
+                  "image-gen",
+                  "video-gen",
+                  "speech-recognition",
+                  "speech-generation",
+                  "music-gen",
+                  "robot-policy",
+                  "world-model",
+                  "vision-backbone",
+                  "detector-segmenter",
+                  "rl-agent",
+                  "science",
+                  "interpretability-tool"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Class"
+        },
+        "specialization": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "reasoning",
+                  "code",
+                  "computer-use",
+                  "cyber",
+                  "bio",
+                  "medical"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Specialization"
+        },
+        "representation_status": {
+          "anyOf": [
+            {
+              "enum": [
+                "expanded",
+                "folded",
+                "class-only",
+                "pointer"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Representation Status"
+        },
+        "weights_access": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WeightsAccess"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "name"
+      ],
+      "title": "VocabNode",
+      "type": "object"
+    },
+    "WeightsAccess": {
+      "additionalProperties": false,
+      "description": "PREPARED, NOT YET FILLED (to be filled in a later pass): whether the weights can be obtained,\nunder which licence (a separate field: a licence is not an access level), on what evidence,\nas of when.",
+      "properties": {
+        "status": {
+          "enum": [
+            "downloadable",
+            "gated",
+            "not-distributed",
+            "unknown"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "licence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Licence"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence"
+        },
+        "as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "pattern": "^\\d{4}(-\\d{2})?(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "As Of"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "WeightsAccess",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/VocabMeta"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/VocabNode"
+      },
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "meta",
+    "entries"
+  ],
+  "type": "object"
+}

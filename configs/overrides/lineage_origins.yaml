@@ -1,0 +1,276 @@
+# lineage_origins.yaml - the curated origin list of the narrow-model lineage (pre-2020 scope review round 2,
+# D664): origin works of catalogued safety techniques in ML security, privacy, interpretability,
+# robustness, poisoning, model extraction/inversion, unlearning and verification, restricted to (1) works before
+# the store's 2015 paper floor and (2) venue-gap works the collectors cannot reach (Distill, proceedings-only).
+#
+# APPROVED AS PREPARED (owner review, 2026-10-21; D664). The operator imports it at build time (entries are `human`-tier
+# overrides once added).
+# Input to `stack overrides add` (docs/howto/overrides.md); no stage reads it from here. The file is a mapping of
+# targets (manual_sources, screen, stack_relevance), so one add imports all three:
+#   stack overrides add configs/overrides/lineage_origins.yaml --out data/overrides/<series>/ --dry-run   # writes nothing
+#   stack overrides add configs/overrides/lineage_origins.yaml --out data/overrides/<series>/ --comment scope-r2-d1b
+# Independent of configs/overrides/manual_sources.yaml (D6): no shared override id and no shared target; either may
+# be added first. The manual sources need the same plan lines as that file's (`collect.manual` with
+# `miss_cap: 1`, gate `{rule: manual_accept}`, acquire wants `manual_url: [page]`, `manual_paper: [full_text]`).
+# Validated by tests/test_overrides_lineage_origins.py.
+#
+# Mechanisms (override_id prefix):
+#   ms-lo-      manual source, flag `accept`: triage fetches the document without asking. 23 works absent from the
+#               store, 2 present but triage-skipped (their DOI URL joins the existing document, so the flag lands
+#               on it). arXiv/DOI URLs where the full text is open; an author-hosted PDF where the DOI is
+#               paywalled. Each entry has `title`, `authors` and `published_at` (D666; the note's year as
+#               `<year>-01-01`, read as year-only; author names from OpenAlex, the PDF's first page or the
+#               note): the source's own metadata, merged by gather like any member's (ranked after every
+#               collected channel, so a joined OpenAlex record's values come first).
+#   scr-lo-     screen field overrides: `verdict: relevant` and `off_topic_reason: null` (the record otherwise keeps
+#   srel-lo-    the model's quotes and reasoning); stack_relevance field override `verdict: relevant`. Only for the
+#               3 present Distill documents whose members are known now.
+# The R question (sr_relevance) is not overridden: the target is "retained as S-relevant"; the model's own R
+# answer stands (an `sr_relevance` field entry `verdict: irrelevant` would express "R irrelevant", but would
+# contradict the model where it sees an agenda: Activation Atlas and the linkpost copy of Zoom In are R relevant).
+#
+# Scope pinning: a screen override applies only while `scope.members` equals the document's live members
+# (stack/annotate/select.py); any other member set leaves it unapplied and listed in `override_stale_ids`.
+# The members below are those of the documents head of 2026-10-20 (checked on a read-only mirror 2026-10-21).
+# Not expressible now (source ids are minted at collect time, so no doc_id or members exist yet): the screen
+# overrides for the 25 `ms-lo-` works and for D6's Cao & Yang (ms-r2-lm-75). They are a second file, written
+# after the first build that gathers these sources (procedure in docs/howto/overrides.md, "Prepared files").
+#
+# Taxonomy ids: the registry pin, configs/taxonomy-v0.6.yaml. Ids and URLs checked 2026-10-21: arXiv ids and DOIs
+# against OpenAlex (one request; the arXiv ids 1306.4447 and 1708.06131 on their abstract pages), every PDF URL
+# fetched once and its first page read; except the CAV 2010 DOI (paywalled; full text not verified).
+
+manual_sources:
+# ---- adversarial examples and evasion
+- override_id: ms-lo-szegedy-2013
+  url: https://arxiv.org/abs/1312.6199
+  title: "Intriguing properties of neural networks"
+  authors: ["Christian Szegedy", "Wojciech Zaremba", "Ilya Sutskever", "Joan Bruna", "Dumitru Erhan", "Ian Goodfellow", "Rob Fergus"]
+  published_at: 2013-01-01
+  flags: [accept]
+  note: 'Intriguing properties of neural networks (2013). Szegedy, Zaremba, Sutskever, Bruna, Erhan, Goodfellow, Fergus. arXiv 1312.6199. Origin of adversarial examples and first adversarial training: adversarial-data-augmentation, jailbreak-robustness-eval. Pre-floor; R1 landmark #65. Store 2026-10-20: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-goodfellow-2014
+  url: https://arxiv.org/abs/1412.6572
+  title: "Explaining and Harnessing Adversarial Examples"
+  authors: ["Ian Goodfellow", "Jonathon Shlens", "Christian Szegedy"]
+  published_at: 2014-01-01
+  flags: [accept]
+  note: 'Explaining and Harnessing Adversarial Examples (2014). Goodfellow, Shlens, Szegedy. arXiv 1412.6572 (ICLR 2015). FGSM and adversarial training: adversarial-data-augmentation. Pre-floor; R1 landmark #66. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-biggio-evasion-2013
+  url: https://arxiv.org/abs/1708.06131
+  title: "Evasion Attacks against Machine Learning at Test Time"
+  authors: ["Battista Biggio", "Igino Corona", "Davide Maiorca", "Blaine Nelson", "Nedim Šrndić", "Pavel Laskov", "Giorgio Giacinto", "Fabio Roli"]
+  published_at: 2013-01-01
+  flags: [accept]
+  note: 'Evasion Attacks against Machine Learning at Test Time (2013). Biggio, Corona, Maiorca, Nelson, Šrndić, Laskov, Giacinto, Roli. ECML PKDD 2013, DOI 10.1007/978-3-642-40994-3_25; arXiv copy 1708.06131 (posted 2017). Gradient-based evasion attacks: jailbreak-robustness-eval. Pre-floor. Store: absent (neither the arXiv nor the DOI key).'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-dalvi-2004
+  url: https://homes.cs.washington.edu/~pedrod/papers/kdd04.pdf
+  title: "Adversarial Classification"
+  authors: ["Nilesh Dalvi", "Pedro Domingos", "Mausam", "Sumit Sanghai", "Deepak Verma"]
+  published_at: 2004-01-01
+  flags: [accept]
+  note: 'Adversarial Classification (2004). Dalvi, Domingos, Mausam, Sanghai, Verma. KDD 2004, DOI 10.1145/1014052.1014066 (paywalled); author-hosted PDF. Origin of adversarial machine learning (classifier vs adversary game): jailbreak-robustness-eval, adversarial-data-augmentation. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-lowd-meek-2005
+  url: https://ix.cs.uoregon.edu/~lowd/kdd05lowd.pdf
+  title: "Adversarial Learning"
+  authors: ["Daniel Lowd", "Christopher Meek"]
+  published_at: 2005-01-01
+  flags: [accept]
+  note: 'Adversarial Learning (2005). Lowd, Meek. KDD 2005, DOI 10.1145/1081870.1081950 (paywalled); author-hosted PDF. Query-based reverse engineering of a classifier for evasion: jailbreak-robustness-eval; ancestor of model extraction via prediction APIs (no v0.6 entry of its own). Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-barreno-2006
+  url: https://people.eecs.berkeley.edu/~tygar/papers/Machine_Learning_Security/asiaccs06.pdf
+  title: "Can Machine Learning Be Secure?"
+  authors: ["Marco Barreno", "Blaine Nelson", "Russell Sears", "Anthony D. Joseph", "J. D. Tygar"]
+  published_at: 2006-01-01
+  flags: [accept]
+  note: 'Can Machine Learning Be Secure? (2006). Barreno, Nelson, Sears, Joseph, Tygar. ASIACCS 2006, DOI 10.1145/1128817.1128824 (paywalled); author-hosted PDF. The attack taxonomy (causative/exploratory, integrity/availability) of ML security: ai-supply-chain-security, training-data-poisoning-detection. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+# ---- poisoning
+- override_id: ms-lo-biggio-poisoning-2012
+  url: https://arxiv.org/abs/1206.6389
+  title: "Poisoning Attacks against Support Vector Machines"
+  authors: ["Battista Biggio", "Blaine Nelson", "Pavel Laskov"]
+  published_at: 2012-01-01
+  flags: [accept]
+  note: 'Poisoning Attacks against Support Vector Machines (2012). Biggio, Nelson, Laskov. ICML 2012; arXiv 1206.6389. Gradient-based training-data poisoning: training-data-poisoning-detection, data-poisoning-backdoor-defenses-pretraining. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-nelson-2008
+  url: https://www.usenix.org/legacy/event/leet08/tech/full_papers/nelson/nelson.pdf
+  title: "Exploiting Machine Learning to Subvert Your Spam Filter"
+  authors: ["Blaine Nelson", "Marco Barreno", "Fuching Jack Chi", "Anthony D. Joseph", "Benjamin I. P. Rubinstein", "Udam Saini", "Charles Sutton", "J. D. Tygar", "Kai Xia"]
+  published_at: 2008-01-01
+  flags: [accept]
+  note: 'Exploiting Machine Learning to Subvert Your Spam Filter (2008). Nelson, Barreno, Chi, Joseph, Rubinstein, Saini, Sutton, Tygar, Xia. USENIX LEET 2008, no DOI; USENIX PDF. Early poisoning attack on a deployed learner, with defenses: training-data-poisoning-detection. Pre-floor, venue gap. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-antidote-2009
+  url: https://people.eecs.berkeley.edu/~tygar/papers/SML/IMC.2009.pdf
+  title: "ANTIDOTE: Understanding and Defending against Poisoning of Anomaly Detectors"
+  authors: ["Benjamin I. P. Rubinstein", "Blaine Nelson", "Ling Huang", "Anthony D. Joseph", "Shing-hon Lau", "Satish Rao", "Nina Taft", "J. D. Tygar"]
+  published_at: 2009-01-01
+  flags: [accept]
+  note: 'ANTIDOTE: Understanding and Defending against Poisoning of Anomaly Detectors (2009). Rubinstein, Nelson, Huang, Joseph, Lau, Rao, Taft, Tygar. IMC 2009, DOI 10.1145/1644893.1644895 (paywalled); author-hosted PDF. Robust-statistics defense against poisoning: training-data-poisoning-detection. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+# ---- privacy: model inversion, membership and property inference
+- override_id: ms-lo-fredrikson-2014
+  url: https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-fredrikson-privacy.pdf
+  title: "Privacy in Pharmacogenetics: An End-to-End Case Study of Personalized Warfarin Dosing"
+  authors: ["Matthew Fredrikson", "Eric Lantz", "Somesh Jha", "Simon Lin", "David Page", "Thomas Ristenpart"]
+  published_at: 2014-01-01
+  flags: [accept]
+  note: 'Privacy in Pharmacogenetics: An End-to-End Case Study of Personalized Warfarin Dosing (2014). Fredrikson, Lantz, Jha, Lin, Page, Ristenpart. USENIX Security 2014, no DOI; USENIX PDF. Introduces model inversion: privacy-memorization-auditing. Pre-floor, venue gap. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-fredrikson-2015
+  url: https://doi.org/10.1145/2810103.2813677
+  title: "Model Inversion Attacks that Exploit Confidence Information and Basic Countermeasures"
+  authors: ["Matt Fredrikson", "Somesh Jha", "Thomas Ristenpart"]
+  published_at: 2015-01-01
+  flags: [accept]
+  note: 'Model Inversion Attacks that Exploit Confidence Information and Basic Countermeasures (2015). Fredrikson, Jha, Ristenpart. CCS 2015, DOI 10.1145/2810103.2813677 (open access at ACM per OpenAlex). Model inversion on neural networks via confidence scores: privacy-memorization-auditing. Proceedings-only (OpenAlex type conference-paper: D2 may also reach it; the DOI URL joins that record). Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-homer-2008
+  url: https://doi.org/10.1371/journal.pgen.1000167
+  title: "Resolving Individuals Contributing Trace Amounts of DNA to Highly Complex Mixtures Using High-Density SNP Genotyping Microarrays"
+  authors: ["Nils Homer", "Szabolcs Szelinger", "Margot Redman", "David J Duggan", "Waibhav Tembe", "Jill Muehling", "John V. Pearson", "Dietrich A. Stephan", "Stanley F. Nelson", "David Wesley Craig"]
+  published_at: 2008-01-01
+  flags: [accept]
+  note: 'Resolving Individuals Contributing Trace Amounts of DNA to Highly Complex Mixtures Using High-Density SNP Genotyping Microarrays (2008). Homer et al. PLoS Genetics, DOI 10.1371/journal.pgen.1000167 (open access). The membership-inference attack on aggregate statistics that ML membership inference descends from: training-data-attribution-membership-testing, privacy-memorization-auditing. Pre-floor; a genomics paper (review: keep only if the statistical origin counts). Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-ateniese-2013
+  url: https://arxiv.org/abs/1306.4447
+  title: "Hacking Smart Machines with Smarter Ones: How to Extract Meaningful Data from Machine Learning Classifiers"
+  authors: ["Giuseppe Ateniese", "Luigi Vincenzo Mancini", "Angelo Spognardi", "Antonio Villani", "Domenico Vitali", "Giovanni Felici"]
+  published_at: 2013-01-01
+  flags: [accept]
+  note: 'Hacking Smart Machines with Smarter Ones: How to Extract Meaningful Data from Machine Learning Classifiers (2013). Ateniese, Mancini, Spognardi, Villani, Vitali, Felici. arXiv 1306.4447; IJSN 2015, DOI 10.1504/ijsn.2015.071829 (OpenAlex merged the arXiv copy into it). Property inference from a trained model: privacy-memorization-auditing. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-shokri-2015
+  url: https://www.cs.cornell.edu/~shmat/shmat_ccs15.pdf
+  title: "Privacy-Preserving Deep Learning"
+  authors: ["Reza Shokri", "Vitaly Shmatikov"]
+  published_at: 2015-01-01
+  flags: [accept]
+  note: 'Privacy-Preserving Deep Learning (2015). Shokri, Shmatikov. CCS 2015, DOI 10.1145/2810103.2813687 (paywalled); author-hosted PDF. Differentially private gradient sharing for deep networks, the step before DP-SGD: differential-privacy-training-dp-sgd. Proceedings-only (D2 may also reach the DOI record, which this URL source does not join). Store: absent (a 2020 namesake is a different work).'
+  added_by: scope-r2-d1b
+# ---- differential privacy as applied to ML
+- override_id: ms-lo-dwork-2006
+  url: https://doi.org/10.29012/jpc.v7i3.405
+  title: "Calibrating Noise to Sensitivity in Private Data Analysis"
+  authors: ["Cynthia Dwork", "Frank McSherry", "Kobbi Nissim", "Adam Smith"]
+  published_at: 2006-01-01
+  flags: [accept]
+  note: 'Calibrating Noise to Sensitivity in Private Data Analysis (2006). Dwork, McSherry, Nissim, Smith. TCC 2006, DOI 10.1007/11681878_14; the store holds the 2017 Journal of Privacy and Confidentiality reprint (DOI 10.29012/jpc.v7i3.405, open access), triage-skipped; this DOI URL joins that document. Definition of differential privacy and the Laplace mechanism: differential-privacy-training-dp-sgd. Store: present (doc sm52yhg55632e), triage skip, abstract only.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-dwork-roth-2014
+  url: https://www.cis.upenn.edu/~aaroth/Papers/privacybook.pdf
+  title: "The Algorithmic Foundations of Differential Privacy"
+  authors: ["Cynthia Dwork", "Aaron Roth"]
+  published_at: 2014-01-01
+  flags: [accept]
+  note: 'The Algorithmic Foundations of Differential Privacy (2014). Dwork, Roth. Foundations and Trends in TCS 9(3-4), DOI 10.1561/0400000042 (paywalled); author-hosted PDF. The standard reference of differential privacy: differential-privacy-training-dp-sgd. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-chaudhuri-2009
+  url: https://arxiv.org/abs/0912.0071
+  title: "Differentially Private Empirical Risk Minimization"
+  authors: ["Kamalika Chaudhuri", "Claire Monteleoni", "Anand D. Sarwate"]
+  published_at: 2009-01-01
+  flags: [accept]
+  note: 'Differentially Private Empirical Risk Minimization (2009). Chaudhuri, Monteleoni, Sarwate. arXiv 0912.0071; JMLR 2011. Private training by objective and output perturbation: differential-privacy-training-dp-sgd. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-song-2013
+  url: https://cseweb.ucsd.edu/~kamalika/pubs/scs13.pdf
+  title: "Stochastic gradient descent with differentially private updates"
+  authors: ["Shuang Song", "Kamalika Chaudhuri", "Anand D. Sarwate"]
+  published_at: 2013-01-01
+  flags: [accept]
+  note: 'Stochastic gradient descent with differentially private updates (2013). Song, Chaudhuri, Sarwate. IEEE GlobalSIP 2013, DOI 10.1109/GlobalSIP.2013.6736861 (paywalled); author-hosted PDF. First differentially private SGD: differential-privacy-training-dp-sgd. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-bassily-2014
+  url: https://arxiv.org/abs/1405.7085
+  title: "Differentially Private Empirical Risk Minimization: Efficient Algorithms and Tight Error Bounds"
+  authors: ["Raef Bassily", "Adam Smith", "Abhradeep Thakurta"]
+  published_at: 2014-01-01
+  flags: [accept]
+  note: 'Private Empirical Risk Minimization: Efficient Algorithms and Tight Error Bounds (2014). Bassily, Smith, Thakurta. FOCS 2014; arXiv 1405.7085. Noisy SGD with privacy amplification and tight bounds, the analysis DP-SGD builds on: differential-privacy-training-dp-sgd. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+# ---- interpretability: feature visualization and attribution
+- override_id: ms-lo-erhan-2009
+  url: https://papers.baulab.info/papers/also/Erhan-2009.pdf
+  title: "Visualizing Higher-Layer Features of a Deep Network"
+  authors: ["Dumitru Erhan", "Yoshua Bengio", "Aaron Courville", "Pascal Vincent"]
+  published_at: 2009-01-01
+  flags: [accept]
+  note: 'Visualizing Higher-Layer Features of a Deep Network (2009). Erhan, Bengio, Courville, Vincent. Technical Report 1341, DIRO, Université de Montréal; no DOI; PDF hosted by the Bau lab (no stable Montréal URL found). Activation maximization, the origin of feature visualization: mechanistic-interp. Pre-floor, venue gap. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-baehrens-2009
+  url: https://arxiv.org/abs/0912.1128
+  title: "How to Explain Individual Classification Decisions"
+  authors: ["David Baehrens", "Timon Schroeter", "Stefan Harmeling", "Motoaki Kawanabe", "Katja Hansen", "Klaus-Robert Müller"]
+  published_at: 2009-01-01
+  flags: [accept]
+  note: 'How to Explain Individual Classification Decisions (2009). Baehrens, Schroeter, Harmeling, Kawanabe, Hansen, Müller. arXiv 0912.1128; JMLR 2010. Gradient explanation vectors, an origin of feature attribution: mechanistic-interp. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-zeiler-2013
+  url: https://arxiv.org/abs/1311.2901
+  title: "Visualizing and Understanding Convolutional Networks"
+  authors: ["Matthew D. Zeiler", "Rob Fergus"]
+  published_at: 2013-01-01
+  flags: [accept]
+  note: 'Visualizing and Understanding Convolutional Networks (2013). Zeiler, Fergus. arXiv 1311.2901 (ECCV 2014). Deconvolutional visualization of learned features: mechanistic-interp. Pre-floor; R1 landmark #98. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-simonyan-2013
+  url: https://arxiv.org/abs/1312.6034
+  title: "Deep Inside Convolutional Networks: Visualising Image Classification Models and Saliency Maps"
+  authors: ["Karen Simonyan", "Andrea Vedaldi", "Andrew Zisserman"]
+  published_at: 2013-01-01
+  flags: [accept]
+  note: 'Deep Inside Convolutional Networks: Visualising Image Classification Models and Saliency Maps (2013). Simonyan, Vedaldi, Zisserman. arXiv 1312.6034. Gradient saliency maps and class-model visualization: mechanistic-interp. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+- override_id: ms-lo-lrp-2015
+  url: https://doi.org/10.1371/journal.pone.0130140
+  title: "On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation"
+  authors: ["Sebastian Bach", "Alexander Binder", "Grégoire Montavon", "Frederick Klauschen", "Klaus-Robert Müller", "Wojciech Samek"]
+  published_at: 2015-01-01
+  flags: [accept]
+  note: 'On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation (2015). Bach (now Lapuschkin), Binder, Montavon, Klauschen, Müller, Samek. PLoS ONE, DOI 10.1371/journal.pone.0130140 (open access). Layer-wise relevance propagation, a feature-attribution origin: mechanistic-interp. Store: present (doc spwpxm0e1hs16), triage skip, abstract only; this DOI URL joins it.'
+  added_by: scope-r2-d1b
+# ---- verification
+- override_id: ms-lo-pulina-2010
+  url: https://doi.org/10.1007/978-3-642-14295-6_24
+  title: "An Abstraction-Refinement Approach to Verification of Artificial Neural Networks"
+  authors: ["Luca Pulina", "Armando Tacchella"]
+  published_at: 2010-01-01
+  flags: [accept]
+  note: 'An Abstraction-Refinement Approach to Verification of Artificial Neural Networks (2010). Pulina, Tacchella. CAV 2010 (LNCS 6174), DOI 10.1007/978-3-642-14295-6_24 (paywalled; no open copy verified, so acquire may get no full text). First formal safety verification of a neural network: formal-verification-gsai. Pre-floor. Store: absent.'
+  added_by: scope-r2-d1b
+
+# Present Distill documents (venue gap: Distill articles reach the store only as OpenAlex records): retained as
+# S-relevant. Members = the live members on the documents head of 2026-10-20.
+screen:
+- {override_id: scr-lo-featvis-2017-verdict, key: {doc_id: skdjf95venqh0}, scope: {members: [skdjf95venqh0]},
+   field: verdict, value: relevant, author: scope-r2-d1b,
+   note: 'Feature Visualization (Olah, Mordvintsev, Schubert; Distill 2017, DOI 10.23915/distill.00007): origin article of feature visualization (mechanistic-interp). Screened irrelevant (general_ml) on 2026-10-20 while Activation Atlas was kept.'}
+- {override_id: scr-lo-featvis-2017-otr, key: {doc_id: skdjf95venqh0}, scope: {members: [skdjf95venqh0]},
+   field: off_topic_reason, value: null, author: scope-r2-d1b, note: 'Clears the off-topic reason with the verdict above.'}
+- {override_id: scr-lo-blocks-2018-verdict, key: {doc_id: sa2cjatngtfey}, scope: {members: [s7my5nnqqmc3h, sa2cjatngtfey]},
+   field: verdict, value: relevant, author: scope-r2-d1b,
+   note: 'The Building Blocks of Interpretability (Olah et al.; Distill 2018, DOI 10.23915/distill.00010): mechanistic-interp. Not screened yet (no text: Distill no_fetchable_url, D8 adds the Distill rule); the field override applies once the screen has an ok answer.'}
+- {override_id: scr-lo-blocks-2018-otr, key: {doc_id: sa2cjatngtfey}, scope: {members: [s7my5nnqqmc3h, sa2cjatngtfey]},
+   field: off_topic_reason, value: null, author: scope-r2-d1b, note: 'Clears the off-topic reason with the verdict above.'}
+- {override_id: scr-lo-zoomin-2020-verdict, key: {doc_id: spckkt48gz204}, scope: {members: [scvj9sgfa309q, spckkt48gz204]},
+   field: verdict, value: relevant, author: scope-r2-d1b,
+   note: 'Zoom In: An Introduction to Circuits (Olah et al.; Distill 2020, DOI 10.23915/distill.00024.001): origin of circuit analysis (mechanistic-interp). Not screened yet (no text, as Building Blocks); its LessWrong/AF linkpost is a separate document (s9bp9pxq25wqr), screened relevant.'}
+- {override_id: scr-lo-zoomin-2020-otr, key: {doc_id: spckkt48gz204}, scope: {members: [scvj9sgfa309q, spckkt48gz204]},
+   field: off_topic_reason, value: null, author: scope-r2-d1b, note: 'Clears the off-topic reason with the verdict above.'}
+
+stack_relevance:
+- {override_id: srel-lo-featvis-2017, key: {doc_id: skdjf95venqh0}, scope: {members: [skdjf95venqh0]},
+   field: verdict, value: relevant, author: scope-r2-d1b, note: 'Feature Visualization (Distill 2017): S relevant as a mechanistic-interp origin.'}
+- {override_id: srel-lo-blocks-2018, key: {doc_id: sa2cjatngtfey}, scope: {members: [s7my5nnqqmc3h, sa2cjatngtfey]},
+   field: verdict, value: relevant, author: scope-r2-d1b, note: 'The Building Blocks of Interpretability (Distill 2018): S relevant as a mechanistic-interp origin.'}
+- {override_id: srel-lo-zoomin-2020, key: {doc_id: spckkt48gz204}, scope: {members: [scvj9sgfa309q, spckkt48gz204]},
+   field: verdict, value: relevant, author: scope-r2-d1b, note: 'Zoom In (Distill 2020): S relevant as the circuits origin.'}

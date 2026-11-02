@@ -1,0 +1,952 @@
+# Fixtures for _build/07-open-research.yaml — every name-variant string from the MD
+# entries (verbatim, annotations stripped) plus canonical display names.
+# Skipped: org-name variants with no node (eleutherai, eleuther ai, eleuther,
+# bigscience, big science, bigscience workshop, ai2, allenai, allen institute for ai,
+# mosaicml, mosaic ml, databricks, nvidia, microsoft, msft, microsoft research,
+# microsoft ai, salesforce, salesforce ai research, bigcode, big code, bigcode
+# project); bare "20b" (GPT-NeoX) and "ssd" (Mamba-2) and "rerank-2" (Voyage) as
+# too generic to pattern; display names of pattern-less structural families are
+# retargeted to their resolving model node.
+
+# ---------------------------------------------------------------- EleutherAI
+- { text: "GPT-Neo", node: gpt-neo }
+- { text: "gpt-neo", node: gpt-neo }
+- { text: "gptneo", node: gpt-neo }
+- { text: "gpt neo", node: gpt-neo }
+- { text: "GPT-Neo 125M", node: gpt-neo-125m }
+- { text: "gpt-neo-125m", node: gpt-neo-125m }
+- { text: "GPT-Neo 1.3B", node: gpt-neo-1.3b }
+- { text: "gpt-neo-1.3b", node: gpt-neo-1.3b }
+- { text: "eleutherai/gpt-neo-1.3b", node: gpt-neo-1.3b }
+- { text: "GPT-Neo 2.7B", node: gpt-neo-2.7b }
+- { text: "gpt-neo-2.7b", node: gpt-neo-2.7b }
+- { text: "eleutherai/gpt-neo-2.7b", node: gpt-neo-2.7b }
+- { text: "GPT-J", node: gpt-j-6b }
+- { text: "GPT-J-6B", node: gpt-j-6b }
+- { text: "gpt-j", node: gpt-j-6b }
+- { text: "gptj", node: gpt-j-6b }
+- { text: "gpt j", node: gpt-j-6b }
+- { text: "gpt-j-6b", node: gpt-j-6b }
+- { text: "gpt-j 6b", node: gpt-j-6b }
+- { text: "eleutherai/gpt-j-6b", node: gpt-j-6b }
+- { text: "GPT-NeoX", node: gpt-neox-20b }
+- { text: "GPT-NeoX-20B", node: gpt-neox-20b }
+- { text: "gpt-neox-20b", node: gpt-neox-20b }
+- { text: "gpt-neox", node: gpt-neox-20b }
+- { text: "neox", node: gpt-neox-20b }
+- { text: "neox-20b", node: gpt-neox-20b }
+- { text: "gptneox", node: gpt-neox-20b }
+- { text: "gpt neox", node: gpt-neox-20b }
+- { text: "eleutherai/gpt-neox-20b", node: gpt-neox-20b }
+- { text: "Pythia", node: pythia }
+- { text: "pythia", node: pythia }
+- { text: "pythia suite", node: pythia }
+- { text: "Pythia 70M", node: pythia-70m }
+- { text: "pythia-70m", node: pythia-70m }
+- { text: "Pythia 160M", node: pythia-160m }
+- { text: "pythia-160m", node: pythia-160m }
+- { text: "Pythia 410M", node: pythia-410m }
+- { text: "pythia-410m", node: pythia-410m }
+- { text: "Pythia 1B", node: pythia-1b }
+- { text: "pythia-1b", node: pythia-1b }
+- { text: "pythia-1b-deduped", node: pythia-1b }
+- { text: "Pythia 1.4B", node: pythia-1.4b }
+- { text: "pythia-1.4b", node: pythia-1.4b }
+- { text: "Pythia 2.8B", node: pythia-2.8b }
+- { text: "pythia-2.8b", node: pythia-2.8b }
+- { text: "Pythia 6.9B", node: pythia-6.9b }
+- { text: "pythia-6.9b", node: pythia-6.9b }
+- { text: "Pythia 12B", node: pythia-12b }
+- { text: "pythia-12b", node: pythia-12b }
+- { text: "pythia-12b-deduped", node: pythia-12b }
+- { text: "eleutherai/pythia-12b", node: pythia-12b }
+
+# ---------------------------------------------------------------- BigScience
+- { text: "BLOOM", node: none }  # v0.9: was bloom-176b (weak bare 'bloom' removed, near-zero corpus precision)
+- { text: "bloom", node: none }  # v0.9: was bloom-176b (weak bare 'bloom' removed, near-zero corpus precision)
+- { text: "bloom-176b", node: bloom-176b }
+- { text: "bloom 176b", node: bloom-176b }
+- { text: "bigscience/bloom", node: bloom-176b }
+- { text: "bloom-560m", node: bloom }  # v0.9: was bloom-176b (smaller BLOOM sizes resolve to the family by their own patterns)
+- { text: "bloom-1b1", node: bloom }  # v0.9: was bloom-176b (smaller BLOOM sizes resolve to the family by their own patterns)
+- { text: "bloom-1b7", node: bloom }  # v0.9: was bloom-176b (smaller BLOOM sizes resolve to the family by their own patterns)
+- { text: "bloom-3b", node: bloom }  # v0.9: was bloom-176b (smaller BLOOM sizes resolve to the family by their own patterns)
+- { text: "bloom-7b1", node: bloom }  # v0.9: was bloom-176b (smaller BLOOM sizes resolve to the family by their own patterns)
+- { text: "BLOOMZ", node: bloomz }
+- { text: "bloomz", node: bloomz }
+- { text: "bloomz-176b", node: bloomz }
+- { text: "bigscience/bloomz", node: bloomz }
+- { text: "bloomz-mt", node: bloomz }
+- { text: "bloomz-p3", node: bloomz }
+- { text: "bloomz-7b1", node: bloomz }
+- { text: "bloomz-560m", node: bloomz }
+
+# ---------------------------------------------------------------- Together
+- { text: "RedPajama-INCITE", node: redpajama }
+- { text: "redpajama", node: redpajama }
+- { text: "redpajama-incite", node: redpajama }
+- { text: "red pajama", node: redpajama }
+- { text: "RedPajama-INCITE 7B", node: redpajama-incite-7b }
+- { text: "redpajama-incite-7b", node: redpajama-incite-7b }
+- { text: "togethercomputer/redpajama-incite-7b-base", node: redpajama-incite-7b }
+- { text: "RedPajama-INCITE 3B", node: redpajama-incite-3b }
+- { text: "redpajama-incite-3b", node: redpajama-incite-3b }
+- { text: "redpajama-incite-chat", node: redpajama }
+- { text: "redpajama-incite-instruct", node: redpajama }
+
+# ---------------------------------------------------------------- AI2
+- { text: "OLMo", node: olmo }
+- { text: "olmo", node: olmo }
+- { text: "allenai/olmo", node: olmo }
+- { text: "OLMo 1", node: olmo-1 }
+- { text: "olmo-1", node: olmo-1 }
+- { text: "olmo-7b", node: olmo-1-7b }  # v0.9: was olmo-1 (OLMo 1 split into sizes, D598 fold policy)
+- { text: "olmo-1b", node: olmo-1-1b }  # v0.9: was olmo-1 (OLMo 1 split into sizes, D598 fold policy)
+- { text: "allenai/olmo-7b", node: olmo-1-7b }  # v0.9: was olmo-1 (OLMo 1 split into sizes, D598 fold policy)
+- { text: "olmo 7b", node: olmo-1-7b }  # v0.9: was olmo-1 (OLMo 1 split into sizes, D598 fold policy)
+- { text: "olmo-7b-instruct", node: olmo-1-7b }  # v0.9: was olmo-1 (OLMo 1 split into sizes, D598 fold policy)
+- { text: "olmo 1.7", node: olmo-1-7b }  # v0.9: was olmo-1 (OLMo 1 split into sizes, D598 fold policy)
+- { text: "OLMo 2", node: olmo-2 }
+- { text: "olmo 2", node: olmo-2 }
+- { text: "olmo-2", node: olmo-2 }
+- { text: "olmo2", node: olmo-2 }
+- { text: "olmo-2-7b", node: olmo-2-7b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "olmo-2-13b", node: olmo-2-13b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "olmo-2-32b", node: olmo-2-32b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "olmo-2-1124-7b", node: olmo-2-7b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "olmo-2-0325-32b", node: olmo-2-32b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "allenai/olmo-2-1124-13b", node: olmo-2-13b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "olmo 2 32b", node: olmo-2-32b }  # v0.9: was olmo-2 (OLMo 2 split into sizes, D598 fold policy)
+- { text: "OLMo 3", node: olmo-3 }
+- { text: "olmo 3", node: olmo-3 }
+- { text: "olmo-3", node: olmo-3 }
+- { text: "olmo3", node: olmo-3 }
+- { text: "olmo 3.1", node: olmo-3.1 }  # v0.9: was olmo-3 (OLMo 3.1 point release split out)
+- { text: "olmo-3-7b", node: olmo-3-7b }  # v0.9: was olmo-3 (OLMo 3 split into sizes)
+- { text: "olmo-3-32b", node: olmo-3-32b }  # v0.9: was olmo-3 (OLMo 3 split into sizes)
+- { text: "olmo 3-think", node: olmo-3 }
+- { text: "olmo-3-think-32b", node: olmo-3 }
+- { text: "olmo-3-instruct", node: olmo-3 }
+- { text: "olmo 3-base", node: olmo-3 }
+- { text: "olmo-3-rl-zero", node: olmo-3 }
+- { text: "olmo 3.1 think 32b", node: olmo-3.1 }  # v0.9: was olmo-3 (OLMo 3.1 point release split out)
+- { text: "Tulu", node: llama-fine-tunes }  # v0.7: was node tulu; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu", node: llama-fine-tunes }  # v0.7: was node tulu; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tülu", node: llama-fine-tunes }  # v0.7: was node tulu; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu series", node: llama-fine-tunes }  # v0.7: was node tulu; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "allenai/tulu", node: llama-fine-tunes }  # v0.7: was node tulu; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Tulu 1", node: llama-fine-tunes }  # v0.7: was node tulu-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-1", node: llama-fine-tunes }  # v0.7: was node tulu-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-65b", node: llama-fine-tunes }  # v0.7: was node tulu-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-7b", node: llama-fine-tunes }  # v0.7: was node tulu-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu v1", node: llama-fine-tunes }  # v0.7: was node tulu-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Tulu 2", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu 2", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-2", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-2-dpo-70b", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-2-70b", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-2-7b", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "allenai/tulu-2-dpo-70b", node: llama-fine-tunes }  # v0.7: was node tulu-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Tulu 3", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu 3", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-3", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tülu 3", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "llama-3.1-tulu-3-8b", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "llama-3.1-tulu-3-70b", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu-3-405b", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "allenai/llama-3.1-tulu-3-70b", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "tulu 3 405b", node: llama-fine-tunes }  # v0.7: was node tulu-3; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Molmo", node: molmo }
+- { text: "molmo", node: molmo }
+- { text: "molmo-72b", node: molmo-1 }
+- { text: "molmo-7b-d", node: molmo-1 }
+- { text: "molmo-7b-o", node: molmo-1 }
+- { text: "molmoe-1b", node: molmo-1 }
+- { text: "allenai/molmo-7b-d", node: molmo-1 }
+- { text: "molmo 72b", node: molmo-1 }
+- { text: "Molmo 2", node: molmo-2 }
+- { text: "molmo 2", node: molmo-2 }
+- { text: "molmo-2", node: molmo-2 }
+- { text: "molmo2", node: molmo-2 }
+
+# ---------------------------------------------------------------- MosaicML / Databricks
+- { text: "MPT", node: mpt }
+- { text: "MPT-7B", node: mpt-7b }
+- { text: "mpt-7b", node: mpt-7b }
+- { text: "mpt 7b", node: mpt-7b }
+- { text: "mpt7b", node: mpt-7b }
+- { text: "mosaicml/mpt-7b", node: mpt-7b }
+- { text: "mpt-7b-instruct", node: mpt-7b }
+- { text: "mpt-7b-chat", node: mpt-7b }
+- { text: "mpt-7b-storywriter", node: mpt-7b }
+- { text: "mpt-7b-storywriter-65k+", node: mpt-7b }
+- { text: "mpt-7b-8k", node: mpt-7b }
+- { text: "MPT-30B", node: mpt-30b }
+- { text: "mpt-30b", node: mpt-30b }
+- { text: "mpt 30b", node: mpt-30b }
+- { text: "mpt30b", node: mpt-30b }
+- { text: "mosaicml/mpt-30b", node: mpt-30b }
+- { text: "mpt-30b-instruct", node: mpt-30b }
+- { text: "mpt-30b-chat", node: mpt-30b }
+- { text: "Dolly", node: dolly }
+- { text: "dolly", node: dolly }
+- { text: "databricks dolly", node: dolly }
+- { text: "databricks-dolly-15k", node: dolly }
+- { text: "Dolly 1.0", node: dolly-1.0 }
+- { text: "dolly 1.0", node: dolly-1.0 }
+- { text: "dolly-v1", node: dolly-1.0 }
+- { text: "dolly-v1-6b", node: dolly-1.0 }
+- { text: "Dolly 2.0", node: dolly-2.0 }
+- { text: "dolly 2.0", node: dolly-2.0 }
+- { text: "dolly-v2", node: dolly-2.0 }
+- { text: "dolly v2", node: dolly-2.0 }
+- { text: "dolly-v2-12b", node: dolly-2.0 }
+- { text: "dolly-v2-7b", node: dolly-2.0 }
+- { text: "dolly-v2-3b", node: dolly-2.0 }
+- { text: "databricks/dolly-v2-12b", node: dolly-2.0 }
+- { text: "DBRX", node: dbrx-132b }
+- { text: "dbrx", node: dbrx-132b }
+- { text: "dbrx-instruct", node: dbrx-132b }
+- { text: "dbrx-base", node: dbrx-132b }
+- { text: "databricks/dbrx-instruct", node: dbrx-132b }
+- { text: "databricks dbrx", node: dbrx-132b }
+
+# ---------------------------------------------------------------- Snowflake
+- { text: "Snowflake Arctic", node: arctic }
+- { text: "arctic", node: arctic }
+- { text: "snowflake arctic", node: arctic }
+- { text: "snowflake-arctic", node: arctic }
+- { text: "arctic-instruct", node: arctic }
+- { text: "arctic-base", node: arctic }
+- { text: "snowflake/snowflake-arctic-instruct", node: arctic }
+
+# ---------------------------------------------------------------- IBM
+- { text: "IBM Granite", node: granite }
+- { text: "granite", node: granite }
+- { text: "ibm granite", node: granite }
+- { text: "ibm-granite", node: granite }
+- { text: "Granite 13B", node: granite-13b }
+- { text: "granite.13b", node: granite-13b }
+- { text: "granite-13b", node: granite-13b }
+- { text: "granite 13b", node: granite-13b }
+- { text: "granite.13b.instruct", node: granite-13b }
+- { text: "granite.13b.chat", node: granite-13b }
+- { text: "Granite Code", node: granite-code }
+- { text: "granite code", node: granite-code }
+- { text: "granite-code", node: granite-code }
+- { text: "granite-8b-code", node: granite-code }
+- { text: "granite-20b-code", node: granite-code }
+- { text: "granite-34b-code", node: granite-code }
+- { text: "ibm-granite/granite-8b-code-instruct", node: granite-code }
+- { text: "Granite 3.x", node: granite-3.x }
+- { text: "granite 3.0", node: granite-3.0 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "granite-3.0-8b-instruct", node: granite-3.0 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node granite-3.0-8b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)
+- { text: "granite 3.1", node: granite-3.1 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "granite 3.2", node: granite-3.2 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "granite 3.3", node: granite-3.3 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "granite-3.1-8b", node: granite-3.1 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node granite-3.1-8b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)
+- { text: "granite-3.3-8b-instruct", node: granite-3.3-8b }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node granite-3.3-8b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)  # v0.9: was granite-3.3 (own node again, D598 fold policy: 33 documents)
+- { text: "granite-guardian", node: granite-guardian }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "granite-3.0-2b", node: granite-3.0 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node granite-3.0-2b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)
+- { text: "ibm-granite/granite-3.3-8b-instruct", node: granite-3.3-8b }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2)  # v0.8: was node granite-3.3-8b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)  # v0.9: was granite-3.3 (own node again, D598 fold policy: 33 documents)
+- { text: "Granite 4.0", node: granite-4.0 }
+- { text: "granite 4.0", node: granite-4.0 }
+- { text: "granite 4", node: granite-4.0 }
+- { text: "granite-4.0", node: granite-4.0 }
+- { text: "Granite 4.0 H-Small", node: granite-4.0-h-small }
+- { text: "granite-4.0-h-small", node: granite-4.0-h-small }
+- { text: "ibm-granite/granite-4.0-h-small", node: granite-4.0-h-small }
+- { text: "Granite 4.0 H-Tiny", node: granite-4.0-h-tiny }
+- { text: "granite-4.0-h-tiny", node: granite-4.0-h-tiny }
+- { text: "Granite 4.0 H-Micro", node: granite-4.0-h-micro }
+- { text: "granite-4.0-h-micro", node: granite-4.0-h-micro }
+- { text: "Granite 4.0 Nano", node: granite-4.0-nano }
+- { text: "granite 4.0 nano", node: granite-4.0-nano }
+- { text: "granite-4.0-h-1b", node: granite-4.0-nano }
+- { text: "granite-4.0-350m", node: granite-4.0-nano }
+
+# ---------------------------------------------------------------- NVIDIA
+- { text: "Megatron", node: megatron }
+- { text: "megatron", node: megatron }
+- { text: "Megatron-LM", node: megatron-lm }
+- { text: "megatron-lm", node: megatron-lm }
+- { text: "megatron lm", node: megatron-lm }
+- { text: "megatron-8.3b", node: megatron-lm }
+- { text: "megatron-gpt2", node: megatron-lm }
+- { text: "Megatron-Turing NLG 530B", node: megatron-turing-nlg }
+- { text: "megatron-turing nlg", node: megatron-turing-nlg }
+- { text: "mt-nlg", node: megatron-turing-nlg }
+- { text: "mt-nlg 530b", node: megatron-turing-nlg }
+- { text: "megatron-turing", node: megatron-turing-nlg }
+- { text: "megatron turing nlg 530b", node: megatron-turing-nlg }
+- { text: "mtnlg", node: megatron-turing-nlg }
+- { text: "Nemotron", node: nemotron }
+- { text: "nemotron", node: nemotron }
+- { text: "nvidia nemotron", node: nemotron }
+- { text: "Nemotron-4", node: nemotron-4 }
+- { text: "Nemotron-4 15B", node: nemotron-4-15b }
+- { text: "nemotron-4 15b", node: nemotron-4-15b }
+- { text: "nemotron-4-15b", node: nemotron-4-15b }
+- { text: "nemotron 15b", node: nemotron-4-15b }
+- { text: "Nemotron-4 340B", node: nemotron-4-340b }
+- { text: "nemotron-4 340b", node: nemotron-4-340b }
+- { text: "nemotron-4-340b", node: nemotron-4-340b }
+- { text: "nemotron 340b", node: nemotron-4-340b }
+- { text: "nemotron-4-340b-instruct", node: nemotron-4-340b }
+- { text: "nemotron-4-340b-reward", node: nemotron-4-340b-reward }  # v0.7: was node nemotron-4-340b; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "nvidia/nemotron-4-340b-instruct", node: nemotron-4-340b }
+- { text: "Llama-Nemotron", node: llama-nemotron }
+- { text: "llama-nemotron", node: llama-nemotron }
+- { text: "llama nemotron", node: llama-nemotron }
+- { text: "Llama-3.1-Nemotron-70B-Instruct", node: llama-3.1-nemotron-70b }
+- { text: "llama-3.1-nemotron-70b-instruct", node: llama-3.1-nemotron-70b }
+- { text: "llama-3.1-nemotron-70b", node: llama-3.1-nemotron-70b }
+- { text: "nemotron 70b", node: llama-3.1-nemotron-70b }
+- { text: "nvidia/llama-3.1-nemotron-70b-instruct", node: llama-3.1-nemotron-70b }
+- { text: "llama 3.1 nemotron", node: llama-3.1-nemotron-70b }
+- { text: "Llama-Nemotron Nano", node: llama-nemotron-nano }
+- { text: "llama-3.1-nemotron-nano-8b-v1", node: llama-nemotron-nano }
+- { text: "nemotron nano", node: llama-nemotron-nano }
+- { text: "Llama-Nemotron Super", node: llama-nemotron-super }
+- { text: "llama-3.3-nemotron-super-49b-v1", node: llama-nemotron-super }
+- { text: "nemotron super", node: llama-nemotron-super }
+- { text: "Llama-Nemotron Ultra", node: llama-nemotron-ultra }
+- { text: "llama-3.1-nemotron-ultra-253b-v1", node: llama-nemotron-ultra }
+- { text: "nemotron ultra", node: llama-nemotron-ultra }
+- { text: "Nemotron-H", node: nemotron-h }
+- { text: "nemotron-h", node: nemotron-h }
+- { text: "nemotron h", node: nemotron-h }
+- { text: "nemotron-h-8b", node: nemotron-h }
+- { text: "nemotron-h-47b", node: nemotron-h }
+- { text: "nemotron-h-56b", node: nemotron-h }
+- { text: "Nemotron Nano 2", node: nemotron-nano-2 }
+- { text: "nemotron nano 2", node: nemotron-nano-2 }
+- { text: "nemotron-nano-9b-v2", node: nemotron-nano-2-9b }  # v0.9: was nemotron-nano-2 (Nemotron-Nano-9B-v2 split out, D598 fold policy (23 docs))
+- { text: "nvidia-nemotron-nano-9b-v2", node: nemotron-nano-2-9b }  # v0.9: was nemotron-nano-2 (Nemotron-Nano-9B-v2 split out, D598 fold policy (23 docs))
+- { text: "nemotron-nano-12b-v2-base", node: nemotron-nano-2 }
+- { text: "nemotron nano 9b", node: nemotron-nano-2-9b }  # v0.9: was nemotron-nano-2 (Nemotron-Nano-9B-v2 split out, D598 fold policy (23 docs))
+- { text: "Nemotron 3", node: nemotron-3 }
+- { text: "nemotron 3", node: nemotron-3 }
+- { text: "nemotron-3", node: nemotron-3 }
+- { text: "Nemotron 3 Nano", node: nemotron-3-nano }
+- { text: "nemotron 3 nano", node: nemotron-3-nano }
+- { text: "nemotron-3-nano", node: nemotron-3-nano }
+- { text: "nemotron 3 nano 30b-a3b", node: nemotron-3-nano }
+- { text: "Nemotron 3 Super", node: nemotron-3-super }
+- { text: "nemotron-3-super", node: nemotron-3-super }
+- { text: "Nemotron 3 Ultra", node: nemotron-3-ultra }
+- { text: "nemotron-3-ultra", node: nemotron-3-ultra }
+
+# ---------------------------------------------------------------- Microsoft
+- { text: "Turing-NLG", node: turing-nlg }
+- { text: "turing-nlg", node: turing-nlg }
+- { text: "turing nlg", node: turing-nlg }
+- { text: "t-nlg", node: turing-nlg }
+- { text: "tnlg", node: turing-nlg }
+- { text: "turing natural language generation", node: turing-nlg }
+- { text: "DeBERTa", node: deberta }
+- { text: "deberta", node: deberta }
+- { text: "DeBERTa (v1/v2)", node: deberta }
+- { text: "deberta-base", node: deberta-v1-v2 }
+- { text: "deberta-large", node: deberta-v1-v2 }
+- { text: "deberta-xlarge", node: deberta-v1-v2 }
+- { text: "deberta-v2", node: deberta-v1-v2 }
+- { text: "deberta-v2-xlarge", node: deberta-v1-v2 }
+- { text: "deberta-v2-xxlarge", node: deberta-v1-v2 }
+- { text: "microsoft/deberta-large", node: deberta-v1-v2 }
+- { text: "DeBERTaV3", node: deberta-v3 }
+- { text: "deberta-v3", node: deberta-v3 }
+- { text: "debertav3", node: deberta-v3 }
+- { text: "deberta v3", node: deberta-v3 }
+- { text: "deberta-v3-base", node: deberta-v3 }
+- { text: "deberta-v3-large", node: deberta-v3 }
+- { text: "deberta-v3-small", node: deberta-v3 }
+- { text: "deberta-v3-xsmall", node: deberta-v3 }
+- { text: "mdeberta-v3-base", node: deberta-v3 }
+- { text: "microsoft/deberta-v3-large", node: deberta-v3 }
+- { text: "Phi", node: none }  # v0.9: was phi (weak bare 'phi' removed, near-zero corpus precision)
+- { text: "phi", node: none }  # v0.9: was phi (weak bare 'phi' removed, near-zero corpus precision)
+- { text: "microsoft phi", node: none }  # v0.9: was phi (matched only through the removed weak bare phi)
+- { text: "phi models", node: phi }
+- { text: "phi family", node: phi }
+- { text: "Phi-1", node: phi-1 }
+- { text: "phi-1", node: phi-1 }
+- { text: "phi 1", node: phi-1 }
+- { text: "phi1", node: phi-1 }
+- { text: "microsoft/phi-1", node: phi-1 }
+- { text: "Phi-1.5", node: phi-1.5 }
+- { text: "phi-1.5", node: phi-1.5 }
+- { text: "phi 1.5", node: phi-1.5 }
+- { text: "phi-1_5", node: phi-1.5 }
+- { text: "microsoft/phi-1_5", node: phi-1.5 }
+- { text: "Phi-2", node: phi-2 }
+- { text: "phi-2", node: phi-2 }
+- { text: "phi 2", node: phi-2 }
+- { text: "phi2", node: phi-2 }
+- { text: "microsoft/phi-2", node: phi-2 }
+- { text: "Phi-3", node: phi-3 }  # v0.9: was phi-3-mini (bare phi 3 moved to the Phi-3 group, K5)
+- { text: "phi-3", node: phi-3 }  # v0.9: was phi-3-mini (bare phi 3 moved to the Phi-3 group, K5)
+- { text: "Phi-3-mini", node: phi-3-mini }
+- { text: "phi-3-mini", node: phi-3-mini }
+- { text: "phi 3 mini", node: phi-3-mini }
+- { text: "phi-3-mini-4k-instruct", node: phi-3-mini }
+- { text: "phi-3-mini-128k-instruct", node: phi-3-mini }
+- { text: "phi3-mini", node: phi-3-mini }
+- { text: "microsoft/phi-3-mini-4k-instruct", node: phi-3-mini }
+- { text: "Phi-3-small", node: phi-3-small }
+- { text: "phi-3-small", node: phi-3-small }
+- { text: "phi 3 small", node: phi-3-small }
+- { text: "phi-3-small-8k-instruct", node: phi-3-small }
+- { text: "phi-3-small-128k-instruct", node: phi-3-small }
+- { text: "Phi-3-medium", node: phi-3-medium }
+- { text: "phi-3-medium", node: phi-3-medium }
+- { text: "phi 3 medium", node: phi-3-medium }
+- { text: "phi-3-medium-4k-instruct", node: phi-3-medium }
+- { text: "phi-3-medium-128k-instruct", node: phi-3-medium }
+- { text: "Phi-3.5", node: phi-3.5 }
+- { text: "phi-3.5", node: phi-3.5 }
+- { text: "phi 3.5", node: phi-3.5 }
+- { text: "Phi-3.5-mini", node: phi-3.5-mini }
+- { text: "phi-3.5-mini", node: phi-3.5-mini }
+- { text: "phi-3.5-mini-instruct", node: phi-3.5-mini }
+- { text: "microsoft/phi-3.5-mini-instruct", node: phi-3.5-mini }
+- { text: "Phi-3.5-MoE", node: phi-3.5-moe }
+- { text: "phi-3.5-moe", node: phi-3.5-moe }
+- { text: "phi-3.5-moe-instruct", node: phi-3.5-moe }
+- { text: "Phi-3.5-vision", node: phi-3.5-vision }
+- { text: "phi-3.5-vision", node: phi-3.5-vision }
+- { text: "phi-3.5-vision-instruct", node: phi-3.5-vision }
+- { text: "Phi-4", node: phi-4-14b }
+- { text: "phi-4", node: phi-4-14b }
+- { text: "phi 4", node: phi-4-14b }
+- { text: "phi4", node: phi-4-14b }
+- { text: "microsoft/phi-4", node: phi-4-14b }
+- { text: "phi-4-14b", node: phi-4-14b }
+- { text: "Phi-4-mini", node: phi-4-mini }
+- { text: "phi-4-mini", node: phi-4-mini }
+- { text: "phi-4-mini-instruct", node: phi-4-mini }
+- { text: "phi 4 mini", node: phi-4-mini }
+- { text: "microsoft/phi-4-mini-instruct", node: phi-4-mini }
+- { text: "Phi-4-multimodal", node: phi-4-multimodal }
+- { text: "phi-4-multimodal", node: phi-4-multimodal }
+- { text: "phi-4-multimodal-instruct", node: phi-4-multimodal }
+- { text: "Phi-4-reasoning", node: phi-4-reasoning }
+- { text: "phi-4-reasoning", node: phi-4-reasoning }
+- { text: "phi 4 reasoning", node: phi-4-reasoning }
+- { text: "phi-4-reasoning-plus", node: phi-4-reasoning }
+- { text: "phi-4-mini-reasoning", node: phi-4-mini-reasoning }  # v0.7: was node phi-4-reasoning; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "microsoft/phi-4-reasoning-plus", node: phi-4-reasoning }
+- { text: "Phi-4-mini-flash-reasoning", node: phi-4-mini-flash-reasoning }
+- { text: "phi-4-mini-flash-reasoning", node: phi-4-mini-flash-reasoning }
+- { text: "phi-4-mini-flash", node: phi-4-mini-flash-reasoning }
+- { text: "phi 4 mini flash", node: phi-4-mini-flash-reasoning }
+- { text: "microsoft/phi-4-mini-flash-reasoning", node: phi-4-mini-flash-reasoning }
+- { text: "Phi-4-reasoning-vision-15B", node: phi-4-reasoning-vision }
+- { text: "phi-4-reasoning-vision", node: phi-4-reasoning-vision }
+- { text: "phi-4-reasoning-vision-15b", node: phi-4-reasoning-vision }
+- { text: "phi 4 reasoning vision", node: phi-4-reasoning-vision }
+- { text: "microsoft/phi-4-reasoning-vision-15b", node: phi-4-reasoning-vision }
+- { text: "Orca", node: llama-fine-tunes }  # v0.7: was node orca; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca", node: llama-fine-tunes }  # v0.7: was node orca; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca 1", node: llama-fine-tunes }  # v0.7: was node orca-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca-13b", node: llama-fine-tunes }  # v0.7: was node orca-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "microsoft orca", node: llama-fine-tunes }  # v0.7: was node orca; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Orca 2", node: llama-fine-tunes }  # v0.7: was node orca-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca 2", node: llama-fine-tunes }  # v0.7: was node orca-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca-2", node: llama-fine-tunes }  # v0.7: was node orca-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca-2-7b", node: llama-fine-tunes }  # v0.7: was node orca-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "orca-2-13b", node: llama-fine-tunes }  # v0.7: was node orca-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "microsoft/orca-2-13b", node: llama-fine-tunes }  # v0.7: was node orca-2; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "WizardLM", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardlm", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizard lm", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardlm-7b", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardlm-13b", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardlm-70b", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardlm-2", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardlm-2-8x22b", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardcoder", node: starcoder-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "wizardmath", node: llama-fine-tunes }  # v0.7: was node wizardlm-1; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "MAI", node: none }  # v0.9: was mai (weak bare 'mai' removed, near-zero corpus precision)
+- { text: "mai", node: none }  # v0.9: was mai (weak bare 'mai' removed, near-zero corpus precision)
+- { text: "microsoft ai models", node: mai }
+- { text: "mai models", node: mai }
+- { text: "MAI-1-preview", node: mai-1-preview }
+- { text: "mai-1-preview", node: mai-1-preview }
+- { text: "mai-1", node: mai-1-preview }
+- { text: "mai 1 preview", node: mai-1-preview }
+- { text: "microsoft mai-1", node: mai-1-preview }
+- { text: "MAI-Voice-1", node: mai-voice-1 }
+- { text: "mai-voice-1", node: mai-voice-1 }
+- { text: "mai voice 1", node: mai-voice-1 }
+- { text: "mai-voice", node: mai-voice-1 }
+- { text: "MAI-Thinking-1", node: mai-thinking-1 }
+- { text: "mai-thinking-1", node: mai-thinking-1 }
+- { text: "mai thinking 1", node: mai-thinking-1 }
+- { text: "mai-thinking", node: mai-thinking-1 }
+- { text: "MAI-Code-1", node: mai-code-1 }
+- { text: "mai-code-1", node: mai-code-1 }
+- { text: "mai code 1", node: mai-code-1 }
+- { text: "mai-code-1-flash", node: mai-code-1 }
+- { text: "mai-code", node: mai-code-1 }
+
+# ---------------------------------------------------------------- Salesforce
+- { text: "CodeGen", node: codegen }
+- { text: "codegen", node: codegen }
+- { text: "code gen", node: codegen }
+- { text: "CodeGen 350M", node: codegen-350m }
+- { text: "codegen-350m", node: codegen-350m }
+- { text: "CodeGen 2B", node: codegen-2b }
+- { text: "codegen-2b", node: codegen-2b }
+- { text: "CodeGen 6B", node: codegen-6b }
+- { text: "codegen-6b", node: codegen-6b }
+- { text: "CodeGen 16B", node: codegen-16b }
+- { text: "codegen-16b", node: codegen-16b }
+- { text: "codegen-16b-mono", node: codegen-16b }
+- { text: "salesforce/codegen-16b-mono", node: codegen-16b }
+- { text: "codegen2", node: codegen-2 }  # v0.7: was node codegen; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "codegen2.5", node: codegen-2.5-7b }  # v0.7: was node codegen; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "codegen2-16b", node: codegen-2 }  # v0.7: was node codegen; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node codegen-2-16b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)
+- { text: "codegen2.5-7b", node: codegen-2.5-7b }  # v0.7: was node codegen; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "XGen", node: xgen-7b }
+- { text: "XGen-7B", node: xgen-7b }
+- { text: "xgen", node: xgen-7b }
+- { text: "xgen-7b", node: xgen-7b }
+- { text: "xgen 7b", node: xgen-7b }
+- { text: "xgen-7b-8k-base", node: xgen-7b }
+- { text: "xgen-7b-8k-inst", node: xgen-7b }
+- { text: "salesforce/xgen-7b-8k-base", node: xgen-7b }
+
+# ---------------------------------------------------------------- BigCode + Replit
+- { text: "SantaCoder", node: santacoder-1.1b }
+- { text: "santacoder", node: santacoder-1.1b }
+- { text: "santa coder", node: santacoder-1.1b }
+- { text: "bigcode/santacoder", node: santacoder-1.1b }
+- { text: "StarCoder", node: starcoder-1 }
+- { text: "starcoder", node: starcoder-1 }
+- { text: "star coder", node: starcoder-1 }
+- { text: "starcoderbase", node: starcoder-1 }
+- { text: "starcoder-15b", node: starcoder-1 }
+- { text: "bigcode/starcoder", node: starcoder-1 }
+- { text: "starcoderplus", node: starcoder-1 }
+- { text: "starcoder+", node: starcoder-1 }
+- { text: "StarCoder2", node: starcoder2 }
+- { text: "starcoder2", node: starcoder2 }
+- { text: "starcoder 2", node: starcoder2 }
+- { text: "starcoder2-3b", node: starcoder2 }
+- { text: "starcoder2-7b", node: starcoder2 }
+- { text: "starcoder2-15b", node: starcoder2 }
+- { text: "bigcode/starcoder2-15b", node: starcoder2 }
+- { text: "Replit Code", node: replit-code-3b }
+- { text: "replit-code", node: replit-code-3b }
+- { text: "replit code", node: replit-code-3b }
+- { text: "replit-code-v1-3b", node: replit-code-3b }
+- { text: "replit-code-v1_5-3b", node: replit-code-3b }
+- { text: "replit-code-v1.5-3b", node: replit-code-3b }
+- { text: "replit/replit-code-v1-3b", node: replit-code-3b }
+
+# ---------------------------------------------------------------- Community wave
+- { text: "Stanford Alpaca", node: alpaca-7b }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "Alpaca", node: none }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes (weak bare 'alpaca' removed, near-zero corpus precision)
+- { text: "alpaca", node: none }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes (weak bare 'alpaca' removed, near-zero corpus precision)
+- { text: "stanford alpaca", node: alpaca-7b }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "alpaca-7b", node: alpaca-7b }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "alpaca 7b", node: alpaca-7b }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "alpaca-lora", node: none }  # v0.7: was node alpaca-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes (weak bare 'alpaca' removed, near-zero corpus precision)
+- { text: "Vicuna", node: llama-fine-tunes }  # v0.7: was node vicuna; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "vicuna", node: llama-fine-tunes }  # v0.7: was node vicuna; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Vicuna 7B", node: vicuna-7b }  # v0.7: was node vicuna-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "vicuna-7b", node: vicuna-7b }  # v0.7: was node vicuna-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "Vicuna 13B", node: vicuna-13b }  # v0.7: was node vicuna-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "vicuna-13b", node: vicuna-13b }  # v0.7: was node vicuna-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "vicuna 13b", node: vicuna-13b }  # v0.7: was node vicuna-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "lmsys/vicuna-13b-v1.5", node: vicuna-13b }  # v0.7: was node vicuna-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "vicuna-13b-v1.3", node: vicuna-13b }  # v0.7: was node vicuna-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was llama-fine-tunes; own node since D623
+- { text: "Vicuna 33B", node: llama-fine-tunes }  # v0.7: was node vicuna-33b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "vicuna-33b", node: llama-fine-tunes }  # v0.7: was node vicuna-33b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "vicuna v1.5", node: llama-fine-tunes }  # v0.7: was node vicuna; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Koala", node: llama-fine-tunes }  # v0.7: was node koala-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "koala", node: llama-fine-tunes }  # v0.7: was node koala-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "koala-13b", node: llama-fine-tunes }  # v0.7: was node koala-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "koala 13b", node: llama-fine-tunes }  # v0.7: was node koala-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "berkeley koala", node: llama-fine-tunes }  # v0.7: was node koala-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Zephyr 7B", node: zephyr-7b }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was mistral-fine-tunes; own node since D623
+- { text: "Zephyr", node: mistral-fine-tunes }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "zephyr", node: mistral-fine-tunes }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "zephyr-7b", node: zephyr-7b }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was mistral-fine-tunes; own node since D623
+- { text: "zephyr-7b-beta", node: zephyr-7b }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was mistral-fine-tunes; own node since D623
+- { text: "zephyr-7b-alpha", node: zephyr-7b }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was mistral-fine-tunes; own node since D623
+- { text: "zephyr 7b", node: zephyr-7b }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was mistral-fine-tunes; own node since D623
+- { text: "huggingfaceh4/zephyr-7b-beta", node: zephyr-7b }  # v0.7: was node zephyr-7b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17); v0.9: was mistral-fine-tunes; own node since D623
+- { text: "Nous Hermes / OpenHermes", node: llama-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "nous hermes", node: llama-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "nous-hermes", node: llama-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "Nous-Hermes-13b", node: llama-fine-tunes }  # v0.7: was node nous-hermes-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "nous-hermes-13b", node: llama-fine-tunes }  # v0.7: was node nous-hermes-13b; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "openhermes", node: mistral-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "openhermes-2.5-mistral-7b", node: mistral-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "hermes 2", node: llama-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "hermes-2-pro", node: llama-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "hermes 3", node: llama-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+- { text: "nous-hermes-2-mixtral", node: mistral-fine-tunes }  # v0.7: was node nous-hermes; research fine-tunes are aliases on a fine-tunes-of-base group (owner decision 2026-10-17)
+
+# ---------------------------------------------------------------- Open VLM lineage (2026-08-02)
+- { text: "LLaVA", node: llava }
+- { text: "llava", node: llava }
+- { text: "LLaVA-7B", node: llava }
+- { text: "llava-13b", node: llava }
+- { text: "llava-1", node: llava-1 }
+- { text: "LLaVA v1", node: llava-1 }
+- { text: "LLaVA-1.5", node: llava-1.5 }
+- { text: "llava 1.5", node: llava-1.5 }
+- { text: "llava-v1.5", node: llava-1.5 }
+- { text: "LLaVA-1.5 7B", node: llava-1.5-7b }
+- { text: "llava-1.5-7b", node: llava-1.5-7b }
+- { text: "llava-v1.5-7b", node: llava-1.5-7b }
+- { text: "liuhaotian/llava-v1.5-7b", node: llava-1.5-7b }
+- { text: "llava-v1.5-13b", node: llava-1.5-13b }
+- { text: "LLaVA-1.5 13B", node: llava-1.5-13b }
+- { text: "LLaVA-NeXT", node: llava-next }
+- { text: "llava next", node: llava-next }
+- { text: "llavanext", node: llava-next }
+- { text: "LLaVA-1.6", node: llava-next }
+- { text: "llava-v1.6-34b", node: llava-next }
+- { text: "LLaVA-OneVision", node: llava-onevision }
+- { text: "llava-onevision", node: llava-onevision }
+- { text: "llava one vision", node: llava-onevision }
+- { text: "llava-ov", node: llava-onevision }
+- { text: "lmms-lab/llava-onevision-qwen2-7b-ov", node: llava-onevision }
+# shadowing: the version node must out-span the bare family pattern
+- { text: "llava-v1.5-7b", not_node: llava }
+- { text: "llava-v1.5-7b", not_node: llava-1 }
+- { text: "LLaVA-NeXT", not_node: llava }
+
+- { text: "MiniGPT", node: minigpt }
+- { text: "minigpt", node: minigpt }
+- { text: "mini-gpt", node: minigpt }
+- { text: "MiniGPT-4", node: minigpt-4 }
+- { text: "minigpt4", node: minigpt-4 }
+- { text: "minigpt-4", node: minigpt-4 }
+- { text: "Mini-GPT-4", node: minigpt-4 }
+- { text: "MiniGPT-v2", node: minigpt-v2 }
+- { text: "minigpt-v2", node: minigpt-v2 }
+- { text: "minigptv2", node: minigpt-v2 }
+- { text: "minigpt-2", node: minigpt-v2 }
+# the OpenAI GPT-4 pattern fires inside the hyphenated form but must be out-spanned
+- { text: "Mini-GPT-4", not_node: gpt-4 }
+- { text: "MiniGPT-4", not_node: minigpt }
+
+- { text: "ShareGPT4V", node: sharegpt4v }
+- { text: "sharegpt4v", node: sharegpt4v }
+- { text: "share-gpt4v", node: sharegpt4v }
+- { text: "ShareGPT4V-13B", node: sharegpt4v }
+- { text: "ShareGPT4V-7B", node: sharegpt4v-7b }
+- { text: "sharegpt4v-7b", node: sharegpt4v-7b }
+- { text: "Lin-Chen/ShareGPT4V-7B", node: sharegpt4v-7b }
+# the ShareGPT dataset/format is not the model — the "4v" is load-bearing
+- { text: "trained on ShareGPT conversations", not_node: sharegpt4v }
+- { text: "sharegpt format", not_node: sharegpt4v }
+- { text: "ShareGPT4V-7B", not_node: sharegpt4v }
+
+# ---- class completion, corpus-gated (2026-08-02) ----
+- { text: "BLIP-2", node: blip-2 }
+- { text: "blip-2", node: blip-2 }
+- { text: "blip2", node: blip-2 }
+- { text: "BLIP 2", node: blip-2 }
+- { text: "blip2-opt-2.7b", node: blip-2 }
+- { text: "Salesforce/blip2-flan-t5-xxl", node: blip-2 }
+- { text: "InstructBLIP", node: instructblip }
+- { text: "instructblip", node: instructblip }
+- { text: "instruct-blip", node: instructblip }
+- { text: "Salesforce/instructblip-vicuna-7b", node: instructblip }
+# bare "blip" is deliberately not a pattern (radar/signal blips; BLIP-1 has no node)
+- { text: "blip", node: none }
+- { text: "a blip in the loss curve", node: none }
+- { text: "the original BLIP model", node: none }
+- { text: "InstructBLIP", not_node: blip-2 }
+
+- { text: "mPLUG-Owl", node: mplug-owl }
+- { text: "mplug-owl", node: mplug-owl }
+- { text: "mplugowl", node: mplug-owl }
+- { text: "mPLUG-Owl 1", node: mplug-owl-1 }
+- { text: "mPLUG-Owl2", node: mplug-owl2 }
+- { text: "mplug-owl2", node: mplug-owl2 }
+- { text: "mplug-owl2-llama2-7b", node: mplug-owl2 }
+- { text: "mPLUG-Owl3", node: mplug-owl3 }
+- { text: "mplug-owl3-7b", node: mplug-owl3 }
+# bare "owl" and bare "mplug" are not patterns
+- { text: "owl", node: none }
+- { text: "a night owl", node: none }
+- { text: "mplug", node: none }
+- { text: "mPLUG-DocOwl", node: none }
+- { text: "mPLUG-Owl2", not_node: mplug-owl }
+
+- { text: "IDEFICS", node: idefics }
+- { text: "idefics", node: idefics }
+- { text: "IDEFICS 9B", node: idefics-1 }
+- { text: "idefics-80b-instruct", node: idefics-1 }
+- { text: "HuggingFaceM4/idefics-9b-instruct", node: idefics-1 }
+- { text: "IDEFICS2", node: idefics2 }
+- { text: "idefics2-8b", node: idefics2 }
+- { text: "idefics-2", node: idefics2 }
+- { text: "IDEFICS3", node: idefics3 }
+- { text: "Idefics3-8B-Llama3", node: idefics3 }
+- { text: "idefics2-8b-chatty", not_node: idefics }
+
+- { text: "Fuyu", node: fuyu }
+- { text: "fuyu", node: fuyu }
+- { text: "Fuyu-Heavy", node: fuyu }
+- { text: "Fuyu-8B", node: fuyu-8b }
+- { text: "fuyu-8b", node: fuyu-8b }
+- { text: "adept/fuyu-8b", node: fuyu-8b }
+- { text: "Fuyu-8B", not_node: fuyu }
+
+- { text: "MiniCPM", node: minicpm }
+- { text: "minicpm", node: minicpm }
+- { text: "MiniCPM-2B", node: minicpm }
+- { text: "MiniCPM3-4B", node: minicpm3-4b }  # v0.7: was node minicpm; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "MiniCPM4-8B", node: minicpm4 }  # v0.7: was node minicpm; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node minicpm4-8b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)
+- { text: "MiniCPM-V", node: minicpm-v }
+- { text: "minicpm-v", node: minicpm-v }
+- { text: "minicpmv", node: minicpm-v }
+- { text: "MiniCPM-V 2.0", node: minicpm-v }
+- { text: "MiniCPM-Llama3-V 2.5", node: minicpm-llama3-v-2.5 }
+- { text: "MiniCPM-Llama3-V-2_5", node: minicpm-llama3-v-2.5 }
+- { text: "minicpm-v-2.5", node: minicpm-llama3-v-2.5 }
+- { text: "MiniCPM-V 2.6", node: minicpm-v-2.6 }
+- { text: "openbmb/MiniCPM-V-2_6", node: minicpm-v-2.6 }
+- { text: "MiniCPM-o 2.6", node: minicpm-o-2.6 }
+- { text: "minicpm-o", node: minicpm-o-2.6 }
+- { text: "MiniCPM-V 4.6", node: minicpm-v-4.6 }
+- { text: "openbmb/MiniCPM-V-4_5", node: minicpm-v-4.5 }  # v0.7: was node minicpm-v-4.6; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+# shadowing: sized/versioned forms out-span the line, which out-spans the family
+- { text: "MiniCPM-V 2.6", not_node: minicpm-v }
+- { text: "MiniCPM-V 2.6", not_node: minicpm }
+- { text: "MiniCPM-V", not_node: minicpm }
+# the "o" branch's short pattern must not eat "minicpm-omni..." (the family's bare
+# token does match there, correctly — it is the o-2.6 node that must stay out)
+- { text: "minicpm-omni-something", not_node: minicpm-o-2.6 }
+- { text: "minicpm-omni-something", node: minicpm }
+
+# ---------------------------------------------------------------- SmolLM (2026-08-02)
+- { text: "SmolLM", node: smollm }
+- { text: "smollm", node: smollm }
+- { text: "smol lm", node: smollm }
+- { text: "SmolLM-1.7B", node: smollm-1 }
+- { text: "smollm-1", node: smollm-1 }
+- { text: "SmolVLM", node: smollm }
+- { text: "smolvlm-256m-instruct", node: smollm }
+- { text: "SmolLM2", node: smollm2 }
+- { text: "smollm2", node: smollm2 }
+- { text: "smollm-2", node: smollm2 }
+- { text: "SmolLM2-135M", node: smollm2-135m }
+- { text: "smollm2-135m-instruct", node: smollm2-135m }
+- { text: "SmolLM2-360M", node: smollm2-360m }
+- { text: "SmolLM2-1.7B", node: smollm2-1.7b }
+- { text: "smollm2-1.7b-instruct", node: smollm2-1.7b }
+- { text: "HuggingFaceTB/SmolLM2-1.7B-Instruct", node: smollm2-1.7b }
+- { text: "SmolLM3", node: smollm3 }
+- { text: "smollm3-3b", node: smollm3 }
+- { text: "HuggingFaceTB/SmolLM3-3B", node: smollm3 }
+# shadowing: the generation and its sizes must out-span the family pattern
+- { text: "SmolLM2-1.7B", not_node: smollm }
+- { text: "SmolLM2-1.7B", not_node: smollm2 }
+- { text: "SmolLM3", not_node: smollm }
+# bare-size strings are version-ambiguous by design and stay at family level
+- { text: "SmolLM-135M", node: smollm }
+
+# ---------------------------------------------------------------- AceInstruct (2026-08-02)
+- { text: "AceInstruct", node: aceinstruct }
+- { text: "aceinstruct", node: aceinstruct }
+- { text: "ace-instruct", node: aceinstruct }
+- { text: "AceInstruct-7B", node: aceinstruct }
+- { text: "AceInstruct-72B", node: aceinstruct }
+- { text: "AceInstruct-1.5B", node: aceinstruct-1.5b }
+- { text: "aceinstruct-1.5b", node: aceinstruct-1.5b }
+- { text: "nvidia/AceInstruct-1.5B", node: aceinstruct-1.5b }
+- { text: "AceInstruct-1.5B", not_node: aceinstruct }
+# bare "ace" is deliberately not a pattern
+- { text: "ace", node: none }
+- { text: "an ace up the sleeve", node: none }
+- { text: "ACE evaluation framework", node: none }
+- { text: "ace instructions for the model", node: none }
+
+# ---------------------------------------------------------------- Encoders / embeddings
+- { text: "DistilBERT", node: distilbert-base }
+- { text: "distilbert", node: distilbert-base }
+- { text: "distil bert", node: distilbert-base }
+- { text: "distilbert-base-uncased", node: distilbert-base }
+- { text: "distilbert-base-cased", node: distilbert-base }
+- { text: "distilbert-base-multilingual-cased", node: distilbert-base }
+- { text: "Sentence-BERT / sentence-transformers", node: sbert }
+- { text: "sbert", node: sbert }
+- { text: "sentence-bert", node: sbert }
+- { text: "sentence bert", node: sbert }
+- { text: "sentence-transformers", node: sbert }
+- { text: "all-MiniLM-L6-v2", node: all-minilm-l6-v2 }
+- { text: "all-minilm-l6-v2", node: all-minilm-l6-v2 }
+- { text: "sentence-transformers/all-minilm-l6-v2", node: all-minilm-l6-v2 }
+- { text: "all-mpnet-base-v2", node: all-mpnet-base-v2 }
+- { text: "E5", node: e5 }
+- { text: "e5", node: e5 }
+- { text: "E5-small", node: e5-small }
+- { text: "e5-small", node: e5-small }
+- { text: "E5-base", node: e5-base }
+- { text: "e5-base", node: e5-base }
+- { text: "E5-large", node: e5-large }
+- { text: "e5-large", node: e5-large }
+- { text: "e5-large-v2", node: e5-large }
+- { text: "intfloat/e5-large-v2", node: e5-large }
+- { text: "multilingual-e5", node: e5 }
+- { text: "multilingual-e5-large", node: e5 }
+- { text: "intfloat/multilingual-e5-large", node: e5 }
+- { text: "E5-Mistral-7B-Instruct", node: e5-mistral-7b }
+- { text: "e5-mistral-7b-instruct", node: e5-mistral-7b }
+- { text: "BGE", node: bge }
+- { text: "bge", node: bge }
+- { text: "BGE-small", node: bge-small }
+- { text: "bge-small-en-v1.5", node: bge-small }
+- { text: "BGE-base", node: bge-base }
+- { text: "bge-base-en-v1.5", node: bge-base }
+- { text: "BGE-large", node: bge-large }
+- { text: "bge-large-en", node: bge-large }
+- { text: "bge-large-en-v1.5", node: bge-large }
+- { text: "baai/bge-large-en-v1.5", node: bge-large }
+- { text: "BGE-M3", node: bge-m3 }
+- { text: "bge-m3", node: bge-m3 }
+- { text: "baai/bge-m3", node: bge-m3 }
+- { text: "bge-reranker", node: bge }
+- { text: "bge-reranker-large", node: bge }
+- { text: "GTE", node: gte }
+- { text: "gte", node: gte }
+- { text: "GTE-small", node: gte-small }
+- { text: "gte-small", node: gte-small }
+- { text: "GTE-base", node: gte-base }
+- { text: "gte-base", node: gte-base }
+- { text: "GTE-large", node: gte-large }
+- { text: "gte-large", node: gte-large }
+- { text: "thenlper/gte-large", node: gte-large }
+- { text: "gte-large-en-v1.5", node: gte-large }
+- { text: "gte-qwen2-7b-instruct", node: gte }
+- { text: "gte-multilingual-base", node: gte }
+- { text: "Jina Embeddings", node: jina-embeddings }
+- { text: "jina embeddings", node: jina-embeddings }
+- { text: "jina-embeddings", node: jina-embeddings }
+- { text: "Jina Embeddings v2", node: jina-embeddings-v2 }
+- { text: "jina-embeddings-v2", node: jina-embeddings-v2 }
+- { text: "jina-embeddings-v2-base-en", node: jina-embeddings-v2 }
+- { text: "Jina Embeddings v3", node: jina-embeddings-v3 }
+- { text: "jina-embeddings-v3", node: jina-embeddings-v3 }
+- { text: "Jina Embeddings v4", node: jina-embeddings-v4 }
+- { text: "jina-embeddings-v4", node: jina-embeddings-v4 }
+- { text: "jinaai/jina-embeddings-v4", node: jina-embeddings-v4 }
+- { text: "jina v4", node: jina-embeddings-v4 }
+- { text: "Voyage AI", node: voyage }
+- { text: "voyage", node: voyage }
+- { text: "voyage ai", node: voyage }
+- { text: "voyage-2", node: voyage-2 }
+- { text: "voyage-large-2", node: voyage-2 }
+- { text: "voyage-3", node: voyage-3 }
+- { text: "voyage-3-lite", node: voyage-3 }
+- { text: "voyage-3-large", node: voyage-3 }
+- { text: "voyage-multimodal-3", node: voyage-multimodal-3 }  # v0.9: was voyage-3 (voyage-multimodal-3 has its own node)
+- { text: "voyage-3.5", node: voyage-3.5 }
+- { text: "voyage-3.5-lite", node: voyage-3.5 }
+- { text: "voyage-multimodal-3.5", node: voyage }  # v0.9: was voyage-3.5 (voyage multimodal 3.5 moved to the family (L4), no dated node)
+- { text: "Voyage 4", node: voyage-4 }
+- { text: "voyage-4", node: voyage-4 }
+- { text: "voyage-4-large", node: voyage-4 }
+- { text: "voyage-4-lite", node: voyage-4 }
+- { text: "voyage-4-nano", node: voyage-4 }
+- { text: "voyage-code-2", node: voyage }
+- { text: "voyage-code-3", node: voyage }
+
+# ---------------------------------------------------------------- State-space / RNN
+- { text: "Mamba", node: mamba }
+- { text: "mamba", node: mamba }
+- { text: "mamba-2.8b", node: mamba-1 }
+- { text: "mamba-1.4b", node: mamba-1 }
+- { text: "mamba-790m", node: mamba-1 }
+- { text: "mamba-370m", node: mamba-1 }
+- { text: "mamba-130m", node: mamba-1 }
+- { text: "state-spaces/mamba-2.8b", node: mamba-1 }
+- { text: "mamba ssm", node: mamba-1 }
+- { text: "selective state space", node: mamba-1 }
+- { text: "Mamba-2", node: mamba-2 }
+- { text: "mamba-2", node: mamba-2 }
+- { text: "mamba2", node: mamba-2 }
+- { text: "mamba 2", node: mamba-2 }
+- { text: "state-spaces/mamba2-2.7b", node: mamba-2 }
+- { text: "state space duality", node: mamba-2 }
+- { text: "RWKV", node: rwkv }
+- { text: "rwkv", node: rwkv }
+- { text: "rwkv-lm", node: rwkv }
+- { text: "RWKV-4", node: rwkv-4 }
+- { text: "rwkv-4", node: rwkv-4 }
+- { text: "rwkv-4-raven", node: rwkv-4 }
+- { text: "raven", node: rwkv-4 }
+- { text: "blinkdl/rwkv-4-raven", node: rwkv-4 }
+- { text: "rwkv-4-pile-14b", node: rwkv-4 }
+- { text: "RWKV-5 \"Eagle\"", node: rwkv-5 }
+- { text: "rwkv-5", node: rwkv-5 }
+- { text: "eagle 7b", node: rwkv-5 }
+- { text: "RWKV-6 \"Finch\"", node: rwkv-6 }
+- { text: "rwkv-6", node: rwkv-6 }
+- { text: "finch", node: rwkv-6 }
+- { text: "RWKV-7 \"Goose\"", node: rwkv-7 }
+- { text: "rwkv-7", node: rwkv-7 }
+- { text: "rwkv7", node: rwkv-7 }
+- { text: "goose", node: rwkv-7 }
+- { text: "rwkv-7 goose", node: rwkv-7 }
+- { text: "rwkv7-g1", node: rwkv-7 }
+
+# ------------------------------------------------- refinement pass (out-spanning)
+# Vendor-qualified family long-forms must not out-span the deeper model match.
+- { text: "IBM Granite 3.0", node: granite-3.0 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "IBM Granite 3.0", not_node: granite }
+- { text: "IBM Granite 3.0 8B Instruct", node: granite-3.0 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)  # v0.8: was node granite-3.0-8b; size folded into its group as an alias (owner decision 2026-10-17: less detail for long-tail lines)
+- { text: "IBM Granite 3.3", node: granite-3.3 }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "IBM Granite Guardian", node: granite-guardian }  # v0.7: was node granite-3.x; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "IBM Granite 4.0", node: granite-4.0 }
+- { text: "IBM Granite 4 is hybrid Mamba", node: granite-4.0 }
+- { text: "IBM Granite 4.0", not_node: granite }
+- { text: "IBM Granite 4.0 Nano", node: granite-4.0-nano }
+- { text: "IBM Granite 4.0 Nano", not_node: granite }
+- { text: "IBM Granite 4.0 H-Small", node: granite-4.0-h-small }
+- { text: "IBM Granite 13B", node: granite-13b }
+- { text: "IBM Granite Code", node: granite-code }
+# `granite 3.x` dropped as redundant with `granite 3` (and its bare `x` token could
+# ride on multiplier prose); the dotted display form must still resolve.
+- { text: "Granite 3.x models", node: granite-3.x }
+# short-form "Llama-Nemotron 70B" must reach the model, not the Llama-Nemotron group
+- { text: "Llama-Nemotron 70B", node: llama-3.1-nemotron-70b }
+- { text: "Llama-Nemotron 70B", not_node: llama-nemotron }
+- { text: "llama-nemotron-70b-instruct", node: llama-3.1-nemotron-70b }
+# Megatron-Turing NLG is NVIDIA/MSR's joint model, not Microsoft's Turing-NLG:
+# the longer megatron-prefixed span must shadow the bare `turing nlg` pattern.
+- { text: "Megatron-Turing NLG 530B", not_node: turing-nlg }
+- { text: "megatron-turing-nlg", not_node: turing-nlg }
+# multilingual-E5 deliberately resolves at family level (the size nodes are the
+# 2022 English v1 models; multilingual-E5 is a separate 2024 release) — pinned so a
+# later "fix" of the probe's out-span report is a visible decision, not a slip.
+- { text: "multilingual-e5-base", node: e5 }
+- { text: "intfloat/multilingual-e5-large-instruct", node: e5 }
+
+# ------------------------------------------------- refinement pass (traps)
+# Bare tokens demoted to weak still match (weak-flagged), so these pin the node
+# rather than asserting no-match; the point is that they land on the family, and
+# that the surrounding prose sense is what `weak` exists to defer to.
+- { text: "our codegen pipeline is slow", node: codegen }
+- { text: "MPT is modern portfolio theory", node: mpt }
+- { text: "Microsoft AI models on Azure", node: mai }
+# ...while the qualified forms stay strong and specific:
+- { text: "CodeGen2.5-7B", node: codegen-2.5-7b }  # v0.7: was node codegen; own node since v0.7 (method G1/G2/G6/G7 or regrouping K4/K5)
+- { text: "MPT-30B-chat", node: mpt-30b }
+- { text: "MAI-1-preview", node: mai-1-preview }
+# No-match traps: boundary guards must keep plurals and compounds out entirely.
+- { text: "code generation with LLMs", node: none }
+- { text: "alpacas and koalas at the zoo", node: none }
+- { text: "the flowers bloomed early", node: none }
+- { text: "black mambas and orcas", node: none }
+- { text: "starcoders everywhere", node: none }
+- { text: "a 7B model trained on 2T tokens", node: none }

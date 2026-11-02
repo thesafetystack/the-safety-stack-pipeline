@@ -1,0 +1,202 @@
+{
+  "set_id": "2026-10-12b-bylines",
+  "task": "affiliation",
+  "created_at": "2026-10-12T17:00:54+00:00",
+  "source_store": "v4/store-dev",
+  "documents_chain": "documents",
+  "documents_head": "rfm2d6vzwvmdd.documents",
+  "git_commit": "e1b1c6d526de2a2ba5989a863d150354a26eb367",
+  "git_dirty": true,
+  "freezer": {
+    "module": "stack.evals.freeze",
+    "source_sha256": "39d30f3485b597591c23c39fe0e2406d806c3f1fb7ce2268b6e00e46a56d9f83"
+  },
+  "basis_builder": {
+    "ref": "workflows/annotate/affiliation/main.py:_roster,_user_message + extract.py:header_window,build_authors_block (user message); parse_xml_byline (xml_byline)",
+    "source_sha256": {
+      "main.py": "8064063b1b40bd87ba87c5fd76f4d5d5b79709b1c5c39f2d94dd5067b456ba82",
+      "extract.py": "7664ae9c0b26153368d40b0d5551ebdaee49fa0217e586e804739c10f32a2e1d"
+    },
+    "caps": {
+      "HEAD_CHARS": 8000,
+      "TAIL_CHARS": 2000,
+      "MAX_AUTHORS": 60
+    }
+  },
+  "seed": "track-e-2026-10-12b-bylines",
+  "order": "sha256(seed + doc_id) hex, ascending",
+  "items_sha256": "595bf4542ad9614a6b2f26cc10aca3f6c7ca7c7f0d7905f749bce041194e317e",
+  "keywords": {
+    "safety_stems": {
+      "alignment": "\\balignment\\b|\\baligned (ai|model|llm)",
+      "superalignment": "\\bsuperalign",
+      "misalign": "\\bmisalign",
+      "safety": "\\bsafety\\b|\\bai[- ]safe",
+      "interpretab": "\\binterpretab",
+      "mechanistic": "\\bmechanistic",
+      "red-team": "\\bred[- ]?team",
+      "jailbreak": "\\bjailbreak",
+      "prompt injection": "\\bprompt[- ]injection",
+      "oversight": "\\boversight\\b",
+      "rlhf": "\\brlhf\\b|reinforcement learning from human feedback",
+      "reward hack": "\\breward[- ]hack|\\breward tampering|\\bspecification gaming",
+      "decepti": "\\bdecepti|\\bdeceiv",
+      "schem": "\\bschem(e|es|ing|er|ers)\\b",
+      "sandbag": "\\bsandbag",
+      "sycophan": "\\bsycophan",
+      "misuse": "\\bmisuse",
+      "guardrail": "\\bguardrail",
+      "refusal": "\\brefus(al|als|e|es|ing)\\b",
+      "constitutional": "\\bconstitutional",
+      "monitor": "\\bmonitor",
+      "ai control": "\\bai control\\b|\\bcontrol (evaluation|protocol)s?\\b",
+      "dangerous capabilit": "\\bdangerous[- ]capabilit",
+      "frontier risk": "\\bfrontier (ai )?risk|\\bcatastrophic risk|\\bexistential risk|\\bx-risk",
+      "preparedness": "\\bpreparedness",
+      "responsible scaling": "\\bresponsible scaling",
+      "unlearning": "\\bunlearn",
+      "backdoor": "\\bbackdoor",
+      "poison": "\\bpoison",
+      "watermark": "\\bwatermark",
+      "adversarial": "\\badversarial",
+      "robust": "\\brobust",
+      "corrigib": "\\bcorrigib",
+      "steering": "\\bsteering\\b",
+      "model organism": "\\bmodel organism",
+      "power-seeking": "\\bpower[- ]seeking",
+      "situational awareness": "\\bsituational awareness|\\bevaluation awareness"
+    },
+    "policy": {
+      "policy": "(?<!on-)(?<!off-)(?<!on )(?<!off )(?<!network )(?<!rl )(?<!agent )\\bpolic(y|ies)\\b(?![- ](gradient|optimi[sz]|network|learning|model|iteration|distill|improvement|search|evaluation|update|space|entropy|head|mirror|collapse|loss|representation))",
+      "regulat": "\\bregulat(ion|ions|ory|ors?|ing ai)\\b",
+      "legislat": "\\blegislat",
+      "law": "(?<!scaling )(?<!power )(?<!goodhart's )(?<!goodhart’s )\\blaws?\\b(?! of\\b)",
+      "act": "\\b(ai|eu|safety|chips|frontier ai) act\\b|\\bexecutive order",
+      "export control": "\\bexport control",
+      "liability": "\\bliabilit"
+    },
+    "governance": {
+      "governance": "\\bgovernance",
+      "safety framework": "\\b(safety|preparedness|frontier|scaling) (policy|framework)"
+    },
+    "governance_weak": {
+      "standard": "\\bstandards?\\b",
+      "audit": "\\baudit",
+      "compliance": "\\bcomplian(ce|t)\\b",
+      "commitment": "\\bcommitment",
+      "government": "\\bgovernment|\\bcongress|\\bsenate|\\bparliament|\\btreat(y|ies)\\b|\\blawmaker"
+    },
+    "hard_body_chars": 800,
+    "capabilities": {
+      "benchmark": "\\bbenchmark",
+      "sota": "\\bsota\\b|\\bstate[- ]of[- ]the[- ]art",
+      "reasoning": "\\breasoning\\b",
+      "agent": "\\bagent(s|ic)?\\b",
+      "coding": "\\bcoding\\b|\\bcode generation|\\bprogramming",
+      "math": "\\bmath(s|ematical)?\\b",
+      "scaling": "\\bscaling\\b",
+      "multimodal": "\\bmulti-?modal",
+      "introducing": "\\bintroduc(ing|es)\\b",
+      "model launch": "\\blaunch|\\bnow available|\\brelease of\\b|\\bgpt-?\\d|\\bgemini \\d|\\bclaude \\w+ \\d"
+    },
+    "marketing_words": "\\bsaf(e|er|ety|ely|eguard)\\b|\\btrust|\\bresponsib|\\bsecur|\\bprivacy\\b|\\bprivate\\b|\\bprotect",
+    "product_words": "\\bchatgpt|\\bgpt\\b|\\bgpt-?\\d|\\bsora\\b|\\bcodex\\b|\\bgemini\\b|\\bclaude\\b|\\bbard\\b|\\bandroid|\\bchrome\\b|\\bsearch\\b|\\bworkspace\\b|\\bpixel\\b|\\byoutube\\b|\\bgmail\\b|\\bapi\\b|\\bapps?\\b|\\bfeatures?\\b|\\btools?\\b|\\benterprise\\b|\\bbusiness\\b|\\bteams?\\b|\\baccounts?\\b|\\bcontrols\\b|\\bsettings\\b|\\bmode\\b|\\bbrowser\\b|\\bplatform\\b|\\bproducts?\\b|\\batlas\\b|\\boperator\\b",
+    "next_to_chars": 30,
+    "rl_context": "\\breinforcement learning|\\brl\\b|\\breward|\\b(on|off)[- ]policy|\\bpolicy gradient"
+  },
+  "doc_ids": [
+    "sp0x07vpffcnn",
+    "s7rdmsgrcemba",
+    "s1we6yr5rkdac",
+    "sc05qpxeasmc7",
+    "sx9vtv58vxps5",
+    "s3pww9ps48ygd",
+    "s5r484db3m4m1",
+    "s9ct5ajmy2ncr",
+    "sm1x6020cys3w",
+    "s1p89tp2ta498",
+    "szcv4fwr9dmkd",
+    "s8atg13bhgzzt",
+    "sc14r8zj7jrb7",
+    "scx1fdpb8tnfa",
+    "shqzbgphe2waj"
+  ],
+  "selection_order": "the given doc ids; item ids by sha256(seed + doc_id)",
+  "split_forced": "test",
+  "byline_rule": {
+    "chars": 3000,
+    "share": 0.5
+  },
+  "population": {
+    "rows": 1806,
+    "live": 1806,
+    "masked": 0,
+    "merged": 0,
+    "untitled": 0,
+    "pool": {
+      "byline": 229,
+      "eligible": 242,
+      "no_byline": 12,
+      "paper_without_full_text": 101,
+      "xml": 1,
+      "xml_byline_parsed": 1
+    },
+    "by_channel": {
+      "paper/arxiv": {
+        "byline": 116,
+        "eligible": 125,
+        "live": 125,
+        "no_byline": 9
+      },
+      "paper/openalex": {
+        "byline": 93,
+        "eligible": 95,
+        "live": 95,
+        "no_byline": 1,
+        "xml": 1
+      },
+      "paper/semantic_scholar": {
+        "byline": 20,
+        "eligible": 22,
+        "live": 22,
+        "no_byline": 2
+      }
+    }
+  },
+  "counts": {
+    "total": 15,
+    "split": {
+      "test": 15
+    },
+    "channel_group": {
+      "paper": 15
+    },
+    "channel": {
+      "paper/arxiv": 11,
+      "paper/openalex": 4
+    },
+    "proxy": {
+      "byline": 13,
+      "no_byline": 2
+    },
+    "hard": {
+      "None": 15
+    },
+    "license_class": {
+      "open": 15
+    },
+    "production_asks": {
+      "True": 15
+    },
+    "stratum_split": {
+      "paper|byline|plain|test": 13,
+      "paper|no_byline|plain|test": 2
+    },
+    "channel_proxy_hard_split": {
+      "paper/arxiv|byline|None|test": 10,
+      "paper/arxiv|no_byline|None|test": 1,
+      "paper/openalex|byline|None|test": 3,
+      "paper/openalex|no_byline|None|test": 1
+    }
+  }
+}

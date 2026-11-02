@@ -1,0 +1,559 @@
+# Fixtures for 04-meta-xai.yaml — every MD name-variant string (verbatim) plus
+# canonical display names. Skipped: distinct-derivative collision hints
+# (xlm-roberta, distilroberta, mbart, mbart-50, xlsr, xls-r, phind-codellama)
+# and excluded serving aliases (grok-3-fast, grok-3-mini-fast).
+
+# Llama family
+- {text: "Llama", node: llama}
+- {text: "llama", node: llama}
+- {text: "meta llama", node: llama}
+- {text: "meta-llama", node: llama}
+- {text: "llama models", node: llama}
+- {text: "the llama herd", node: llama}
+
+# LLaMA 1 series
+- {text: "LLaMA 1", node: llama-1}
+- {text: "llama 1", node: llama-1}
+- {text: "llama-1", node: llama-1}
+- {text: "llama v1", node: llama-1}
+- {text: "llama1", node: llama-1}
+
+- {text: "LLaMA 7B", node: llama-1-7b}
+- {text: "llama 7b", node: llama-1-7b}
+- {text: "llama-7b", node: llama-1-7b}
+- {text: "llama-1-7b", node: llama-1-7b}
+- {text: "llama 6.7b", node: llama-1-7b}
+- {text: "huggyllama/llama-7b", node: llama-1-7b}
+- {text: "decapoda-research llama 7b", node: llama-1-7b}
+
+- {text: "LLaMA 13B", node: llama-1-13b}
+- {text: "llama 13b", node: llama-1-13b}
+- {text: "llama-13b", node: llama-1-13b}
+- {text: "llama-1-13b", node: llama-1-13b}
+- {text: "huggyllama/llama-13b", node: llama-1-13b}
+
+- {text: "LLaMA 33B", node: llama-1-33b}
+- {text: "llama 33b", node: llama-1-33b}
+- {text: "llama-33b", node: llama-1-33b}
+- {text: "llama 30b", node: llama-1-33b}
+- {text: "llama-30b", node: llama-1-33b}
+- {text: "llama-1-33b", node: llama-1-33b}
+
+- {text: "LLaMA 65B", node: llama-1-65b}
+- {text: "llama 65b", node: llama-1-65b}
+- {text: "llama-65b", node: llama-1-65b}
+- {text: "llama-1-65b", node: llama-1-65b}
+
+# Llama 2 series
+- {text: "Llama 2", node: llama-2}
+- {text: "llama 2", node: llama-2}
+- {text: "llama-2", node: llama-2}
+- {text: "llama2", node: llama-2}
+- {text: "llama v2", node: llama-2}
+
+- {text: "Llama 2 7B", node: llama-2-7b}
+- {text: "llama 2 7b", node: llama-2-7b}
+- {text: "llama-2-7b", node: llama-2-7b}
+- {text: "llama-2-7b-chat", node: llama-2-7b}
+- {text: "llama2-7b", node: llama-2-7b}
+- {text: "meta-llama/Llama-2-7b-hf", node: llama-2-7b}
+- {text: "meta-llama/Llama-2-7b-chat-hf", node: llama-2-7b}
+- {text: "meta.llama2-7b-chat-v1", node: llama-2-7b}
+- {text: "Llama-2-Chat 7B", node: llama-2-7b}
+
+- {text: "Llama 2 13B", node: llama-2-13b}
+- {text: "llama 2 13b", node: llama-2-13b}
+- {text: "llama-2-13b", node: llama-2-13b}
+- {text: "llama-2-13b-chat", node: llama-2-13b}
+- {text: "meta-llama/Llama-2-13b-hf", node: llama-2-13b}
+- {text: "meta-llama/Llama-2-13b-chat-hf", node: llama-2-13b}
+- {text: "meta.llama2-13b-chat-v1", node: llama-2-13b}
+- {text: "LLaMA-2-Chat 13B", node: llama-2-13b}
+- {text: "TheBloke/Llama-2-13B-chat-GGUF", node: llama-2-13b}
+- {text: "llama-2-13b-chat.Q4_K_M.gguf", node: llama-2-13b}
+
+- {text: "Llama 2 70B", node: llama-2-70b}
+- {text: "llama 2 70b", node: llama-2-70b}
+- {text: "llama-2-70b", node: llama-2-70b}
+- {text: "llama-2-70b-chat", node: llama-2-70b}
+- {text: "llama2-70b", node: llama-2-70b}
+- {text: "meta-llama/Llama-2-70b-hf", node: llama-2-70b}
+- {text: "meta-llama/Llama-2-70b-chat-hf", node: llama-2-70b}
+- {text: "meta.llama2-70b-chat-v1", node: llama-2-70b}
+- {text: "Llama-2-Chat-70B", node: llama-2-70b}
+
+# Code Llama series
+- {text: "Code Llama", node: code-llama}
+- {text: "code llama", node: code-llama}
+- {text: "codellama", node: code-llama}
+- {text: "code-llama", node: code-llama}
+
+- {text: "Code Llama 7B", node: code-llama-7b}
+- {text: "code llama 7b", node: code-llama-7b}
+- {text: "codellama-7b", node: code-llama-7b}
+- {text: "codellama/CodeLlama-7b-hf", node: code-llama-7b}
+- {text: "code llama - python 7b", node: code-llama-7b}
+- {text: "code llama - instruct 7b", node: code-llama-7b}
+- {text: "codellama-7b-instruct", node: code-llama-7b}
+- {text: "codellama:7b-python", node: code-llama-7b}
+
+- {text: "Code Llama 13B", node: code-llama-13b}
+- {text: "code llama 13b", node: code-llama-13b}
+- {text: "codellama-13b", node: code-llama-13b}
+- {text: "codellama/CodeLlama-13b-hf", node: code-llama-13b}
+- {text: "codellama-13b-instruct", node: code-llama-13b}
+- {text: "codellama-13b-python", node: code-llama-13b}
+- {text: "Code Llama - Python 13B", node: code-llama-13b}
+- {text: "Code Llama - Instruct 13B", node: code-llama-13b}
+
+- {text: "Code Llama 34B", node: code-llama-34b}
+- {text: "code llama 34b", node: code-llama-34b}
+- {text: "codellama-34b", node: code-llama-34b}
+- {text: "codellama/CodeLlama-34b-hf", node: code-llama-34b}
+- {text: "codellama-34b-instruct", node: code-llama-34b}
+- {text: "Code Llama - Python 34B", node: code-llama-34b}
+- {text: "Code Llama - Instruct 34B", node: code-llama-34b}
+
+- {text: "Code Llama 70B", node: code-llama-70b}
+- {text: "code llama 70b", node: code-llama-70b}
+- {text: "codellama-70b", node: code-llama-70b}
+- {text: "codellama/CodeLlama-70b-hf", node: code-llama-70b}
+- {text: "codellama-70b-instruct", node: code-llama-70b}
+- {text: "code llama 70b python", node: code-llama-70b}
+- {text: "Code Llama - Python 70B", node: code-llama-70b}
+- {text: "Code Llama - Instruct 70B", node: code-llama-70b}
+
+# Llama 3 series
+- {text: "Llama 3", node: llama-3}
+- {text: "llama 3", node: llama-3}
+- {text: "llama-3", node: llama-3}
+- {text: "llama3", node: llama-3}
+- {text: "meta llama 3", node: llama-3}
+
+- {text: "Llama 3 8B", node: llama-3-8b}
+- {text: "llama 3 8b", node: llama-3-8b}
+- {text: "llama-3-8b", node: llama-3-8b}
+- {text: "llama3-8b", node: llama-3-8b}
+- {text: "meta-llama/Meta-Llama-3-8B", node: llama-3-8b}
+- {text: "meta-llama/Meta-Llama-3-8B-Instruct", node: llama-3-8b}
+- {text: "meta.llama3-8b-instruct-v1:0", node: llama-3-8b}
+- {text: "Meta-Llama-3-8B-Instruct.Q5_K_M.gguf", node: llama-3-8b}
+
+- {text: "Llama 3 70B", node: llama-3-70b}
+- {text: "llama 3 70b", node: llama-3-70b}
+- {text: "llama-3-70b", node: llama-3-70b}
+- {text: "llama3-70b", node: llama-3-70b}
+- {text: "meta-llama/Meta-Llama-3-70B", node: llama-3-70b}
+- {text: "meta-llama/Meta-Llama-3-70B-Instruct", node: llama-3-70b}
+- {text: "meta.llama3-70b-instruct-v1:0", node: llama-3-70b}
+- {text: "ollama pull llama3:70b-instruct-q4_0", node: llama-3-70b}
+
+# Llama 3.1 series
+- {text: "Llama 3.1", node: llama-3.1}
+- {text: "llama 3.1", node: llama-3.1}
+- {text: "llama-3.1", node: llama-3.1}
+- {text: "llama3.1", node: llama-3.1}
+- {text: "llama 3 1", node: llama-3.1}
+
+- {text: "Llama 3.1 8B", node: llama-3.1-8b}
+- {text: "llama 3.1 8b", node: llama-3.1-8b}
+- {text: "llama-3.1-8b", node: llama-3.1-8b}
+- {text: "meta-llama/Llama-3.1-8B", node: llama-3.1-8b}
+- {text: "meta-llama/Llama-3.1-8B-Instruct", node: llama-3.1-8b}
+- {text: "meta.llama3-1-8b-instruct-v1:0", node: llama-3.1-8b}
+- {text: "ollama run llama3.1:8b", node: llama-3.1-8b}
+- {text: "llama-3.1-8b-instant", node: llama-3.1-8b}
+
+- {text: "Llama 3.1 70B", node: llama-3.1-70b}
+- {text: "llama 3.1 70b", node: llama-3.1-70b}
+- {text: "llama-3.1-70b", node: llama-3.1-70b}
+- {text: "meta-llama/Llama-3.1-70B", node: llama-3.1-70b}
+- {text: "meta-llama/Llama-3.1-70B-Instruct", node: llama-3.1-70b}
+- {text: "meta.llama3-1-70b-instruct-v1:0", node: llama-3.1-70b}
+
+- {text: "Llama 3.1 405B", node: llama-3.1-405b}
+- {text: "llama 3.1 405b", node: llama-3.1-405b}
+- {text: "llama-3.1-405b", node: llama-3.1-405b}
+- {text: "llama 405b", node: llama-3.1-405b}
+- {text: "meta-llama/Llama-3.1-405B", node: llama-3.1-405b}
+- {text: "meta-llama/Llama-3.1-405B-Instruct", node: llama-3.1-405b}
+- {text: "meta.llama3-1-405b-instruct-v1:0", node: llama-3.1-405b}
+- {text: "Meta-Llama-3.1-405B-Instruct", node: llama-3.1-405b}
+- {text: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", node: llama-3.1-405b}
+# Meta's own "Llama 3 Herd of Models" report calls the 405B "Llama 3 405B"
+- {text: "Llama 3 405B", node: llama-3.1-405b}
+
+# Llama 3.2 series
+- {text: "Llama 3.2", node: llama-3.2}
+- {text: "llama 3.2", node: llama-3.2}
+- {text: "llama-3.2", node: llama-3.2}
+- {text: "llama3.2", node: llama-3.2}
+
+- {text: "Llama 3.2 1B", node: llama-3.2-1b}
+- {text: "llama 3.2 1b", node: llama-3.2-1b}
+- {text: "llama-3.2-1b", node: llama-3.2-1b}
+- {text: "meta-llama/Llama-3.2-1B", node: llama-3.2-1b}
+- {text: "meta-llama/Llama-3.2-1B-Instruct", node: llama-3.2-1b}
+- {text: "meta.llama3-2-1b-instruct-v1:0", node: llama-3.2-1b}
+
+- {text: "Llama 3.2 3B", node: llama-3.2-3b}
+- {text: "llama 3.2 3b", node: llama-3.2-3b}
+- {text: "llama-3.2-3b", node: llama-3.2-3b}
+- {text: "meta-llama/Llama-3.2-3B", node: llama-3.2-3b}
+- {text: "meta-llama/Llama-3.2-3B-Instruct", node: llama-3.2-3b}
+- {text: "meta.llama3-2-3b-instruct-v1:0", node: llama-3.2-3b}
+
+- {text: "Llama 3.2 11B Vision", node: llama-3.2-11b-vision}
+- {text: "llama 3.2 11b", node: llama-3.2-11b-vision}
+- {text: "llama-3.2-11b-vision", node: llama-3.2-11b-vision}
+- {text: "meta-llama/Llama-3.2-11B-Vision", node: llama-3.2-11b-vision}
+- {text: "meta-llama/Llama-3.2-11B-Vision-Instruct", node: llama-3.2-11b-vision}
+- {text: "meta.llama3-2-11b-instruct-v1:0", node: llama-3.2-11b-vision}
+- {text: "ollama run llama3.2-vision:11b", node: llama-3.2-11b-vision}
+- {text: "Llama-3.2-11B-Vision-Instruct-Turbo", node: llama-3.2-11b-vision}
+
+- {text: "Llama 3.2 90B Vision", node: llama-3.2-90b-vision}
+- {text: "llama 3.2 90b", node: llama-3.2-90b-vision}
+- {text: "llama-3.2-90b-vision", node: llama-3.2-90b-vision}
+- {text: "meta-llama/Llama-3.2-90B-Vision", node: llama-3.2-90b-vision}
+- {text: "meta-llama/Llama-3.2-90B-Vision-Instruct", node: llama-3.2-90b-vision}
+- {text: "meta.llama3-2-90b-instruct-v1:0", node: llama-3.2-90b-vision}
+- {text: "llama3.2-vision:90b", node: llama-3.2-90b-vision}
+
+# Llama 3.3
+- {text: "Llama 3.3 70B", node: llama-3.3-70b}
+- {text: "llama 3.3", node: llama-3.3-70b}
+- {text: "llama 3.3 70b", node: llama-3.3-70b}
+- {text: "llama-3.3-70b", node: llama-3.3-70b}
+- {text: "llama-3.3-70b-instruct", node: llama-3.3-70b}
+- {text: "meta-llama/Llama-3.3-70B-Instruct", node: llama-3.3-70b}
+- {text: "meta.llama3-3-70b-instruct-v1:0", node: llama-3.3-70b}
+- {text: "llama-3.3-70b-versatile", node: llama-3.3-70b}
+
+# Llama 4 series
+- {text: "Llama 4", node: llama-4}
+- {text: "llama 4", node: llama-4}
+- {text: "llama-4", node: llama-4}
+- {text: "llama4", node: llama-4}
+- {text: "the llama 4 herd", node: llama-4}
+
+- {text: "Llama 4 Scout", node: llama-4-scout}
+- {text: "llama 4 scout", node: llama-4-scout}
+- {text: "llama-4-scout", node: llama-4-scout}
+- {text: "scout", node: llama-4-scout}
+- {text: "meta-llama/Llama-4-Scout-17B-16E", node: llama-4-scout}
+- {text: "meta-llama/Llama-4-Scout-17B-16E-Instruct", node: llama-4-scout}
+- {text: "meta.llama4-scout-17b-instruct-v1:0", node: llama-4-scout}
+- {text: "Llama4 Scout", node: llama-4-scout}
+- {text: "Llama-4-Scout-17B-16E-Instruct-FP8", node: llama-4-scout}
+
+- {text: "Llama 4 Maverick", node: llama-4-maverick}
+- {text: "llama 4 maverick", node: llama-4-maverick}
+- {text: "llama-4-maverick", node: llama-4-maverick}
+- {text: "maverick", node: llama-4-maverick}
+- {text: "meta-llama/Llama-4-Maverick-17B-128E-Instruct", node: llama-4-maverick}
+- {text: "Llama-4-Maverick-17B-128E-Instruct-FP8", node: llama-4-maverick}
+- {text: "meta.llama4-maverick-17b-instruct-v1:0", node: llama-4-maverick}
+- {text: "llama-4-maverick-03-26-experimental", node: llama-4-maverick}
+
+- {text: "Llama 4 Behemoth", node: llama-4-behemoth}
+- {text: "llama 4 behemoth", node: llama-4-behemoth}
+- {text: "llama-4-behemoth", node: llama-4-behemoth}
+- {text: "behemoth", node: llama-4-behemoth}
+
+# Muse
+- {text: "Muse", node: muse}
+- {text: "muse", node: muse}
+- {text: "meta muse", node: muse}
+- {text: "muse series", node: muse}
+
+- {text: "Muse Spark", node: muse-spark}
+- {text: "muse spark", node: muse-spark}
+- {text: "muse-spark", node: muse-spark}
+- {text: "spark", node: none}  # weak pattern dropped 2026-08-01 (English word / Apache Spark; cost 1 doc)
+- {text: "avocado", node: muse-spark}
+- {text: "project avocado", node: muse-spark}
+
+- {text: "Muse Spark 1.1", node: muse-spark-1.1}
+- {text: "muse spark 1.1", node: muse-spark-1.1}
+- {text: "muse-spark-1.1", node: muse-spark-1.1}
+- {text: "spark 1.1", node: muse-spark-1.1}
+
+# OPT
+- {text: "OPT", node: opt}
+- {text: "opt", node: opt}
+- {text: "open pre-trained transformer", node: opt}
+- {text: "open pretrained transformer", node: opt}
+
+- {text: "OPT 125M", node: opt-125m}
+- {text: "opt-125m", node: opt-125m}
+- {text: "OPT 350M", node: opt-350m}
+- {text: "opt-350m", node: opt-350m}
+- {text: "OPT 1.3B", node: opt-1.3b}
+- {text: "opt-1.3b", node: opt-1.3b}
+- {text: "facebook/opt-1.3b", node: opt-1.3b}
+- {text: "OPT 2.7B", node: opt-2.7b}
+- {text: "opt-2.7b", node: opt-2.7b}
+- {text: "OPT 6.7B", node: opt-6.7b}
+- {text: "opt-6.7b", node: opt-6.7b}
+- {text: "OPT 13B", node: opt-13b}
+- {text: "opt-13b", node: opt-13b}
+- {text: "OPT 30B", node: opt-30b}
+- {text: "opt-30b", node: opt-30b}
+- {text: "OPT 66B", node: opt-66b}
+- {text: "opt-66b", node: opt-66b}
+- {text: "facebook/opt-66b", node: opt-66b}
+
+- {text: "OPT-175B", node: opt-175b}
+- {text: "opt 175b", node: opt-175b}
+- {text: "opt175b", node: opt-175b}
+
+# Galactica
+- {text: "Galactica", node: galactica}
+- {text: "galactica", node: galactica}
+- {text: "galai", node: galactica}
+- {text: "Galactica 120B", node: galactica-120b}
+- {text: "galactica-120b", node: galactica-120b}
+- {text: "facebook/galactica-120b", node: galactica-120b}
+
+# RoBERTa
+- {text: "RoBERTa", node: roberta}
+- {text: "roberta", node: roberta}
+- {text: "RoBERTa base", node: roberta-base}
+- {text: "roberta-base", node: roberta-base}
+- {text: "RoBERTa large", node: roberta-large}
+- {text: "roberta-large", node: roberta-large}
+
+# BART
+- {text: "BART", node: bart}
+- {text: "bart", node: bart}
+- {text: "BART base", node: bart-base}
+- {text: "bart-base", node: bart-base}
+- {text: "BART large", node: bart-large}
+- {text: "bart-large", node: bart-large}
+- {text: "bart-large-cnn", node: bart-large}
+- {text: "bart-large-mnli", node: bart-large}
+- {text: "facebook/bart-large", node: bart-large}
+
+# NLLB
+- {text: "NLLB", node: none}  # v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "nllb", node: none}  # v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "no language left behind", node: none}  # v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "NLLB-200", node: none}  # v0.7: was node nllb-200; OCR/translation models get no node (method D4/X4); v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "nllb-200", node: none}  # v0.7: was node nllb-200; OCR/translation models get no node (method D4/X4); v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "nllb-200-3.3b", node: none}  # v0.7: was node nllb-200; OCR/translation models get no node (method D4/X4); v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "nllb-200-distilled-600m", node: none}  # v0.7: was node nllb-200; OCR/translation models get no node (method D4/X4); v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "NLLB-200-distilled-1.3B", node: none}  # v0.7: was node nllb-200; OCR/translation models get no node (method D4/X4); v0.9: was nllb (nllb pointer family removed, methodology X4)
+- {text: "facebook/nllb-200-3.3B", node: none}  # v0.7: was node nllb-200; OCR/translation models get no node (method D4/X4); v0.9: was nllb (nllb pointer family removed, methodology X4)
+
+# wav2vec
+- {text: "wav2vec", node: wav2vec}
+- {text: "wav2vec 2.0", node: wav2vec-2.0}
+- {text: "wav2vec2", node: wav2vec-2.0}
+- {text: "wav2vec-2", node: wav2vec-2.0}
+- {text: "facebook/wav2vec2-base", node: wav2vec-2.0}
+- {text: "facebook/wav2vec2-large-960h", node: wav2vec-2.0}
+- {text: "wav2vec2-large-xlsr-53", node: wav2vec-2.0}
+
+# Segment Anything
+- {text: "Segment Anything", node: segment-anything}
+- {text: "segment anything", node: segment-anything}
+- {text: "segment anything model", node: segment-anything}
+- {text: "sam", node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+- {text: "SAM (Segment Anything Model)", node: segment-anything}
+
+- {text: "SAM 1", node: sam-1}
+- {text: "sam 1", node: sam-1}
+- {text: "sam-vit-h", node: sam-1}
+- {text: "facebook/sam-vit-huge", node: sam-1}
+- {text: "sam-vit-base", node: sam-1}
+
+- {text: "SAM 2", node: sam-2}
+- {text: "sam 2", node: sam-2}
+- {text: "sam2", node: sam-2}
+- {text: "sam-2", node: sam-2}
+- {text: "segment anything 2", node: sam-2}
+- {text: "segment anything in images and videos", node: sam-2}
+- {text: "sam 2.1", node: sam-2}
+- {text: "Segment Anything Model 2", node: sam-2}
+
+- {text: "SAM 3", node: sam-3}
+- {text: "sam 3", node: sam-3}
+- {text: "sam3", node: sam-3}
+- {text: "sam-3", node: sam-3}
+- {text: "segment anything 3", node: sam-3}
+- {text: "segment anything with concepts", node: sam-3}
+- {text: "Segment Anything Model 3", node: sam-3}
+
+# Chameleon
+- {text: "Chameleon", node: chameleon}
+- {text: "chameleon", node: chameleon}
+- {text: "meta chameleon", node: chameleon}
+- {text: "Chameleon 7B", node: chameleon-7b}
+- {text: "chameleon-7b", node: chameleon-7b}
+- {text: "Chameleon 34B", node: chameleon-34b}
+- {text: "chameleon 34b", node: chameleon-34b}
+- {text: "chameleon-30b", node: chameleon-34b}
+
+# Code World Model
+- {text: "Code World Model", node: code-world-model}
+- {text: "code world model", node: code-world-model}
+- {text: "Code World Model (CWM)", node: cwm}
+- {text: "cwm", node: cwm}
+- {text: "facebook/cwm", node: cwm}
+- {text: "cwm-sft", node: cwm}
+- {text: "cwm-pretrain", node: cwm}
+
+# BlenderBot (added 2026-08-02)
+- {text: "BlenderBot", node: blenderbot}
+- {text: "blenderbot", node: blenderbot}
+- {text: "blender bot", node: blenderbot}
+- {text: "Blender Bot", node: blenderbot}
+- {text: "blender-bot", node: blenderbot}
+- {text: "facebook/blenderbot-400M-distill", node: blenderbot}
+
+- {text: "BlenderBot 1", node: blenderbot-1}
+- {text: "blenderbot-1", node: blenderbot-1}
+- {text: "blenderbot 2.7B", node: blenderbot-1}
+- {text: "blenderbot-9.4b", node: blenderbot-1}
+
+- {text: "BlenderBot 2", node: blenderbot-2}
+- {text: "blenderbot 2", node: blenderbot-2}
+- {text: "blenderbot-2", node: blenderbot-2}
+- {text: "BlenderBot 2.0", node: blenderbot-2}
+- {text: "blenderbot2", node: blenderbot-2}
+
+- {text: "BlenderBot 3", node: blenderbot-3}
+- {text: "blenderbot 3", node: blenderbot-3}
+- {text: "blenderbot-3", node: blenderbot-3}
+- {text: "BlenderBot3", node: blenderbot-3}
+- {text: "blenderbot-3-175b", node: blenderbot-3}
+- {text: "BB3", node: blenderbot-3}
+- {text: "bb3", node: blenderbot-3}
+# collision guard: bare "blender" is not a pattern at all (3D software)
+- {text: "rendered in Blender", node: none}
+- {text: "blender", node: none}
+- {text: "we blended the datasets", node: none}
+# shadowing: the versioned model must out-span the family pattern
+- {text: "BlenderBot 3", not_node: blenderbot}
+- {text: "blenderbot-2", not_node: blenderbot}
+
+# Grok family
+- {text: "Grok", node: grok}
+- {text: "grok", node: grok}
+- {text: "xai grok", node: grok}
+- {text: "x.ai grok", node: grok}
+- {text: "spacexai grok", node: grok}
+
+- {text: "Grok-1", node: grok-1}
+- {text: "grok 1", node: grok-1}
+- {text: "grok1", node: grok-1}
+- {text: "xai-org/grok-1", node: grok-1}
+- {text: "grok-0", node: grok-1}
+
+- {text: "Grok-1.5", node: grok-1.5}
+- {text: "grok 1.5", node: grok-1.5}
+- {text: "grok1.5", node: grok-1.5}
+
+- {text: "Grok-1.5V", node: grok-1.5v}
+- {text: "grok 1.5v", node: grok-1.5v}
+- {text: "grok-1.5-vision", node: grok-1.5v}
+- {text: "grok 1.5 vision", node: grok-1.5v}
+
+- {text: "Grok-2", node: grok-2}
+- {text: "grok 2", node: grok-2}
+- {text: "grok2", node: grok-2}
+- {text: "grok-2-1212", node: grok-2}
+- {text: "grok-2-vision-1212", node: grok-2}
+- {text: "grok-beta", node: grok-2}
+- {text: "grok-vision-beta", node: grok-2}
+- {text: "sus-column-r", node: grok-2}
+- {text: "grok 2.5", node: grok-2}
+
+- {text: "Grok-2 mini", node: grok-2-mini}
+- {text: "grok-2-mini", node: grok-2-mini}
+- {text: "grok 2 mini", node: grok-2-mini}
+
+- {text: "Aurora", node: grok-aurora}
+- {text: "aurora", node: grok-aurora}
+- {text: "grok-2-image", node: grok-aurora}
+- {text: "grok-2-image-1212", node: grok-aurora}
+- {text: "xai aurora", node: grok-aurora}
+
+- {text: "Grok 3", node: grok-3}
+- {text: "grok-3", node: grok-3}
+- {text: "grok3", node: grok-3}
+- {text: "grok-3-beta", node: grok-3}
+- {text: "grok-3-latest", node: grok-3}
+- {text: "grok 3 think", node: grok-3}
+- {text: "big brain mode", node: grok-3}
+
+- {text: "Grok 3 mini", node: grok-3-mini}
+- {text: "grok-3-mini", node: grok-3-mini}
+- {text: "grok-3-mini-beta", node: grok-3-mini}
+
+- {text: "Grok 4", node: grok-4}
+- {text: "grok-4", node: grok-4}
+- {text: "grok4", node: grok-4}
+- {text: "grok-4-0709", node: grok-4}
+- {text: "grok-4-latest", node: grok-4}
+- {text: "grok 4 heavy", node: grok-4}
+- {text: "grok-4-heavy", node: grok-4}
+
+- {text: "Grok 4 Fast", node: grok-4-fast}
+- {text: "grok 4 fast", node: grok-4-fast}
+- {text: "grok-4-fast", node: grok-4-fast}
+- {text: "grok-4-fast-reasoning", node: grok-4-fast}
+- {text: "grok-4-fast-non-reasoning", node: grok-4-fast}
+- {text: "grok-4-fast-reasoning-latest", node: grok-4-fast}
+- {text: "x-ai/grok-4-fast", node: grok-4-fast}
+
+- {text: "Grok Code Fast 1", node: grok-code-fast-1}
+- {text: "grok code fast 1", node: grok-code-fast-1}
+- {text: "grok-code-fast-1", node: grok-code-fast-1}
+- {text: "grok code fast", node: grok-code-fast-1}
+- {text: "grok-code", node: grok-code-fast-1}
+- {text: "sonic", node: grok-code-fast-1}
+
+- {text: "Grok 4.1", node: grok-4.1}
+- {text: "grok-4.1", node: grok-4.1}
+- {text: "grok-4-1", node: grok-4.1}
+- {text: "grok 4.1 thinking", node: grok-4.1}
+- {text: "grok-4-1-fast-reasoning", node: grok-4.1}
+- {text: "grok-4-1-fast-non-reasoning", node: grok-4.1}
+- {text: "grok 4.1 fast", node: grok-4.1}
+
+- {text: "Grok 4.20", node: grok-4.20}
+- {text: "grok-4.20", node: grok-4.20}
+- {text: "grok-4.20-multi-agent-0309", node: grok-4.20}
+- {text: "grok-4.20-0309-reasoning", node: grok-4.20}
+- {text: "grok-4.20-0309-non-reasoning", node: grok-4.20}
+- {text: "grok 420", node: grok-4.20}
+
+- {text: "Grok 4.3", node: grok-4.3}
+- {text: "grok-4.3", node: grok-4.3}
+- {text: "grok-4-3", node: grok-4.3}
+- {text: "grok-4.3-latest", node: grok-4.3}
+
+- {text: "Grok 4.5", node: grok-4.5}
+- {text: "grok-4.5", node: grok-4.5}
+- {text: "grok-4-5", node: grok-4.5}
+- {text: "grok-4.5-latest", node: grok-4.5}
+- {text: "SpaceXAI shipped Grok 4.5 last week", node: grok-4.5}
+
+- {text: "Grok Build 0.1", node: grok-build-0.1}
+- {text: "grok build", node: grok-build-0.1}
+- {text: "grok build 0.1", node: grok-build-0.1}
+- {text: "grok-build-0.1", node: grok-build-0.1}
+- {text: "grok-build-latest", node: grok-build-0.1}
+
+# Grok Imagine
+- {text: "Grok Imagine", node: grok-imagine}
+- {text: "grok imagine", node: grok-imagine}
+- {text: "grok-imagine", node: grok-imagine}
+- {text: "imagine", node: none}  # weak pattern dropped 2026-07-31 (doc-level recall principle)
+
+- {text: "grok-imagine-image", node: grok-imagine-image}
+- {text: "grok-imagine-video", node: grok-imagine-video}
+- {text: "grok-imagine-video-1.5", node: grok-imagine-video-1.5}
+- {text: "grok-imagine-video-1.5-preview", node: grok-imagine-video-1.5}

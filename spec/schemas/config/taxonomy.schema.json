@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thesafetystack.ai/schemas/config/taxonomy.schema.json",
+  "title": "taxonomy-vX.Y.yaml",
+  "description": "Standalone versioned taxonomy artifact (10-design §8; CONF-5). Facet definitions with answer menus, edge types, descriptive fields, and technique entries whose facet answers are objects {values, origin}. Slugs are stable across versions. Shape validated here; the full artifact is 292 entries — examples/config/taxonomy-sample.yaml is a 3-technique sample.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "facets", "techniques"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+$" },
+    "status": { "type": "string" },
+    "sample": { "type": "boolean", "description": "true marks a non-canonical sample (not the real 292-entry artifact)." },
+    "facets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/facet" } },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edgeType" } },
+    "fields": { "type": "array", "items": { "$ref": "#/$defs/fieldDef" } },
+    "techniques": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/technique" } }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "name", "cardinality", "values"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string" },
+        "cardinality": { "type": "string", "enum": ["single", "single+", "multi"] },
+        "population": { "type": "string", "enum": ["AI-scored", "human-set"] },
+        "difficulty": { "type": "string", "enum": ["low", "medium", "high"] },
+        "empty_is_legal": { "type": "boolean" },
+        "description": { "type": "string" },
+        "exclusive_with": {
+          "type": "array",
+          "items": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/slug" } },
+          "description": "Value-combination hygiene (H-M2): mutually-exclusive value groups; at most one value from each group may stand. Annotators repair pre-write, reducers at union (§7.2). check_configs validates each referenced value is on this facet's menu."
+        },
+        "absorbs": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
+          "description": "Value-combination hygiene (H-M2): absorption map {dominant_value: [absorbed_values]} — when a dominant/catch-all value co-occurs with an absorbed one, the absorbed drops. Applied by annotators pre-write and by reducers at union (§7.2)."
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["slug", "name"],
+            "properties": {
+              "slug": { "$ref": "#/$defs/slug" },
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "edgeType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "target"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "target": { "type": "string", "enum": ["technique", "standard", "source"] },
+        "description": { "type": "string" }
+      }
+    },
+    "fieldDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "values": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "technique": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "name", "type", "family", "description", "facets"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["technique", "variant"] },
+        "family": { "$ref": "#/$defs/slug" },
+        "variant_of": { "$ref": "#/$defs/slug" },
+        "description": { "type": "string" },
+        "fields": { "type": "object", "description": "descriptive field answers keyed by field slug" },
+        "facets": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/facetAnswer" },
+          "description": "facet slug -> {values, origin}"
+        }
+      }
+    },
+    "facetAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["values", "origin"],
+      "properties": {
+        "values": { "type": "array", "items": { "$ref": "#/$defs/slug" }, "description": "[] is legal for empty_is_legal facets" },
+        "origin": { "type": "string", "x-enum": "facet_answer_origin", "enum": ["initial_pass", "source_confirmed", "human_set", "escalated"] }
+      }
+    }
+  }
+}

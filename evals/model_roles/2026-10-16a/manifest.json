@@ -1,0 +1,32 @@
+{
+  "task": "model_roles",
+  "set_id": "2026-10-16a",
+  "source": "evals/model_roles/2026-10-13a (the same items and texts, re-frozen under the merged stage, D591)",
+  "store_head": "rcprvcnepyb1g",
+  "items": 25,
+  "items_sha256": "57a751903fb4cde819c85654a485e3b523961c78773d5ea37e1ec669e8a0f6bb",
+  "splits": {
+    "dev": 14,
+    "test": 11
+  },
+  "frozen_with": {
+    "models_yaml_sha256": "7672a43bac3a80295d8b685f232d641199b4f89d1387673d54c9b23181264cba",
+    "model_roles_prompt": "model-roles-v1",
+    "model_roles_prompt_digest": "d535bdabefa0dfb074d3f3224a1f54ba014f74bc793932e6dc6b109fbf8587b4"
+  },
+  "gold": {
+    "file": "gold.jsonl",
+    "from": "evals/model_roles/2026-10-13a/gold-vocab-v0.5.jsonl",
+    "sha256": "53bced2a259c2f1fb9859b909cceb930dbc25958200504d15777004c24316d9f",
+    "gap_items": [
+      "an-0003",
+      "an-0005",
+      "an-0010",
+      "an-0011",
+      "an-0017",
+      "an-0019",
+      "an-0021",
+      "an-0023"
+    ]
+  }
+}

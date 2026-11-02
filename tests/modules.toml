@@ -1,0 +1,316 @@
+# Touched path -> test files, for tools/devtest.py (A11, D490).
+#
+# Each [[map]] entry: `paths` are fnmatch globs over repo-relative paths (`*` also crosses `/`); `tests` run in the
+# dev tier (-m "not slow and not tools"); `slow` are added by `--with-slow` (which drops the marker filter: heavy
+# files, scenario worlds, tool tests). A name is a file under tests/ without `test_` and `.py` (`store_chain` =
+# tests/test_store_chain.py), optionally with `::<node>`. A path matching several entries gets their union; a
+# touched test file runs itself. "Infra" modules (stack/plan.py, stack/store/chain.py, stack/stage_runner.py, ...)
+# are imported by most test files: they list only the files about them, and the dev run adds the smoke set.
+# tests/test_devtest.py checks that every stack/**/*.py and workflows/** file matches some glob here and that
+# every name exists: a new module cannot fall out of the map.
+
+# ---------------------------------------------------------------- store, runs, runner, build
+[[map]]
+paths = ["stack/store/chain.py", "stack/store/layout.py", "stack/store/parquet.py", "stack/store/index.py"]
+tests = ["store_chain", "store_parquet", "store_index", "store_series", "family_format"]
+slow = ["run_liveness", "checks_fixtures", "scenario_m1"]
+
+[[map]]
+paths = ["stack/duck.py"]
+tests = ["duck", "release_export"]
+
+[[map]]
+paths = ["stack/store/remote.py", "stack/store/s3config.py", "stack/store/backend.py", "stack/store/blobs.py"]
+tests = ["store_remote", "s3config", "blobstore"]
+slow = ["store_job", "scenario_m3", "scenario_m4"]
+
+[[map]]
+paths = ["stack/store/job.py", "stack/runs.py", "stack/cli/status.py"]
+tests = ["runs", "store_index", "run_liveness"]
+slow = ["store_job", "runner_crash"]
+
+[[map]]
+paths = ["stack/stage_runner.py", "workflows/echo_test/*"]
+tests = ["stage_runner", "store_series", "options_declared"]
+slow = ["run_liveness", "runner_crash", "scenario_m1"]
+
+[[map]]
+paths = ["stack/build.py", "stack/plan.py", "stack/cli/build.py"]
+tests = ["stage_runner", "build_overrides", "annotate_inputs", "plan_files"]
+slow = ["passes_build", "scenario_m5", "verify_modes"]
+
+[[map]]
+paths = ["stack/checks/*"]
+tests = ["checks_rows", "checks_x13", "checks_scale", "checks_fixtures::test_clean_store_is_green"]
+slow = ["checks_fixtures", "checks_annotate", "scenario_m1", "verify_modes"]
+
+[[map]]
+paths = ["stack/fold/*", "stack/query.py", "stack/cli/fold.py", "stack/cli/release.py"]
+tests = ["fold", "fold_build", "release_batches", "prebump_corpus"]
+slow = ["screen_records"]
+
+[[map]]
+paths = ["stack/migrate.py", "stack/schemas/*", "stack/cli/migrate.py"]
+tests = ["family_format", "migrate", "store_parquet", "config"]
+slow = ["prebump_corpus", "checks_scale"]
+
+[[map]]
+paths = ["stack/cli/*"]
+tests = ["cli", "cli_contact", "diff", "cli_show"]
+slow = []
+
+[[map]]
+paths = ["stack/config.py", "stack/yamlio.py", "configs/*", "tools/check_configs.py"]
+tests = ["config", "keyword_cuts", "source_rules", "plan_files", "options_declared", "llm_anthropic_direct"]
+slow = []
+
+[[map]]
+paths = ["stack/__init__.py", "stack/*/__init__.py", "stack/progress.py", "stack/cli/__main__.py"]
+tests = ["progress"]
+slow = []
+
+[[map]]  # prose only: the smoke set covers it
+paths = ["workflows/README.md"]
+tests = []
+slow = []
+
+# ---------------------------------------------------------------- collect
+[[map]]
+paths = ["stack/collect/base.py", "stack/collect/sampling.py", "stack/collect/inband.py"]
+tests = ["collect_base", "collect_robustness", "collect_sampling", "collect_inband", "collect_cooldown"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["stack/collect/listing.py"]
+tests = ["collect_blogs", "collect_cards", "collect_robustness", "card_dates"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["stack/collect/forummagnum.py"]
+tests = ["collect_af", "collect_lw_graphql"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["stack/collect/links.py", "workflows/collect/links/*"]
+tests = ["collect_links"]
+slow = ["passes_links"]
+
+[[map]]
+paths = ["stack/collect/xapi.py", "workflows/collect/x-lookup/*"]
+tests = ["collect_x"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["stack/collect/roster.py"]
+tests = ["collect_author_ids"]
+slow = ["resolve_openalex_authors"]
+
+[[map]]
+paths = ["stack/collect/provider_keys.py"]
+tests = ["provider_keys"]
+slow = ["resolve_openalex_authors"]
+
+[[map]]
+paths = ["workflows/collect/af_graphql/*"]
+tests = ["collect_af"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/arxiv_sweep/*"]
+tests = ["collect_arxiv_kw", "collect_search", "collect_author_ids"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/blogs/*"]
+tests = ["collect_blogs"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/cards/*"]
+tests = ["collect_cards"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/feeds/*"]
+tests = ["collect_feeds"]
+slow = ["passes_links"]
+
+[[map]]
+paths = ["workflows/collect/forums/*"]
+tests = ["collect_forums", "collect_search"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/lw_graphql/*"]
+tests = ["collect_lw_graphql"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/manual/*"]
+tests = ["collect_manual"]
+slow = []
+
+[[map]]
+paths = ["workflows/collect/openalex/*"]
+tests = ["collect_openalex", "openalex_failed_retry"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/semantic_scholar/*"]
+tests = ["collect_s2", "collect_cooldown"]
+slow = ["passes_collect"]
+
+[[map]]
+paths = ["workflows/collect/v3_import/*"]
+tests = ["v3_import"]
+slow = []
+
+[[map]]
+paths = ["workflows/collect/openalex-lookup/*", "workflows/collect/s2-lookup/*", "workflows/collect/card-dates-lookup/*",
+         "stack/lookup/*", "workflows/fetch/*"]
+tests = ["fetch_metadata", "collect_lookup", "provider_keys", "card_dates"]
+slow = ["passes_collect"]
+
+# ---------------------------------------------------------------- transport, identity, gather, triage
+[[map]]
+paths = ["stack/provider_transport.py", "stack/http.py", "stack/gate.py"]
+tests = ["provider_transport", "fetch_http", "fetch_oa", "provider_keys", "collect_cooldown", "acquire_arxiv_limit"]
+slow = ["acquire_fetch_workers"]
+
+[[map]]
+paths = ["stack/identity.py", "stack/urls.py", "stack/canon.py", "stack/scholarly_records.py", "stack/anchor.py",
+         "stack/core/*"]
+tests = ["identity", "urls", "canon", "scholarly_records", "anchor", "ids", "hashes"]
+slow = ["gather_identity"]
+
+[[map]]
+paths = ["workflows/gather/*", "stack/overrides.py", "workflows/overrides/*", "stack/cli/overrides.py"]
+tests = ["gather_identity", "gather_merge", "gather_union_scale", "overrides"]
+slow = ["collect_manual", "build_overrides"]
+
+[[map]]
+paths = ["workflows/triage/*", "stack/rules.py", "stack/gate.py"]
+tests = ["triage_rules", "source_rules", "keyword_cuts", "triage_v4"]
+slow = ["triage_questions", "triage_standing", "triage_workers", "batch_stages"]
+
+# ---------------------------------------------------------------- acquire
+[[map]]
+paths = ["workflows/acquire/*"]
+tests = ["acquire_core", "acquire_reopen"]
+slow = ["acquire_lanes", "scenario_m3", "passes_stages"]
+
+[[map]]
+paths = ["workflows/acquire/lanes/*", "stack/arxiv.py", "stack/oa_adapter.py", "stack/fetchcycle.py",
+         "stack/mediatype.py", "stack/cli/acquire.py", "stack/browser.py"]
+tests = ["fetch_http", "fetch_arxiv", "fetch_oa", "acquire_fetch_workers", "acquire_arxiv_limit", "browser"]
+slow = ["acquire_lanes", "acquire_structured"]
+
+[[map]]
+paths = ["workflows/acquire/convert.py", "workflows/acquire/quality.py", "stack/conversion/*"]
+tests = ["convert", "fetch_convert_contract", "text_quality", "convert_pin_guard"]
+slow = ["acquire_convert", "acquire_structured"]
+
+# ---------------------------------------------------------------- LLM, annotate, evals
+[[map]]
+paths = ["stack/llm/*"]
+tests = ["llm", "llm_strict", "llm_truncation", "llm_ledger", "llm_batch", "llm_breaker", "llm_workers",
+         "llm_openai_direct", "llm_anthropic_direct"]
+slow = ["batch_stages"]
+
+[[map]]
+paths = ["stack/annotate/*", "stack/annotations.py", "stack/state.py", "stack/states.py"]
+tests = ["annotate_inputs", "screen_batching", "state"]
+slow = ["annotate", "screen_records", "checks_annotate"]
+
+[[map]]
+paths = ["stack/annotate/prompt_files.py"]
+tests = ["annotate_prompt_files", "annotate_model_roles", "annotate_technique_roles"]
+slow = []
+
+[[map]]
+paths = ["workflows/annotate/screen/*"]
+tests = ["screen_v13", "screen_v12", "screen_v11", "screen_sr_schema", "llm_strict"]
+slow = ["screen_tiers", "screen_records", "batch_stages"]
+
+[[map]]
+paths = ["workflows/annotate/affiliation/*"]
+tests = ["affiliation"]
+slow = ["affiliation_stage", "annotate_inputs"]
+
+[[map]]
+paths = ["stack/orgvocab.py", "stack/catalogue.py", "taxonomy/orgs-*.yaml", "data-repo/taxonomies/schemas/*",
+         "data-repo/taxonomies/orgs/*", "workflows/annotate/affiliation_orgs/*"]
+tests = ["orgvocab", "dataset_release"]
+slow = ["annotate_affiliation_orgs", "annotate_inputs"]
+
+[[map]]
+paths = ["workflows/annotate/translation/*", "stack/schemas/payloads/translation.py"]
+tests = ["annotate_translation", "dataset_release"]
+slow = ["annotate_inputs"]
+
+[[map]]
+paths = ["tools/recall_concordia.py", "evals/recall/*"]
+tests = ["recall_concordia"]
+
+[[map]]
+paths = ["workflows/annotate/model_roles/match.py", "stack/modelvocab.py", "configs/models.yaml"]
+tests = ["annotate_model_roles_match", "annotate_model_roles"]
+slow = ["annotate_inputs"]
+
+[[map]]
+paths = ["workflows/annotate/model_roles/*", "stack/modelvocab.py"]
+tests = ["annotate_model_roles", "annotate_model_roles_match"]
+slow = ["annotate_inputs"]
+
+[[map]]
+paths = ["taxonomy/vendored.lock.yaml", "taxonomy/techniques-1.*.yaml", "taxonomy/taxonomy-v0.9.1.yaml",
+         "taxonomy/orgs-0.2.0.yaml", "taxonomy/orgs-0.2.2.yaml", "configs/models.yaml", "data-repo/taxonomies/*", "stack/catalogue.py",
+         "stack/modelvocab.py", "workflows/annotate/technique_staged/taxonomy.py",
+         "workflows/annotate/technique_staged/lexical.py", "workflows/annotate/model_roles/render.py",
+         "workflows/annotate/model_roles/match.py"]
+tests = ["vendored_taxonomies"]
+slow = []
+
+[[map]]
+paths = ["workflows/annotate/technique_roles/*", "taxonomy/taxonomy-v0.8.yaml", "tests/fixtures/technique_roles/*"]
+tests = ["annotate_technique_roles", "eval_annotators", "annotate_technique_staged"]  # technique_staged reads judge.py
+slow = ["annotate_inputs"]
+
+[[map]]
+paths = ["workflows/annotate/technique_staged/*", "taxonomy/taxonomy-v0.9.yaml", "taxonomy/sources/convert_v09.py",
+         "tests/fixtures/technique_staged/*"]
+tests = ["annotate_technique_staged_foundation", "annotate_technique_staged", "eval_technique_staged"]
+slow = []
+
+[[map]]
+paths = ["stack/evals/*", "stack/cli/eval.py", "evals/*", "tools/fetch_eval_texts.py", "tests/eval_texts.py"]
+tests = ["eval_harness", "eval_combine", "eval_sr", "eval_freeze", "eval_sr_freeze", "eval_annotators",
+         "eval_technique_staged", "eval_texts"]
+slow = []
+
+[[map]]
+# the release's quality numbers from its own build (D728): the re-scoring module, the judge eval set it reads, the card
+paths = ["stack/evals/release_quality.py", "evals/judge-2026-10-25j/*", "stack/fold/dataset.py"]
+tests = ["release_quality", "dataset_release"]
+slow = []
+
+# ---------------------------------------------------------------- tools and the dev tier itself
+[[map]]
+paths = ["tools/resolve_openalex_authors.py"]
+tests = []
+slow = ["resolve_openalex_authors"]
+
+[[map]]
+paths = ["tools/scheduled_run.py"]
+tests = []
+slow = ["scheduled_run", "memlog"]
+
+[[map]]
+paths = ["tools/memlog.py"]
+tests = []
+slow = ["memlog", "scheduled_run"]
+
+[[map]]
+paths = ["tools/devtest.py", "tests/modules.toml", "tests/smoke.txt"]
+tests = ["devtest"]
+slow = []

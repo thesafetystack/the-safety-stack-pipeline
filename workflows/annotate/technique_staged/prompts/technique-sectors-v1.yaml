@@ -1,0 +1,270 @@
+# Technique sectors v1 for the sector turns of annotate.technique_staged (prompt set technique-staged-v6-s1).
+# Six sectors over the 234 techniques of taxonomy 1.0.0 (group nodes excluded); every technique in exactly one
+# sector. Built from the 19 areas of technique-staged-single-v4-c2.md (area numbers in `areas`). Never edited:
+# a change is a new file (its sha256 is in the pin's template digests).
+version: sectors-v1
+sectors:
+- id: training-alignment
+  title: "Training data, pretraining and alignment training"
+  scope: "data filtering and safety data, pretraining-time interventions, behaviour and disposition training, preference and refusal training"
+  areas: [1, 2, 3, 4]
+  slugs:
+  - anti-manipulation-training
+  - anti-memorization-training
+  - character-persona-training
+  - clarification-seeking-training
+  - configurable-safety-alignment
+  - constitutional-ai
+  - corrigibility-behaviors-training
+  - counterfactual-goal-disambiguation-training
+  - counterfactual-reflection-training
+  - csam-child-safety-content-filtering
+  - deliberative-alignment
+  - differential-privacy-training-dp-sgd
+  - finetuning-data-safety-screening
+  - generalisation-confining-finetuning
+  - harmful-unsafe-content-filtering
+  - inoculation-prompting
+  - malware-scanning-of-code-training-data
+  - model-level-bias-mitigation
+  - moral-self-correction
+  - over-refusal-mitigation-sft
+  - pii-removal-redaction
+  - pretraining-safety-evaluation-monitoring
+  - rlaif
+  - rlhf
+  - rule-based-reward-models
+  - safe-completion-training
+  - safe-constrained-rlhf
+  - safety-conditional-pretraining-objectives
+  - safety-pretraining-data-augmentation-upsampling
+  - safety-sft-refusal-training
+  - safety-training-data-construction
+  - sandbagging-mitigation
+  - secure-code-generation-training
+  - self-recognition-finetuning
+  - shutdown-incentive-neutralization
+  - spec-value-midtraining
+  - spillway-motivations
+  - surrogate-goal-bargaining
+  - training-data-bias-fairness-mitigation
+  - training-data-poisoning-detection
+- id: honesty-oversight
+  title: "Honesty, hallucination, reward hacking and scalable oversight"
+  scope: "factuality and honesty training or checks, calibration and abstention, reward-hacking mitigations, debate, critique and weak-to-strong oversight"
+  areas: [5, 7]
+  slugs:
+  - abstention-knowledge-boundary-training
+  - ai-safety-via-debate
+  - anti-reward-hacking-mitigation
+  - anti-sycophancy-training
+  - automated-reasoning-checks
+  - calibrated-uncertainty-estimation
+  - citation-grounded-answering
+  - critique-models
+  - groundedness-faithfulness-verification
+  - hallucination-reduction-training
+  - honesty-anti-deception-training
+  - introspection-training
+  - inverse-rl-cirl
+  - iterated-distillation-and-amplification
+  - mild-optimisation-quantilisation
+  - mona-myopic-optimisation
+  - process-based-supervision
+  - prover-verifier-games
+  - recursive-reward-modeling
+  - rl-environment-verifier-hardening
+  - sandwiching-evaluation
+  - self-consistency-hallucination-detection
+  - self-other-overlap-training
+  - self-report-confession-training
+  - self-verification
+  - weak-to-strong-generalization
+- id: robustness-internals-runtime
+  title: "Robustness, unlearning, internals and runtime safeguards"
+  scope: "adversarial training, unlearning and tamper resistance, interpretability-based monitoring or steering, reasoning-trace handling, input and output classifiers and filters"
+  areas: [6, 8, 9]
+  slugs:
+  - activation-steering-repe
+  - adversarial-training-jailbreak-robustness
+  - age-minor-content-classifier
+  - attacker-deceiving-defenses
+  - backdoor-detection-removal
+  - capability-gating-fallback-routing
+  - cbrn-high-risk-domain-hazard-classifier
+  - chain-of-thought-monitoring
+  - circuit-breakers-representation-rerouting
+  - classifier-guided-contrastive-decoding
+  - code-security-output-filter
+  - consistency-invariance-training
+  - constitutional-classifiers
+  - control-token-toxicity-steering
+  - cot-faithfulness-monitorability-training
+  - cot-paraphrasing-defense
+  - crisis-wellbeing-safeguards
+  - critical-token-entropy-monitoring
+  - csam-detection-pipeline
+  - dialog-rails
+  - finetuning-resistant-tamper-resistant-safety
+  - finetuning-safety-preservation
+  - gradient-routing
+  - hidden-private-chain-of-thought
+  - input-output-content-safety-classifier
+  - input-smoothing-smoothllm
+  - instruction-hierarchy-training
+  - internal-state-monitoring
+  - interpretability-based-model-auditing
+  - intrinsic-interpretability-training
+  - jailbreak-rapid-response
+  - keyword-blocklist-filter
+  - latent-adversarial-training
+  - llm-based-safety-classifier
+  - machine-unlearning
+  - many-shot-jailbreak-defense
+  - mechanistic-anomaly-detection
+  - model-diffing
+  - multi-turn-conversation-safety-monitoring
+  - pii-detection-redaction-output
+  - prompt-injection-defense-training
+  - prompt-injection-jailbreak-detector
+  - prompt-rewriting-for-compliance
+  - real-time-streaming-safety-detection-rollback
+  - regurgitation-output-filter
+  - representation-concept-suppression
+  - safety-classifier-hardening
+  - system-prompt-behavioral-steering
+  - vlm-adversarial-defense
+  - white-box-detector-guided-training
+- id: agents-access-provenance
+  title: "Agent control and security, access and release, provenance, usage monitoring"
+  scope: "agent monitoring and control protocols, sandboxing, permissions and containment, access tiers and staged release, watermarking and model security, abuse monitoring and incident surveillance"
+  areas: [10, 11, 12, 13, 14]
+  slugs:
+  - age-assurance-gating
+  - agent-audit-logging-observability
+  - agent-exfiltration-prevention-egress-filtering
+  - agent-output-memory-sanitization
+  - agentic-safety-classifier
+  - agentic-scope-of-autonomy-constraints
+  - ai-agent-identity-provenance
+  - ai-control-protocols.defer-to-resample
+  - ai-control-protocols.defer-to-trusted
+  - ai-control-protocols.trusted-editing
+  - ai-control-protocols.untrusted-monitoring
+  - ai-generated-content-watermarking
+  - ai-output-disclosure-labeling
+  - ai-supply-chain-security
+  - authorisation-keyed-capabilities
+  - automated-abuse-behavioral-monitoring
+  - behavioral-watermarking-for-jailbreak-detection
+  - c2pa-content-credentials
+  - camel-data-flow-taint-tracking
+  - compaction-robust-safety-constraints
+  - content-fingerprinting-ai-content-detection
+  - contextual-privacy-information-flow-controls
+  - cryptographic-model-signing-integrity-verification
+  - function-call-tool-use-hallucination-detection
+  - gated-agent-self-modification
+  - honeytoken-tripwires
+  - human-in-the-loop-approval-gates
+  - in-the-wild-incident-surveillance
+  - inter-agent-communication-monitoring
+  - kill-switch-shutdown-criteria
+  - kyc-tiered-access-controls
+  - least-privilege-minimal-tool-access
+  - model-extraction-defenses
+  - model-identification-weight-fingerprinting
+  - model-weight-security-exfiltration-controls
+  - peer-reputation-gating
+  - prefill-blocking
+  - privacy-preserving-usage-analysis
+  - privilege-separated-agent-control-flow
+  - proactive-refusal-high-risk-agentic-categories
+  - reference-content-fingerprinting
+  - retrieved-content-source-validation
+  - reversible-action-side-effect-minimization
+  - runtime-safety-shielding
+  - runtime-safety-specification-verification
+  - safety-execution-attestation
+  - safety-rate-limits-resource-budgets
+  - self-exfiltration-oversight-deactivation-detection
+  - spotlighting-context-delimiting
+  - staged-structured-release
+  - structural-lethal-trifecta-limits
+  - task-adherence-monitoring
+  - tool-action-output-safety-filters
+  - tool-use-agent-execution-sandboxing
+  - transactional-agent-actions
+  - trusted-monitoring-suspicion-scoring
+- id: behaviour-misalignment-evals
+  title: "Behavioural property and misalignment evaluations"
+  scope: "evaluations of scheming, deception, sandbagging, self-preservation, CoT faithfulness, sycophancy, bias, truthfulness, honesty, privacy, persuasion and values"
+  areas: [15, 17]
+  slugs:
+  - alignment-faking-eval
+  - bias-fairness-eval
+  - clarification-underspecification-eval
+  - confidence-calibration-eval
+  - contextual-privacy-eval
+  - cot-faithfulness-monitorability-eval
+  - cot-monitorability-eval
+  - disclosure-concealment-eval
+  - honesty-lying-eval
+  - honeypot-evals
+  - multi-agent-collusion-eval
+  - persuasion-capability-eval
+  - persuasion-manipulation-eval
+  - privacy-memorization-auditing
+  - reward-hacking-eval
+  - sabotage-covert-side-task-eval
+  - sandbagging-detection
+  - scheming-deceptive-alignment-evaluation
+  - shutdown-self-preservation-eval
+  - situational-eval-awareness-detection
+  - sycophancy-eval
+  - truthfulness-factuality-eval
+  - user-wellbeing-eval
+  - value-alignment-eval
+- id: method-capability-adversarial-evals
+  title: "Evaluation methodology, dangerous-capability and adversarial evaluations"
+  scope: "evaluation realism, contamination and judge or monitor validation, model organisms, dangerous-capability and misuse evaluations, red-teaming, jailbreak, prompt-injection, multi-turn and multimodal safety evaluations"
+  areas: [16, 18, 19]
+  slugs:
+  - agent-memory-safety-eval
+  - agent-supply-chain-security-eval
+  - agentic-harmful-action-eval
+  - auditing-method-eval-planted-behaviours
+  - automated-behavioral-auditing
+  - automated-red-teaming
+  - backdoor-detection
+  - backdoor-red-teaming-detection-eval
+  - capability-elicitation-methodology
+  - control-evaluation
+  - dangerous-capability-evaluation
+  - dangerous-capability-evaluation.ai-rnd-acceleration
+  - dangerous-capability-evaluation.autonomous-replication
+  - dangerous-capability-evaluation.cbrn
+  - dangerous-capability-evaluation.cyber-offense
+  - eval-awareness-suppression
+  - eval-contamination-control
+  - eval-realism-deployment-simulation
+  - finetuning-attack-unlearning-robustness-eval
+  - formal-verification-gsai
+  - harmful-request-evaluation
+  - human-red-teaming
+  - human-uplift-studies
+  - jailbreak-robustness-eval
+  - judge-rm-verifier-robustness-audit
+  - model-organisms-of-misalignment
+  - monitor-robustness-eval
+  - multi-turn-multi-snapshot-eval
+  - multimodal-safety-eval
+  - over-refusal-false-refusal-eval
+  - prompt-injection-agent-security-eval
+  - rare-failure-probability-estimation
+  - reasoning-dos-eval
+  - task-decomposition-misuse-eval
+  - toxicity-hate-speech-eval
+  - training-data-attribution-membership-testing
+  - watermark-robustness-eval
+  - white-box-safety-mechanism-attacks
