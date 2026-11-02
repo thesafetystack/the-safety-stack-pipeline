@@ -516,6 +516,23 @@ def spend_since(since: str, st: dict[str, Any] | None = None) -> float:
     return float(sum(j["spend_usd_micro"] + j["open_usd_micro"] for j in jobs)) / 1e6
 
 
+def cap_spend_since(since: str, st: dict[str, Any] | None = None) -> float:
+    """What the cycle's spend cap counts (D797): USD settled of every job started at or after ``since``, plus the
+    open reservations of those that are not live (a dead job's open amount is part of its spend). A live run's
+    reservations are bounded by its own per-run cap (an annotate line's ``--max-usd`` is what was left of the cycle's,
+    :func:`max_usd_args`); counting them too books that budget twice, and stopped a cycle at $4.66 settled when an
+    annotate run started with $8.00 open across its workers."""
+    jobs = [j for j in (st or status_json())["jobs"] if j["started_at"] >= since]
+    return float(sum(j["spend_usd_micro"] + (0 if j.get("liveness") == "live" else j["open_usd_micro"])
+                     for j in jobs)) / 1e6
+
+
+def live_open_since(since: str, st: dict[str, Any]) -> float:
+    """USD open in live jobs started at or after ``since``: what :func:`cap_spend_since` leaves out (the LIVE line)."""
+    return float(sum(j["open_usd_micro"] for j in st["jobs"]
+                     if j["started_at"] >= since and j.get("liveness") == "live")) / 1e6
+
+
 # ---------------------------------------------------------------- the ops prefix: lock, summaries, releases
 class Ops:
     """The ops prefix on the store's bucket, through :class:`S3Backend`; ``read_only`` installs the client guard."""
@@ -972,11 +989,12 @@ class Cycle:
         asked = sum(int((x.get("counts") or {}).get("asked_pairs", 0)) for x in runs if x.get("stage") == "triage")
         return rows, asked
 
-    def over_caps(self) -> str | None:
+    def over_caps(self, st: dict[str, Any] | None = None) -> str | None:
+        """The wall or spend cap reached, else None; ``st``: a ``stack status --json`` already read (else read here)."""
         el = (utcnow() - self.t0).total_seconds() / 3600
         if el >= self.s.max_wall_h:
             return f"wall {el:.1f} h >= STACK_SCHED_MAX_WALL_H {self.s.max_wall_h}"
-        usd = spend_since(self.t0iso)
+        usd = cap_spend_since(self.t0iso, st)
         if usd >= self.s.max_usd:
             return f"cycle spend ${usd:.2f} >= STACK_SCHED_MAX_USD {self.s.max_usd}"
         return None
@@ -1054,8 +1072,10 @@ class Cycle:
             if now - last_cap >= self.s.watch_s:
                 last_cap = now
                 try:
-                    why = self.over_caps()
-                    log(f"LIVE: cycle {self.id}, spend ${spend_since(self.t0iso):.2f}, "
+                    st = status_json()  # one read for the cap and the LIVE line, so the two agree
+                    why = self.over_caps(st)
+                    log(f"LIVE: cycle {self.id}, spend ${cap_spend_since(self.t0iso, st):.2f} "
+                        f"(+${live_open_since(self.t0iso, st):.2f} open in live runs), "
                         f"wall {(utcnow() - self.t0).total_seconds() / 3600:.1f} h"
                         f"{mem_note(getattr(children.current, 'pid', None))}")
                 except RuntimeError as exc:

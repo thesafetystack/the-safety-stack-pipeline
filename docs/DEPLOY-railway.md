@@ -85,7 +85,8 @@ the documents acquire covers.
    `cycles/latest.json`) on the ops prefix and on stdout, and **one email per cycle** (below).
 
 Exit 0 ok, 1 failed, halted or upload refused, 3 incomplete (resumed by the next cycle), 4 refused. Caps:
-`STACK_SCHED_MAX_USD` ($100, every job the cycle started; annotate lines get `--max-usd` of what is left; triage's
+`STACK_SCHED_MAX_USD` ($100, every job the cycle started: settled spend plus the open reservations of jobs that are
+not live, D797; annotate lines get `--max-usd` of what is left; triage's
 $20 per run cannot be lowered), `STACK_SCHED_MAX_WALL_H` (20 h: a Sunday 00:00 start ends by 20:00 UTC, before
 Monday morning AoE); at a cap the running job is drained (one SIGTERM), cancelled after 60 min
 (`STACK_SCHED_DRAIN_GRACE_S`, 3600: a drained build's final verify takes 29-38 min), and the cycle exits after

@@ -773,9 +773,86 @@ def test_the_watchdog_marks_a_lost_lock(env: None, monkeypatch: pytest.MonkeyPat
         monkeypatch.setattr(sr.children, "stop_reason", None)
         cyc = sr.Cycle(sr.Settings.from_env(), dry=False)
         monkeypatch.setattr(cyc, "held", lambda: None)
-        monkeypatch.setattr(cyc, "over_caps", lambda: None)
+        monkeypatch.setattr(cyc, "over_caps", lambda *_a: None)
         cyc.watchdog(FakeLock(ours), Done())  # type: ignore[arg-type]
         assert cyc.lock_lost is (not ours) and sr.children.stop_reason == (None if ours else "lock lost")
+
+
+def _spend_jobs(since: str, build_liveness: str, finished_settled: float = 4.66) -> dict[str, Any]:
+    """A status read of a cycle's jobs: a finished build and a second build with $8.00 open (an annotate run's
+    reservations across its workers, 20261102T0059Z-729d), and an older job outside the cycle."""
+    def job(i: str, liveness: str, settled: float, open_: float, at: str = since) -> dict[str, Any]:
+        return {"kind": "build", "id": i, "liveness": liveness, "started_at": at,
+                "spend_usd_micro": round(settled * 1e6), "open_usd_micro": round(open_ * 1e6)}
+    return {"jobs": [job("b2", build_liveness, 0.0, 8.0), job("b1", "finished", finished_settled, 0.0),
+                     job("old", "dead", 50.0, 50.0, "2000-01-01T00:00:00+00:00")]}
+
+
+@pytest.mark.parametrize(("liveness", "settled", "want"), [
+    ("live", 4.66, None),                                                  # a live run's open is its own --max-usd's
+    ("dead", 4.66, "cycle spend $12.66 >= STACK_SCHED_MAX_USD 10.0"),     # a dead job's open is part of its spend
+    ("unknown", 4.66, "cycle spend $12.66 >= STACK_SCHED_MAX_USD 10.0"),
+    ("finished", 4.66, "cycle spend $12.66 >= STACK_SCHED_MAX_USD 10.0"),
+    ("live", 10.5, "cycle spend $10.50 >= STACK_SCHED_MAX_USD 10.0"),     # settled alone over the cap
+])
+def test_the_cycle_cap_leaves_out_the_open_reservations_of_live_runs(
+        env: None, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, liveness: str, settled: float,
+        want: str | None) -> None:
+    """D797: the cycle's spend cap counts settled spend plus the open reservations of jobs that are not live."""
+    _canned_cycle(monkeypatch, tmp_path, [])
+    monkeypatch.setenv("STACK_SCHED_MAX_USD", "10")
+    cyc = sr.Cycle(sr.Settings.from_env(), dry=False)
+    st = _spend_jobs(cyc.t0iso, liveness, settled)
+    monkeypatch.setattr(sr, "status_json", lambda: st)
+    assert cyc.over_caps() == want
+    assert cyc.over_caps(st) == want
+    assert sr.spend_since(cyc.t0iso, st) == pytest.approx(settled + 8.0)  # the period total keeps every open amount
+
+
+def test_the_live_line_and_the_cap_read_the_status_once(env: None, monkeypatch: pytest.MonkeyPatch,
+                                                        tmp_path: Path) -> None:
+    """One status read per cap check serves the cap and the LIVE line, so they cannot disagree; LIVE shows what the
+    cap counts and, apart, what is open in live runs. Each read here returns a different spend: a second read would
+    show in the line or stop the cycle."""
+    _canned_cycle(monkeypatch, tmp_path, [])
+    monkeypatch.setenv("STACK_SCHED_MAX_USD", "10")
+    cyc = sr.Cycle(sr.Settings.from_env(), dry=False)
+    reads = [_spend_jobs(cyc.t0iso, "live"), _spend_jobs(cyc.t0iso, "live", 10.5)]
+    calls: list[int] = []
+
+    def status_json() -> dict[str, Any]:
+        calls.append(1)
+        return reads[len(calls) - 1]
+
+    clock = {"t": 0.0}
+
+    class FakeTime:
+        @staticmethod
+        def monotonic() -> float:
+            return clock["t"]
+
+    class Done:
+        def wait(self, s: float) -> bool:
+            clock["t"] += s
+            return clock["t"] > cyc.s.watch_s + 60  # one cap check
+
+    class FakeLock:
+        def heartbeat(self) -> bool:
+            return True
+
+    lines: list[str] = []
+    monkeypatch.setattr(sr, "status_json", status_json)
+    monkeypatch.setattr(sr, "time", FakeTime)
+    monkeypatch.setattr(sr, "log", lines.append)
+    monkeypatch.setattr(sr, "mem_note", lambda _pid: "")
+    monkeypatch.setattr(sr.children, "current", None)
+    monkeypatch.setattr(sr.children, "stop_reason", None)
+    monkeypatch.setattr(cyc, "held", lambda: None)
+    cyc.watchdog(FakeLock(), Done())  # type: ignore[arg-type]
+    assert len(calls) == 1 and sr.children.stop_reason is None
+    live = [ln for ln in lines if ln.startswith("LIVE: ")]
+    assert len(live) == 1 and live[0].startswith(f"LIVE: cycle {cyc.id}, spend $4.66 (+$8.00 open in live runs), "
+                                                 "wall ")
 
 
 def test_tail_share_reads_the_last_acquire_runs_due_and_covered_rows() -> None:
@@ -900,7 +977,7 @@ def test_the_watchdog_gives_a_child_started_after_the_stop_its_own_clock(
     monkeypatch.setattr(sr.os, "_exit", exit_)
     monkeypatch.setattr(cyc, "finish", lambda write=True: None)
     monkeypatch.setattr(cyc, "held", lambda: None)
-    monkeypatch.setattr(cyc, "over_caps", lambda: None)
+    monkeypatch.setattr(cyc, "over_caps", lambda *_a: None)
     monkeypatch.setattr(sr, "spend_since", lambda *_a: 0.0)
     monkeypatch.setattr(sr.children, "stop_reason", "wall 20.0 h >= STACK_SCHED_MAX_WALL_H 20.0")
     monkeypatch.setattr(sr.children, "current", build)
