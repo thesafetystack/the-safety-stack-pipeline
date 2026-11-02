@@ -594,7 +594,8 @@ print(f"${usd:,.2f} over {len(jobs)} jobs")'
 
 `jobs` holds builds and standalone runs. A build's runs are counted in its own entry and are not jobs of their own,
 so nothing is counted twice; the `active_runs` listed under a running build repeat part of its spend and are left
-out.
+out. The scheduled cycle's spend cap (`STACK_SCHED_MAX_USD`, `docs/DEPLOY-railway.md`) counts this total over the jobs
+the cycle started, less the open reservations of live jobs, which their own per-run caps bound (D797).
 
 ### What a crash leaves, and why it is safe
 
