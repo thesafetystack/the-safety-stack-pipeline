@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "orgs-0.schema.json",
+  "title": "Organisation vocabulary, major version 0 (catalogue envelope + organisation fields)",
+  "description": "stack/orgvocab.py reads it; the matcher lints what the schema cannot say (dangling or cyclic parents, aliases made of generic words or naming a country).",
+  "allOf": [{"$ref": "catalogue-0.schema.json"}],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "string", "pattern": "^0\\.[0-9]+\\.[0-9]+$"},
+    "meta": {
+      "type": "object",
+      "required": ["schema", "updated", "status", "types"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": {"const": "orgs-0"},
+        "updated": {"type": "string"},
+        "status": {"enum": ["draft", "released"]},
+        "description": {"type": "string"},
+        "sources": {"type": "object"},
+        "types": {"type": "object", "additionalProperties": {"type": "string"}},
+        "tags": {"type": "object", "additionalProperties": {"type": "string"}},
+        "countries": {"type": "object", "propertyNames": {"pattern": "^[A-Z]{2}$"},
+                      "additionalProperties": {"type": "array", "items": {"type": "string", "minLength": 1}}},
+        "regions": {"type": "object", "propertyNames": {"pattern": "^[A-Z]{2}$"},
+                    "additionalProperties": {"type": "object", "additionalProperties": false,
+                                             "properties": {"names": {"type": "array", "items": {"type": "string"}},
+                                                            "codes": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z]{2}$"}}}}},
+        "places": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "generic_words": {"type": "array", "items": {"type": "string"}},
+        "unit_words": {"type": "array", "items": {"type": "string"}},
+        "non_org": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/org"}}
+  },
+  "$defs": {
+    "strings": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "org": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "name": {"type": "string"},
+        "parent": {},
+        "aliases": {"$ref": "#/$defs/strings"},
+        "note": {},
+        "external_ids": {"type": "object", "additionalProperties": false,
+                         "properties": {"ror": {"type": "array", "items": {"type": "string", "pattern": "^0[a-z0-9]{8}$"}}}},
+        "type": {"enum": ["university", "company", "institute", "government", "nonprofit", "hospital", "other"]},
+        "country": {"type": ["string", "null"], "pattern": "^[A-Z]{2}$"},
+        "other_ids": {"$ref": "#/$defs/strings"},
+        "tags": {"$ref": "#/$defs/strings"},
+        "cased": {"$ref": "#/$defs/strings"},
+        "segment_aliases": {"$ref": "#/$defs/strings"},
+        "local_names": {"$ref": "#/$defs/strings"},
+        "patterns": {"$ref": "#/$defs/strings"},
+        "domains": {"$ref": "#/$defs/strings"}
+      }
+    }
+  }
+}
