@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "models-2.schema.json",
+  "title": "Models taxonomy, schema 2 (catalogue envelope; models 1.1.0 on)",
+  "description": "One entries list of family, group and model nodes. maker and lab are references {id, name} into the organisation vocabulary version meta.references.orgs; the validator checks they resolve there, and that parent, variant_of, based_on, distilled_from and same_weights_as name other entries.",
+  "allOf": [{"$ref": "catalogue-0.schema.json"}],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$"},
+    "meta": {
+      "type": "object",
+      "required": ["schema", "updated", "status", "description", "references"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": {"const": "models-2"},
+        "updated": {"$ref": "#/$defs/day"},
+        "status": {"enum": ["draft", "released"]},
+        "description": {"type": "string", "minLength": 1},
+        "sources": {"type": "object"},
+        "references": {"type": "object", "required": ["orgs"], "additionalProperties": false,
+                       "properties": {"orgs": {"type": "string"}}}
+      }
+    },
+    "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/node"}}
+  },
+  "$defs": {
+    "key": {"$ref": "catalogue-0.schema.json#/$defs/id"},
+    "org": {"$ref": "catalogue-0.schema.json#/$defs/ref"},
+    "text": {"type": "string", "minLength": 1},
+    "texts": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "day": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "partial_date": {"type": "string", "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$"},
+    "millions": {"type": ["number", "null"], "minimum": 0},
+    "modality": {"enum": ["text", "image", "video", "audio", "embedding", "action", "code", "music"]},
+    "node": {
+      "type": "object",
+      "required": ["id", "kind", "name", "gloss", "model_class"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/key"},
+        "kind": {"enum": ["family", "group", "model"]},
+        "level": {"enum": ["generation", "line", "series"]},
+        "name": {"$ref": "#/$defs/text"},
+        "gloss": {"$ref": "#/$defs/text"},
+        "parent": {"$ref": "#/$defs/key"},
+        "maker": {
+          "oneOf": [
+            {"$ref": "#/$defs/org"},
+            {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/org"}}
+          ]
+        },
+        "mentions": {"$ref": "#/$defs/texts"},
+        "weak_mentions": {"oneOf": [{"$ref": "#/$defs/texts"}, {"type": "null"}]},
+        "mentions_verbatim": {"$ref": "#/$defs/texts"},
+        "notes": {"$ref": "#/$defs/text"},
+        "model_class": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"enum": ["language-model", "vision-language", "image-gen", "speech-generation", "embedding",
+                             "video-gen", "guard-classifier", "speech-recognition", "robot-policy", "world-model",
+                             "vision-backbone", "music-gen", "reward-model", "rl-agent", "science",
+                             "text-encoder", "reranker", "detector-segmenter", "judge-model",
+                             "interpretability-tool"]}
+        },
+        "lifecycle": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true,
+          "properties": {
+            "released": {"$ref": "#/$defs/partial_date"},
+            "announced": {"$ref": "#/$defs/partial_date"},
+            "preview": {"$ref": "#/$defs/partial_date"},
+            "deprecated": {"$ref": "#/$defs/partial_date"},
+            "retired": {"$ref": "#/$defs/partial_date"}
+          }
+        },
+        "links": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "announcement": {"$ref": "#/$defs/text"},
+            "model_card": {"$ref": "#/$defs/text"},
+            "paper": {"$ref": "#/$defs/text"}
+          }
+        },
+        "params": {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": true,
+          "properties": {
+            "kind": {"enum": ["official", "undisclosed", "estimate"]},
+            "total_m": {"$ref": "#/$defs/millions"},
+            "active_m": {"$ref": "#/$defs/millions"},
+            "source": {"$ref": "#/$defs/text"}
+          }
+        },
+        "modalities": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "in": {"type": "array", "items": {"$ref": "#/$defs/modality"}},
+            "out": {"type": "array", "items": {"$ref": "#/$defs/modality"}}
+          }
+        },
+        "confidence": {"enum": ["verified", "weak", "stub"]},
+        "checked": {"$ref": "#/$defs/day"},
+        "uncertainties": {"$ref": "#/$defs/texts"},
+        "variant_of": {"$ref": "#/$defs/key"},
+        "variant_kind": {"$ref": "#/$defs/text"},
+        "based_on": {"$ref": "#/$defs/key"},
+        "distilled_from": {"$ref": "#/$defs/key"},
+        "same_weights_as": {"$ref": "#/$defs/key"},
+        "representation_status": {"enum": ["folded", "expanded", "class-only"]},
+        "specialization": {
+          "type": "array",
+          "items": {"enum": ["code", "reasoning", "cyber", "bio", "computer-use", "medical"]}
+        },
+        "lab": {"$ref": "#/$defs/org"},
+        "tags": {"type": "array", "items": {"enum": ["instrument", "pre-llm", "supercategory"]}}
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "group"}}}, "then": {"required": ["level"]},
+         "else": {"not": {"required": ["level"]}}},
+        {"if": {"properties": {"kind": {"const": "model"}}},
+         "then": {"required": ["parent", "confidence", "checked"]},
+         "else": {"not": {"anyOf": [{"required": ["confidence"]}, {"required": ["checked"]}]}}}
+      ]
+    }
+  }
+}

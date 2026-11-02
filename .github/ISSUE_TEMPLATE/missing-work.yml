@@ -1,0 +1,24 @@
+name: Missing work
+description: A document that fits the inclusion criterion is not in the dataset.
+title: "Missing: "
+labels: [missing-work]
+body:
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: URL, DOI or arXiv id of the document.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it belongs
+      description: Which part of the inclusion criterion (README, "What is included") it meets, in a sentence or two.
+    validations:
+      required: true
+  - type: textarea
+    id: techniques
+    attributes:
+      label: Techniques or models it covers
+      description: Optional. Slugs from the techniques taxonomy or model names, if you know them.

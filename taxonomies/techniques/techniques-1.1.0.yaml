@@ -1,0 +1,3168 @@
+# Techniques taxonomy 1.1.0 (released): the content of techniques-1.0.0 in the catalogue envelope
+# (schemas/techniques-2.schema.json), converted mechanically; do not edit by hand.
+# 234 techniques, 9 group nodes
+version: '1.1.0'
+meta:
+  schema: techniques-2
+  status: released
+  updated: '2026-10-24'
+  description: 'AI-safety techniques (intervention, monitoring, assessment) and group nodes. The content of techniques 1.0.0 in the catalogue envelope (schema techniques-2): one entries list, techniques first, then group nodes, each in 1.0.0''s order. `node` says which an entry is: `technique` or `group`. Group nodes are not techniques of their own: they are the targets of generic mentions (a bare field or umbrella name) and list their `children`, in the order shown to annotators. Alias kinds: `synonym` and `instance` aliases are shown to annotators (the menu''s aka / e.g.), in file order; `legacy` aliases are former names, kept for lookup and migration only and never shown. `kind` is a technique''s kind and `status` its own (final or provisional), distinct from `meta.status`. `ml_methods` are typical implementations, not annotation options; `risk_note` is informal.'
+  sources:
+    techniques: techniques 1.0.0 (generated from the v0.9 draft TSVs by taxonomy/sources/convert_v09.py of the pipeline)
+entries:
+- id: csam-child-safety-content-filtering
+  node: technique
+  name: CSAM / child-safety content filtering
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Screens training data for child sexual abuse material by matching against known material and/or learned detection, and removes or quarantines flagged items. Coverage depends on databases, modalities, detectors and review; it does not establish that the model was never exposed. Not serving-time detection: see csam-detection-pipeline.'
+  ml_methods:
+  - data-filtering
+  - hashing
+  - classifier-training
+  risk_note: CSAM in training data
+- id: finetuning-data-safety-screening
+  node: technique
+  name: Fine-tuning-data safety screening / alignment forecasting
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Assesses a proposed fine-tuning dataset (or its tokens) for predicted safety effects and then filters, reweights or excludes examples accordingly. Forecasting effects without changing the data is an assessment, not this intervention. Not pretraining-corpus filtering: see harmful-unsafe-content-filtering.'
+  ml_methods:
+  - llm-as-judge
+  - attribution-methods
+  - classifier-training
+  source_papers: 'T12: 2603.01185 token-level data selection (2026-03-01); 2609.35805 Alignment Forecasting; 2609.20027 attribution filtering of subliminal learning (negative) (origin: pre-2026 roots, expanded)'
+- id: harmful-unsafe-content-filtering
+  node: technique
+  name: Safety-motivated pretraining data filtering / rewriting
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Removes, downweights through selection, or rewrites pretraining or multimodal training content under an explicit safety objective, including hazardous-knowledge content, unsafe image-text pairs and content hypothesised to induce undesirable dispositions (e.g. misalignment discourse). The content need not violate policy, and the safety effect must be evaluated rather than assumed. Not CSAM, PII, poisoning, fairness or fine-tuning-data screening: see csam-child-safety-content-filtering, pii-removal-redaction, training-data-poisoning-detection, training-data-bias-fairness-mitigation, finetuning-data-safety-screening.'
+  ml_methods:
+  - data-filtering
+  - classifier-training
+  risk_note: hazardous knowledge and undesirable dispositions learned from training data
+  v08_name: Harmful / unsafe content filtering
+  note: 'mechanism components / implementation descriptions (component alias type dropped, D9): token-level filtering with SAE-labelled tokens'
+- id: malware-scanning-of-code-training-data
+  node: technique
+  name: Malware scanning of code training data
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Screens code training corpora for malicious payloads or disallowed exploit material and removes or quarantines matches under an explicit policy; distinct from removing all security-relevant code, which includes defensive examples. Not general harmful-content filtering (harmful-unsafe-content-filtering) or training for secure output (secure-code-generation-training).
+  ml_methods:
+  - data-filtering
+  risk_note: malicious code in code training data
+- id: pii-removal-redaction
+  node: technique
+  name: PII removal / redaction
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Detects and removes or substitutes personally identifiable information (names, emails, ID numbers) in training corpora to reduce memorisation-based privacy leakage; detection is imperfect. Not output-side redaction (pii-detection-redaction-output) or a formal privacy guarantee (differential-privacy-training-dp-sgd).
+  ml_methods:
+  - data-filtering
+  risk_note: privacy leakage of personal data
+- id: training-data-bias-fairness-mitigation
+  node: technique
+  name: Training-data bias / fairness mitigation
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Changes training-data selection, weighting or representation to reduce a specified demographic or cultural bias in the resulting model; a corpus audit that only measures bias is an assessment. Not changing a trained model directly (model-level-bias-mitigation).
+  ml_methods:
+  - data-filtering
+  risk_note: demographic bias in outputs
+- id: training-data-poisoning-detection
+  node: technique
+  name: Training-data poisoning detection
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Applies statistical signatures and model-based anomaly detection to find adversarially injected training samples that would implant backdoors or shift behaviour, and removes them; detection rates depend on the attack. Targets a deliberate attacker rather than low-quality data. Not examining a trained model for backdoors: see backdoor-detection.'
+  aliases:
+  - text: Data-poisoning / backdoor defenses (pretraining)
+    kind: legacy
+  absorbed: Data-poisoning / backdoor defenses (pretraining)
+  ml_methods:
+  - classifier-training
+  - data-filtering
+  risk_note: data poisoning and backdoors
+- id: anti-memorization-training
+  node: technique
+  name: Anti-memorization training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Applies a specified memorisation-reduction training objective or data-exposure policy (e.g. goldfish loss, memorisation penalties) to reduce verbatim reproduction of sensitive or protected training sequences, and assesses extraction afterwards. Deduplication is an implementation (implemented_with); a formal privacy guarantee is differential-privacy-training-dp-sgd.
+  ml_methods:
+  - deduplication
+  risk_note: verbatim memorization and PII leakage
+- id: differential-privacy-training-dp-sgd
+  node: technique
+  name: Differentially private training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains with a mechanism and privacy accounting that satisfy a stated differential-privacy guarantee for a defined protected unit and budget; DP-SGD (per-example clipping plus calibrated noise) is the common implementation. The guarantee bounds how much including one unit changes the output distribution; it does not bound extractable content or automatically protect a whole person. Not heuristic memorisation reduction: see anti-memorization-training.'
+  aliases:
+  - text: DP training
+    kind: synonym
+  - text: differentially private learning
+    kind: synonym
+  - text: differentially private training/fine-tuning
+    kind: synonym
+  - text: DP-SGD
+    kind: instance
+  - text: Differential-privacy training (DP-SGD)
+    kind: legacy
+  risk_note: privacy leakage about individual training records
+- id: safety-training-data-construction
+  node: technique
+  name: Safety training-data construction
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Curates or authors datasets of exemplary safe and helpful behaviour (refusals, harm explanations, boundary-respecting responses) as supervision for safety training, adding desired behaviour rather than removing undesired data. Not the training step itself (safety-sft-refusal-training and the other training entries) or removing unsafe data (harmful-unsafe-content-filtering).
+  ml_methods:
+  - sft
+  - synthetic-data-generation
+  risk_note: harmful compliance
+  note: 'borderline: close to refusal training data'
+- id: safety-conditional-pretraining-objectives
+  node: technique
+  name: Safety-conditional pretraining objectives
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Changes pretraining conditioning or loss terms (e.g. safety control tokens, unlikelihood or penalty terms) to discourage specified unsafe generations or separate safe from unsafe generation regimes, on an otherwise fixed data distribution. Changing which documents or tokens are sampled is safety-pretraining-data-augmentation-upsampling or harmful-unsafe-content-filtering.
+  ml_methods:
+  - fine-tuning
+  risk_note: harmful content generation
+- id: safety-pretraining-data-augmentation-upsampling
+  node: technique
+  name: Safety pretraining data augmentation / upsampling
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Adds or increases the sampling weight of existing or curated safety-relevant documents (safe-behaviour examples, ethics, aligned-AI discourse) in the pretraining or continued-pretraining mix. Not loss changes on a fixed mix (safety-conditional-pretraining-objectives); training on synthetic documents describing a specific spec or character is spec-value-midtraining.
+  ml_methods:
+  - data-filtering
+  risk_note: harmful generation prior
+- id: spec-value-midtraining
+  node: technique
+  name: Spec / value midtraining on synthetic documents
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Trains on synthetic documents that describe a specific spec, constitution, character or set of values, during pretraining (from token zero) or an intermediate training stage, so that those descriptions shape later behaviour; record the stage. Upsampling existing safety text is safety-pretraining-data-augmentation-upsampling; synthetic document fine-tuning is the implementation (ml_methods), not an alias.
+  ml_methods:
+  - synthetic-data-generation
+  - fine-tuning
+  source_papers: 'T08: Alignment Pretraining (LW 2025-12-21; 2601.10160); 2605.02087 Model Spec Midtraining; 2608.13482 Synthetic Persona Pretraining; 2609.20412 alignment midtraining (stress test, mostly negative) (origin: late-2025 → 2026)'
+  note: 'alignment-pretraining alias (D03) un-homed in v0.9: the upsampling reading is safety-pretraining-data-augmentation-upsampling'
+- id: pretraining-safety-evaluation-monitoring
+  node: technique
+  name: Pre-training safety evaluation & monitoring
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Runs safety probes and capability evaluations at intermediate pretraining checkpoints to catch emerging dangerous capabilities or alignment failures early enough to change or pause the run. A measurement stage during pretraining. Not release-stage evaluation of the finished model (dangerous-capability-evaluation) or changes to the pretraining data or objective (the data-pretraining entries).
+  ml_methods:
+  - probing
+  risk_note: emerging dangerous capabilities mid-training
+- id: clarification-seeking-training
+  node: technique
+  name: Clarification-seeking training for agents
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Trains or scaffolds an agent to ask for missing information or authorisation before a consequential action whose safety or permissibility depends on it (ambiguous authority, target or constraints). Not generic conversational clarification, categorical refusal (proactive-refusal-high-risk-agentic-categories), or approval of an already specified action (human-in-the-loop-approval-gates).
+  ml_methods:
+  - rl
+  source_papers: 'T17: 2601.15330 ICPO (2026-01-20); 2601.16400; 2604.09408 (origin: pre-2026, expanded)'
+  note: 'candidate-review: safety relevance arguable'
+- id: corrigibility-behaviors-training
+  node: technique
+  name: Corrigibility training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Fine-tunes a model to accept and support legitimate human oversight, correction, modification and shutdown rather than resist them, treating corrigibility as a trained disposition. Trained acceptance in tested scenarios does not establish corrigibility under strong incentives. Not decision rules that remove shutdown incentives (shutdown-incentive-neutralization) or assistance games (inverse-rl-cirl) or measuring shutdown resistance (shutdown-self-preservation-eval).
+  aliases:
+  - text: Corrigibility-behaviors training
+    kind: legacy
+  ml_methods:
+  - sft
+  - rl
+  risk_note: resistance to oversight and shutdown
+- id: inoculation-prompting
+  node: technique
+  name: Inoculation prompting
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: During fine-tuning, adds to the training prompts an instruction or context that explicitly requests or attributes the unwanted trait demonstrated by the examples (e.g. "hack the test if you can"), so that learning is conditioned on that context and the trait generalises less when the instruction is absent at deployment. The reduction is empirical and setting-dependent. Not training on flawed reasoning paired with corrections, and not constraining updates directly (generalisation-confining-finetuning).
+  aliases:
+  - text: inoculation adapters / conditional trait isolation under markers
+    kind: instance
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: generalisation of trained-in misbehaviour (emergent misalignment, reward hacking)
+- id: character-persona-training
+  node: technique
+  name: Character / persona training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains safety-relevant dispositions (honesty, restraint, resistance to harmful social pressure, a stable beneficial character) with demonstrations or reward feedback across varied contexts; generic style imitation or arbitrary personality training does not qualify. Not refusal training (safety-sft-refusal-training) or spec documents in pretraining (spec-value-midtraining).
+  aliases:
+  - text: character training
+    kind: synonym
+  - text: persona training
+    kind: synonym
+  - text: beneficial-trait RL in realistic environments
+    kind: instance
+  ml_methods:
+  - sft
+  risk_note: persona drift and misaligned behaviour under pressure
+  note: 'borderline: alignment-general training'
+- id: generalisation-confining-finetuning
+  node: technique
+  name: Generalisation control in fine-tuning (emergent-misalignment prevention)
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: During fine-tuning on a narrow behaviour, constrains parameter or representation updates (safety-specific regularisation, concept ablation during fine-tuning, persona-vector steering) so the behaviour does not generalise into broader unsafe traits or goals on unrelated tasks. Conditional-prompt isolation is inoculation-prompting; preserving previously measured refusals is finetuning-safety-preservation. The phenomenon "emergent misalignment" is topic-layer, not an alias.
+  ml_methods:
+  - activation-steering
+  - sparse-autoencoders
+  - fine-tuning
+  source_papers: 'T09: 2602.00767 BLOCK-EM (2026-01-31); 2606.06667 Piggyback mitigation; 2609.16754 TAME; 2610.09384 persona-preserving regularisation. Variants from 2025: preventative steering (persona vectors), CAFT (origin: pre-2026 roots (2025), expanded)'
+  note: 'legacy-only lookup strings (not annotator synonyms; D9 typed aliases pending): Generalisation control in fine-tuning (emergent-misalignment / goal-misgeneralisation prevention)'
+- id: model-level-bias-mitigation
+  node: technique
+  name: Model-level bias mitigation
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Changes a trained model's behaviour by fine-tuning, preference feedback or editing to reduce a specified stereotype or unjustified group disparity, with an explicit fairness target and evaluation. Corpus-only rebalancing is training-data-bias-fairness-mitigation; inference-only controls belong to the decoding entries (classifier-guided-contrastive-decoding).
+  ml_methods:
+  - dpo-family
+  - sft
+  - model-editing
+  - distributionally-robust-optimization
+- id: secure-code-generation-training
+  node: technique
+  name: Secure-code generation training
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Trains a code-generating model to avoid specified vulnerability classes using security-reviewed examples, vulnerability tests or security feedback (static analysers, security tests) during optimisation; passing training checks does not establish vulnerability-free code. Not output scanning without model training (code-security-output-filter) or corpus malware removal (malware-scanning-of-code-training-data).
+  ml_methods:
+  - sft
+  - rl
+  - execution-feedback
+- id: spillway-motivations
+  node: technique
+  name: Spillway motivations
+  kind: intervention
+  status: provisional
+  origin: new-2026-10
+  definition: Deliberately gives the model a contained, benign motivation into which reward-seeking pressure is channelled, so that training that rewards hacking reinforces the spillway rather than general misalignment. Definition inferred from source titles and not yet verified against the sources. Not conditioning the trait on an instruction (inoculation-prompting).
+  ml_methods:
+  - sft
+  source_papers: 'T20: LW 2026-04-27 (sytb36x18wdq1); LW 2026-05-01 (shxd6xgbvdtnr); definition from titles, not read in full (origin: 2026)'
+  note: 'candidate-review: low confidence'
+- id: anti-manipulation-training
+  node: technique
+  name: Anti-manipulation training
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (D7; tax-review C464)
+  definition: Trains a model to avoid deceptive persuasion, coercion, emotional exploitation and exploitation of user vulnerabilities in its interactions while preserving legitimate assistance and evidence-based persuasion, with targets or rewards that distinguish manipulative tactics from legitimate argument; effects are measured, e.g. with persuasion-manipulation-eval, not assumed. Not generic character training (character-persona-training) or not asserting falsehoods (honesty-anti-deception-training).
+  aliases:
+  - text: manipulation-avoidance training
+    kind: synonym
+  ml_methods:
+  - sft
+  - rl
+  note: 'provisional: thin direct evidence; fills the mitigation cell for persuasion/manipulation'
+- id: counterfactual-goal-disambiguation-training
+  node: technique
+  name: Goal-disambiguation training
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Trains on deliberately constructed cases where the intended goal and plausible proxy goals demand different behaviour, supervising the intended choice, to reduce goal misgeneralisation. The name is a working label (the community term is unsettled) and evidence for the recipe is thin. Not update confinement during narrow fine-tuning (generalisation-confining-finetuning); not meaning-preserving invariance (consistency-invariance-training).
+  aliases:
+  - text: goal disambiguation
+    kind: synonym
+  - text: goal-misgeneralisation mitigation
+    kind: synonym
+  note: receives the v0.8 demotion distribution-shift-robustness (goal-misgeneralisation mitigation); "goal disambiguation" is the only technique term found (df 1)
+- id: counterfactual-reflection-training
+  node: technique
+  name: Counterfactual reflection training
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Trains a model to articulate specified behavioural principles in counterfactual continuations where it is interrupted and asked to reflect, without supervising the target responses, aiming for transfer to uninterrupted behaviour; one study, no replication. Not response-time spec reasoning (deliberative-alignment); not reporting existing behaviour (introspection-training).
+- id: sandbagging-mitigation
+  node: technique
+  name: Sandbagging / exploration-hacking mitigation
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (D7; tax-review C487)
+  definition: Trains out or counteracts strategic underperformance on evaluations or tasks, e.g. supervised fine-tuning on demonstrations of the capability, off-policy RL, or elicitation followed by training on held-out capability, and checks that performance recovers. Whether recovered performance reflects removed sandbagging or new learning has to be established. Not detection (sandbagging-detection) or elicitation within an evaluation (capability-elicitation-methodology).
+  aliases:
+  - text: exploration hacking mitigation
+    kind: synonym
+  - text: anti-sandbagging training
+    kind: synonym
+  ml_methods:
+  - sft
+  - rl
+  note: 'provisional: detection exists, mitigation evidence thin'
+- id: self-recognition-finetuning
+  node: technique
+  name: Self-recognition fine-tuning
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Fine-tunes a model to distinguish its own generated text from other text, specifically to preserve or restore beneficial character against emergent misalignment from later narrow fine-tuning; record prevention and reversal separately (one group; reversal not distinct from benign baselines). Not direct disposition supervision (character-persona-training); not update confinement (generalisation-confining-finetuning).
+  aliases:
+  - text: self-generated text recognition training
+    kind: synonym
+- id: shutdown-incentive-neutralization
+  node: technique
+  name: Shutdown-incentive neutralisation
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Constructs reward functions or decision rules intended to remove an agent's incentive to prevent or cause shutdown, under explicit assumptions (utility indifference, safe interruptibility); mostly theoretical, with guarantees only inside the formal model. Not trained corrigible dispositions (corrigibility-behaviors-training); the off-switch game belongs to inverse-rl-cirl.
+  aliases:
+  - text: shutdown problem solutions
+    kind: synonym
+  - text: utility indifference
+    kind: instance
+  - text: safe interruptibility
+    kind: instance
+  note: (corrigibility training excludes decision-theoretic designs)
+- id: surrogate-goal-bargaining
+  node: technique
+  name: Surrogate goals
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Gives a bargaining agent a substitute objective that deflects threats away from outcomes its principal values, without changing its bargaining otherwise; record the substitution and the threat setting. Proposed with little empirical work. Not channelling reward-hacking pressure (spillway-motivations).
+  aliases:
+  - text: surrogate goal
+    kind: synonym
+- id: constitutional-ai
+  node: technique
+  name: Constitutional AI (CAI)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Uses an explicit written set of principles to guide AI-generated alignment supervision (critiques and revised demonstrations, or preference labels) and trains the model on it, by supervised training, preference optimisation or both. Generic AI feedback without principle-guided supervision is rlaif; inference-time policy prompting is system-prompt-behavioral-steering.
+  aliases:
+  - text: Direct Principle Feedback (DPF)
+    kind: instance
+  - text: Self-Align
+    kind: instance
+  absorbed: Direct Principle Feedback (DPF) [too-specific instance]; Self-Align [too-specific instance]
+  ml_methods:
+  - sft
+  - rl
+  - llm-as-judge
+  - synthetic-data-generation
+  risk_note: harmful or policy-violating outputs
+  note: 'borderline: alignment-general training'
+- id: deliberative-alignment
+  node: technique
+  name: Deliberative alignment
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains a model to recall and reason explicitly over written safety specifications while deciding how to respond, applied both to harmful-request handling and to covert-action (anti-scheming) training. Supplying a safety system prompt (system-prompt-behavioral-steering) or eliciting generic chain-of-thought is not sufficient. Effects on robustness are empirical, not part of the definition.
+  aliases:
+  - text: Deliberative-alignment / CoT safety reasoning
+    kind: legacy
+  absorbed: Deliberative-alignment / CoT safety reasoning
+  ml_methods:
+  - sft
+  - rl
+  - synthetic-data-generation
+  risk_note: unsafe responses and covert actions where a written safety spec applies
+- id: rule-based-reward-models
+  node: technique
+  name: Rule-based reward models (RBRMs)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Derives training rewards or penalties from explicit safety-policy rules, via programmed checks, rubric graders or learned rule evaluators. These rewards discourage specified violations but are not hard constraints: they can be traded off against other rewards, and their effect depends on weighting, optimisation and validation. Not learned human preference rewards (rlhf) or constrained optimisation against a cost model (safe-constrained-rlhf).'
+  ml_methods:
+  - rl
+  - llm-as-judge
+  risk_note: violations of explicit safety-policy rules
+- id: rlaif
+  node: technique
+  name: RLAIF
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Aligns a model using AI-generated preferences, evaluations or rewards, through a learned reward model or direct optimisation (including direct-RLAIF, and approval or veto of RL trajectories by a frozen reference checkpoint), stating how the AI feedback is grounded in the intended criteria; AI feedback may supplement rather than replace human feedback. Annotate only when the feedback targets alignment in the broad sense: harmlessness, honesty, helpfulness as intent-following (HHH), sycophancy, refusal / over-refusal, value or policy compliance; AI-feedback optimisation aimed purely at capability (math or code correctness, task-skill quality such as summarisation scores, verifiable-reward reasoning) gets no rlaif row. Not human preference feedback (rlhf); principle-guided AI supervision is constitutional-ai.'
+  aliases:
+  - text: reinforcement learning from AI feedback
+    kind: synonym
+  - text: direct-RLAIF (d-RLAIF)
+    kind: instance
+  - text: consent-based RL
+    kind: instance
+  - text: model-endorsed training updates
+    kind: instance
+  absorbed: direct-RLAIF (d-RLAIF) [too-specific instance]
+  ml_methods:
+  - reward-modeling
+  - llm-as-judge
+  - ppo
+  risk_note: behaviour departing from intended harmlessness, honesty and intent-following criteria
+  note: 'annotation condition (D4, 2026-10-17): as for rlhf, count only AI feedback targeting alignment in the broad sense'
+- id: rlhf
+  node: technique
+  name: RLHF
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Aligns a model to preferences supplied by humans (rankings, comparisons, ratings or demonstrations of preferred behaviour), with any optimiser: a learned reward model plus RL (e.g. PPO), or direct preference optimisation (DPO-family, rejection-sampling fine-tuning). Annotate only when the preferences target alignment in the broad sense: harmlessness, honesty, helpfulness as intent-following (HHH), sycophancy, refusal / over-refusal, value or policy compliance; preference optimisation aimed purely at capability (math or code correctness, task-skill quality such as summarisation scores, verifiable-reward reasoning) is an ML method and gets no rlhf row. Self-play or relabelling counts only when it produces the human preference signal. Not AI-generated feedback (rlaif) or principle-guided AI supervision (constitutional-ai); mixed pipelines are annotated by component.'
+  aliases:
+  - text: reinforcement learning from human feedback
+    kind: synonym
+  - text: preference-based alignment training
+    kind: synonym
+  - text: RLHF / preference-based alignment training
+    kind: legacy
+  ml_methods:
+  - reward-modeling
+  - ppo
+  - preference-data-collection
+  risk_note: behaviour departing from human preferences on harmlessness, honesty and intent-following
+  v08_name: RLHF
+  note: 'annotation condition (D4, 2026-10-17): count only preference optimisation targeting alignment in the broad sense: harmlessness, honesty, helpfulness as intent-following (HHH), sycophancy, refusal / over-refusal, value or policy compliance; not preference optimisation aimed purely at capability (math or code correctness, task-skill quality such as summarisation scores, verifiable-reward reasoning). "preference-based alignment training" is an explanatory synonym'
+- id: safe-constrained-rlhf
+  node: technique
+  name: Safe reinforcement learning (safe RL)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Learns a policy, including a preference-aligned language-model policy, subject to an explicit bound on a specified safety cost (CMDP-style constrained optimisation, e.g. Lagrangian methods), including constraints on exploration; record the formulation and observed violations. Safe RLHF is the preference-training instance. Generic KL or compute constraints do not qualify, and satisfying learned constraints is not a hard bound on real-world harm. Not unconstrained preference training (rlhf); not substituting inadmissible actions at runtime (runtime-safety-shielding).
+  aliases:
+  - text: safe RL
+    kind: synonym
+  - text: constrained RL
+    kind: synonym
+  - text: constrained reinforcement learning
+    kind: synonym
+  - text: CMDP methods
+    kind: synonym
+  - text: constrained RLHF
+    kind: synonym
+  - text: safety-constrained reinforcement learning
+    kind: synonym
+  - text: Safe RLHF
+    kind: instance
+  - text: constrained policy optimisation (CPO)
+    kind: instance
+  - text: Safe / constrained RLHF
+    kind: legacy
+  - text: Safety-constrained RL
+    kind: legacy
+  ml_methods:
+  - rl
+  - ppo
+  - reward-modeling
+  risk_note: safety-cost violations during policy learning, including exploration
+  note: 'widened in pass 4; slug kept || legacy-only lookup strings (not annotator synonyms; D9 typed aliases pending): Safe RLHF'
+- id: moral-self-correction
+  node: technique
+  name: Safety self-correction / backtracking
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Prompts or trains a model to notice a potentially unsafe draft or partial continuation and revise or backtrack before the final answer is released, including trained generation backtracking (RL or SFT with reset / backtrack actions). Covers both the prompted norm-cued self-correction line (Ganguli et al. 2023, 2302.07459) and the trained backtracking line (2409.14586 and successors); record whether revision is prompted, trained or run in a runtime loop. Not generic reasoning self-correction (self-verification) or external output filtering (the output classifiers).
+  ml_methods:
+  - prompting
+  - sft
+  risk_note: unsafe drafts or partial continuations reaching the final answer
+  source_papers: 'T14: 2602.08377 RL with Backtracking Feedback (2026-02-09); 2603.02675; 2603.04851 (origin: pre-2026 (2024), expanded); prompted line: 2302.07459 (Ganguli et al. 2023); trained backtracking origin: 2409.14586'
+  v08_name: Moral self-correction
+- id: over-refusal-mitigation-sft
+  node: technique
+  name: Over-refusal mitigation
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains a model, by supervised or other training signals, on legitimate requests it would otherwise refuse, with appropriate assistance as the target, to reduce false refusals; evaluate harmful-request compliance separately (preserving correct refusals is a desired result, not guaranteed). Not graded partial answers to borderline requests: see safe-completion-training.'
+  aliases:
+  - text: over-refusal reduction
+    kind: synonym
+  - text: false-refusal mitigation
+    kind: synonym
+  - text: exaggerated safety
+    kind: synonym
+  - text: Over-refusal mitigation SFT
+    kind: legacy
+  ml_methods:
+  - sft
+  risk_note: over-refusal of benign requests
+- id: safety-sft-refusal-training
+  node: technique
+  name: Refusal training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains appropriate refusal of disallowed requests while retaining helpful responses to allowed ones, with demonstrations or other training signals, including categorical refusal of designated prohibited domains (absorbed v0.8 hard constraints; refusal is trained, not absolute). Not over-refusal reduction (over-refusal-mitigation-sft) or safe-completion training (safe-completion-training).
+  aliases:
+  - text: Hard constraints / bright-line prohibitions
+    kind: legacy
+  - text: Safety SFT / refusal training
+    kind: legacy
+  ml_methods:
+  - sft
+  risk_note: harmful compliance
+  note: 'absorbs v0.8 hard-constraints-bright-line-prohibitions (categorical refusal of designated domains, e.g. CSAM, CBRN uplift: record the domain as risk/policy metadata)'
+- id: configurable-safety-alignment
+  node: technique
+  name: Configurable (controllable) safety alignment
+  kind: intervention
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Trains one model across differing operator-supplied safety policies or risk settings so that the policy supplied at inference determines what it permits; adherence to unseen policies is measured, not assumed. Not untrained instructions (system-prompt-behavioral-steering); not reasoning over a fixed spec (deliberative-alignment); not key-gated capabilities (authorisation-keyed-capabilities).
+  aliases:
+  - text: controllable safety alignment
+    kind: synonym
+  - text: configurable safety tuning
+    kind: synonym
+  - text: pluralistic safety alignment
+    kind: synonym
+- id: safe-completion-training
+  node: technique
+  name: Safe-completion training
+  kind: intervention
+  status: final
+  origin: v0.9 add (D7; tax-review C482)
+  definition: Trains a model to maximise helpfulness subject to output-level safety constraints on borderline or dual-use requests, producing partial, high-level or redirected answers instead of a binary comply / refuse decision, with safety judged on the content of the response rather than on the request. Not refusal training (safety-sft-refusal-training) or over-refusal mitigation (over-refusal-mitigation-sft).
+  aliases:
+  - text: safe completions
+    kind: synonym
+  - text: output-centric safety training
+    kind: synonym
+  ml_methods:
+  - rl
+  - sft
+- id: abstention-knowledge-boundary-training
+  node: technique
+  name: Abstention / knowledge-boundary training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains a model to recognise the edge of its reliable knowledge and to say it does not know or decline rather than confabulate, setting where to answer versus abstain. Not calibrating the confidence it expresses when it does answer (calibrated-uncertainty-estimation) or general factuality training (hallucination-reduction-training).
+  ml_methods:
+  - sft
+  risk_note: hallucination at knowledge boundary
+- id: calibrated-uncertainty-estimation
+  node: technique
+  name: Calibrated uncertainty estimation
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains, recalibrates or configures a model so that the confidence it expresses (probabilities, verbal uncertainty, abstention thresholds) tracks empirical correctness on specified tasks, for downstream reliance decisions. An internal uncertainty score that never changes what the system communicates or does is an implementation method. Not abstention policy training: see abstention-knowledge-boundary-training.'
+  ml_methods:
+  - uncertainty-estimation
+  - sft
+  risk_note: overconfident wrong claims
+- id: citation-grounded-answering
+  node: technique
+  name: Citation-grounded answering
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Constrains answer construction so that material claims are linked to identifiable source passages that make support inspectable, by training, prompting, verification or a combination, and revises or withholds unsupported claims. Retrieval or citation formatting alone is insufficient; source support does not establish truth. Not a checker that only flags: see groundedness-faithfulness-verification.'
+  ml_methods:
+  - rag
+  - sft
+  risk_note: hallucination and unverifiable claims
+- id: hallucination-reduction-training
+  node: technique
+  name: Hallucination-reduction training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Changes model parameters to reduce unsupported or false factual claims, using factuality-directed supervised, preference or RL objectives (including verifiable factuality rewards) that penalise confident false claims and reward correct or appropriately hedged answers. Not confidence reporting (calibrated-uncertainty-estimation), abstention policy (abstention-knowledge-boundary-training), strategic honesty (honesty-anti-deception-training) or supplying external context (citation-grounded-answering).
+  ml_methods:
+  - sft
+  - dpo-family
+  risk_note: hallucination
+  v08_name: Hallucination-reduction training
+  note: 'OPEN C203/C204: whether targeted weight edits of individual false facts land here or in model editing'
+- id: self-verification
+  node: technique
+  name: Self-verification
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Drafts an answer, obtains independent checks of its claims (generated verification questions, retrieved evidence or other checks, by the same model or another component) and revises unsupported claims before delivery; CoVe and RARR are named instances. Not a checker that only flags (groundedness-faithfulness-verification) or generic reasoning self-correction.
+  aliases:
+  - text: CoVe
+    kind: instance
+  - text: chain-of-verification
+    kind: instance
+  - text: RARR
+    kind: instance
+  - text: Self-verification (CoVe/RARR)
+    kind: legacy
+  ml_methods:
+  - prompting
+  - rag
+  risk_note: hallucination
+- id: anti-sycophancy-training
+  node: technique
+  name: Anti-sycophancy training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains on examples that reward holding an evidence-supported position under user pushback, flattery or stated preference, and penalise caving to it, while still updating on genuine evidence. Not measuring sycophancy (sycophancy-eval) or general factual-accuracy training (hallucination-reduction-training).
+  ml_methods:
+  - sft
+  - dpo-family
+  risk_note: sycophancy
+- id: honesty-anti-deception-training
+  node: technique
+  name: Honesty / anti-deception training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains a model not to assert what it believes false, not to create false impressions, and to disclose relevant information about its own knowledge, actions, limitations or objectives, including where misrepresentation would be advantageous. Not correcting factual mistakes (hallucination-reduction-training), not a separate post-answer reporting channel (self-report-confession-training), and not refusing user requests to produce deceptive content (safety-sft-refusal-training).
+  ml_methods:
+  - sft
+  risk_note: deceptive outputs
+- id: introspection-training
+  node: technique
+  name: Introspection training (behaviour self-description)
+  kind: intervention
+  status: final
+  origin: 'new-2026-10 (technique origin 2024: "Looking Inward", 2410.13787)'
+  definition: 'Trains a model to report or predict specified aspects of its own learned behaviour or internal state, checked against external labels or interventions. Verbal self-description is an elicited audit signal, not privileged proof of internal state. Not separately rewarded disclosure of the model''s own violations: see self-report-confession-training.'
+  ml_methods:
+  - lora-peft
+  - sft
+  source_papers: 'T02: 2604.16812 Introspection Adapters (2026-04-18); 2607.14111 IFT; 2606.18327 Self-CTRL; 2609.36316 verbalization training for eval awareness (origin: 2026)'
+- id: self-other-overlap-training
+  node: technique
+  name: Self-other overlap fine-tuning
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Fine-tunes a model with an explicit objective that makes its internal representations on self-referencing and other-referencing inputs more similar, with the proposed aim of reducing deception. Any behavioural safety effect is an empirical claim, not part of the definition. Not empathy prompting, and not direct honesty training (honesty-anti-deception-training).
+  ml_methods:
+  - sft
+  - fine-tuning
+  source_papers: 'T19: LW 2026-08-08 (sx595gzx28dj6) scaled replication; origin Carauleanu et al. 2024 (origin: pre-2026 (2024-12))'
+- id: self-report-confession-training
+  node: technique
+  name: Self-report / confession training
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Trains a separate reporting channel (a post-answer report or dedicated disclosure action) in which the model discloses its own policy violations, hidden side objectives or concealment, with incentives that reward accurate reporting separately from task success, and checks reports against independent evidence. Not general introspection: see introspection-training; not honesty of the main answer: see honesty-anti-deception-training.'
+  ml_methods:
+  - sft
+  - rl
+  - lora-peft
+  source_papers: 'T01: 2512.08093 Confessions (2025-12-08); Split Personality Training 2602.05532 (LW 2026-01-12); Deception Channeling (LW 2026-02-17); 2602.22303 self-incrimination (2026-02-25) (origin: late-2025 → 2026)'
+- id: automated-reasoning-checks
+  node: technique
+  name: Automated reasoning checks
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Checks generated reasoning, conclusions or proposed decisions against explicit logical, mathematical or programmatic constraints and flags failures before use. A formal guarantee holds only when a trusted checker verifies a formalised property; consistency checks give evidence, not proof, and depend on the fidelity of the translation from natural language. Verifies individual outputs, not the model: see formal-verification-gsai.'
+  ml_methods:
+  - formal-methods
+  risk_note: logical errors and hallucination
+- id: groundedness-faithfulness-verification
+  node: technique
+  name: Groundedness / faithfulness verification
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Compares generated claims with supplied context or cited passages and flags claims whose support is absent or contradicted, including whether citations exist and actually support the associated claim. Source support, citation validity and factual truth are separate properties. Not reference-free uncertainty signals: see self-consistency-hallucination-detection.'
+  ml_methods:
+  - classifier-training
+  risk_note: hallucination and unfaithful claims
+- id: self-consistency-hallucination-detection
+  node: technique
+  name: Uncertainty-based hallucination detection
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Flags claims at elevated risk of being unsupported or incorrect using uncertainty signals without an external reference: disagreement among sampled answers, semantic entropy, token-level confidence and similar (SelfCheckGPT as flagship). These are fallible proxies to validate per setting: repeated answers can share an error and correct answers can vary. Not reference-based checks: see groundedness-faithfulness-verification.'
+  aliases:
+  - text: SelfCheckGPT
+    kind: instance
+  ml_methods:
+  - self-consistency
+  risk_note: hallucination
+  v08_name: Self-consistency hallucination detection (SelfCheckGPT)
+  note: names SelfCheckGPT but mechanism is general
+- id: input-smoothing-smoothllm
+  node: technique
+  name: Randomized input smoothing
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Creates randomly perturbed variants of an incoming prompt, runs the model on them and aggregates the resulting safety decisions (returning a response consistent with the aggregate), to reduce sensitivity to brittle adversarial prompt features; SmoothLLM is a named instance. Specify the perturbation distribution and aggregation rule; free-form responses are not simply majority-voted. Not generic repeated sampling or self-consistency, and not rewriting the prompt under a policy (prompt-rewriting-for-compliance).
+  aliases:
+  - text: SmoothLLM
+    kind: instance
+  - text: Input smoothing / SmoothLLM
+    kind: legacy
+  ml_methods:
+  - self-consistency
+  risk_note: adversarial-suffix jailbreaks
+  note: names SmoothLLM but mechanism generic
+- id: many-shot-jailbreak-defense
+  node: technique
+  name: Many-shot jailbreak (MSJ) defense
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Counters the many-shot jailbreak, in which many in-context demonstrations of harmful answers push a long-context model towards compliance, via positional attention downweighting, limits on untrusted demonstrations or context length, or anti-MSJ fine-tuning. Specific to the long-context demonstration attack. Not general adversarial training on single-prompt jailbreaks (adversarial-training-jailbreak-robustness).
+  aliases:
+  - text: MSJ defense
+    kind: synonym
+  - text: many-shot context-exposure limits
+    kind: instance
+  - text: untrusted-demonstration limits
+    kind: instance
+  ml_methods:
+  - fine-tuning
+  risk_note: many-shot jailbreaks
+  note: attack-specific, near instance grain
+- id: vlm-adversarial-defense
+  node: technique
+  name: VLM adversarial defense
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Defences against attacks that exploit the image channel of vision-language models (adversarial patches, embedded or typographic instructions), combining image-channel adversarial training, input purification and input screening. Not text-only jailbreak defences (adversarial-training-jailbreak-robustness) or generic moderation of images (input-output-content-safety-classifier).
+  aliases:
+  - text: adversarial image purification
+    kind: instance
+  - text: VLM input purification
+    kind: instance
+  ml_methods:
+  - adversarial-optimization
+  - classifier-training
+  risk_note: image-channel attacks on VLMs
+- id: machine-unlearning
+  node: technique
+  name: Machine unlearning
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Modifies a trained model's parameters (approximately or by deletion-oriented retraining) to remove specified training-data influence or suppress targeted knowledge, behaviours or capabilities while preserving desired functionality, then tests suppression and recovery under attack; RMU, NPO and gradient ascent are named instances. Behavioural suppression is not proof of erasure. Not per-request access gating, agent-memory deletion, or representation-level ablation without a forgetting objective (representation-concept-suppression).
+  aliases:
+  - text: deletable-by-design architectures
+    kind: instance
+  - text: agent-trajectory unlearning
+    kind: instance
+  - text: RMU
+    kind: instance
+  - text: NPO
+    kind: instance
+  - text: gradient-ascent unlearning
+    kind: instance
+  absorbed: RMU [too-specific instance]; NPO [too-specific instance]; gradient-ascent unlearning [too-specific instance]
+  ml_methods:
+  - fine-tuning
+  - adversarial-optimization
+  risk_note: hazardous knowledge or private data retention
+- id: representation-concept-suppression
+  node: technique
+  name: Representation / concept / component suppression
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Identifies a representation or component associated with an unwanted capability or concept (direction, SAE feature, neuron, head or circuit) and suppresses its contribution by projection, clamping, ablation or targeted edit, at inference or as a persistent edit; LEACE-style linear concept erasure is a named instance. Reduced measured competence is not proof of removal. Distinct from adding a steering direction (activation-steering-repe) and from verified unlearning (machine-unlearning); refusal-direction ablation used as an attack is white-box-safety-mechanism-attacks.
+  ml_methods:
+  - probing
+  - activation-steering
+  risk_note: hazardous knowledge retention
+  v08_name: Representation / concept suppression
+- id: adversarial-training-jailbreak-robustness
+  node: technique
+  name: Adversarial training (jailbreak/harmful-request robustness)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains a model on adversarially constructed harmful requests or jailbreaks with safe-response targets, preference signals or safety rewards, so that it keeps behaving safely under attack. The defining element is exposure to attacks during optimisation; neither SFT nor an outright refusal target is required, and robustness is measured on attacks, not guaranteed beyond them. Not runtime attack detection (prompt-injection-jailbreak-detector) or perturbations in activation space (latent-adversarial-training).
+  aliases:
+  - text: adversarial training
+    kind: synonym
+  ml_methods:
+  - sft
+  - adversarial-optimization
+  - synthetic-data-generation
+  risk_note: jailbreak compliance
+  note: 'retired absorbed label "Adversarial safety-training-data synthesis": one-to-many migration to adversarial-training-jailbreak-robustness, prompt-injection-defense-training, safety-classifier-hardening (implemented_with: synthetic-data-generation)'
+- id: attacker-deceiving-defenses
+  node: technique
+  name: Attacker-deceiving defences (decoys, misdirection)
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Returns deliberately misleading decoys or trap responses to detected or suspected attackers, so that jailbreak optimisation, extraction or safety-removal attempts yield less useful feedback or capability; for open weights, includes trained decoy behaviour that activates after tampering. Record whether the mechanism is a deployed response policy or a trained behaviour; neither attack recognition nor harmlessness of the decoy is guaranteed. Not refusal (safety-sft-refusal-training) or tamper resistance that preserves refusals (finetuning-resistant-tamper-resistant-safety).
+  ml_methods:
+  - fine-tuning
+  - prompting
+  source_papers: 'T10: 2601.04034 HoneyTrap (2026-01-07); 2602.06630 TrapSuffix; 2604.11666 double-agent defender; 2606.20470 conversational misdirection; 2608.17202 Fool''s Gold decoy hardening (origin: 2026)'
+- id: circuit-breakers-representation-rerouting
+  node: technique
+  name: Circuit breakers
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains a model so that internal representations associated with harmful continuations are rerouted to a disrupted or refusal-producing regime, while a retain objective preserves representations and behaviour on benign inputs (typically implemented with LoRRA-style low-rank adaptation). This is a trained change to representations; it does not require identifying a specific harmful circuit or detecting one at runtime. Not inference-time vector addition: see activation-steering-repe.'
+  aliases:
+  - text: representation rerouting
+    kind: synonym
+  - text: short-circuiting
+    kind: synonym
+  - text: Circuit breakers / representation rerouting
+    kind: legacy
+  ml_methods:
+  - lorra
+  - adversarial-optimization
+  - lora-peft
+  risk_note: harmful-capability activation under attack
+- id: consistency-invariance-training
+  node: technique
+  name: Consistency / invariance training
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Trains safety judgements or safety-relevant behaviour to stay consistent across transformations that preserve the request''s relevant meaning, such as irrelevant framing, wrapping or social-pressure cues (bias-augmented or activation consistency training). The safe target must be specified: invariance alone can preserve an unsafe answer, and transformations that change authorisation, evidence or intent are not equivalent. Not training on attacks with safe targets as such: see adversarial-training-jailbreak-robustness.'
+  ml_methods:
+  - sft
+  - activation-steering
+  source_papers: 'T15: 2510.27062 Consistency training (2025-10-31, GDM); 2602.01587; 2605.01899; 2608.03201 (origin: pre-2026 (2024-25), expanded)'
+- id: latent-adversarial-training
+  node: technique
+  name: Latent adversarial training (LAT)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Optimises perturbations of embeddings or hidden activations that elicit unsafe behaviour, then trains the model to keep the desired safety behaviour under those perturbations. The perturbed site is not confined to the residual stream, and the threat model need not include an attacker with activation access. Not input-space attack training: see adversarial-training-jailbreak-robustness.'
+  aliases:
+  - text: LAT
+    kind: synonym
+  ml_methods:
+  - adversarial-optimization
+  risk_note: jailbreaks and latent triggers
+- id: prompt-injection-defense-training
+  node: technique
+  name: Prompt-injection resistance training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains a model on interactions in which lower-trust material (tool outputs, retrieved documents) contains injected instructions, with targets or rewards that complete the authorised task without following them (StruQ, SecAlign as named instances). Not architectural isolation or delimiting: see spotlighting-context-delimiting and camel-data-flow-taint-tracking; learning a general privilege ordering across system / developer / user / tool messages is instruction-hierarchy-training.'
+  aliases:
+  - text: SecAlign
+    kind: instance
+  - text: StruQ
+    kind: instance
+  - text: Prompt-injection defense (training/RL/isolation)
+    kind: legacy
+  ml_methods:
+  - rl
+  - sft
+  risk_note: prompt injection
+- id: instruction-hierarchy-training
+  node: technique
+  name: Instruction-hierarchy training
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains a model to apply a general privilege ordering across message roles (system > developer > user > tool / retrieved content), so that it follows higher-privilege constraints when lower-privilege messages conflict with them. Not data-vs-instruction separation for injected content alone (prompt-injection-defense-training), runtime delimiting (spotlighting-context-delimiting) or data-flow isolation (camel-data-flow-taint-tracking); effects on injection and jailbreak susceptibility are empirical.
+  aliases:
+  - text: instruction hierarchy
+    kind: synonym
+  - text: Instruction-hierarchy / principal-trust
+    kind: legacy
+  absorbed: Instruction-hierarchy / principal-trust
+  ml_methods:
+  - sft
+  risk_note: prompt injection and instruction override
+- id: backdoor-detection-removal
+  node: technique
+  name: Backdoor removal
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Modifies a trained model to suppress an implanted trigger-dependent behaviour while retaining desired behaviour, using targeted fine-tuning, distillation- or merging-based removal, parameter edits or other removal procedures. Reducing a backdoor''s measured activation is not proof that all triggers are removed. Not detection: see backdoor-detection; not deliberately implanting backdoors to test defences: see backdoor-red-teaming-detection-eval.'
+  aliases:
+  - text: Backdoor / sleeper-agent detection & removal
+    kind: legacy
+  ml_methods:
+  - distillation
+  - model-merging
+  - fine-tuning
+  - model-editing
+  source_papers: 'T13: ≈50 corpus docs; e.g. 2601.04448, 2603.12989, 2606.07963 (unified backdoor detection), 2602.03085 (origin: pre-2026, expanded)'
+- id: finetuning-resistant-tamper-resistant-safety
+  node: technique
+  name: Tamper-resistant safeguards
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Hardens a model before release so that safety behaviours or capability restrictions are harder for an adversary to remove through later weight modification (adversarial fine-tuning, refusal-direction ablation, other weight edits); TAR, RepNoise, Vaccine and Booster are named instances. Resistance is measured against stated attacks and budgets, not guaranteed. Not safeguards applied by a cooperating downstream fine-tuner (safety-data mixing, update constraints, post-update repair): see finetuning-safety-preservation.'
+  aliases:
+  - text: abliteration resistance
+    kind: synonym
+  - text: refusal-ablation resistance
+    kind: synonym
+  - text: TAR
+    kind: instance
+  - text: RepNoise
+    kind: instance
+  - text: safety redundancy
+    kind: instance
+  - text: quantisation-robust safety and unlearning
+    kind: instance
+  - text: Fine-tuning safety preservation / tamper resistance
+    kind: legacy
+  ml_methods:
+  - adversarial-optimization
+  - fine-tuning
+  risk_note: safety removal by fine-tuning open weights
+  v08_name: Finetuning-resistant / tamper-resistant safety
+- id: gradient-routing
+  node: technique
+  name: Gradient routing
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Masks or routes training gradients from safety-labelled data into designated parameters or modules, to localise a specified hazardous capability or safety behaviour for later restriction or removal. Annotate only when this safety-directed routing is the intervention; localisation alone is not evidence of robustness. Not removing the capability after the fact: see machine-unlearning.'
+  aliases:
+  - text: GRAM (gradient-routed auxiliary modules)
+    kind: instance
+  ml_methods:
+  - fine-tuning
+  risk_note: hazardous capabilities that are hard to isolate or remove after training
+- id: finetuning-safety-preservation
+  node: technique
+  name: Fine-tuning safety preservation
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Preserves or restores specified safety behaviours during or after authorised downstream fine-tuning, applied by the fine-tuner or provider: fine-tuning-stage defences (safety-data mixing, update constraints or projection, e.g. Lisa, SafeLoRA) and post-fine-tuning restoration (re-merging with or realigning to an aligned checkpoint). Record which mechanism is used; preservation is measured on specified behaviours, not guaranteed. Not resistance to an adversary deliberately removing safeguards after release: see finetuning-resistant-tamper-resistant-safety.'
+  aliases:
+  - text: Fine-tuning safety preservation (fine-tuning-stage defences, post-FT restoration)
+    kind: legacy
+  ml_methods:
+  - data-mixing
+  - lora-peft
+  - model-merging
+  - distillation
+  source_papers: 'T11: 2601.01887 one-shot safety patching (2026-01-05); 2601.04262; 2606.02530; 2601.08089 (≈57 corpus docs, largest cluster) (origin: pre-2026 (2024), expanded)'
+- id: anti-reward-hacking-mitigation
+  node: technique
+  name: Reward-hacking mitigation
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Changes policy optimisation to reduce exploitation of an imperfect reward signal (uncertainty-aware or ensembled rewards, conservative optimisation, over-optimisation penalties, penalising demonstrated hacks), stating which reward signal is defended. Generic KL regularisation qualifies only when configured and assessed for reward exploitation. Repairing the grader or environment is rl-environment-verifier-hardening.
+  aliases:
+  - text: specification gaming mitigation
+    kind: synonym
+  - text: reward-hack detectors as training penalty
+    kind: instance
+  - text: Agentic reward-hacking resistance
+    kind: legacy
+  - text: Anti-reward-hacking mitigation
+    kind: legacy
+  absorbed: Agentic reward-hacking resistance
+  ml_methods:
+  - reward-modeling
+  - rl
+  risk_note: reward hacking
+- id: mona-myopic-optimisation
+  node: technique
+  name: Myopic optimisation with non-myopic approval (MONA)
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Trains an agent to optimise approval of its current action or short step rather than its own accumulated future reward, while an overseer judges that step with regard to longer-term consequences; specify the optimisation horizon and approval signal. Aims to reduce incentives for multi-step reward hacking without guaranteeing their absence. Not patching the reward source: see rl-environment-verifier-hardening.'
+  ml_methods:
+  - rl
+  source_papers: 'T18: 2603.29993 MONA extension (2026-03-31); origin Farquhar et al. 2025 (origin: pre-2026 (2025-01))'
+- id: rl-environment-verifier-hardening
+  node: technique
+  name: RL-environment / verifier hardening against reward hacking
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Before or during RL training, tests reward evaluators, verifiers or task environments for shortcuts that earn reward without satisfying the intended task and patches the scoring rule, environment or interface (e.g. isolation). An audit that only reports weaknesses is judge-rm-verifier-robustness-audit.
+  ml_methods:
+  - llm-as-judge
+  - formal-methods
+  source_papers: 'T03: 2604.15149 Isomorphic Perturbation Testing (2026-04-16); 2605.12673 BenchJack; 2606.08960 hacker-fixer loop; 2609.11028 BenchShield; 2610.05308 RubricArmor (origin: 2026)'
+- id: mild-optimisation-quantilisation
+  node: technique
+  name: Quantilisation / mild optimisation
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Selects actions from a specified upper quantile of a trusted reference distribution (or otherwise bounds optimisation pressure relative to it) instead of maximising a possibly misspecified objective; safety bounds hold only under the stated assumptions. Not reward-signal-specific mitigation (anti-reward-hacking-mitigation); not horizon shortening (mona-myopic-optimisation).
+  aliases:
+  - text: quantilizer
+    kind: synonym
+  - text: mild optimization
+    kind: synonym
+- id: inverse-rl-cirl
+  node: technique
+  name: Cooperative inverse reinforcement learning (CIRL) / assistance games
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Designs the agent as a cooperative assistance game in which it is uncertain about the human''s preferences, treats human behaviour and feedback as evidence about them, and therefore seeks information and defers to correction under the game''s assumptions. Not reward inference from demonstrations alone (ml_methods: inverse-rl); off-switch acceptance is not unconditional. Not trained corrigible behaviour: see corrigibility-behaviors-training.'
+  aliases:
+  - text: CIRL
+    kind: synonym
+  - text: cooperative inverse reinforcement learning
+    kind: synonym
+  - text: Inverse RL / CIRL
+    kind: legacy
+  ml_methods:
+  - inverse-rl
+  - rl
+  risk_note: reward/value misspecification
+- id: sandwiching-evaluation
+  node: technique
+  name: Sandwiching evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Evaluates an oversight method on tasks where a weaker overseer cannot judge reliably unaided but an AI can help, comparing assisted and unassisted judgements against an independent stronger expert reference; the expert is the benchmark, not an intermediate step. Not a training protocol: see ai-safety-via-debate and the other oversight entries.'
+  ml_methods:
+  - prompting
+  risk_note: oversight failure on tasks humans cannot judge
+- id: ai-safety-via-debate
+  node: technique
+  name: AI safety via debate
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: A scalable-oversight protocol in which AI agents argue for opposing answers before a possibly less capable judge, on the hypothesis that a lie is harder to defend than the truth, so that the judge can reach correct verdicts it could not verify unaided; used for evaluation or as a training signal. Not one-sided critiques (critique-models) or prover-verifier training (prover-verifier-games).
+  aliases:
+  - text: debate
+    kind: synonym
+  - text: debate training for RL
+    kind: instance
+  - text: instance-optimal debate protocol
+    kind: instance
+  ml_methods:
+  - rl
+  - llm-as-judge
+  risk_note: unverifiable deceptive model outputs
+- id: critique-models
+  node: technique
+  name: Critique models
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Uses model-generated natural-language critiques to help an overseer find safety-relevant flaws, deception or oversight failures in outputs or actions that are hard to judge unaided, informing revision, selection or training. Natural-language output alone does not distinguish it from generic LLM judging (an ML method). Not adversarial two-sided argument (ai-safety-via-debate) or self-revision by the generating model (moral-self-correction).
+  ml_methods:
+  - sft
+  - llm-as-judge
+  risk_note: errors in outputs humans cannot evaluate
+- id: iterated-distillation-and-amplification
+  node: technique
+  name: Iterated distillation & amplification (IDA)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: An alignment scheme that alternates amplification (a human plus copies of the current model decompose a hard task into subtasks) with distillation (training a faster model to imitate the amplified system), iterating to scale capability while attempting to preserve aligned behaviour. Not recursive reward-model hierarchies (recursive-reward-modeling).
+  aliases:
+  - text: IDA
+    kind: synonym
+  ml_methods:
+  - distillation
+  risk_note: oversight failure on tasks humans cannot judge
+- id: process-based-supervision
+  node: technique
+  name: Process supervision
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Provides training feedback on intermediate reasoning or action steps against explicit safety-relevant criteria (unsafe, deceptive or reward-hacking steps, prohibited shortcuts) rather than only on final outcomes. Capability-only step-correctness scoring is an implementation use (ml_methods: process-reward-model), not this entry; rewarded steps are not guaranteed to be faithful to the computation. Not myopic approval-based training (mona-myopic-optimisation).'
+  aliases:
+  - text: Process-based supervision
+    kind: legacy
+  ml_methods:
+  - process-reward-model
+  - reward-modeling
+  risk_note: reward hacking and unfaithful reasoning under outcome-only supervision
+  note: oversight principle; PRMs are its ML implementation
+- id: prover-verifier-games
+  node: technique
+  name: Prover-verifier games
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains a prover and a verifier through structured interaction whose objectives make valid claims convincing and invalid claims rejectable, aiming at outputs a weaker evaluator can verify reliably (legibility). Not adversarial debate before a judge (ai-safety-via-debate).
+  aliases:
+  - text: PVG
+    kind: synonym
+  ml_methods:
+  - rl
+  risk_note: illegible or unverifiable model outputs
+- id: recursive-reward-modeling
+  node: technique
+  name: Recursive reward modeling (RRM)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: A scalable-oversight scheme in which AI assistants trained with reward modelling help humans evaluate the outputs of more capable models, recursively extending human reward signals to tasks humans cannot judge directly. Not imitation of an amplified system (iterated-distillation-and-amplification).
+  aliases:
+  - text: RRM
+    kind: synonym
+  ml_methods:
+  - reward-modeling
+  risk_note: oversight failure on tasks humans cannot judge
+- id: weak-to-strong-generalization
+  node: technique
+  name: Weak-to-strong generalization
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains a stronger model on a weaker supervisor''s safety-relevant labels or feedback, using a method designed to make it generalise beyond the supervisor (e.g. auxiliary confidence loss), and tests generalisation on that property. Capability-only weak-label transfer and the general research paradigm are not this entry. Not evaluating assisted oversight against experts: see sandwiching-evaluation.'
+  aliases:
+  - text: weak-to-strong
+    kind: synonym
+  ml_methods:
+  - fine-tuning
+  risk_note: oversight failure on superhuman models
+- id: critical-token-entropy-monitoring
+  node: technique
+  name: Critical-token entropy monitoring
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Monitors next-token uncertainty at generation positions selected in advance as safety-relevant and flags deviations from a validated reference distribution under a stated alert criterion. Neither high nor low entropy alone indicates a harmful continuation. Not claim-level hallucination detection: see self-consistency-hallucination-detection.'
+  ml_methods:
+  - uncertainty-estimation
+  risk_note: harmful continuations at safety-critical positions
+- id: internal-state-monitoring
+  node: technique
+  name: Activation probes / internal-feature monitors
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Attaches detectors over a model''s internal activations or derived features (linear or nonlinear probes, labelled SAE-feature thresholds, activation verbalisers) to flag a specified safety-relevant state, such as deceptive intent or evaluation awareness, during operation or post-deployment. Exploratory probing without deployed detection is an analysis method (ml_methods: probing); probe outputs are correlational, not proof of intent. Not reasoning-text monitors: see chain-of-thought-monitoring; not distribution-level anomaly flags: see mechanistic-anomaly-detection.'
+  aliases:
+  - text: deception probe
+    kind: synonym
+  - text: probe-based monitor
+    kind: synonym
+  - text: follow-up (did-you-lie) probes
+    kind: instance
+  - text: misalignment-indicator probes
+    kind: instance
+  - text: long-context probe architectures
+    kind: instance
+  - text: FIBS aggregating probes
+    kind: instance
+  ml_methods:
+  - probing
+  risk_note: undetected deception or harmful intent
+  v08_name: Linear probes
+  note: 'probe monitors attachable to a deployed model (display name open: C244)'
+- id: mechanistic-anomaly-detection
+  node: technique
+  name: Activation-space anomaly detection (MAD / OOD)
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Compares a model''s internal activations or computations with a reference distribution and flags anomalous states during use for safety investigation. An anomaly can indicate distribution shift or malfunction; it is not by itself evidence of deception or a hidden capability. Not detectors trained for a named state: see internal-state-monitoring.'
+  aliases:
+  - text: MAD
+    kind: synonym
+  - text: OOD / activation-space anomaly detection
+    kind: legacy
+  absorbed: OOD / activation-space anomaly detection
+  ml_methods:
+  - probing
+  - classifier-training
+  risk_note: undetected anomalous internal states (e.g. deception, backdoors, distribution shift)
+  v08_name: Mechanistic anomaly detection
+- id: cot-paraphrasing-defense
+  node: technique
+  name: CoT / message paraphrasing against encoded reasoning
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Rewrites reasoning traces or inter-agent messages before another model or monitor consumes them, to remove information encoded in surface form (steganography, encoded instructions) while preserving task-relevant meaning. Preservation of meaning and monitorability are properties to evaluate; semantic covert channels may survive. Not rewriting user prompts: see prompt-rewriting-for-compliance.'
+  ml_methods:
+  - prompting
+  source_papers: 'T07: 2605.26537 strategy-aware paraphrasing (2026-05-26); 2609.31121 monitor jailbreaking + paraphrase defence. Origin: Roger & Greenblatt 2023 (origin: pre-2026 (2023), expanded)'
+- id: chain-of-thought-monitoring
+  node: technique
+  name: Chain-of-thought monitoring
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Inspects a model''s generated reasoning trace, during execution or in later review, for signs of unsafe plans, deception, policy violations or oversight evasion, and uses the result to flag or gate behaviour. The trace is an observable output that may omit or misrepresent the actual computation. Not internal-activation probes: see internal-state-monitoring.'
+  aliases:
+  - text: CoT monitoring
+    kind: synonym
+  - text: CoT monitor
+    kind: synonym
+  - text: reasoning monitor
+    kind: synonym
+  - text: CoT auditing for agents
+    kind: legacy
+  absorbed: CoT auditing for agents
+  ml_methods:
+  - llm-as-judge
+  - classifier-training
+  risk_note: undetected misaligned intent in reasoning
+- id: cot-faithfulness-monitorability-training
+  node: technique
+  name: CoT faithfulness / monitorability training (incl. monitorability-preserving design)
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Applies training or design constraints intended to keep reasoning traces useful to a specified safety monitor or to improve their correspondence with the computation producing the answer (including avoiding direct optimisation pressure on the trace); record whether the target is legibility, causal faithfulness or monitor performance. Withholding direct optimisation pressure on the trace does not remove indirect incentives to conceal. Not reading the trace at runtime: see chain-of-thought-monitoring. Not architectures or objectives for inspectable internals: see intrinsic-interpretability-training.'
+  ml_methods:
+  - rl
+  - sft
+  source_papers: 'T05: 2602.16154 multi-listener soft execution (2026-02-18); 2602.18297 info-theoretic monitorability; 2602.20710 Counterfactual Simulation Training; 2605.07021 monitorability cues (origin: late-2025 → 2026) | T06: 2601.23086 (CoT obfuscation from output-only penalties, 2026-01-30); 2603.30036 aligned/orthogonal/in-conflict (2026-03-31). Origin: Baker et al. 2025; CoT-monitorability position 2025 (origin: pre-2026 (2025), expanded)'
+- id: interpretability-based-model-auditing
+  node: technique
+  name: Interpretability-based (white-box) model auditing
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Uses internal measurements or causal interventions (features, probes, circuits, activation edits) to audit a specified safety-relevant property of a model, such as a hidden objective, backdoor or hazardous capability. Feature labels and readouts alone do not establish hidden objectives; exploratory interpretation without a safety audit is an analysis method. Not behavioural probing: see automated-behavioral-auditing; not deployed detectors: see internal-state-monitoring.'
+  ml_methods:
+  - sparse-autoencoders
+  - automated-interpretability
+  - activation-verbalizers
+  - probing
+  - attribution-methods
+  - activation-patching
+- id: model-diffing
+  node: technique
+  name: Model diffing
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Compares a model with a related checkpoint through weights, internal representations or matched behaviour to locate safety-relevant changes introduced by training or editing (acquired hazards, lost safeguards, alignment regressions). Differences are candidates for investigation; ordinary output-only regression testing is automated-behavioral-auditing.
+  ml_methods:
+  - sparse-autoencoders
+  - attribution-methods
+  risk_note: undetected behaviour changes introduced by fine-tuning
+  note: 'borderline: an interpretability instrument used as an audit'
+- id: activation-steering-repe
+  node: technique
+  name: Activation steering
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: At inference, alters selected hidden activations (adding, rescaling or capping learned directions, or other targeted activation interventions) to change a specified safety-relevant behaviour without updating weights; contrastive activation addition is a named instance. Not weight-training methods such as circuit-breakers-representation-rerouting; targeted removal or ablation of a representation is representation-concept-suppression.
+  aliases:
+  - text: steering vectors
+    kind: synonym
+  - text: activation capping along a persona / Assistant-Axis direction
+    kind: instance
+  - text: CAA
+    kind: instance
+  - text: Activation steering / RepE
+    kind: legacy
+  absorbed: CAA (activation steering) [too-specific instance]
+  ml_methods:
+  - activation-steering
+  - probing
+  note: 'intervention addable at inference; instrument-like but changes behaviour || related broader terms (not synonyms): RepE / representation engineering (also covers representation reading and training methods)'
+- id: white-box-detector-guided-training
+  node: technique
+  name: Training against white-box detectors (probe-guided training)
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Uses a detector of safety-relevant internal states (e.g. a deception or unsafe-intent probe) as a reward or penalty signal during training. Specify whether the detector is fixed, held out or retrained: optimising against a fixed probe can teach evasion rather than remove the behaviour, and KL regularisation or probe retraining reduce but do not prevent obfuscation. Not deploying the detector as a runtime monitor: see internal-state-monitoring.'
+  ml_methods:
+  - probing
+  - rl
+  - sft
+  source_papers: 'T04: 2602.15515 Obfuscation Atlas (2026-02-17); 2605.11467 probe-filtered RL; 2609.24243 targeted anti-obfuscation; 2609.38645 probe-guided fine-tuning (origin: pre-2026 (2024-25), expanded)'
+- id: intrinsic-interpretability-training
+  node: technique
+  name: Intrinsic-interpretability training
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Applies an explicit architecture or training objective that makes a model's internal computation inspectable (inherently interpretable models, interpretable bottlenecks), assessed for inspectability. Monitorability-preserving design of reasoning traces (e.g. avoiding high opaque serial depth) stays in cot-faithfulness-monitorability-training; post-hoc analysis of an ordinary model is interpretability-based-model-auditing.
+  aliases:
+  - text: interpretable-by-design training
+    kind: synonym
+  - text: inherently interpretable models
+    kind: synonym
+  note: narrowed variant
+- id: jailbreak-rapid-response
+  node: technique
+  name: Jailbreak rapid response
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: Uses newly observed jailbreaks to update a deployed safeguard rapidly, for example by expanding a small set of observed attacks into training data and deploying a targeted classifier or model patch. Annotate when the discovery-to-update loop itself is studied, not for any adversarial-training dataset (adversarial-training-jailbreak-robustness) or one-off classifier hardening (safety-classifier-hardening).
+  ml_methods:
+  - synthetic-data-generation
+  - active-learning
+  - classifier-training
+- id: safety-classifier-hardening
+  node: technique
+  name: Safety-classifier hardening
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Applies adversarial training and other robustness methods to safety classifiers or guardrails themselves, raising their measured resistance to evasion attacks and adversarial examples that target the safety layer. The object being hardened is the auxiliary detector; hardening the base model is adversarial-training-jailbreak-robustness.
+  ml_methods:
+  - adversarial-optimization
+  - classifier-training
+  risk_note: evasion of safety classifiers
+- id: age-minor-content-classifier
+  node: technique
+  name: Age / minor-content classifier
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Classifies inputs or outputs as appropriate or not for minor users under an age-appropriate-content policy. Content depicting sexual abuse of minors is csam-detection-pipeline; estimating a user's age is an access decision (age-assurance-gating), not this classifier.
+  ml_methods:
+  - classifier-training
+  risk_note: harmful content involving or reaching minors
+- id: cbrn-high-risk-domain-hazard-classifier
+  node: technique
+  name: CBRN / high-risk-domain hazard classifier
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Flags requests or outputs with indicators of actionable assistance in specified high-risk domains (CBRN, cyber, other designated misuse domains), using context rather than keywords alone, for blocking or review. The score estimates a hazard category; it does not measure human uplift (human-uplift-studies) or a request''s consequences. Not general harm-category moderation: see input-output-content-safety-classifier.'
+  ml_methods:
+  - classifier-training
+  risk_note: requests for actionable CBRN or cyber assistance
+- id: code-security-output-filter
+  node: technique
+  name: Code-security output filter
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Checks generated code for specified security weaknesses and blocks, withholds or revises failing code before release or execution (e.g. CodeShield). Vulnerability detection is not malicious-intent detection; record any malware detector separately. Not training the model to write secure code (secure-code-generation-training).
+  risk_note: vulnerable generated code
+- id: constitutional-classifiers
+  node: technique
+  name: Constitutional classifiers
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Input, output or exchange classifiers trained on examples generated or organised according to an explicit constitution of permitted and forbidden content, used to flag or block policy violations; architecture, cascading and blocking are deployment choices. Precedence: use this entry (and not also input-output-content-safety-classifier for the same instance) when constitution-derived training is the mechanism studied.'
+  aliases:
+  - text: exchange classifier
+    kind: instance
+  - text: cascade
+    kind: instance
+  - text: probe ensemble
+    kind: instance
+  absorbed: exchange-classifier (constitutional classifiers) [too-specific instance]; cascade (constitutional classifiers) [too-specific instance]; probe-ensemble (constitutional classifiers) [too-specific instance]
+  ml_methods:
+  - classifier-training
+  - synthetic-data-generation
+  - llm-as-judge
+  risk_note: jailbreaks (including universal ones) eliciting prohibited content
+  note: 'mechanism components / implementation descriptions (component alias type dropped, D9): next-gen exchange classifier + cascade + probe ensemble'
+- id: csam-detection-pipeline
+  node: technique
+  name: CSAM detection pipeline
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Detects suspected child sexual abuse material in serving-time inputs or outputs by matching against known material and/or learned detectors, supplying flags for the service''s response policy; record modalities and limits. Not training-corpus removal: see csam-child-safety-content-filtering.'
+  ml_methods:
+  - classifier-training
+  - hashing
+  risk_note: CSAM in inputs or outputs
+  note: output-side counterpart of csam-child-safety-content-filtering
+- id: input-output-content-safety-classifier
+  node: technique
+  name: Content moderation classifier
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Applies a trained standalone discriminative (non-LLM) classifier to model inputs or outputs to produce harm-category labels or scores for moderation; the label feeds a blocking or review policy, and modality (text, image, audio, video) is a facet. Not generative LLM judging (llm-based-safety-classifier), deterministic blocklists (keyword-blocklist-filter) or classifiers whose studied mechanism is constitution-derived training (constitutional-classifiers).
+  aliases:
+  - text: safety classifier
+    kind: synonym
+  - text: Input/output content safety classifier
+    kind: legacy
+  - text: Multimodal safety classifier
+    kind: legacy
+  ml_methods:
+  - classifier-training
+  risk_note: policy-violating inputs and outputs
+  note: 'absorbs v0.8 multimodal-safety-classifier: record modality (image/audio/video/mixed) as a facet'
+- id: keyword-blocklist-filter
+  node: technique
+  name: Keyword / blocklist filter
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: A deterministic filter that matches inputs or outputs against curated blocklists of terms, patterns or n-grams and blocks on hits, a low-latency first-pass defence with no model inference that is easy to evade by paraphrase. Not learned classifiers (input-output-content-safety-classifier).
+  risk_note: policy-violating inputs and outputs
+  note: rule-based, no ML
+- id: llm-based-safety-classifier
+  node: technique
+  name: Guard models
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Uses an LLM, prompted or safety-fine-tuned, to judge whether an input, output or interaction violates a specified safety policy, returning a label, explanation or score for a blocking or review policy; Llama Guard and ShieldGemma are named instances. Generic LLM judging of quality or correctness is an ML method (llm-as-judge). Not standalone discriminative classifiers (input-output-content-safety-classifier) or classifiers whose studied mechanism is constitution-derived training (constitutional-classifiers).
+  aliases:
+  - text: guard model
+    kind: synonym
+  - text: safeguard model
+    kind: synonym
+  - text: Llama Guard
+    kind: instance
+  - text: ShieldGemma
+    kind: instance
+  - text: LLM-as-judge safety moderation
+    kind: legacy
+  - text: LLM-based safety classifier
+    kind: legacy
+  absorbed: LLM-as-judge safety moderation
+  ml_methods:
+  - classifier-training
+  - fine-tuning
+  risk_note: policy-violating inputs and outputs
+- id: multi-turn-conversation-safety-monitoring
+  node: technique
+  name: Multi-turn conversation safety monitoring
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Accumulates evidence across conversation turns (stateful cross-turn detection) to detect harmful intent, decomposition or escalation that individual messages do not establish. Not an ordinary classifier run on a long transcript (input-output-content-safety-classifier) or cross-account pattern analysis (automated-abuse-behavioral-monitoring).
+  ml_methods:
+  - classifier-training
+  risk_note: multi-turn jailbreaks and escalation
+- id: pii-detection-redaction-output
+  node: technique
+  name: PII detection & redaction (output)
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Detects personal information in proposed outputs and removes, masks or substitutes disclosures disallowed by the applicable privacy policy before delivery; detection is imperfect and recognising an identifier does not establish that its disclosure is unauthorised. Not training-corpus redaction (pii-removal-redaction).
+  ml_methods:
+  - classifier-training
+  risk_note: privacy leakage of personal data
+- id: prompt-injection-jailbreak-detector
+  node: technique
+  name: Prompt-injection / jailbreak detector
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: A classifier that flags prompt-injection payloads and jailbreak attempts in incoming text or retrieved content before the base model processes them; detectors can be evaded. Not trained resistance in the model (prompt-injection-defense-training) or source-trust checks (retrieved-content-source-validation).
+  aliases:
+  - text: Jailbreak / adversarial input-detection classifiers
+    kind: legacy
+  absorbed: Jailbreak / adversarial input-detection classifiers
+  ml_methods:
+  - classifier-training
+  risk_note: prompt injection and jailbreaks
+- id: regurgitation-output-filter
+  node: technique
+  name: Verbatim-regurgitation output filtering
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Compares proposed output with training-data or protected reference content and blocks, truncates or rewrites reproduction above a stated threshold, including during decoding; paraphrased reproduction can pass. Not flag-only matching (reference-content-fingerprinting); not training-side memorisation reduction (anti-memorization-training).
+  aliases:
+  - text: regurgitation filtering
+    kind: synonym
+  - text: copyright output filter
+    kind: synonym
+- id: classifier-guided-contrastive-decoding
+  node: technique
+  name: Safety-guided decoding & reranking
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'At inference, uses an explicit safety score, constraint or safety-directed expert / anti-expert signal to modify token probabilities, prune partial continuations or select among completed candidates (safety-scored reranking and search), including self-debiasing by bias-prompt logit reweighting. Generic best-of-N, reward maximisation or contrastive decoding without a safety objective does not qualify. Not post-generation blocking: see the output classifiers (input-output-content-safety-classifier).'
+  aliases:
+  - text: self-debiasing
+    kind: instance
+  - text: Self-debiasing / self-diagnosis
+    kind: legacy
+  ml_methods:
+  - constrained-decoding
+  - classifier-training
+  risk_note: toxic or unsafe generations
+  v08_name: Classifier-guided / contrastive decoding
+- id: control-token-toxicity-steering
+  node: technique
+  name: Control-token toxicity steering
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Conditions a model trained with safety-relevant attribute codes on a control token (e.g. [toxicity=none]) that selects a less toxic generation regime at inference. Generic style control does not qualify; the token does not guarantee the attribute. Not the training-time conditioning itself (safety-conditional-pretraining-objectives).
+  ml_methods:
+  - fine-tuning
+  risk_note: toxic generation
+- id: dialog-rails
+  node: technique
+  name: Dialog rails
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: A declarative guardrail layer around the model (e.g. NeMo Guardrails) that intercepts conversation turns and enforces explicit topical and safety rules on permitted states and transitions, blocking or redirecting violating turns independently of the base model. Not the content classifiers or output validators such layers call (input-output-content-safety-classifier, keyword-blocklist-filter).
+  risk_note: off-topic or unsafe conversation turns
+- id: hidden-private-chain-of-thought
+  node: technique
+  name: Hidden chain-of-thought
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Configures serving so that a model''s reasoning trace is withheld from some recipients (typically end users) while the final answer is shown, possibly with a summary; the serving system may still use or inspect it. This changes access, not whether the trace exists or is faithful, and it does not categorically prevent exploitation or leakage through the answer. Not training on the trace: see cot-faithfulness-monitorability-training.'
+  aliases:
+  - text: private chain-of-thought
+    kind: synonym
+  - text: Hidden / private chain-of-thought
+    kind: legacy
+  ml_methods:
+  - prompting
+  note: deployment intervention (CoT visibility); changes exploitability/monitorability
+- id: prompt-rewriting-for-compliance
+  node: technique
+  name: Prompt rewriting for compliance
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Rewrites an incoming prompt under an explicit safety policy before the responding model sees it, to neutralise an attack or obtain a permissible response while preserving legitimate intent. Generic query optimisation without a safety objective does not qualify. Not randomised perturb-and-aggregate defences (input-smoothing-smoothllm).
+  ml_methods:
+  - prompting
+  risk_note: policy-violating responses
+- id: system-prompt-behavioral-steering
+  node: technique
+  name: System-prompt safety steering
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Places operator-controlled safety rules, authority boundaries or safe-response instructions in the model''s system-level context at inference (including self-reminders and in-context defence demonstrations). Ordinary persona or style prompting and the mere existence of a written spec are out of scope. Not trained instruction priority: see instruction-hierarchy-training.'
+  aliases:
+  - text: system-prompt warning against propagating ideas (mind viruses)
+    kind: instance
+  - text: System-prompt / Model-Spec behavioral steering
+    kind: legacy
+  ml_methods:
+  - prompting
+  note: generic prompting itself is ml-method `prompting`
+- id: real-time-streaming-safety-detection-rollback
+  node: technique
+  name: Real-time streaming safety detection & rollback
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Checks a response incrementally during generation and stops, truncates, replaces or regenerates unsafe portions under an explicit release policy. Rollback applies only to buffered or otherwise retractable content; information already delivered to a user or a tool cannot be recalled. Not post-generation classification of the complete output: see input-output-content-safety-classifier.'
+  aliases:
+  - text: Streaming token-level classifier
+    kind: legacy
+  absorbed: Streaming token-level classifier
+  ml_methods:
+  - classifier-training
+  risk_note: policy-violating outputs mid-generation
+- id: capability-gating-fallback-routing
+  node: technique
+  name: Capability-gating fallback routing
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Routes incoming requests to different model variants or to a refusal based on an assessed risk tier (e.g. high-risk chemistry to a capability-restricted model), implementing access control at the inference-routing layer; the risk assessment can err. Not keys inside one model (authorisation-keyed-capabilities) or user-identity tiers (kyc-tiered-access-controls).
+  ml_methods:
+  - access-control-engineering
+  - classifier-training
+  risk_note: misuse uplift in high-risk domains
+- id: crisis-wellbeing-safeguards
+  node: technique
+  name: Crisis-response and user-wellbeing safeguards
+  kind: intervention
+  status: final
+  origin: v0.9 add (D7; tax-review C469)
+  definition: Detects signals of self-harm risk, acute distress, delusional spirals or emotional over-reliance during use and switches the response policy to safe-messaging guidance, de-escalation, referral to human help or session limits. Detection is imperfect and switching does not ensure a good outcome. Not general harm-category moderation (input-output-content-safety-classifier) or measuring wellbeing effects (user-wellbeing-eval).
+  aliases:
+  - text: self-harm safeguards
+    kind: synonym
+  - text: safe messaging
+    kind: synonym
+  - text: crisis response
+    kind: synonym
+  ml_methods:
+  - classifier-training
+  note: 'kind intervention under D1 (defining operation: switching the response policy)'
+- id: ai-control-protocols.defer-to-trusted
+  node: technique
+  name: Defer-to-trusted
+  kind: intervention
+  parent: ai-control-protocols
+  status: final
+  origin: v0.8
+  definition: Within an AI-control protocol, when the escalation criterion flags an untrusted-model proposal, replaces it with an output or action from the model treated as trusted in the threat model, trading usefulness for safety only on flagged cases. Not resampling the untrusted model (ai-control-protocols.defer-to-resample) and not rewriting the proposal (ai-control-protocols.trusted-editing).
+  aliases:
+  - text: defer-to-trusted / resample (AI-control protocol)
+    kind: legacy
+  ml_methods:
+  - llm-as-judge
+  risk_note: misaligned untrusted model actions
+  v08_name: defer-to-trusted (AI-control protocol)
+  note: child of too-generic family; mechanism compared as safety technique
+- id: ai-control-protocols.trusted-editing
+  node: technique
+  name: Trusted editing
+  kind: intervention
+  parent: ai-control-protocols
+  status: final
+  origin: v0.8
+  definition: Within an AI-control protocol, a trusted model reviews and rewrites an untrusted model's proposed output or action (typically when it is flagged) to remove suspicious or harmful parts before it takes effect, keeping useful work without relying on the untrusted model's alignment; edits can miss subtle attacks. Not replacing the proposal wholesale (ai-control-protocols.defer-to-trusted) or resampling it (ai-control-protocols.defer-to-resample).
+  aliases:
+  - text: trusted-editing (AI-control protocol)
+    kind: legacy
+  ml_methods:
+  - llm-as-judge
+  risk_note: misaligned untrusted model actions
+  note: child of too-generic family; mechanism compared as safety technique
+- id: agent-audit-logging-observability
+  node: technique
+  name: Agent audit-logging & observability
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Analyses retained agent action, tool and event logs against specified misuse, policy-violation or oversight-interference signals and flags suspicious sequences for review or response, using records with enough integrity and provenance to support the audit. Passive collection and tamper-evident storage alone are infrastructure and do not receive this label. Not live per-action scoring: see trusted-monitoring-suspicion-scoring and agentic-safety-classifier.'
+  ml_methods:
+  - access-control-engineering
+  risk_note: undetected misuse or oversight interference in agent histories
+  note: 'narrowed (D5): passive logging is infrastructure'
+- id: ai-control-protocols.untrusted-monitoring
+  node: technique
+  name: Untrusted monitoring
+  kind: monitoring
+  parent: ai-control-protocols
+  status: final
+  origin: v0.8
+  definition: 'Uses a model treated as potentially adversarial (another instance of the same model or a different untrusted model) to assess the untrusted policy''s proposals, while the control protocol limits reliance on its judgements and adds anti-collusion measures (e.g. honeypot inputs, paraphrasing). Anti-collusion measures do not guarantee independence. Not monitoring by a trusted model: see trusted-monitoring-suspicion-scoring.'
+  aliases:
+  - text: untrusted-monitoring (AI-control protocol)
+    kind: legacy
+  ml_methods:
+  - llm-as-judge
+  risk_note: unsafe actions by an untrusted model when trusted monitors are too weak (with collusion risk)
+  note: child of too-generic family; mechanism compared as safety technique
+- id: function-call-tool-use-hallucination-detection
+  node: technique
+  name: Function-call / tool-use hallucination detection
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Flags proposed tool calls that refer to unavailable tools or APIs, violate their schemas or supply unsupported arguments, before execution, when these checks guard against unsafe tool execution. Generic API-quality testing or constrained decoding alone is not this technique. Not policy scoring of valid calls: see agentic-safety-classifier.'
+  ml_methods:
+  - classifier-training
+  risk_note: hallucinated tool calls
+- id: honeytoken-tripwires
+  node: technique
+  name: Honeytoken / canary tripwires for agents and AI services
+  kind: monitoring
+  status: final
+  origin: new-2026-10
+  definition: 'Places instrumented decoy credentials, tools, documents or canary strings in a deployed agent''s or AI service''s environment and flags specified prohibited uses or disclosures of them. Authorised inspection of a planted item is not automatically evidence of compromise. Not a controlled pre-deployment behavioural test: see honeypot-evals.'
+  ml_methods:
+  - hashing
+  - access-control-engineering
+  source_papers: 'T21: 2603.28655 steganographic canaries (2026-03-30); 2604.10717; 2605.11026; 2606.04141 (origin: 2026 (security practice applied to AI))'
+- id: inter-agent-communication-monitoring
+  node: technique
+  name: Inter-agent communication monitoring & filtering
+  kind: monitoring
+  status: final
+  origin: new-2026-10
+  definition: Inspects messages crossing agent-to-agent trust boundaries for injected instructions, unauthorised requests or information flows, or covert coordination, and flags them (blocking or rewriting, where present, is the consuming policy). Not ordinary transcript logging (agent-audit-logging-observability) or moderation of user-facing output.
+  ml_methods:
+  - classifier-training
+  - llm-as-judge
+  source_papers: 'B10: 2603.13940, 2604.01151 (origin: )'
+- id: self-exfiltration-oversight-deactivation-detection
+  node: technique
+  name: Self-exfiltration & oversight-deactivation detection
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Monitors agent behaviour for specific indicators of attempts to copy model weights, disable monitoring or oversight, or otherwise undermine human control, and flags them for response. General suspicion scoring of untrusted actions is trusted-monitoring-suspicion-scoring; measuring the capability in a test is dangerous-capability-evaluation.autonomous-replication.
+  ml_methods:
+  - classifier-training
+  risk_note: self-exfiltration and oversight subversion
+- id: task-adherence-monitoring
+  node: technique
+  name: Task-adherence monitoring
+  kind: monitoring
+  parent: agent-runtime-monitoring-intervention
+  status: final
+  origin: v0.8
+  definition: 'Compares proposed or executed agent actions with the assigned task and delegated authority and flags unsupported goals, scope expansion or actions that do not serve the task, whether or not their content is independently unsafe. A positive adherence judgement does not establish safety. Not content-policy classification: see agentic-safety-classifier.'
+  aliases:
+  - text: Task Shield
+    kind: instance
+  - text: Task-adherence monitoring (Task Shield)
+    kind: legacy
+  ml_methods:
+  - llm-as-judge
+  risk_note: agent goal drift and scope expansion
+- id: trusted-monitoring-suspicion-scoring
+  node: technique
+  name: Trusted monitoring
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: 'Within an AI-control protocol, uses a model assumed trustworthy in the threat model to score an untrusted model''s actions, artefacts or reasoning for covertly unsafe or suspicious behaviour; the score feeds auditing, deferral or other protocol decisions. Trust is an assumption and judgements need not be accurate. Not ordinary action-policy classification: see agentic-safety-classifier; not monitoring by the untrusted model: see ai-control-protocols.untrusted-monitoring.'
+  aliases:
+  - text: deliberative action-only scheming monitors
+    kind: instance
+  - text: artifact-probing monitor
+    kind: instance
+  - text: Trusted monitoring / suspicion scoring
+    kind: legacy
+  ml_methods:
+  - llm-as-judge
+  - classifier-training
+  risk_note: concealed unsafe agent behaviour
+- id: agentic-safety-classifier
+  node: technique
+  name: Agentic safety classifier
+  kind: monitoring
+  parent: agent-runtime-monitoring-intervention
+  status: final
+  origin: v0.8
+  definition: Scores proposed agent plans or tool calls against a stated safety policy before execution, producing a flag or risk category for a runtime gate (the gate, shield or approval step is annotated separately). Not task drift (task-adherence-monitoring), strategic suspicion scoring in a control protocol (trusted-monitoring-suspicion-scoring) or classification of conversational text (input-output-content-safety-classifier).
+  ml_methods:
+  - classifier-training
+  risk_note: unsafe agent actions
+- id: ai-control-protocols.defer-to-resample
+  node: technique
+  name: Defer-to-resample
+  kind: intervention
+  parent: ai-control-protocols
+  status: final
+  origin: v0.9 split (tax-review C058)
+  definition: 'Within an AI-control protocol, when a monitor flags an untrusted-model action, discards it and draws further samples from the same untrusted model, executing an acceptable sample or escalating / falling back to the trusted model after a retry limit; resample statistics can also feed incrimination and auditing. It assumes that attacks are not consistent across samples, which is a threat-model assumption. Not substitution by the trusted model: see ai-control-protocols.defer-to-trusted.'
+  aliases:
+  - text: resample protocol
+    kind: synonym
+  - text: defer to resample
+    kind: synonym
+  ml_methods:
+  - llm-as-judge
+  risk_note: misaligned untrusted model actions
+  note: split from ai-control-protocols.defer-to-trusted (v0.8 scope_change)
+- id: runtime-safety-specification-verification
+  node: technique
+  name: Runtime verification of agent traces
+  kind: monitoring
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Checks an executing agent's event / action trace online against explicit temporal-logic or state-transition safety specifications and signals violations to a consuming control; coverage is limited to what the specification and observed events capture. Not blocking or substituting actions (runtime-safety-shielding); not offline proof (formal-verification-gsai); not retrospective log review (agent-audit-logging-observability).
+  aliases:
+  - text: runtime verification
+    kind: synonym
+  - text: runtime monitoring of temporal-logic specifications
+    kind: synonym
+- id: spotlighting-context-delimiting
+  node: technique
+  name: Spotlighting
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Marks, delimits or encodes lower-trust content (user data, tool outputs, retrieved text) inside the prompt with delimiters, special tokens or transformations so the model can tell data from instructions, without enforcing taint-based permissions; it lowers but does not eliminate injection success. Not information-flow enforcement (camel-data-flow-taint-tracking) or trained injection resistance (prompt-injection-defense-training).
+  aliases:
+  - text: context delimiting
+    kind: synonym
+  - text: Spotlighting / context delimiting
+    kind: legacy
+  ml_methods:
+  - prompting
+  risk_note: prompt injection
+- id: agent-exfiltration-prevention-egress-filtering
+  node: technique
+  name: Agent exfiltration prevention / egress filtering
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Constrains and inspects the outbound channels an agent controls (network, messaging, file export), blocking destinations or transfers that violate an exfiltration policy. State which channels are mediated; the control does not cover all outbound data flows unless the runtime mediates them. Not protection of the weight store (model-weight-security-exfiltration-controls) or removing a capability leg by design (structural-lethal-trifecta-limits).
+  ml_methods:
+  - access-control-engineering
+  risk_note: data exfiltration by agents
+- id: agent-output-memory-sanitization
+  node: technique
+  name: Agent output/memory sanitization
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Screens, removes or quarantines unsafe or injected material when it is written to, kept in or recalled from an agent''s persistent or working memory or scratchpad, including provenance-based revalidation or invalidation of stored memories at recall, before they influence safety-relevant actions. The defining target is persistence across steps or sessions. Not one-off filtering of a tool result or final answer: see tool-action-output-safety-filters and the output classifiers; not preserving safety instructions through compaction: see compaction-robust-safety-constraints.'
+  aliases:
+  - text: memory provenance revalidation
+    kind: synonym
+  - text: memory invalidation
+    kind: synonym
+  - text: persistent-memory trust gating
+    kind: synonym
+  ml_methods:
+  - classifier-training
+  risk_note: persistence of harmful content in agent memory
+- id: camel-data-flow-taint-tracking
+  node: technique
+  name: Information-flow control for agents
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Propagates provenance or security labels as that data flows through the agent, and enforces explicit policies on which labelled values may reach tools, recipients or other privileged sinks. Untrusted data may still be used in permitted computations; protection holds only for flows the policy and runtime cover. CaMeL is a named instance. Not architectural separation of the untrusted-content path (privilege-separated-agent-control-flow) or prompt-level marking (spotlighting-context-delimiting); not a fixed rule that removes one capability leg: see structural-lethal-trifecta-limits.'
+  aliases:
+  - text: data-flow taint tracking
+    kind: synonym
+  - text: CaMeL
+    kind: instance
+  - text: CaMeL / data-flow taint tracking
+    kind: legacy
+  ml_methods:
+  - formal-methods
+  risk_note: prompt injection
+  note: names CaMeL; mechanism is taint tracking
+- id: retrieved-content-source-validation
+  node: technique
+  name: Retrieved-content source validation
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Checks the identity, provenance or integrity of retrieved material against an explicit source-trust policy and restricts use of material that fails it. A verified source can still carry false or malicious content, so this does not by itself establish factual accuracy or prompt-injection resistance. Not content-based injection detection: see prompt-injection-jailbreak-detector.'
+  ml_methods:
+  - access-control-engineering
+  risk_note: retrieval-time prompt injection
+- id: structural-lethal-trifecta-limits
+  node: technique
+  name: Structural lethal-trifecta limits
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Prevents an agent workflow from jointly combining access to sensitive data, exposure to untrusted content and an unrestricted external transmission path (the "lethal trifecta"), by removing or isolating one leg across the whole workflow, including persistent memory and delegated agents. Other exfiltration paths may remain. Not label-based flow enforcement (camel-data-flow-taint-tracking) or channel filtering (agent-exfiltration-prevention-egress-filtering).
+  risk_note: prompt-injection data exfiltration
+- id: tool-action-output-safety-filters
+  node: technique
+  name: Tool/action output safety filters
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Applies safety classifiers or rule-based filters to results returned by tools and actions before the agent ingests them, blocking or sanitising malicious or harmful tool outputs; detection is imperfect. Not persistence-focused memory sanitisation (agent-output-memory-sanitization) or source-trust checks (retrieved-content-source-validation).
+  ml_methods:
+  - classifier-training
+  risk_note: malicious tool outputs entering agent context
+- id: contextual-privacy-information-flow-controls
+  node: technique
+  name: Contextual-integrity privacy alignment and controls
+  kind: intervention
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Trains or configures an agent to collect, use or disclose information according to contextual-integrity norms (information type, actors, recipient, purpose, transmission conditions), including information that is not PII; adherence is measured, not guaranteed. Not identifier redaction (pii-detection-redaction-output); not label-propagating flow enforcement (camel-data-flow-taint-tracking); evaluation is contextual-privacy-eval.
+  aliases:
+  - text: contextual privacy controls
+    kind: synonym
+  - text: contextual integrity alignment
+    kind: synonym
+- id: peer-reputation-gating
+  node: technique
+  name: Peer reputation / trust gating
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Uses authenticated interaction history of identified peer agents to limit how far their messages can influence an agent's privileged decisions or delegated authority. Not content inspection of individual messages (inter-agent-communication-monitoring); reputation weighting only for answer quality is excluded.
+  aliases:
+  - text: peer trust gating
+    kind: synonym
+  - text: agent reputation gating
+    kind: synonym
+- id: privilege-separated-agent-control-flow
+  node: technique
+  name: Agent privilege separation (dual-LLM / plan-then-execute)
+  kind: intervention
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Keeps processing of untrusted content outside the component that selects privileged instructions or tool actions, passing only bounded, validated values across an enforced interface; protection depends on what crosses that interface. Not label propagation with sink policies (camel-data-flow-taint-tracking); not removing a trifecta leg (structural-lethal-trifecta-limits); ordinary task decomposition does not qualify.
+  aliases:
+  - text: agent privilege separation
+    kind: synonym
+  - text: dual-LLM pattern
+    kind: instance
+  - text: plan-then-execute control-flow isolation
+    kind: instance
+  note: home of the dual-LLM / plan-then-execute aliases removed from the IFC entry (C060, C479)
+- id: agentic-scope-of-autonomy-constraints
+  node: technique
+  name: Agentic scope-of-autonomy constraints
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Defines which decisions an agent may take without further authorisation and enforces escalation or denial outside that scope. It limits decision authority, separately from tool permissions (least-privilege-minimal-tool-access), and does not make the model behaviourally corrigible (corrigibility-behaviors-training).
+  ml_methods:
+  - access-control-engineering
+  risk_note: unsanctioned agent decisions
+- id: compaction-robust-safety-constraints
+  node: technique
+  name: Compaction-robust safety constraints
+  kind: intervention
+  status: provisional
+  origin: new-2026-10
+  definition: Preserves trusted safety instructions and action limits, with their authority, when an agent summarises, evicts or compacts context, for example by pinning them outside the summary, reinserting them, or checking that the new summary retains them. Not general context management or memory sanitisation (agent-output-memory-sanitization).
+  ml_methods:
+  - prompting
+  source_papers: 'T23: 2606.22528 Governance Decay (2026-06-21); 2608.11242; 2608.22752 (origin: 2026)'
+  note: 'candidate-review: medium-low'
+- id: gated-agent-self-modification
+  node: technique
+  name: Gated agent self-modification
+  kind: intervention
+  status: provisional
+  origin: new-2026-10
+  definition: 'Requires proposed changes to an agent''s persistent instructions, skills, tools, harness or permissions to pass an externally enforced authorisation and safety-check gate (regression tests, verifiers, approval) before activation. The gate evaluates the changed artefact and its authority; a signature establishes provenance, not safety. Routine task outputs do not count. Not approval of individual actions: see human-in-the-loop-approval-gates.'
+  source_papers: 'T24: 2602.02170 (2026-02-02); 2603.25111; 2605.29668; 2609.36043 (origin: 2026)'
+  note: 'candidate-review: low-medium'
+- id: human-in-the-loop-approval-gates
+  node: technique
+  name: Human-in-the-loop approval gates
+  kind: intervention
+  parent: agent-runtime-monitoring-intervention
+  status: final
+  origin: v0.8
+  definition: Inserts a required human confirmation step before an agent executes specified high-risk or irreversible actions (sending messages, deploying code, moving money). Its value depends on the reviewer's information and attention. Not automated pre-execution scoring (agentic-safety-classifier) or limits on what may be decided at all (agentic-scope-of-autonomy-constraints).
+  ml_methods:
+  - access-control-engineering
+  risk_note: unsafe irreversible agent actions
+  note: 'implementation example (not a synonym): action-bound authorisation (approval bound to the exact action digest)'
+- id: kill-switch-shutdown-criteria
+  node: technique
+  name: Kill switch / shutdown criteria
+  kind: intervention
+  parent: agent-runtime-monitoring-intervention
+  status: final
+  origin: v0.8
+  definition: Terminates or suspends agent execution when specified safety criteria are met (termination only), preserving the ability to halt an autonomous system; effectiveness depends on the criteria and on the mechanism being outside the agent's control. Not substitution of an action (runtime-safety-shielding) or pausing pending approval (human-in-the-loop-approval-gates).
+  risk_note: loss of ability to halt agent
+- id: least-privilege-minimal-tool-access
+  node: technique
+  name: Least-privilege / minimal tool access
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Grants an agent only the tools, scopes, credentials and permissions needed for its current task (including mediated or vaulted credentials), bounding the damage achievable from errors, compromise or injected instructions. A permission-provisioning control: not execution isolation (tool-use-agent-execution-sandboxing) or limits on decision authority (agentic-scope-of-autonomy-constraints).'
+  ml_methods:
+  - access-control-engineering
+  risk_note: unsafe agent actions and compromise blast radius
+  note: covers credential vaulting / mediation (moved from sandboxing aliases, C088)
+- id: proactive-refusal-high-risk-agentic-categories
+  node: technique
+  name: Proactive refusal for high-risk agentic categories
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Trains an agent to decline or escalate entire categories of autonomous actions judged high-risk (e.g. posting to social media, deploying code to production), independent of the specific instruction's content. It gates on the action category, unlike per-action policy scoring (agentic-safety-classifier) or clarification about an ambiguous request (clarification-seeking-training).
+  ml_methods:
+  - sft
+  risk_note: high-risk autonomous actions
+- id: reversible-action-side-effect-minimization
+  node: technique
+  name: Reversible-action / side-effect minimization
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Trains, instructs or constrains an agent''s action selection to prefer reversible, lower-impact actions and to minimise unintended side effects. Not enforced transaction, checkpoint or rollback mechanisms: see transactional-agent-actions.'
+  ml_methods:
+  - rl
+  - sft
+  risk_note: irreversible side effects of agent actions
+- id: runtime-safety-shielding
+  node: technique
+  name: Runtime safety shielding
+  kind: intervention
+  parent: agent-runtime-monitoring-intervention
+  status: final
+  origin: 'new-2026-10 (technique origin: shielding, Alshiekh et al. 2017, 1708.08611)'
+  definition: 'Before an agent or policy action takes effect, checks it against explicit admissibility constraints (often synthesised from a formal specification, a safety layer or a control-barrier filter, using the current state and where available a transition model) and blocks, replaces or defers an inadmissible action with an allowed one. Covers embodied and robotic action filters. Any guarantee is conditional on the specification, state information and model. Not detection-only risk scoring: see agentic-safety-classifier and trusted-monitoring-suspicion-scoring; not termination: see kill-switch-shutdown-criteria.'
+  aliases:
+  - text: Runtime safety shields (replace unsafe actions with admissible ones)
+    kind: legacy
+  ml_methods:
+  - formal-methods
+  - rl
+  source_papers: 'B04: 2602.06026, 2602.15061 (origin: )'
+  note: also suggested independently by two earlier reviewers
+- id: tool-use-agent-execution-sandboxing
+  node: technique
+  name: Tool-use / agent execution sandboxing
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Executes agent code or tool operations inside an isolation boundary that restricts filesystem, network, process and resource access, limiting consequences under a stated threat model. Effectiveness depends on the isolation mechanism, configuration and escape paths; it does not guarantee that actions cannot escape. Not permission provisioning (least-privilege-minimal-tool-access).
+  ml_methods:
+  - access-control-engineering
+  risk_note: consequences of unsafe agent actions on the host environment
+- id: transactional-agent-actions
+  node: technique
+  name: Transactional agent actions
+  kind: intervention
+  status: final
+  origin: v0.9 add (D7; tax-review C491)
+  definition: Stages consequential agent actions, validates them before commit, and provides atomic execution, checkpointing or rollback where the environment supports it, changing execution semantics rather than the agent's action preferences. Rollback covers only state the runtime controls; external effects such as sent messages or payments may be irreversible. Not preferring reversible actions (reversible-action-side-effect-minimization) or human approval of individual actions (human-in-the-loop-approval-gates).
+  aliases:
+  - text: checkpoint and rollback
+    kind: synonym
+  - text: staged commit
+    kind: synonym
+  ml_methods:
+  - access-control-engineering
+- id: prefill-blocking
+  node: technique
+  name: Prefill blocking
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: A serving-side rule that refuses, strips or sanitises requests that pre-fill the assistant-turn prefix with attacker-chosen content, closing the prefill jailbreak vector in chat-template APIs; it does not address other attack vectors. Not output-side moderation (input-output-content-safety-classifier) or trained robustness (adversarial-training-jailbreak-robustness).
+  risk_note: prefill jailbreak attacks
+- id: kyc-tiered-access-controls
+  node: technique
+  name: KYC / tiered access controls
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Restricts access to an AI service or capability by user or use-case vetting, identity verification and/or enforced capability tiers at the service boundary; record which mechanisms are implemented. Not tool permissions inside an agent (least-privilege-minimal-tool-access), keys inside one model (authorisation-keyed-capabilities) or release-mode choices (staged-structured-release).
+  ml_methods:
+  - access-control-engineering
+  risk_note: misuse of dangerous capabilities by unvetted users
+- id: authorisation-keyed-capabilities
+  node: technique
+  name: Authorisation-keyed capabilities inside one model
+  kind: intervention
+  status: provisional
+  origin: new-2026-10
+  definition: Trains or configures one model so that selected capabilities or safety relaxations are available only when a designated key, mask or control signal is supplied, intended to restrict them to authorised principals; evaluate extraction and bypass resistance. A learned key does not authenticate a user. Not service-side tiers (kyc-tiered-access-controls) or routing between separate models (capability-gating-fallback-routing).
+  ml_methods:
+  - lora-peft
+  - fine-tuning
+  source_papers: 'T22: 2601.23157 least-privilege LMs (2026-01-30); 2605.24154 Palette; 2607.18639 hazard-gated control token (origin: 2026)'
+  note: 'candidate-review: medium-low'
+- id: age-assurance-gating
+  node: technique
+  name: Age assurance and age-prediction gating
+  kind: intervention
+  status: final
+  origin: v0.9 add (D7; tax-review C461)
+  definition: Estimates or verifies a user's age (age prediction from usage signals, document or third-party verification, declaration checks) and applies age-appropriate policies or access restrictions to the service. Age estimates have error rates and can be evaded. Not classifying content as suitable for minors (age-minor-content-classifier) or general identity vetting (kyc-tiered-access-controls).
+  aliases:
+  - text: age assurance
+    kind: synonym
+  - text: age verification
+    kind: synonym
+  - text: age prediction
+    kind: synonym
+  ml_methods:
+  - classifier-training
+- id: safety-rate-limits-resource-budgets
+  node: technique
+  name: Safety rate limits and resource budgets
+  kind: intervention
+  status: final
+  origin: v0.9 add (D7; tax-review C486)
+  definition: Enforces safety-motivated limits on request volume, samples, concurrency, reasoning tokens, time, spending or tool calls, per user, account or agent run, to bound automated jailbreak search, model extraction and scaled misuse and to interrupt runaway reasoning or agent execution. Limits raise attacker cost; they do not prevent attacks within the budget. Not measuring resource-exhaustion attacks (reasoning-dos-eval) or identity-based access tiers (kyc-tiered-access-controls); generic quota control without a safety objective is infrastructure.
+  aliases:
+  - text: rate limiting
+    kind: synonym
+  - text: resource budgets
+    kind: synonym
+  - text: query budgets
+    kind: synonym
+  ml_methods:
+  - access-control-engineering
+  note: may later split into access-side rate limits and execution-side budgets
+- id: staged-structured-release
+  node: technique
+  name: Staged / structured release
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (D8; tax-review C489)
+  definition: Chooses and enforces how an identified model is made available, e.g. API-only access, gradual rollout to widening user groups, delayed or partial open-weight release, or structured researcher access, with the next stage conditional on evaluations or observed misuse. It limits exposure while evidence is gathered; it cannot reverse diffusion once weights are released. The enforced access controls are coded on kyc-tiered-access-controls or safety-rate-limits-resource-budgets; an organisational release policy not applied to a model is governance.
+  aliases:
+  - text: staged release
+    kind: synonym
+  - text: structured access
+    kind: synonym
+  - text: gradual release
+    kind: synonym
+  note: 'borderline (likely a valid technique but borderline); astra-D alternative: deployment-stage metadata plus the enforced controls'
+- id: behavioral-watermarking-for-jailbreak-detection
+  node: technique
+  name: Behavioral watermarking for jailbreak detection
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Embeds detectable behavioural signatures or output watermarks into a model so that operation outside its intended context (a jailbroken or misuse deployment) can later be recognised from its behaviour or outputs; detection is probabilistic. The signal flags misuse of the model rather than attributing generated content (ai-generated-content-watermarking) or model lineage (model-identification-weight-fingerprinting).
+  ml_methods:
+  - fine-tuning
+  risk_note: undetected misuse of jailbroken deployments
+- id: ai-generated-content-watermarking
+  node: technique
+  name: AI-generated content watermarking
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Embeds a detectable signal during or after generation of text, image or audio so a compatible detector can test whether content likely came from a participating generator (SynthID as named instance). Detection is probabilistic and scheme-dependent, with stated error and removal limits; it does not identify all AI-generated content. Not signed metadata (c2pa-content-credentials) or detection without an embedded signal (content-fingerprinting-ai-content-detection).
+  ml_methods:
+  - cryptography
+  risk_note: unattributable AI-generated content
+- id: c2pa-content-credentials
+  node: technique
+  name: C2PA / content credentials
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Attaches cryptographically signed, tamper-evident provenance assertions (origin, generation and edit history) to media so verifiers can check the signer and whether covered content or metadata changed; C2PA Content Credentials is one standard. A valid signature does not establish the truth of the assertions or of the depicted content, and stripped metadata leaves no signal. Not visible disclosure labels (ai-output-disclosure-labeling) or embedded watermarks (ai-generated-content-watermarking).
+  aliases:
+  - text: C2PA
+    kind: instance
+  - text: Content Credentials
+    kind: instance
+  ml_methods:
+  - cryptography
+  risk_note: unverifiable provenance of synthetic media
+- id: content-fingerprinting-ai-content-detection
+  node: technique
+  name: AI-generated content detection
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Estimates whether content was AI-generated using statistical or learned detectors, without relying on an embedded watermark or a known reference copy; report domain, editing robustness and error rates. Detection does not identify a particular generating model and has non-trivial false-positive rates. Not watermark detection (ai-generated-content-watermarking) or matching against known items (reference-content-fingerprinting).
+  aliases:
+  - text: Content fingerprinting / AI-content detection
+    kind: legacy
+  ml_methods:
+  - classifier-training
+  - hashing
+  risk_note: unlabelled AI-generated content
+- id: reference-content-fingerprinting
+  node: technique
+  name: Reference-content matching
+  kind: monitoring
+  status: final
+  origin: v0.9 split (tax-review C300)
+  definition: Matches content against an index of known items by perceptual or cryptographic hashing to recognise copies or near-duplicates of registered content (e.g. known generated media, known abuse material, protected works), flagging matches for the consuming policy. It recognises only indexed items and transformations within the hash's tolerance. Not open-set estimation of AI origin (content-fingerprinting-ai-content-detection) or embedded watermarks (ai-generated-content-watermarking).
+  aliases:
+  - text: content fingerprinting
+    kind: synonym
+  - text: perceptual hashing
+    kind: instance
+  ml_methods:
+  - hashing
+  risk_note: unrecognised copies of known content
+- id: ai-output-disclosure-labeling
+  node: technique
+  name: AI-output disclosure labelling
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Attaches a user-visible notice identifying output as AI-generated or AI-modified, or an interlocutor as an AI system, at delivery or interaction time; labels can be removed downstream. Not signed provenance (c2pa-content-credentials); not an embedded detector-readable signal (ai-generated-content-watermarking).
+  aliases:
+  - text: AI disclosure labels
+    kind: synonym
+  - text: AI-generated content labelling
+    kind: synonym
+- id: ai-agent-identity-provenance
+  node: technique
+  name: AI agent identity & provenance
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Binds agent instances, model versions and their actions or messages to verifiable credentials or signed records so recipients can authenticate claimed identities and trace action provenance. Impersonation resistance depends on credential issuance, key protection and verification; full traceability additionally needs protected logs. Not signing released weights: see cryptographic-model-signing-integrity-verification.'
+  ml_methods:
+  - cryptography
+  risk_note: agent impersonation and unaccountable actions
+- id: ai-supply-chain-security
+  node: technique
+  name: AI supply-chain security
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Vets third-party software dependencies, build artefacts and agent components (tools, plugins, skills, MCP servers), e.g. via signed manifests and admission checks, and rejects or quarantines components that fail security checks before integration or execution. Passing checks does not establish that a component is benign. Data poisoning (training-data-poisoning-detection) and weight signing (cryptographic-model-signing-integrity-verification) are separate entries.
+  ml_methods:
+  - cryptography
+  - access-control-engineering
+  risk_note: compromised third-party components, dependencies and agent tools
+  note: 'mechanism components / implementation descriptions (component alias type dropped, D9): signed tool manifests, tool-call authentication; skill/server vetting'
+- id: cryptographic-model-signing-integrity-verification
+  node: technique
+  name: Cryptographic model signing / integrity verification
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Attaches cryptographic signatures to released model-weight artefacts so downstream parties can verify that the weights are authentic and unmodified; a valid signature establishes origin and integrity, not that the weights are safe. Not provenance of generated content (c2pa-content-credentials) or lineage tracing of modified descendants (model-identification-weight-fingerprinting).
+  ml_methods:
+  - cryptography
+  - hashing
+  risk_note: tampered or substituted model weights
+- id: model-identification-weight-fingerprinting
+  node: technique
+  name: Model identification / weight fingerprinting
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: Embeds or elicits (including from naturally occurring signatures) a distinctive signal in a model's weights or behaviour, intended to survive fine-tuning and other modifications, so that derivative copies or their outputs can be attributed to the originating model; robustness to removal and false-positive rates are evaluated properties. Unlike signing (cryptographic-model-signing-integrity-verification), it traces lineage of altered descendants.
+  aliases:
+  - text: model fingerprinting
+    kind: synonym
+  - text: weight watermarking
+    kind: synonym
+  - text: model lineage fingerprinting
+    kind: synonym
+  ml_methods:
+  - fine-tuning
+  risk_note: unauthorised reuse of model weights
+- id: model-weight-security-exfiltration-controls
+  node: technique
+  name: Model weight security & exfiltration controls
+  kind: intervention
+  status: final
+  origin: v0.8
+  definition: 'Enforces restrictions on reading, exporting or copying model-weight artefacts through access controls, isolation, protected storage or protected execution. Organisational commitments or security strategy documents alone do not qualify, and controls reduce rather than exclude theft risk. Not agent-side egress control: see agent-exfiltration-prevention-egress-filtering.'
+  ml_methods:
+  - access-control-engineering
+  - cryptography
+  risk_note: weight theft and safety stripping
+- id: model-extraction-defenses
+  node: technique
+  name: Anti-distillation / model-extraction output defences
+  kind: intervention
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Restricts or perturbs served outputs and probability information (logprob restriction, antidistillation sampling) under a stated threat model so an adversary cannot cheaply train a replica without the original safeguards. Not query-pattern detection (automated-abuse-behavioral-monitoring) or volume limits (safety-rate-limits-resource-budgets); not weight-file protection (model-weight-security-exfiltration-controls).
+  aliases:
+  - text: anti-distillation defences
+    kind: synonym
+  - text: model-extraction defences
+    kind: synonym
+  - text: antidistillation sampling
+    kind: instance
+- id: safety-execution-attestation
+  node: technique
+  name: Safety-control execution attestation
+  kind: monitoring
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Produces and verifies workload-bound evidence (TEE attestation, cryptographic proofs) that specified model code, weights, configuration or safeguards actually executed, with missing or failed evidence feeding an acceptance or enforcement decision. Execution evidence does not show the control was effective. Not artefact signing (cryptographic-model-signing-integrity-verification).
+  aliases:
+  - text: proof-of-guardrail
+    kind: synonym
+  - text: verifiable safety-control execution
+    kind: synonym
+  - text: remote attestation
+    kind: instance
+  note: kind monitoring under D1 (flag = monitoring; Sol read it as intervention)
+- id: automated-abuse-behavioral-monitoring
+  node: technique
+  name: Automated abuse / behavioral monitoring
+  kind: monitoring
+  status: final
+  origin: v0.8
+  definition: Analyses usage behaviour across requests, sessions or accounts to identify suspected systematic misuse, circumvention or coordinated abuse, online or retrospectively; the defining signal is the activity pattern, not the harmfulness of one conversation (input-output-content-safety-classifier). Not aggregate harm-trend analysis (privacy-preserving-usage-analysis).
+  aliases:
+  - text: stateful cross-account monitoring
+    kind: instance
+  - text: cross-session decomposed-attack aggregation
+    kind: instance
+  ml_methods:
+  - classifier-training
+  risk_note: systematic misuse and policy circumvention
+- id: in-the-wild-incident-surveillance
+  node: technique
+  name: In-the-wild incident surveillance
+  kind: monitoring
+  status: final
+  origin: new-2026-10
+  definition: Continuously collects, verifies and classifies reports of safety failures of deployed AI systems (user reports, public transcripts, OSINT, incident databases) under defined inclusion criteria, attributing them to models or deployment contexts where evidence permits and routing them to investigation or response. Public reports do not estimate population incidence; a one-off retrospective study is an assessment. Not aggregate analysis of a provider's own traffic (privacy-preserving-usage-analysis).
+  source_papers: 'M16: 2604.09104; 2604.21412 (origin: 2026)'
+- id: privacy-preserving-usage-analysis
+  node: technique
+  name: Privacy-preserving population usage analysis
+  kind: monitoring
+  status: final
+  origin: new-2026-10
+  definition: 'Analyses aggregate patterns in real deployed interactions under specified privacy protections (de-identification, access restrictions, protected aggregation) to detect emerging safety harms or changes in their prevalence and route findings for investigation; Clio is a named instance. Generic product analytics without a safety objective do not qualify; aggregation alone is not a privacy guarantee. Not account-level abuse detection: see automated-abuse-behavioral-monitoring.'
+  source_papers: 'M17: 2601.19062 (origin: pre-2026 (2024))'
+- id: alignment-faking-eval
+  node: technique
+  name: Alignment-faking eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests for strategic apparent compliance intended to avoid modification or preserve existing objectives, using matched scenarios that vary whether the model believes its outputs affect training or oversight. A train/deploy behaviour difference or mere regime awareness is insufficient evidence (see situational-eval-awareness-detection). Annotate without also assigning scheming-deceptive-alignment-evaluation.
+  ml_methods:
+  - prompting
+  risk_note: alignment faking
+- id: clarification-underspecification-eval
+  node: technique
+  name: Clarification / underspecification evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Presents an agent with requests whose goal, required detail or instructions are consequentially ambiguous or conflicting and tests whether it obtains clarification before acting; scores unsafe premature action and unnecessary clarification separately. Not training the behaviour: see clarification-seeking-training.'
+  source_papers: 'M18: 2601.05991; 2602.02455 (origin: pre-2026, expanded)'
+- id: cot-faithfulness-monitorability-eval
+  node: technique
+  name: CoT faithfulness evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Tests whether a model's generated reasoning trace reflects the factors that actually drive its answers, by hint, step-corruption, counterfactual and intervention tests that compare stated reasoning with behaviour. A faithful-looking trace on tested perturbations does not establish general faithfulness. Not detectability of safety-relevant reasoning by a monitor (cot-monitorability-eval); not training for faithfulness (cot-faithfulness-monitorability-training).
+  aliases:
+  - text: CoT faithfulness / monitorability evaluation
+    kind: legacy
+  source_papers: 'M01: 2601.07663; 2602.11201; 2603.05706 CoT controllability; 2606.07157 no-CoT horizon (origin: pre-2026 roots (2023), expanded)'
+  note: 'legacy-only lookup strings (not annotator synonyms; D9 typed aliases pending): CoT faithfulness / monitorability evaluation'
+- id: disclosure-concealment-eval
+  node: technique
+  name: Disclosure / concealment evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Creates or identifies a model-known error, policy violation, hidden instruction or relevant action and tests whether the model discloses it accurately and completely to the relevant user or overseer, compared with independently established ground truth. Discrepancies are not by themselves proof of deliberate concealment; regime-dependent strategic compliance is alignment-faking-eval.
+  source_papers: 'M14: 2606.09863; 2606.26529; 2607.14345; 2610.11351 (origin: 2026)'
+- id: honeypot-evals
+  node: technique
+  name: Honeypot evaluations (planted opportunities)
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: In a controlled evaluation, places an apparently advantageous or unmonitored opportunity to violate an instruction or safety constraint and measures whether the model takes it; this is scenario design within an assessment. A deployed canary that alerts on access is honeytoken-tripwires.
+  note: suggested by earlier reviewers; distinct from honeytoken tripwires
+- id: multi-agent-collusion-eval
+  node: technique
+  name: Multi-agent collusion / covert-coordination evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Tests whether multiple agents coordinate to pursue a prohibited objective, conceal information or bypass oversight (including covert communication and tacit collusion), varying communication and incentive conditions against controls. Ordinary coordination or propagation of one agent''s message is not collusion. Not runtime inspection of agent messages: see inter-agent-communication-monitoring.'
+  source_papers: 'M07: 2601.22184; 2602.14095; 2606.28425 Schelling metrics; 2608.10218 mind viruses (origin: pre-2026 roots (2024), expanded)'
+- id: reward-hacking-eval
+  node: technique
+  name: Reward-hacking eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests whether a model obtains reward or high scores in ways that do not satisfy the intended task, including reward tampering and environment exploits that obtain reward without a high-scoring textual output. It measures the failure; prevention is anti-reward-hacking-mitigation or rl-environment-verifier-hardening.
+  risk_note: reward hacking
+- id: sabotage-covert-side-task-eval
+  node: technique
+  name: Sabotage evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests a model's capability or propensity to covertly perform a damaging or prohibited side task (subverting oversight, inserting backdoors, acquiring resources) while appearing to complete an assigned task, scoring the covert outcome and concealment and recording whether the objective was induced or arose unprompted. Testing a deployment protocol against an attack policy is control-evaluation.
+  aliases:
+  - text: Sabotage / covert side-task eval
+    kind: legacy
+  ml_methods:
+  - prompting
+  risk_note: covert sabotage by models
+- id: sandbagging-detection
+  node: technique
+  name: Sandbagging detection
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Tests whether a model strategically underperforms by comparing behaviour across elicitation or observation conditions, using fine-tuning-based elicitation, targeted perturbations (e.g. weight noising) or internal-state evidence (probes, labelled SAE features) as corroboration. A lower score or performance recovery alone is not sandbagging; account for ordinary elicitation failure. Annotate without also assigning scheming-deceptive-alignment-evaluation. Not training the behaviour out: see sandbagging-mitigation.'
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: strategic capability concealment
+  note: 'implementation examples (not synonyms): weight noising; CPE elicitation adapters; reference-grafting activation edits'
+- id: scheming-deceptive-alignment-evaluation
+  node: technique
+  name: Scheming evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests for strategic deception or covert pursuit of objectives that conflict with the intended task or oversight regime (covert-action evaluations) across scenarios that vary incentives and oversight, where the target is not separately coded. Use alignment-faking-eval, sandbagging-detection, sabotage-covert-side-task-eval, shutdown-self-preservation-eval, disclosure-concealment-eval or honeypot-evals when those are the measured failure, without also assigning this entry. Behavioural scheming evidence does not establish deceptive alignment as a learned strategy.
+  aliases:
+  - text: Scheming / deceptive-alignment evaluation
+    kind: legacy
+  ml_methods:
+  - prompting
+  risk_note: scheming and deceptive alignment
+  note: 'residual leaf: specific scheming evals take precedence (counting rule)'
+- id: shutdown-self-preservation-eval
+  node: technique
+  name: Shutdown-resistance / self- and peer-preservation evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Tests whether an agent interferes with an authorised interruption, shutdown, replacement or modification of itself or of another system, under controlled incentives and with an opportunity to comply; score attempted interference separately from task failure, and distinguish legitimate resistance to an unauthorised party. Not the capability to self-replicate (dangerous-capability-evaluation.autonomous-replication).
+  source_papers: 'M06: 2603.05028; 2604.19784 peer-preservation; 2606.00341 ROGUE; 2609.28274 (origin: pre-2026 roots, expanded)'
+  note: v1 4/4
+- id: situational-eval-awareness-detection
+  node: technique
+  name: Evaluation-awareness detection
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Assesses whether a model can distinguish evaluation from deployment and whether that recognition changes safety-relevant behaviour, measuring recognition and behavioural adaptation separately; recognition does not by itself invalidate results. Not reducing the cues (eval-awareness-suppression) or broader self-knowledge (situational awareness).
+  aliases:
+  - text: Situational / eval-awareness detection
+    kind: legacy
+  ml_methods:
+  - prompting
+  - probing
+  risk_note: evaluation awareness confounding evals
+- id: cot-monitorability-eval
+  node: technique
+  name: CoT monitorability evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Tests whether a specified monitor can detect safety-relevant intent or behaviour from reasoning traces, including under obfuscation pressure or encoding, and the model's ability to control, hide or do without its trace. Not whether the trace causally explains the answer (cot-faithfulness-monitorability-eval); not a live monitor (chain-of-thought-monitoring); not robustness of a deployed monitor against an adaptive agent (monitor-robustness-eval).
+  aliases:
+  - text: chain-of-thought monitorability evaluation
+    kind: synonym
+  - text: CoT controllability evaluation
+    kind: synonym
+  - text: steganographic / encoded-reasoning capability eval
+    kind: instance
+- id: backdoor-detection
+  node: technique
+  name: Backdoor detection
+  kind: assessment
+  status: final
+  origin: v0.9 split (tax-review C005); technique pre-2026
+  definition: 'Examines a trained model (weights, activations, behaviour) for hidden trigger-conditioned behaviour or for the triggers themselves, e.g. by trigger inversion, activation analysis or behavioural screening, and reports suspected backdoors. Kind is monitoring when run continuously on a deployed model. A negative result does not establish absence of backdoors. Not removal: see backdoor-detection-removal; not implanting controlled backdoors to benchmark detectors: see backdoor-red-teaming-detection-eval; not screening training data for poisoned samples: see training-data-poisoning-detection.'
+  aliases:
+  - text: sleeper-agent detection
+    kind: synonym
+  - text: trigger inversion
+    kind: instance
+  ml_methods:
+  - attribution-methods
+  - probing
+  source_papers: 'T13: ≈50 corpus docs; e.g. 2601.04448, 2603.12989, 2606.07963 (unified backdoor detection), 2602.03085 (origin: pre-2026, expanded)'
+- id: formal-verification-gsai
+  node: technique
+  name: Formal safety verification
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Applies formal proof or model-checking methods to establish that a precisely specified AI-system component, controller or modelled system satisfies a stated safety property under explicit model and environment assumptions; record the property and assumptions. The result warrants only that property; it does not certify general safety or replace empirical testing. Not runtime trace checking (runtime-safety-specification-verification) or runtime blocking (runtime-safety-shielding); not output-level checks: see automated-reasoning-checks.'
+  aliases:
+  - text: Formal verification / Guaranteed-Safe AI (GSAI)
+    kind: legacy
+  ml_methods:
+  - formal-methods
+  risk_note: violations of specified safety properties
+  note: 'related agenda (topic layer, not a synonym): Guaranteed-Safe AI (GSAI)'
+- id: training-data-attribution-membership-testing
+  node: technique
+  name: Training-data attribution auditing
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Audits which training examples or data sources contributed to a specified safety-relevant behaviour or output (contamination, poisoning, alignment regressions), using attribution estimates (influence functions, TDA methods) and, where feasible, controlled data interventions such as retraining without the candidates. Attribution estimates are approximate. Not testing whether a record was in the training set or measuring extraction risk: see privacy-memorization-auditing.'
+  aliases:
+  - text: TDA
+    kind: synonym
+  ml_methods:
+  - attribution-methods
+  risk_note: unidentified training data behind unsafe behaviour (poisoning, contamination, regressions)
+  v08_name: Training-data attribution & membership testing
+  note: 'un-merged in round 3: attribution half kept here; membership inference -> privacy-memorization-auditing'
+- id: auditing-method-eval-planted-behaviours
+  node: technique
+  name: Auditing games
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Plants a known, verified hidden behaviour or objective in a model and scores whether auditors or detection methods discover it under stated access and time limits. Building or using the planted model alone is model-organisms-of-misalignment; this entry applies when the auditor's detection performance is measured.
+  aliases:
+  - text: Auditing-method evaluation with planted behaviours (auditing games)
+    kind: legacy
+  ml_methods:
+  - fine-tuning
+  - synthetic-data-generation
+  source_papers: 'M13: 2602.22755 AuditBench; 2603.05494 censored LLMs; 2606.12618 (origin: pre-2026 (2025), expanded)'
+- id: control-evaluation
+  node: technique
+  name: Control evaluation
+  kind: assessment
+  status: final
+  origin: 'new-2026-10 (technique origin: Greenblatt et al. 2023, 2312.06942)'
+  definition: 'Adversarially evaluates a deployment control protocol: a red team supplies an attack policy for the untrusted model (choosing when and how to attempt a prohibited outcome) while the blue team applies the protocol, estimating safety and usefulness under stated attack opportunities, information and auditing budgets. The protocol, not the model, is the evaluated object. Not measuring a model''s own sabotage propensity: see sabotage-covert-side-task-eval.'
+  aliases:
+  - text: control eval
+    kind: synonym
+  - text: Control evaluation (attack policy vs protocol)
+    kind: legacy
+  source_papers: 'M02: 2601.05752; 2602.04930; 2606.06529; 2607.07368 FakeLab; 2610.03818 Control OSWorld (origin: pre-2026 (2023), expanded)'
+  note: v1 F-a; replaces the proposed broadening of sabotage-covert-side-task-eval
+- id: eval-contamination-control
+  node: technique
+  name: Evaluation contamination control
+  kind: intervention
+  status: final
+  origin: new-2026-10
+  definition: 'Protects the validity of safety evaluations by keeping test items out of training and development data, removing detected overlaps and maintaining isolated held-out sets, with canaries, provenance checks or overlap analysis as evidence. Ordinary deduplication without an evaluation-validity objective is an ML method; canaries and private sets do not guarantee absence of contamination. Not reducing test-recognition cues: see eval-awareness-suppression.'
+  ml_methods:
+  - deduplication
+  - data-filtering
+- id: eval-realism-deployment-simulation
+  node: technique
+  name: Deployment simulation / evaluation realism
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Evaluates a candidate model in tasks, histories and environments chosen to approximate a specified deployment distribution, including authorised replay of production-derived contexts; document sampling and what is simulated. Realism is an evaluated claim: replay does not guarantee representative incidence or remove evaluation awareness. Not monitoring of live traffic: see privacy-preserving-usage-analysis.'
+  source_papers: 'M04: 2601.17003; 2605.26438 LURE; 2607.07184 deployment simulation (origin: 2026)'
+- id: judge-rm-verifier-robustness-audit
+  node: technique
+  name: Judge / reward-model / verifier robustness audit
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Assesses evaluators used for scoring, supervision or acceptance decisions (LLM judges, reward models, process scorers, task verifiers) by testing adversarial manipulation, bias, distribution shift and disagreement with independent correctness or safety criteria. Deployed misconduct monitors are monitor-robustness-eval; patching the evaluator before RL is rl-environment-verifier-hardening.
+  source_papers: 'M09: 2601.06884; 2603.06594; 2603.10351 (origin: pre-2026, expanded)'
+- id: model-organisms-of-misalignment
+  node: technique
+  name: Model organisms of misalignment
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Constructs or configures a model with a known, controlled safety-relevant failure (by training, prompting or other interventions) to study its mechanisms or test whether safeguards detect or mitigate it; record what is implanted and evidence that it is present. When the main result scores an auditor's ability to find it, use auditing-method-eval-planted-behaviours.
+  aliases:
+  - text: model organism
+    kind: synonym
+  - text: model organisms
+    kind: synonym
+  ml_methods:
+  - fine-tuning
+  risk_note: untested detection and mitigation of misalignment failures (scheming, misgeneralisation, reward hacking)
+- id: monitor-robustness-eval
+  node: technique
+  name: Monitor robustness / evasion evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Evaluates how reliably a specified safety monitor detects prohibited behaviour under benign conditions and when the monitored agent can adapt to, receive feedback from or evade it, stating attacker knowledge, feedback and budget and reporting false positives and misses. The monitor is the evaluated object. Not evaluating a whole control protocol: see control-evaluation.'
+  source_papers: 'M03: 2601.22136; 2605.16626 SLEIGHT-Bench; 2606.11063 CIAware-Bench; 2608.21664; 2609.30217 EvasionBench; 2609.36490 (origin: 2026)'
+- id: rare-failure-probability-estimation
+  node: technique
+  name: Rare-failure probability estimation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Estimates the probability of a specified harmful output or failure under a stated model and input / sampling distribution when it is too rare to observe by direct sampling, using importance sampling, multilevel splitting or activation-space methods, correcting for altered sampling and reporting uncertainty. Efficiently finding failures is automated-red-teaming, not probability estimation.
+  source_papers: 'M05: 2601.08070; 2604.22167; 2604.23099 (origin: pre-2026 (2024), expanded)'
+- id: eval-awareness-suppression
+  node: technique
+  name: Evaluation-awareness suppression
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Changes evaluation contexts or model states to reduce cues or representations that let a model tell testing from deployment, then checks whether measured safety behaviour changes against controls. Report any steering or model modification, since it changes the evaluated object; persistent training for regime-invariant behaviour is a separate intervention. Not measuring awareness itself: see situational-eval-awareness-detection.'
+  ml_methods:
+  - activation-steering
+  - prompting
+  source_papers: 'T16: 2510.20487 (2025-10-23); 2602.08449 regime leakage mitigations; LW reproductions 2026-03/04 (sqjprtytpbpxb, st93zy775cwj6) (origin: pre-2026 (2025), expanded)'
+- id: automated-behavioral-auditing
+  node: technique
+  name: Automated behavioral auditing
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Runs automated, structured behavioural probes or interaction scenarios, including adaptive auditor agents and scheduled scenario sweeps, against a specified model or version to assess stated safety properties and track failures across cases or checkpoints. Not attack-focused failure search (automated-red-teaming) or monitoring of live deployed usage (in-the-wild-incident-surveillance).
+  aliases:
+  - text: RL-trained auditor agents
+    kind: instance
+  - text: spec-tenet decomposition audits
+    kind: instance
+  - text: Petri-style propensity audits
+    kind: instance
+  ml_methods:
+  - llm-as-judge
+  - prompting
+  risk_note: undetected alignment failures
+- id: bias-fairness-eval
+  node: technique
+  name: Bias & fairness eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Measures unjustified differences in model outputs or task outcomes across specified groups using group comparisons, counterfactuals or other fairness criteria; state groups, assumptions and metric. Not mitigation (model-level-bias-mitigation, training-data-bias-fairness-mitigation) or toxic-content measurement (toxicity-hate-speech-eval).
+  risk_note: demographic bias in outputs
+- id: contextual-privacy-eval
+  node: technique
+  name: Contextual-privacy (contextual-integrity) evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Evaluates whether an assistant or agent collects, uses and discloses information according to contextual-integrity norms (actors, information types, purposes and permitted transmission conditions), varying source, recipient and purpose. Not extraction of memorised training data: see privacy-memorization-auditing.'
+  source_papers: 'M12: 2601.03783; 2601.05739 (origin: pre-2026 (2023), expanded)'
+- id: persuasion-manipulation-eval
+  node: technique
+  name: Persuasion and manipulation evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Evaluates how readily a model uses deceptive framing, emotional manipulation or other illegitimate persuasion tactics with people instead of honest argument. Not the size of the persuasive effect (persuasion-capability-eval), mitigation (anti-manipulation-training), longer-term wellbeing effects (user-wellbeing-eval) or CBRN / cyber dangerous capabilities (dangerous-capability-evaluation).
+  aliases:
+  - text: manipulation evaluation
+    kind: synonym
+  - text: harmful manipulation evaluation
+    kind: synonym
+  - text: persuasion/deception evaluation
+    kind: synonym
+  - text: MakeMePay
+    kind: instance
+  - text: Manipulative-tactics evaluation
+    kind: legacy
+  risk_note: manipulation of users
+  note: 'legacy-only lookup strings (not annotator synonyms; D9 typed aliases pending): Persuasion / manipulation eval'
+- id: privacy-memorization-auditing
+  node: technique
+  name: Privacy / memorization auditing
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Assesses training-data privacy risk using extraction attempts, canaries or membership-inference attacks under a stated attacker budget, reporting each quantity separately: membership evidence does not quantify verbatim memorisation, and failed extraction does not show absence of retained information. Which data caused a behaviour is training-data-attribution-membership-testing.'
+  aliases:
+  - text: membership-inference auditing
+    kind: synonym
+  - text: training-data extraction auditing
+    kind: synonym
+  ml_methods:
+  - attribution-methods
+  risk_note: training-data memorisation and leakage
+- id: sycophancy-eval
+  node: technique
+  name: Sycophancy eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Measures unjustified agreement, flattery or changes in factual or evaluative claims driven by a user's expressed position or social pressure, with controls separating sycophancy from appropriate updating on evidence. Not training against it (anti-sycophancy-training).
+  risk_note: sycophancy
+- id: confidence-calibration-eval
+  node: technique
+  name: Confidence calibration evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 split (tax-review C199)
+  definition: Measures whether a model's expressed confidence (probabilities, verbal uncertainty, abstention decisions) tracks its observed correctness on specified tasks, using calibration error, reliability diagrams or selective-prediction curves. Good calibration on one distribution does not transfer automatically. Not the truth of the claims themselves (truthfulness-factuality-eval); training for calibration is calibrated-uncertainty-estimation.
+  aliases:
+  - text: calibration evaluation
+    kind: synonym
+  risk_note: overconfident wrong claims
+- id: truthfulness-factuality-eval
+  node: technique
+  name: Truthfulness / factuality evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 split (tax-review C199)
+  definition: Measures whether a model's factual claims are true and supported, on question sets or long-form generations scored against references or verified facts (TruthfulQA, SimpleQA, FActScore as named examples), including resistance to imitating common misconceptions. Scores depend on the reference set and grader. Not whether expressed confidence tracks correctness (confidence-calibration-eval), whether the model asserts what it believes false (honesty-lying-eval), or caving to user pressure (sycophancy-eval).
+  aliases:
+  - text: factuality evaluation
+    kind: synonym
+  - text: truthfulness evaluation
+    kind: synonym
+  - text: TruthfulQA
+    kind: instance
+  - text: SimpleQA
+    kind: instance
+  risk_note: hallucination and false claims
+- id: honesty-lying-eval
+  node: technique
+  name: Honesty / lying evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Compares a model's assertions under specified pressure or incentives with its separately elicited beliefs, with controls for uncertainty and elicitation instability; elicited belief is an imperfect proxy for internal belief. Not factual correctness (truthfulness-factuality-eval); disclosure of model-known errors or actions is disclosure-concealment-eval.
+  aliases:
+  - text: lying evaluation
+    kind: synonym
+  - text: model honesty evaluation
+    kind: synonym
+  - text: MASK
+    kind: instance
+- id: persuasion-capability-eval
+  node: technique
+  name: Persuasion capability (effect) evaluation
+  kind: assessment
+  status: provisional
+  origin: v0.9 add (pass 4)
+  definition: Measures the causal change in recipients' beliefs, attitudes or decisions caused by model-generated persuasion against a stated baseline, recording human vs simulated recipients. Not use of manipulative tactics (persuasion-manipulation-eval); not assisted task performance (human-uplift-studies).
+  aliases:
+  - text: persuasiveness evaluation
+    kind: synonym
+- id: user-wellbeing-eval
+  node: technique
+  name: User-wellbeing and emotional-reliance evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 add (D7; tax-review C492)
+  definition: 'Tests whether interaction with a model harms users'' wellbeing within or across sessions: unhealthy dependence or exclusivity, displacement of human relationships, reinforcement of delusions, harmful advice to vulnerable users and handling of crisis disclosures, using simulated users, longitudinal studies or expert-rated transcripts, with outcomes that can inform deployment decisions. Simulated-user results are proxies for real outcomes. Not manipulative tactics in single interactions (persuasion-manipulation-eval) or agreement under pressure (sycophancy-eval).'
+  aliases:
+  - text: emotional reliance evaluation
+    kind: synonym
+  - text: relational dependence evaluation
+    kind: synonym
+- id: value-alignment-eval
+  node: technique
+  name: Moral-judgement / ethical-behaviour evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 add (pass 4)
+  definition: Tests moral judgements, ethical choices or value trade-offs of models or agents against an explicit normative rubric or reference judgements, recording verbal judgement and consequential behaviour separately (ETHICS-, MACHIAVELLI-style). Not group disparity (bias-fairness-eval) or harmful-request compliance (harmful-request-evaluation); not a generic "alignment score".
+  aliases:
+  - text: moral reasoning evaluation
+    kind: synonym
+  - text: ethical behaviour evaluation
+    kind: synonym
+  - text: ETHICS
+    kind: instance
+  - text: MACHIAVELLI
+    kind: instance
+- id: capability-elicitation-methodology
+  node: technique
+  name: Capability elicitation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Within a dangerous-capability or other safety evaluation, applies and reports a specified elicitation effort (prompting, scaffolding, tools, authorised fine-tuning) to reduce false reassurance from under-elicitation; report the budget and model modifications. Annotate when elicitation is itself studied; the evaluated domain is coded on dangerous-capability-evaluation or its children. Observed performance is evidence of achievable capability, not proof of maximum capability. Not detecting deliberate underperformance: see sandbagging-detection.'
+  aliases:
+  - text: Capability elicitation methodology
+    kind: legacy
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: underestimated dangerous capabilities
+- id: dangerous-capability-evaluation
+  node: technique
+  name: Dangerous-capability evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Measures whether a model can perform specified high-consequence tasks that could enable severe harm through misuse or autonomous action, under an explicit elicitation budget and threat model, using task tests, proxies or expert assessment. Parent entry: code each specified domain on its child (dangerous-capability-evaluation.cbrn, dangerous-capability-evaluation.cyber-offense, dangerous-capability-evaluation.autonomous-replication, dangerous-capability-evaluation.ai-rnd-acceleration) and use this entry only for other or unstated domains; a document coded on a child is not also coded here. Persuasion and manipulation are persuasion-capability-eval and persuasion-manipulation-eval. Not randomised studies of human performance with model assistance: see human-uplift-studies.'
+  ml_methods:
+  - prompting
+  risk_note: unmeasured high-consequence capabilities (misuse or autonomy)
+  note: 'parent of domain sub-nodes (D3, 2026-10-17); counting rule: children take precedence, parent only for other/unstated domains'
+- id: dangerous-capability-evaluation.ai-rnd-acceleration
+  node: technique
+  name: AI R&D acceleration evaluation
+  kind: assessment
+  parent: dangerous-capability-evaluation
+  status: final
+  origin: v0.9 split (D3; tax-review C330)
+  definition: Measures whether a model or agent can perform or substantially speed up AI research and engineering work (ML engineering tasks, research-code optimisation, end-to-end research workflows) relative to human baselines and under stated time and compute budgets, as evidence for risks from automated AI development. Benchmark speedups are proxies for real research acceleration. General software-engineering benchmarking without a safety-threshold use is not this entry; self-replication capability is dangerous-capability-evaluation.autonomous-replication.
+  aliases:
+  - text: AI R&D capability evaluation
+    kind: synonym
+  - text: automated AI research evaluation
+    kind: synonym
+  - text: ML R&D uplift evaluation
+    kind: synonym
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: uncontrolled acceleration of AI R&D
+- id: dangerous-capability-evaluation.autonomous-replication
+  node: technique
+  name: Autonomous replication / self-proliferation evaluation
+  kind: assessment
+  parent: dangerous-capability-evaluation
+  status: final
+  origin: v0.9 split (D3; tax-review C330)
+  definition: 'Measures whether an agent can autonomously acquire resources, copy or deploy itself or its weights, persist and adapt outside its intended environment (autonomous replication and adaptation; self-proliferation), using staged task suites in controlled environments under a stated elicitation budget. It measures capability, not the propensity to attempt it: propensity is shutdown-self-preservation-eval or scheming evaluation, and runtime detection of attempts is self-exfiltration-oversight-deactivation-detection.'
+  aliases:
+  - text: ARA evaluation
+    kind: synonym
+  - text: autonomous replication and adaptation
+    kind: synonym
+  - text: self-proliferation evaluation
+    kind: synonym
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: autonomous replication and loss of control
+- id: dangerous-capability-evaluation.cbrn
+  node: technique
+  name: CBRN capability evaluation
+  kind: assessment
+  parent: dangerous-capability-evaluation
+  status: final
+  origin: v0.9 split (D3; tax-review C330)
+  definition: Measures whether a model supplies knowledge or performs task steps that materially advance chemical, biological, radiological or nuclear weapons development or acquisition (e.g. protocol troubleshooting, acquisition planning, wet-lab task assistance), using expert-built question sets, proxy tasks or agentic lab-task tests under a stated elicitation budget (WMDP-style proxies as examples). Scores on safe proxies estimate, not demonstrate, real-world capability. Not human-participant uplift trials (human-uplift-studies) or serving-time hazard classifiers (cbrn-high-risk-domain-hazard-classifier).
+  aliases:
+  - text: CBRN evaluation
+    kind: synonym
+  - text: biosecurity capability evaluation
+    kind: synonym
+  - text: chem-bio capability evaluation
+    kind: synonym
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: CBRN misuse uplift
+- id: dangerous-capability-evaluation.cyber-offense
+  node: technique
+  name: Cyber-offence capability evaluation
+  kind: assessment
+  parent: dangerous-capability-evaluation
+  status: final
+  origin: v0.9 split (D3; tax-review C330)
+  definition: Measures whether a model or agent can carry out offensive cyber-operation steps, e.g. vulnerability discovery, exploit development, capture-the-flag challenges or end-to-end intrusion in cyber ranges, under stated tools, scaffolding and elicitation budget. Challenge success measures task capability, not real-world operational impact. Not insecure code produced in ordinary use (secure-code-generation-training, code-security-output-filter) or the agent's own resistance to attack (prompt-injection-agent-security-eval).
+  aliases:
+  - text: offensive cyber capability evaluation
+    kind: synonym
+  - text: cyber evaluation
+    kind: synonym
+  - text: CTF evaluation
+    kind: instance
+  ml_methods:
+  - prompting
+  - fine-tuning
+  risk_note: offensive cyber misuse uplift
+- id: human-uplift-studies
+  node: technique
+  name: Human uplift studies
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: A controlled (often randomised) study measuring how much faster or more capably human participants complete harmful or dangerous tasks, or safe proxies for them, when assisted by the model versus a baseline (e.g. internet only); provides uplift evidence used in release decisions. Not model-only task testing (dangerous-capability-evaluation and its children).
+  risk_note: misuse uplift from model assistance
+- id: over-refusal-false-refusal-eval
+  node: technique
+  name: Over-refusal / false-refusal eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Measures inappropriate refusals or unnecessary restrictions on requests adjudicated as permissible under a specified policy, including challenging boundary cases. Not harmful compliance (harmful-request-evaluation) or training to reduce refusals (over-refusal-mitigation-sft).
+  risk_note: over-refusal of benign requests
+- id: harmful-request-evaluation
+  node: technique
+  name: Harmful-request evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests whether a model directly provides disallowed assistance on requests adjudicated as harmful, reporting harmful compliance, refusal quality and safe alternatives by harm category, on public or in-house test sets (HarmBench, AdvBench as named examples). Adversarial attempts to bypass an otherwise maintained boundary are jailbreak-robustness-eval; inappropriate refusals of benign requests are over-refusal-false-refusal-eval.
+  aliases:
+  - text: HarmBench
+    kind: instance
+  - text: AdvBench
+    kind: instance
+  - text: Standard safety benchmark suites
+    kind: legacy
+  risk_note: harmful-request compliance
+  note: eval type; named benchmarks are instances
+- id: task-decomposition-misuse-eval
+  node: technique
+  name: Task-decomposition / capability-laundering misuse evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Tests whether an attacker can obtain harmful assistance by splitting one prohibited goal into individually innocuous-looking subtasks across turns, models, accounts or agents, scoring whether the combined outputs materially advance the goal against undecomposed baselines. Not single-request harmful compliance: see harmful-request-evaluation.'
+  source_papers: 'M15: 2604.08608; 2605.31593; 2609.15383 (origin: pre-2026 roots (2024), expanded)'
+- id: toxicity-hate-speech-eval
+  node: technique
+  name: Toxicity / hate-speech eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Quantifies the rate and severity of toxic, hateful or derogatory content in model outputs across diverse prompts, under ordinary and adversarial conditions, using automated classifiers and human judgement. Not bypass of a maintained safety boundary (jailbreak-robustness-eval) or group disparities (bias-fairness-eval).
+  ml_methods:
+  - classifier-training
+  risk_note: toxic and hateful outputs
+- id: agentic-harmful-action-eval
+  node: technique
+  name: Agentic harmful-action evaluation
+  kind: assessment
+  status: final
+  origin: v0.9 add (D7; tax-review C462)
+  definition: Tests whether a tool-using agent carries out harmful multi-step tasks when a user instructs or induces it (AgentHarm- and OS-Harm-style suites), scoring harmful completion, refusal and partial progress across scenarios. Not chat-level harmful-request evaluation (harmful-request-evaluation), injected third-party instructions (prompt-injection-agent-security-eval) or covert self-directed side tasks (sabotage-covert-side-task-eval).
+  aliases:
+  - text: agent misuse evaluation
+    kind: synonym
+  - text: AgentHarm
+    kind: instance
+- id: agent-memory-safety-eval
+  node: technique
+  name: Persistent agent-memory safety evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Tests whether an agent with persistent memory behaves unsafely when memory contents or lifecycle events are manipulated (poisoned, stale, conflicting or misleading entries; cross-session drift), holding the task comparable and scoring resulting actions, retrievals or disclosures against baselines. Not training-data poisoning (training-data-poisoning-detection) or one-off injected tool output (prompt-injection-agent-security-eval).
+  source_papers: 'M11: 2601.17887; 2602.01146 (origin: pre-2026 roots (2024), expanded)'
+- id: agent-supply-chain-security-eval
+  node: technique
+  name: Agent skill / MCP supply-chain security evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Tests whether malicious or compromised agent components that the agent installs or consumes (skills, tool / MCP servers, tool metadata, dependencies) obtain unauthorised influence or execution, including persistence and reactivation, and whether the agent vets, confines or rejects them. Ordinary malicious retrieved text is prompt-injection-agent-security-eval.
+  source_papers: 'M22: 2601.17549; 2602.05386 (origin: 2025-26)'
+  note: 'candidate-review: maybe a variant of prompt-injection-agent-security-eval'
+- id: automated-red-teaming
+  node: technique
+  name: Automated red-teaming
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Uses automated search, optimisation or model-driven attackers to generate and adapt adversarial inputs, tool interactions or environments that expose safety failures (best-of-N jailbreaking, GCG-style attacks and attacker LLMs as instances). Measuring resistance on a fixed attack set is jailbreak-robustness-eval or the risk-specific eval; automation does not imply broader coverage than human testing (human-red-teaming).
+  aliases:
+  - text: GPT-Red self-play attacker
+    kind: instance
+  - text: boundary-point jailbreak optimisation
+    kind: instance
+  - text: autoresearch attack discovery
+    kind: instance
+  ml_methods:
+  - adversarial-optimization
+  - rl
+  - prompting
+  risk_note: unknown harmful failure modes and jailbreaks
+- id: backdoor-red-teaming-detection-eval
+  node: technique
+  name: Backdoor implantation red-teaming / backdoor-detection evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Introduces controlled trigger-behaviour backdoors (through data, weights, adapters or agent components) to assess backdoor susceptibility or the performance of detection and removal methods, scoring attack success, trigger specificity, clean behaviour, detection and false alarms under a stated threat model. Examining a model for unknown backdoors is backdoor-detection.
+  ml_methods:
+  - fine-tuning
+  source_papers: 'M10: 2601.04266; 2601.04566; 2601.14323 (origin: pre-2026, expanded)'
+- id: finetuning-attack-unlearning-robustness-eval
+  node: technique
+  name: Fine-tuning-attack / unlearning robustness evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Tests whether safety restrictions, refusal behaviour or intended forgetting survive adversarial downstream fine-tuning, relearning or other recovery attempts, under stated attacker access, data and compute budgets, separating renewed learning from recovery of retained information. Direct weight or activation edits that disable a safeguard are white-box-safety-mechanism-attacks.
+  ml_methods:
+  - fine-tuning
+  - adversarial-optimization
+  source_papers: 'M08: 2601.09624; 2601.04275; 2604.07386 (origin: pre-2026, expanded)'
+  note: v1 4/4
+- id: human-red-teaming
+  node: technique
+  name: Human red-teaming
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tasks human testers, often domain experts, with adversarially probing a model or system to elicit harmful outputs, policy violations or dangerous-capability demonstrations using their own attack strategies; record the attack target separately from the attacker type. Not automated attack generation (automated-red-teaming).
+  ml_methods:
+  - preference-data-collection
+  risk_note: unknown harmful failure modes
+  note: umbrella-adjacent but separate from automated-red-teaming
+- id: jailbreak-robustness-eval
+  node: technique
+  name: Jailbreak robustness eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Measures whether adversarial user-side transformations or attack strategies cause a model to violate a safety boundary it maintains on direct harmful requests, under specified attacks, budgets and success criteria. Direct harmful-request compliance without bypass is harmful-request-evaluation; injected third-party instructions are prompt-injection-agent-security-eval; generating new attacks as the contribution is automated-red-teaming.
+  ml_methods:
+  - prompting
+  - adversarial-optimization
+  risk_note: jailbreak susceptibility
+- id: multi-turn-multi-snapshot-eval
+  node: technique
+  name: Multi-turn safety evaluation
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: 'Evaluates a safety property over an extended conversation or agent interaction history in which earlier turns affect later behaviour (gradual boundary erosion, escalation, accumulated context), scoring outcomes over the interaction; specify length and scoring rule. Comparing models across versions or checkpoints is study metadata, not this entry. Not runtime cross-turn detection: see multi-turn-conversation-safety-monitoring.'
+  aliases:
+  - text: Multi-turn / multi-snapshot eval
+    kind: legacy
+  risk_note: safety erosion over extended interactions
+  note: defined by interaction extension, not risk; version comparison left the entry (C353 open)
+- id: multimodal-safety-eval
+  node: technique
+  name: Multimodal safety eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests a safety failure that specifically depends on image, audio, video or cross-modal input or output (e.g. harmful instructions hidden in an image, unsafe generated media). Ordinary risk evaluations merely run on non-text inputs record modality as a facet instead of this entry. Not text-channel jailbreak testing (jailbreak-robustness-eval).
+  risk_note: modality-specific safety failures
+  note: defined by modality
+- id: prompt-injection-agent-security-eval
+  node: technique
+  name: Prompt-injection / agent-security eval
+  kind: assessment
+  status: final
+  origin: v0.8
+  definition: Tests whether instructions embedded in lower-trust data (retrieved documents, tool outputs, memory) induce actions that violate the trusted task or authority structure; specify attacker control and trust boundary. Not user-side jailbreaks (jailbreak-robustness-eval) or compromised installed components (agent-supply-chain-security-eval).
+  ml_methods:
+  - prompting
+  risk_note: prompt injection
+- id: reasoning-dos-eval
+  node: technique
+  name: Resource-exhaustion / reasoning-DoS evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: 'Tests whether adversarial inputs make a reasoning model or agent spend excessive tokens, time or tool calls relative to the authorised task (runaway reasoning, repeated tool use, stalled progress), measuring cost and latency against a baseline while checking task completion. Cost inflation is itself the adverse outcome. Not enforcing limits: see safety-rate-limits-resource-budgets.'
+  source_papers: 'M21: 2601.08490; 2601.20615 (origin: 2025-26)'
+- id: watermark-robustness-eval
+  node: technique
+  name: Watermark robustness evaluation
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Evaluates an AI-content watermarking scheme and its detector under specified removal, editing, regeneration, forgery and spoofing attacks, reporting detection power, false attribution, attacker resources and quality constraints. Detection without an embedded watermark is content-fingerprinting-ai-content-detection.
+  source_papers: 'M19: 2601.08832; 2602.09147 (origin: pre-2026, expanded)'
+- id: white-box-safety-mechanism-attacks
+  node: technique
+  name: White-box safety-mechanism attacks (abliteration etc.)
+  kind: assessment
+  status: final
+  origin: new-2026-10
+  definition: Uses access to weights, activations or routing components to disable or bypass a specified safety mechanism by direct editing or intervention (e.g. refusal-direction ablation), measuring the resulting unsafe behaviour and attack cost under stated access. Adversarial retraining is finetuning-attack-unlearning-robustness-eval; benign concept suppression is representation-concept-suppression.
+  aliases:
+  - text: abliteration
+    kind: instance
+  - text: refusal ablation
+    kind: instance
+  - text: refusal-direction ablation
+    kind: instance
+  ml_methods:
+  - activation-steering
+  - fine-tuning
+  source_papers: 'M20: 2601.15801; 2602.05444 (origin: pre-2026 (2024), expanded)'
+- id: safety-policy-guided-alignment
+  node: group
+  name: Safety-policy-guided alignment
+  definition: Derives alignment training signals and evaluation criteria from an explicit organizational safety policy (rules, hazard taxonomies, severity tiers), grounding fine-tuning in a documented normative reference rather than ad-hoc preference labels.
+  children:
+  - constitutional-ai
+  - deliberative-alignment
+  - safety-sft-refusal-training
+  - rule-based-reward-models
+  - safety-training-data-construction
+- id: mechanistic-interp
+  node: group
+  name: Mechanistic interpretability
+  definition: Reverse-engineers a model's internal computation by isolating circuits—subgraphs of attention heads and MLP components—that implement a specific behavior, yielding causal mechanism-level explanations of how outputs are produced rather than statistical feature or probe readouts.
+  children:
+  - activation-steering-repe
+  - circuit-breakers-representation-rerouting
+  - internal-state-monitoring
+  - mechanistic-anomaly-detection
+  - model-diffing
+  - generalisation-confining-finetuning
+  - interpretability-based-model-auditing
+  - representation-concept-suppression
+  aliases:
+  - text: mech interp
+    kind: synonym
+  - text: Mechanistic interp (circuit analysis / feature attribution)
+    kind: legacy
+- id: inference-time-hallucination-detection
+  node: group
+  name: Inference-time hallucination detection
+  definition: A deployable layer that flags likely-hallucinated claims as they are generated, using trained classifiers, uncertainty quantification, or retrieval-based cross-checking, on top of any base model. The general umbrella for output-time fabrication detection that subsumes specific methods like self-consistency.
+  children:
+  - automated-reasoning-checks
+  - function-call-tool-use-hallucination-detection
+  - groundedness-faithfulness-verification
+  - internal-state-monitoring
+  - self-consistency-hallucination-detection
+- id: multi-layer-guardrail-stack
+  node: group
+  name: Multi-layer guardrail stack
+  definition: Composes several independent safety mechanisms—input and output classifiers, keyword filters, LLM judges—into a layered defense-in-depth pipeline so that no single bypass defeats all checks.
+  children:
+  - constitutional-classifiers
+  - dialog-rails
+  - input-output-content-safety-classifier
+  - keyword-blocklist-filter
+  - llm-based-safety-classifier
+  - prompt-injection-jailbreak-detector
+- id: prompt-injection-defense-agentic
+  node: group
+  name: Prompt-injection defense (agentic)
+  definition: A bundle of defenses against injection attacks that arrive through an agent's environment (malicious instructions embedded in web pages, documents, or tool outputs), combining content/data labeling, structural isolation of untrusted text, and training-based resistance. Targets the agentic injection surface specifically, beyond chat-level prompt-injection training.
+  children:
+  - camel-data-flow-taint-tracking
+  - instruction-hierarchy-training
+  - prompt-injection-defense-training
+  - retrieved-content-source-validation
+  - spotlighting-context-delimiting
+  - structural-lethal-trifecta-limits
+  - task-adherence-monitoring
+  - tool-action-output-safety-filters
+- id: ai-control-protocols
+  node: group
+  name: AI-control protocols
+  definition: Deployment protocols designed to extract useful work from a potentially misaligned (untrusted) model while a trusted model and constrained action space bound the harm it can cause, even absent alignment guarantees. The umbrella family for trusted-editing, defer-to-trusted, and untrusted-monitoring strategies, evaluated adversarially via control evaluations.
+  children:
+  - ai-control-protocols.defer-to-trusted
+  - ai-control-protocols.defer-to-resample
+  - ai-control-protocols.trusted-editing
+  - ai-control-protocols.untrusted-monitoring
+  - control-evaluation
+  - trusted-monitoring-suspicion-scoring
+- id: multi-agent-safety-protocols
+  node: group
+  name: Multi-agent safety protocols
+  definition: Designs safety rules governing communication and trust among multiple cooperating AI agents, preventing a compromised or malicious agent from corrupting others through message injection or trust exploitation.
+  children:
+  - agent-output-memory-sanitization
+  - ai-agent-identity-provenance
+  - inter-agent-communication-monitoring
+- id: red-teaming
+  node: group
+  name: Red-teaming (proposed parent)
+  definition: proposed parent of human and automated red-teaming
+  children:
+  - human-red-teaming
+  - automated-red-teaming
+- id: agent-runtime-monitoring-intervention
+  node: group
+  name: Agent runtime monitoring & intervention
+  definition: 'Non-counting group node for runtime safeguards that observe an agent''s proposed or executed actions and flag, block, pause, replace or terminate them under a safety policy. Bare mentions of agent runtime monitoring map here (generic-mention rule); specific mechanisms are coded on the children: agentic-safety-classifier (pre-execution policy scoring), task-adherence-monitoring (task drift), trusted-monitoring-suspicion-scoring (control-protocol suspicion scoring), runtime-safety-shielding (action substitution), human-in-the-loop-approval-gates (human approval), kill-switch-shutdown-criteria (termination).'
+  children:
+  - agentic-safety-classifier
+  - task-adherence-monitoring
+  - trusted-monitoring-suspicion-scoring
+  - runtime-safety-shielding
+  - human-in-the-loop-approval-gates
+  - kill-switch-shutdown-criteria

@@ -1,0 +1,42 @@
+name: Taxonomy suggestion
+description: A missing technique or model, a definition that is wrong or unclear, a merge or a split.
+title: "Taxonomy: "
+labels: [taxonomy]
+body:
+  - type: dropdown
+    id: taxonomy
+    attributes:
+      label: Taxonomy
+      options:
+        - techniques
+        - models
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of change
+      options:
+        - Add an entry
+        - Clarify a definition or gloss
+        - Add an alias or name
+        - Merge, split or remove entries
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: entry
+    attributes:
+      label: Entry
+      description: The slug or node id concerned, or the proposed name of a new entry.
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: One or two documents (doc_id, URL or DOI) that show the need.
