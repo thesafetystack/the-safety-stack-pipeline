@@ -1,8 +1,8 @@
 # The docs: map, references, words
 
-v4 is the only supported code in this repository and the production pipeline: its cycle runs weekly on Railway
-since 2026-10-31 (`DEPLOY-railway.md`). "v4" is the working label of the file-based design (a store of immutable
-parquet files and blobs, no database) that replaced v3.
+The pipeline runs in production as a weekly cycle on Railway (`DEPLOY-railway.md`). "v4" is the working label of
+its file-based design (a store of immutable parquet files and blobs, no database), which replaced v3; older labels
+(v1, v3, M1-M5) name generations and plans that are not in this repository.
 
 ## Docs
 
@@ -20,8 +20,8 @@ Start with `CONCEPTS.md` after the root `README.md`; then `SETUP.md`, `OPERATE.m
 | `DESIGN.md` | The design (v4f): families, blocks, states, stage contracts, folds, identity, checks (App. B), schemas (App. A). Written before the implementation; its "Deltas" block and per-subsection "Stale" notes say where the code moved on, and where they disagree the code wins. |
 | `DECISIONS.md` | Every decision taken while implementing, one row each, append-only: a later row amends or supersedes an earlier one. A row marked "default taken" is in force until a later row overrides it. |
 
-Removed material (the M1-M5 plan, whose §9 is now `FUTURE.md`; implementation boards; design mocks; `HISTORY.md`):
-root `README.md`, "Removed, and where it lives"; it is kept in the archived pre-publication repository.
+Removed material (the M1-M5 plan, whose §9 is now `FUTURE.md`; implementation boards; design mocks; status notes):
+root `README.md`, "What is not in this repository".
 
 Gitignored, local to the machine that ran them: `v4/store-dev/` (the dev store), the other `v4/store-*/` copies,
 `v4/evals-store/` (eval runs), `v4/mirror/` (the local mirrors of `s3://` stores). Each run's spend is in its run record
