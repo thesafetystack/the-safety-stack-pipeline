@@ -1,8 +1,8 @@
 # `collect.cards` — per-lab model-card / policy-doc watcher
 
-The `kind: watch` collector (§5.6 url row). Per configured `*_cards` channel it reads **only** the
+The `kind: watch` collector (`docs/DESIGN.md` §5.6, the url row). Per configured `*_cards` channel it reads **only** the
 channel's listing/seed surface(s), parses the listing in code (`stack/collect/listing.py`, shared
-with `collect.blogs`), applies the ported v1 include/exclude/policy regexes, and writes one
+with `collect.blogs`), applies the include/exclude/policy regexes ported from the earlier pipeline, and writes one
 `sources` row per listed item on its own chain `sources.cards`. **No item content is fetched
 here** (no in-band entry) — acquisition is `acquire`'s job. The module docstring of `main.py` is
 the full contract; this is the summary.
@@ -10,8 +10,8 @@ the full contract; this is the summary.
 ## What it writes
 
 - **`sources.cards`** — one row per listed item that is new or whose listing record changed
-  (`skip_unchanged`). `external_id` is the v1 `make_doc_id` org-slug body (`<org>-<slug>`,
-  `systemcard:`/`policy:` prefix stripped; v1-import continuity). `identity.canonical_url` = the
+  (`skip_unchanged`). `external_id` is the earlier pipeline's org-slug doc id body (`<org>-<slug>`,
+  `systemcard:`/`policy:` prefix stripped; continuity with imported documents). `identity.canonical_url` = the
   item URL in its fetch form (`stack.urls.fetch_url`); the one key is `url` = `stack.urls.url_key` of it. `metadata`: `title` (anchor text,
   else the slug), `published_at` (the listing's resolved publication date, `stack/lookup/
   card_dates.py` evidence), `doc_type` ∈ {system_card, model_card, framework_policy}.
@@ -25,13 +25,13 @@ Publication dates the listing does not give are looked up later by `collect.card
 (`stack/lookup/card_date_backfill.py`), which reads the `documents` head and the cards' stored
 content and official pages.
 
-## Discovery methods (per surface, ported from v1's `pipeline/config/doc_watch.yaml`, an earlier generation)
+## Discovery methods (per surface, ported from the earlier pipeline's watch configuration)
 
 `html-index` · `sitemap` · `github-tree` · `github-org` · `pinned-pdf`. The per-lab selectors
 live in `WATCH_SPECS` in `main.py` (keyed by channel id), **not** in `channels.yaml`
 (`ChannelDef` forbids extra fields). See the `anthropic_cards` `[FLAG]` in `channels.yaml`.
 
-## Options (plan stage line `options:`; the v3 env var wins when set)
+## Options (plan stage line `options:`; the env var wins when set)
 
 | option | env | meaning |
 |-----|-----|---------|
@@ -40,7 +40,7 @@ live in `WATCH_SPECS` in `main.py` (keyed by channel id), **not** in `channels.y
 | `only` | `STACK_CARDS_ONLY` | channel ids (list, or comma-separated in the env). |
 | `fraction`, `max_queries` | `STACK_COLLECT_FRACTION`, `STACK_COLLECT_MAX_QUERIES` | scale knobs over the surface list. |
 | `relist_after_h` | — | hours before a surface whose last attempt was `ok` (or a deterministic `partial`) is listed again in a later pass (default 12; `0` = always; D226). |
-| — | `STACK_CARDS_FIXTURES` | offline replay dir (`responses.json`) instead of the network (v3's seam; bypasses the transport). |
+| — | `STACK_CARDS_FIXTURES` | offline replay dir (`responses.json`) instead of the network (bypasses the transport). |
 
 ## Run
 
@@ -55,7 +55,7 @@ The two `--in` are the stage's priors and say where its outputs go. Without them
 `--series` is given, and then writes a series' first files (refused into a non-empty directory without `--restart`).
 `stack build <plan> --dry-run` prints a build line's flags.
 
-## Divergences from v1/v3 (deliberate)
+## Divergences from the earlier pipeline (deliberate)
 
 - **No item-content / landing-page fetch** — title/date come from the LISTING only.
 - **No github per-file commit-date call** — github-tree items carry no `published_at`.
@@ -63,4 +63,4 @@ The two `--in` are the stage's priors and say where its outputs go. Without them
 - **Dropped (no A.5 column):** `self_published` (the channel's `self_published_org`), the
   `discovery` provenance blob, the `card_date_evidence` list (its resolved date is `published_at`).
 - **Listing reads are paced** by the harness transport at the channels' `rate_rps` (0.5/s per
-  host); v3 read them unpaced. `respect_robots` is not applied to listing reads (as v3).
+  host); the earlier pipeline read them unpaced. `respect_robots` is not applied to listing reads (as before).
