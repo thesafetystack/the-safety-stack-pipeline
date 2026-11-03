@@ -49,7 +49,7 @@ acceptable, in preference to adding copies of phases. The keyed-only first phase
 
 **Measured** (section 3): admitted targets per linking document are 9.5 on lab pages, 13.9 on LessWrong AI-tag posts
 (20 for karma ≥ 50) and 16.7 on Zvi posts (n = 3); Zvi posts link about 84 distinct tweets each. In two builds on the
-development store the carry stages took seconds on the dev store (gather 1.7 s, triage 2.3 s, folds 0.3 s, verify about 20 s); the
+development store the carry stages took seconds (gather 1.7 s, triage 2.3 s, folds 0.3 s, verify about 20 s); the
 4.7-minute build was LLM work on new rows.
 
 **Volume and cost** (section 6), per week: about 800-1,500 admitted links, 300-320 tweets, 200-750 probes and
