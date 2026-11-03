@@ -1,7 +1,9 @@
 # Consume: reading a build or a release
 
 For a reader of the corpus: a researcher, the website builder, an operator checking a build. The queries below ran
-on the synthetic world (`docs/SETUP.md` §5) and on a copy of `v4/store-dev`, from the store's root directory.
+on the synthetic world (`docs/SETUP.md` §5) and on a development store, from the store's root directory. A reader of
+the published dataset starts from its card on Hugging Face and the release's own `FORMAT.md`; how that release is
+exported: `docs/howto/dataset-release.md`.
 
 ## What to open
 
@@ -36,14 +38,14 @@ queries below then run from the mirror directory.
 
 ```sql
 -- from the store root; build records are zstd-compressed JSON
-SET VARIABLE b = (SELECT files FROM read_json('builds/*.std-v3/build.json.zst')
+SET VARIABLE b = (SELECT files FROM read_json('builds/*.batch-2026-10a/build.json.zst')
                   WHERE status = 'ok' ORDER BY finished_at DESC LIMIT 1);
 SELECT doc_id, metadata.title, annotations.screen.payload.verdict, content.current_text_sha256
 FROM read_parquet(getvariable('b').corpus.path)
 WHERE annotations.screen.status = 'ok';
 ```
 
-Replace `std-v3` with the plan's name: a build's directory is `builds/<head>.<plan>/`, named by its plan, not by its
+Replace `batch-2026-10a` (the production plan) with the plan's name: a build's directory is `builds/<head>.<plan>/`, named by its plan, not by its
 series. `status = 'ok'` skips `incomplete` and `failed` builds.
 
 ## The helper macros
@@ -86,7 +88,7 @@ digest under the build's plan:
 
 ```python
 from stack.annotations import annotation, pinned_digest
-digest = pinned_digest("dev-v2-m4", "stack_relevance")         # raises if the plan's screen pin does not produce it
+digest = pinned_digest("batch-2026-10a", "stack_relevance")    # raises if the plan's screen pin does not produce it
 rec = annotation(row, "stack_relevance", config_digest=digest)   # typed field, else other[]; None if absent
 ```
 

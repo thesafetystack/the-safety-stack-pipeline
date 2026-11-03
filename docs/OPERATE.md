@@ -43,11 +43,11 @@ technique_roles, technique_staged, affiliation_orgs: model-free, D736; translati
 ## A build
 
 ```bash
-export STACK_ENV_FILE=.env STACK_PLAN=configs/plans/dev-v2-m4.yaml
-uv run --no-sync stack build dev-v2-m4 --dry-run     # series dev-v2-m4 (the plan's series:); each line's --in paths, outputs, kind, caps
-uv run --no-sync stack build dev-v2-m4 [--series S] [--skip 'collect.*'] [--max-usd annotate.screen=0.5] [--passes 2]
+export STACK_ENV_FILE=.env STACK_PLAN=configs/plans/<plan>.yaml
+uv run --no-sync stack build <plan> --dry-run     # the plan's series:; each line's --in paths, outputs, kind, caps
+uv run --no-sync stack build <plan> [--series S] [--skip 'collect.*'] [--max-usd annotate.screen=0.5] [--passes 2]
 uv run --no-sync stack head data/corpus.build/<series>/   # the last fold.build file of the series
-uv run --no-sync stack release --in data/corpus.build/<series>/ --config public-v1 --tag dev-<date>
+uv run --no-sync stack release --in data/corpus.build/<series>/ --config public-v1 --tag <tag>
 ```
 
 A build is a runner and nothing more. It runs the plan's lines in order, each as a recorded run with the `--in` and
@@ -66,16 +66,15 @@ the series it writes (`sources.<p>/<series>/`), else mints a new one, and a `doc
 window and re-pays every triage, screen and annotate call and every fetch, and the other series' overrides do not
 apply. So a build whose series has no `documents` file while another series of the store has one is refused before
 any record (exit 1; the error names the series that have `documents`), unless `--new-series` is given: pass it
-once, on the first build of a deliberately new series (the full fetch's `batch-import` beside the e2e's `main`).
+once, on the first build of a deliberately new series.
 A build into an empty store, or into a series that has `documents`, needs no flag; `--dry-run` prints the verdict
 as its `new_series` line. A `stack run collect.<p>` with no `sources` prior of its own, into such a series, is
 refused the same way and takes the same flag. There is no tool that copies or renames a series.
 
-Each stage writes its output files only at its end; a cancelled run leaves a `cancelled` record and nothing a
-record names in `data/` (its staged output stays as `data/<family>/<series>/.<name>.tmp`, garbage); a rerun hits the
-LLM responses cached in `cache/llm-responses/`. A drained run (SIGTERM, `stack stop`) publishes what it completed
-first ("Stopping, cancelling and resuming"). On an S3 store each run's data and record go up as it finishes
-("The store, jobs and upload" below).
+Each stage writes its output files only at its end. A cancelled run leaves a `cancelled` record and nothing a
+record names in `data/` (its staged `.<name>.tmp` output is garbage), and a rerun hits the LLM responses cached in
+`cache/llm-responses/`; a drained run publishes what it completed ("Stopping, cancelling and resuming"). On an S3
+store each run's data and record go up as it finishes ("The store, jobs and upload").
 
 Build options, all recorded in the build record (`series`, `note`, `overrides`, `warnings`):
 
@@ -115,20 +114,19 @@ failed-transient collector windows, a collector window a cap cut short, a conver
 an `arxiv_pdf: on_miss` PDF made due after `quality` (reason `pending`, D482)) does not stop the build. Every line
 runs, then verify; if a stage writing a family in the plan's `require_complete` stopped short, the build ends
 **`incomplete`**, its record lists `incomplete: [{stage, run_id, reasons}]`, and `stack build` exits **3**. So `stack build … && stack release --in …` never releases an `incomplete` build's corpus by accident. A stage line with
-`require_complete: false` (std-v3's `collect.s2-lookup`) is exempt: its shortfall is listed under
+`require_complete: false` (the production plan's `collect.s2-lookup`) is exempt: its shortfall is listed under
 `incomplete_allowed`, warned, and retried next build, and the build can still end `ok`.
 
 **Acquire's clocks** (D392, defaults D483). `budget.max_minutes` stops acquire's fetch; convert then runs on a clock
 of its own, started after the fetch: `options.convert_max_minutes` minutes, absent the same `budget.max_minutes`, and
 `options.convert_max_rows` rows, absent no row cap (whatever `max_rows` is). So a run can take up to **twice**
-`budget.max_minutes` (std-v3: 90 min of fetch plus up to 90 min of convert, up to 12 h per build at `max_runs: 4`),
+`budget.max_minutes` (batch-2026-10a: 45 min of fetch plus up to 45 min of convert, up to 9 h per build at `max_runs: 6`),
 and a fetch stopped by its budget or by `max_rows` still converts what it fetched and every pending in-band body
-in scope. Set either convert option to bound convert tighter; an explicit value wins. Before D483 the absent options
-meant `max_rows` and the stage's one clock, so a budget-stopped fetch converted nothing (D483).
+in scope. Set either convert option to bound convert tighter; an explicit value wins.
 **A halted run ends the repeat**: a run that ended `halted` (acquire: a lane's provider halt, `halted.<lane>`) with
 fewer than 10 items ok (`outcome.ok`; `stack/build.py` `HALTED_REPEAT_MIN_OK`) is not repeated within the build
 (a build warning names it); the build goes on and ends `incomplete` (`halted`), and the next build asks its rows
-again. A halted run that still completed 10 or more is repeated as before.
+again. A halted run that still completed 10 or more is repeated.
 
 The record's `reasons` per stage (`stack/build.py` `INCOMPLETE_REASONS`, read from the run's counts): `budget`
 (an LLM line's `budget.max_usd`, S2's page budget, an OpenAlex or X spend cap), `limit` (a row or result cap:
@@ -187,8 +185,7 @@ for a job that uploads, as an S3 object at the same key. The job reads it at its
 then a HEAD of the S3 key), logs `stop request (drain)`, and removes it at its end (with the marker DELETE, the only
 objects a job deletes). A finished, dead or unknown target is refused before anything is written. A job running with
 `--no-upload` reads only its local file: stop it on its own machine. **SIGTERM** (D570) drains the same way at once;
-it reaches the process directly (the e2e kit's `stop`: the `stack` pid of the job's process group, `kill -TERM`). A
-SIGTERM to a whole process group reaches `stack` twice under `uv run`, which forwards it; a second SIGTERM within
+it reaches the process directly (`kill -TERM` to the `stack` pid). A SIGTERM to a whole process group reaches `stack` twice under `uv run`, which forwards it; a second SIGTERM within
 5 s of the drain's start is taken as the same stop, a later one cancels.
 
 **What a drain keeps** (D571): everything the run completed is published as at a normal end, blobs first (D407).
@@ -209,10 +206,10 @@ them before it exits. `llm_mode: batch` lines are not interrupted inside their b
 bounds it); their replay then admits nothing new. gather and the folds run to their end.
 
 **How long it takes.** Up to 30 s for a stop request to be read, up to the wait (120 s) for the work in flight,
-then the publish (blob uploads first) and, for a build, verify over the store and the build record. Verify's time
-at full scale: 29-38 min for a build with triage, acquire and the annotate lines on the 227k-row batch store from
-Railway (2026-10-27 and 2026-10-31; it grows with the build's acquire runs, each a full `documents` file); build 1
-(collectors and gather) 8-15 min. A supervisor that escalates to SIGKILL must allow for all of it:
+then the publish (blob uploads first) and, for a build, verify over the store and the build record. At the
+production store's size verify takes about half an hour for a build with triage, acquire and the annotate lines (it
+grows with the build's acquire runs, each a full `documents` file), 8-15 min for a build of collectors and gather. A
+supervisor that escalates to SIGKILL must allow for all of it:
 `systemd-run -p TimeoutStopSec=60min …` (the default is 90 s), `docker stop -t 3600`. Or drain with `stack stop`
 and stop the supervisor when `stack status` shows the job finished. A SIGKILL leaves a dead job (below).
 
@@ -232,12 +229,12 @@ line's options and pins; a stage not in the plan runs with a bare stage line and
 record is under `runs/`.
 
 ```bash
-export STACK_PLAN=configs/plans/std-v3.yaml        # its series: std-v3
-uv run --no-sync stack run triage --in data/documents/std-v3/ --in data/triage_evidence/std-v3/ --part
-uv run --no-sync stack run fold.corpus --in data/documents/std-v3/ --out data/corpus/std-v3/
-uv run --no-sync stack run annotate.screen --in data/corpus/std-v3/<name>.full.parquet \
-      --in data/screen/std-v3/ --in data/screen_evidence/std-v3/     # outputs default to the prior dirs
-uv run --no-sync stack run acquire --in data/documents/std-v3/ --part --only point   # substages: the stage's SUBSTAGES
+export STACK_PLAN=configs/plans/batch-2026-10a.yaml        # its series: batch-import
+uv run --no-sync stack run triage --in data/documents/batch-import/ --in data/triage_evidence/batch-import/
+uv run --no-sync stack run fold.corpus --in data/documents/batch-import/ --out data/corpus/batch-import/
+uv run --no-sync stack run annotate.screen --in data/corpus/batch-import/<name>.full.parquet \
+      --in data/screen/batch-import/ --in data/screen_evidence/batch-import/     # outputs default to the prior dirs
+uv run --no-sync stack run acquire --in data/documents/batch-import/ --only point   # substages: the stage's SUBSTAGES
 ```
 
 **Inputs.** `--in` is repeatable; nothing is selected by plan, build or family:
@@ -266,8 +263,9 @@ uv run --no-sync stack run acquire --in data/documents/std-v3/ --part --only poi
   family with none of these is refused, and so is a path naming a series together with a different `--series`.
 - **Kind.** Full by default. `--part` (plan: `out: {kind: part}`) writes a part on the directory head the run read.
   A stage that emits parts (the collectors, triage, acquire) writes, without `--part`, the full its part makes on
-  the version it read (counted `materialized.<family>`); the standard plans therefore say `out: {kind: part}` on
-  those lines. A stage that emits full files (gather, the folds, annotate) refuses `--part` into a non-empty
+  the version it read (counted `materialized.<family>`); the production plan writes full files on every line
+  (`out: {kind: full}`, so a reader of a series directory takes one file), the other plans say `out: {kind: part}`
+  on those lines. A stage that emits full files (gather, the folds, annotate) refuses `--part` into a non-empty
   directory (no full-to-part diff is computed). `corpus`, `<wf>`, `<wf>_evidence` and `triage_evidence` files are
   always full. A file without a series is always full.
 - **Base.** An output's base is the file the run read from the destination directory: the head it pinned, or the
@@ -290,8 +288,8 @@ The run prints one JSON line: `run_id`, `status`, `error_class`, `scope_complete
 
 Examples (`<S>` = `--store`; `weekly` is an example series, not one the plans in the tree use):
 
-- **Rerun one build line:** `stack run triage --in data/documents/std-v3/ --in data/triage_evidence/std-v3/ --part`
-  is the run std-v3's triage line makes.
+- **Rerun one build line:** `stack run triage --in data/documents/batch-import/ --in data/triage_evidence/batch-import/`
+  is the run the production plan's triage line makes.
 - **Prompt experiment seeded from weekly:**
   ```bash
   stack --store <S> run annotate.screen --in data/corpus/weekly/<corpus>.full.parquet --in data/screen/weekly/ \
@@ -363,8 +361,9 @@ to.
   (`sources.af_graphql`, `coverage.af_graphql`) and a suffix for the two other corpus directories. In use:
   `sources.<p>`, `coverage.<p>`, `documents`, `triage_evidence`, `corpus` (fold.corpus), `corpus.everything` (the
   diagnostic fold.corpus), `corpus.build` (fold.build), `<wf>`, `<wf>_evidence`, `overrides`.
-- `<series>` is `[a-z0-9][a-z0-9-]*`, e.g. `std-v3`, `exp-2`, `legacy`. The plans in the tree use their own name
-  (`series: std-v3`, D378); a series need not be a plan's name, and dated plans could share one (e.g. `weekly`).
+- `<series>` is `[a-z0-9][a-z0-9-]*`, e.g. `batch-import`, `exp-2`, `legacy`. A series need not be a plan's name
+  (D378): the production plan `batch-2026-10a` writes `batch-import`, which a later dated plan can continue; the
+  other plans in the tree use their own name.
 - `<utc>` is `YYYYMMDDTHHMMSSZ`, one stamp per run: its start floored to the second, moved to one second after the
   newest of its input files and of each destination directory's last file when it would not sort after them, so
   every output sorts after every input the run read and after the file it lands behind (D381). The record's
@@ -441,7 +440,7 @@ A job owns three files: its record (`….json.zst`, `build.json.zst`), its log (
 
 1. **Prepare.** Refresh the index (LIST `builds/` and `runs/`, GET the record jsons that are new or changed) and,
    when uploading, run recovery (below). This comes before the inputs are pinned, so the pins see the directories as
-   S3 has them (D353; the design put it after the start PUTs). An S3 failure here that the client's retries did not
+   S3 has them (D353). An S3 failure here that the client's retries did not
    get past (connection, timeout, 5xx, throttling) leaves no record: a build ends `failed[s3_transient]`, `stack run`
    exits 1 with `error: [s3_transient] ...` (D461).
 2. **Start.** Write the `running` json, the log and the marker locally and, when uploading, PUT them, before any
@@ -467,11 +466,10 @@ A job owns three files: its record (`….json.zst`, `build.json.zst`), its log (
    the next uploading job's recovery, or `stack store push`, sends it.
 
 If the final record cannot be written after the rename, the renamed data files stay: no `ok` record names them, so
-they are unpublished (garbage, an X1 warning locally; on S3 invisible). A first SIGTERM drains a run or build (it
-publishes what it completed and ends `ok`; the build ends `incomplete`); a second SIGTERM, Ctrl-C or `stack stop
---now` ends it `cancelled` through the same end steps ("Stopping, cancelling and resuming"). A build started detached
-from a non-interactive shell (`setsid nohup … &`) inherits SIGINT ignored, so `kill -INT` does nothing to it; stop it
-with SIGTERM to the `stack` process, or `stack stop`. A tick also reads the job's stop request (`stack stop`).
+they are unpublished (garbage, an X1 warning locally; on S3 invisible). A drain or a cancel ends the job through the
+same end steps ("Stopping, cancelling and resuming"); a tick also reads the job's stop request. A build started
+detached from a non-interactive shell (`setsid nohup … &`) inherits SIGINT ignored, so `kill -INT` does nothing to
+it; stop it with SIGTERM to the `stack` process, or `stack stop`.
 
 **Liveness** (D344), read from the index: a final json means finished, whatever marker is beside it; a `running`
 json with a marker younger than 5 min is **live**, with an older one **dead**, without one **unknown**. The marker's
@@ -561,7 +559,7 @@ conflict with a writer. Concurrency inside a stage (worker threads per stage lin
 ### Consistency assumption
 
 The index refresh before pinning and before the publish rule assumes read-after-write LIST and GET on the bucket
-(Tigris gives this within one region; writers run in one region). A view from another region may lag briefly, which
+(the production provider, Tigris, gives this within one region; writers run in one region). A view from another region may lag briefly, which
 is harmless for reads. If a lagging LIST ever let a writer publish on an old head, the result is a fork that the next
 reader reports, not a silent loss.
 
@@ -610,12 +608,9 @@ Readers go through records, so none of these is ever read as data:
   unpublished; on S3 they are invisible. `stack verify`'s X1 lists local ones as a warning; safe to delete locally.
   The retry is a new run with new names.
 - A `running` json with a stale marker: a dead job; its json is its last state. Rerun what it was doing.
-- A final local record whose PUT failed: the next uploading job's recovery, or `stack store push`, uploads it after
-  checking the publish rule again. A directory that moved meanwhile refuses it; the record stays local and `push
-  --check` lists it. If the record had in fact reached S3 (a lost acknowledgement), the directory's last file is the
-  run's own and the push is done. Retry or push, never both.
-- A data PUT retried after a lost acknowledgement: `If-None-Match` means it never overwrites; a 412 is accepted only
-  with an equal digest.
+- A final local record whose PUT failed: recovery or `stack store push` uploads it after checking the publish rule
+  again ("Recovery", "`stack store push` and `--check`"). Retry or push, never both.
+- A data PUT retried after a lost acknowledgement never overwrites ("Upload").
 
 ### `stack status`
 
@@ -737,7 +732,7 @@ the Atom pages asked. arXiv's 429/503 is waited out (60, 120, 240 s; `arxiv.limi
 and every paper whose version is still unknown answered without a request (`arxiv.limited_roles`, roles
 `failed_transient[rate_limit]`, due again next run; `html` roles first ask the unversioned HTML URL,
 `arxiv.html.unversioned`, D585), for the PDF/HTML host `halted.arxiv` and `halted_roles` (the lane halts for the
-run). Before D584 one Atom 429 gave up at once: a run with `lane_calls.arxiv` in the thousands and no arXiv request.
+run).
 
 ## Verify
 
@@ -751,8 +746,7 @@ What runs:
   file checks, the pair checks against their base views, V7, V8), and the build checks (X2-X25) on that build.
   `--build <id|path|latest>` (`latest`: the newest finished build, `ok` or `incomplete`, the default's build; D703)
   or `--series S` (its newest finished build) picks another build; `--run <run_id>`
-  (repeatable) checks those runs' files instead; `--no-build-set` leaves the build checks out. About 14 min for a
-  build of the 2015 backfill's size.
+  (repeatable) checks those runs' files instead; `--no-build-set` leaves the build checks out.
 - **Structural** (`stack verify --structural`; every build at its start and its finish): file damage over the whole
   store, without reading a data file in full: S1 from each file's footer, V11 (every chain resolves; keys unique in
   the files from its newest full file to the head), X23 (every base a published file of its directory), X1 (every
@@ -761,7 +755,7 @@ What runs:
   70 s on the production store). A failure at a build's start ends the build `failed[verify]` before any run
   (`verify_start` in the record).
 - **Full** (`stack verify --full`; `stack build --verify-full` at the finish): every check on every file, and every
-  local data file re-hashed against its record. About 1 h 50 min and 3.6 GB at the 2015 backfill's size: run it
+  local data file re-hashed against its record. About 2 h and 3.6 GB at the production store's size: run it
   explicitly, after changing a check, the registry or a schema, and before a release, never while a build runs.
 
 A check of a part that did not run prints `skipped[structural]`, `skipped[files]` or `skipped[build_set]`. The last
@@ -791,18 +785,18 @@ refuses and prints the pin document) can be changed or dropped. A changed pin re
 next `acquire`, and screen and affiliation then re-run on the new texts.
 
 Structured text (JATS XML, arXiv LaTeXML HTML, the PDF as fallback) is the acquire option `structured: {jats,
-arxiv_html}` (D276; on in std-v3). Turning it on changes the pin and so re-converts once; a plan that turns it on
+arxiv_html}` (D276; on in batch-2026-10a). Turning it on changes the pin and so re-converts once; a plan that turns it on
 must widen `content.current_role = 'full_text'` filters to `IN ('full_text', 'xml', 'html')`. With `arxiv_html` on,
 every member whose key carries an arXiv id (an `arxiv` key or a `10.48550/arxiv.<id>` DOI) wants `html`, whichever
 channel found it (OpenAlex and S2 papers too, not only the `wants` channels), one fetch per arXiv id.
 
 Which arXiv PDFs are fetched is the acquire option `arxiv_pdf` (D480-D482; `workflows/acquire/carry.py`, "arXiv
 PDF"). It covers every `full_text` role on lane `arxiv`, so OpenAlex and S2 papers keyed by an arXiv id or DOI too;
-`wants` alone cannot stop those. Not set in any shipped plan.
+`wants` alone cannot stop those. The production plan sets `on_miss`.
 
 | `arxiv_pdf` | fetched | the current text of an arXiv paper |
 |---|---|---|
-| `always` (default; absent or null) | the PDF of every id, and its HTML with `structured.arxiv_html`, as before the option | the HTML when its text is `ok` and at least half its PDF's length (same revision); else the PDF |
+| `always` (default; absent or null) | the PDF of every id, and its HTML with `structured.arxiv_html` | the HTML when its text is `ok` and at least half its PDF's length (same revision); else the PDF |
 | `on_miss` | the HTML; the PDF only where the HTML is a miss: no `html` role, arXiv has no acceptable page (`empty`), the role failed for good, or its text failed conversion or the quality gate. Not a miss: a withdrawn version, or HTML still pending | the HTML when its text is `ok` (no PDF to be `too_short` against); on a miss the PDF, fetched by the run after the one that found the miss |
 | `never` | the HTML only | the HTML when its text is `ok`; else another member's text or the abstract (`no_raw` without one) |
 
@@ -814,15 +808,14 @@ pending (a merged member's `html` not fetched yet) and set aside only once the H
 `on_miss` a run that finds a miss ends `scope_complete = false` (count `arxiv_pdf.due_next_run`, build reason
 `pending`), so the build's acquire repeat fetches the PDF in its next run. **Adding PDFs later**: set `arxiv_pdf:
 always` (or drop the key); the next acquire makes only the skipped PDF roles due, asks no HTML again, and moves a
-paper's current text only where the HTML is now `too_short` against its PDF (e2e build 3: 4 of 585 converted HTMLs). The
-convert pin does not change.
+paper's current text only where the HTML is now `too_short` against its PDF. The convert pin does not change.
 
 An HTML-only paper is a full member of the corpus: `has_text`, the corpus and `excluded_reason` read the current
-text pointer, screen takes the corpus, std-v3's affiliation filter takes `current_role IN ('full_text', 'xml',
+text pointer, screen takes the corpus, the production plan's affiliation filter takes `current_role IN ('full_text', 'xml',
 'html')`, and `acquire_pending`/`acquire_failed` do not count a `skipped[not_requested]` PDF as open work. Triage
 treats an `ok` arXiv `html` role as the primary `full_text` when the plan's acquire line sets `on_miss` or `never`
 (D485), so a `gate:` edit does not re-ask such papers and X14 agrees. Plans with an affiliation filter of
-`current_role = 'full_text'` (std-v2, dev-v2, ann-scratch) would leave HTML-current papers out; none of them turns
+`current_role = 'full_text'` (std-v2, dev-v2, dev-v2-m4, ann-scratch) would leave HTML-current papers out; none of them turns
 on the arXiv HTML.
 
 ## Failed fetches and `acquire reopen`
@@ -877,12 +870,9 @@ files are never migrated (the next `stack build` writes a current one).
 `documents`/`corpus` files before v6 and `sources` files before v4 (D690) record no size for converted texts and
 in-band bodies and do not read: `stack/schemas/upcasters.py` keeps their version entries behind `Incompatible` steps,
 so every reader refuses such a file by name (`IncompatibleFormat`, S1 in `stack verify`). Every store's files were
-rewritten once, in place, by a one-off tool (D691), which D693 removed together with
-`stack/schemas/blobrefs_upcast.py` and the older steps.
-
-Stored triage gates (`blobs/<gate_digest>`, content-addressed, read only by X14) of builds made before D690 name the
-gate view's column `inband_text_digest` in their SQL; `stack.gate.load_gate` reads it as `inband_text_sha256` (the
-upcast does not rewrite gates; D693 keeps the read while any pre-rename build is verified).
+rewritten once by a one-off tool (D691), since removed (D693). Stored triage gates of builds made before D690
+(`blobs/<gate_digest>`, read only by X14) name the column `inband_text_digest`; `stack.gate.load_gate` reads it as
+`inband_text_sha256`.
 
 ## Keeping answers across a config change (accepted configs)
 

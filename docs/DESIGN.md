@@ -1,19 +1,21 @@
-# v4f design: one `documents` family through the phases, blocks, states, fold, partial versions (exploration)
+# Design: one `documents` family through the phases, blocks, states, fold, partial versions
 
-**Status: design record.** Written as an exploration (2026-10-12); the code implements it with the deltas below, and
-the production plan runs that code. "v4", "v4e", "v4f" are working labels. Audience: the maintainers and
-developers of the pipeline. v4f replaces v4e's twelve families with one `documents` family carried copy-on-write
-through `gather → triage → acquire` (six blocks, four states, optional part files) and makes corpus, build and release
-one `fold`. Provenance: branches B1 (chain semantics), B2 (versions), B3 (fold, consumers); seven Opus critics; eight
-Codex answers; the contract `review/reconciled.md` (E1-E22, C1-C36), which is in the author's notes, not in this
-repository: a `(C<n>)`, `(E<n>)` or `F<n>` citation marks where a rule came from, and the sentence it annotates states
-the rule. "Ran" = the B2 partials mock,
-the B3 fold mock or a critic's probe (cited by file and finding); the rest is argued. v3 file:line at 9312c8c as
-verified by the source named, C35's corrections applied.
+**Status: design record.** The design of the file-based ("v4") pipeline, written before the implementation
+(2026-10-12). The code implements it with the deltas below, and production runs that code. Where this document and
+the code disagree, the code wins, with `docs/DECISIONS.md` for what changed and why; a **Stale** note at the top of a
+section marks a known gap. Audience: the maintainers and developers of the pipeline; operators read
+`docs/OPERATE.md`, `docs/CONSUME.md` and `docs/howto/`.
 
-**Deltas since this design was written (checked 2026-10-14).** The code implements this design with the changes
-below; where a section disagrees, the code and `docs/DECISIONS.md` win, and the operator docs are `docs/OPERATE.md`,
-`docs/CONSUME.md` and `docs/howto/`. Lines that are only history are left as written.
+The design ("v4f") replaces an earlier draft's twelve families ("v4e") with one `documents` family carried
+copy-on-write through `gather → triage → acquire` (six blocks, four states, optional part files) and makes corpus,
+build and release one `fold`. Markers in the text: B1, B2, B3 are the design's three branches (chain semantics;
+versions; fold and consumers); a `(C<n>)`, `(E<n>)` or `F<n>` citation names a rule in the design notes, which are
+not in this repository, and the sentence it annotates states the rule; "ran" means checked on a mock or probe at the
+time, the rest is argued; v3 `file:line` citations are to the earlier pipeline (at its commit 9312c8c), which is not
+in this repository.
+
+**Deltas (checked 2026-10-14).** The code implements this design with the changes below; where a section disagrees,
+the code and `docs/DECISIONS.md` win. Lines that are only history are left as written.
 - Chains: `stack/store/chain.py` resolves chains from the run records' `outputs` (D345, below); footers are
   verification only. D22 dropped `input_rule` and `compact_after`; compaction runs at build start by
   `versions.compaction`. Priors are explicit inputs, the series directories below; there is no prior build.
@@ -535,7 +537,7 @@ s2, pmid, zenodo`; arXiv-DOI bridge `stack/scholarly_records.py:129, 196-197`), 
 Overrides: the `overrides` family (targets `identity`: `merge`, `separate`, `mask`; `fields`; `<wf>`: `row`, `field`,
 `quarantine`; `manual_sources`), added by `stack overrides add`, pinned as an input by its readers; what wins:
 `docs/howto/overrides.md` (D336-D338).
-**Detectors** (round 5, D251-D254): `stack/identity.py` declares them in one place. Key adders give a source extra
+**Detectors** (D251-D254): `stack/identity.py` declares them in one place. Key adders give a source extra
 keys from its own record (a LessWrong linkpost's target URL, an OpenAlex arXiv location, a feed guid, URL alternates
 of `stack/urls.py`) at collect time and in `stack migrate rekey`; a forum source's `url` key joins the url group.
 Matchers join sources of one class (paper, post) by normalised title plus first-author surname within a year
@@ -892,7 +894,7 @@ configs/
   releases/public-v1.yaml  plans/std-v2.yaml
 ```
 
-Implemented since, beyond this delta (M1-M5 and rounds 2-4; tree as of 2026-10-13): `stack/{stage_runner,plan,runs,
+Implemented since, beyond this delta (tree as of 2026-10-13): `stack/{stage_runner,plan,runs,
 build,migrate,urls,gate,rules,annotations,overrides}.py`; `stack/{annotate,collect,conversion,evals,llm,lookup}/`;
 `stack/cli/` (verbs `run, fold, verify, latest, status, ls, release, build, diff, chain, eval, migrate, acquire,
 overrides, store`); the store (D320-D366): `stack/store/{layout,remote,index,job,blobs,backend,s3config}.py`
@@ -902,7 +904,7 @@ blobs), `stack/cli/store.py` (`store push`); removed with it: `stack/cli/gc.py`,
 `stack/schemas/payloads/{doc_class,relevance,usability}.py`; `stack/checks/{annotate,build_checks,content,digests,
 fold_checks,lookup,triage}.py`; `workflows/acquire/`, `workflows/gather/{anchor,merge,normalise,overrides,union}.py`,
 `workflows/annotate/{screen,affiliation}/`, the collectors under `workflows/collect/`; `configs/plans/{dev-v2,
-dev-v2-m4,links-scratch}.yaml`. v3 leftovers were removed (root `README.md`, "Removed").
+dev-v2-m4,links-scratch}.yaml`. v3 leftovers were removed (`README.md`, "What is not in this repository").
 
 ## Appendix A. Schemas
 
@@ -959,7 +961,7 @@ wanted_by! LS(S), questions LS(QUESTION))`; `SCREEN = ST(verdict S, basis_role S
 off_topic_reason S, confidence D, reasoning S, adjudication_tier I, tier1_verdict S, tier1_model S)` (v3
 `payloads.py:127-150`); `AFFILIATION = ST(items LS(ST(item_key! S, author_name S, author_surface S, byline_index I,
 affiliations LS(AFFIL), orcid S, resolution S)))`; `DOC_CLASS = ST(doc_type S, self_published B, primary_lang S)`;
-`MODEL_ROLES`, `TECHNIQUE_ROLES`: `stack/schemas/payloads/{model_roles,technique_roles}.py` (round 5, D266-D268;
+`MODEL_ROLES`, `TECHNIQUE_ROLES`: `stack/schemas/payloads/{model_roles,technique_roles}.py` (D266-D268;
 `MODEL_MENTIONS` merged into model_roles, D591: its hits are the record `MODEL_REGEXP_MATCHES`, `model_regexp_matches`).
 **Registry entry**: `{workflow, version, payload_schema, grain ∈ {document, item}, text_bearing: [paths], evidence: B,
 basis_kind ∈ {fields, text, chained}, produced_by, reads}` (`produced_by` defaults to `workflow`; `reads` names earlier

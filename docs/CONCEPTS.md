@@ -55,8 +55,9 @@ part before the dot (`stack/store/layout.py`, `family_of_dir`).
 
 ## Series and data files
 
-A **series** is a named line of work (`[a-z0-9][a-z0-9-]*`; the plans in the tree use their own name, e.g. `std-v3`)
-with one **series directory** per family, `data/<family>/<series>/`. A data file is
+A **series** is a named line of work (`[a-z0-9][a-z0-9-]*`; the production plan `batch-2026-10a` uses `batch-import`,
+the other plans in the tree their own name) with one **series directory** per family, `data/<family>/<series>/`. A
+data file is
 `<utc>_<run_id>[_<comment>].<kind>.parquet`: `<utc>` (`YYYYMMDDTHHMMSSZ`) is the run's start, moved past its inputs
 so names sort in time order; `<kind>` is `full` (every row of the version) or `part` (only the rows changed since the
 previous file). `corpus`, `<wf>`, `<record>` and evidence files are always full, as is a file directly under
