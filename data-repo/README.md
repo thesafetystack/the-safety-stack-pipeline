@@ -40,7 +40,7 @@ lab or a technique.
 
 | Where | What |
 |---|---|
-| This repository (`thesafetystack/the-safety-stack` on GitHub) | the taxonomies (exact files of every version, schemas, changelogs); the taxonomy validator ([tools/](tools/)); issue forms for corrections, takedowns and suggestions |
+| This repository (`thesafetystack/the-safety-stack` on GitHub) | the taxonomies (exact files of every version, schemas, changelogs); the release formats ([formats/](formats/): the schemas of every format version, its changelog and compatibility rules); the taxonomy validator and the release checker ([tools/](tools/)); issue forms for corrections, takedowns and suggestions |
 | [Hugging Face, `thesafetystack/the-safety-stack`](https://huggingface.co/datasets/thesafetystack/the-safety-stack) | the dataset: the data file, the dataset card with the annotation quality figures, the format and vocabulary documentation, the taxonomy files used, the overrides applied, the manifest; one tagged revision per release |
 | [`thesafetystack/the-safety-stack-pipeline`](https://github.com/thesafetystack/the-safety-stack-pipeline) on GitHub | the pipeline that builds the dataset: collection, screening, annotation, release |
 | [thesafetystack.ai](https://thesafetystack.ai) | the project site |
@@ -140,6 +140,18 @@ Dataset releases are dated (`YYYY-MM-DD`) and planned weekly. Each is a revision
 taxonomy versions its annotations use (each with the sha256 of its file, the same file as in this repository), and
 every file with its size and sha256. This repository changes only when the release format or a taxonomy gets a new
 version, not with each release. There is no DOI per release; a Zenodo record for the dataset series is planned.
+
+From format 1.0.0 on, each release names its format version (`format_version` in `release.json`, in the parquet
+file's metadata and in the card), and ships the schema of each of its files beside it and the release checker
+(`tools/release-validator.py`). The formats, what each version guarantees and how a new one is cut are in
+[formats/](formats/README.md). To check a downloaded release:
+
+```bash
+uv run tools/release-validator.py <release directory> --rows all
+```
+
+Run from a checkout of this repository, the checker also compares the release's schemas with the archived format
+and checks its taxonomy files against their schemas.
 
 ## Licences
 
