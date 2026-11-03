@@ -1,31 +1,32 @@
 # Setup: from a fresh clone to a first build
 
-Checked against the code on 2026-10-14: §5 was run offline on the synthetic world and §6's `--dry-run` on an empty
-store; §6's note on `v4/store-dev` was checked on a reflink copy on 2026-10-13. The real build in §6 was not run.
+Checked against the code on 2026-11-03: §5 was run offline on the synthetic world and §6's `--dry-run` on an empty
+store. The real build in §6 was not run.
 
 ## 1. Install
 
 Python 3.12 or newer (`pyproject.toml` `requires-python`) and `uv`.
 
 ```bash
-uv sync                          # base + the default `dev` group (pytest, xdist, mypy, jsonschema, boto3)
-uv sync --group convert-pdf      # + pymupdf, pymupdf4llm, trafilatura
-uv sync --group convert          # + the above and docling (only for the docling-v2 convert config)
+uv sync --frozen --group convert-pdf --group release   # never a plain `uv sync`
 ```
+
+That is the base install, the default `dev` group (pytest, xdist, mypy, jsonschema, and the `s3` group's boto3 for an
+S3 store), `convert-pdf` (pymupdf, pymupdf4llm, trafilatura) and `release` (the Hugging Face client for uploads).
+`--frozen` installs the lock as it is. `uv sync` is exact: a later `uv sync` without the groups uninstalls them again.
+Run commands with `uv run --no-sync …` (as every doc here does) so that running never re-syncs.
 
 - The base install includes `fetchpdf` from a pinned git commit (acquire's oa lane), so the first sync needs
   network access to GitHub.
-- The `s3` group (boto3) is part of `dev`, so `uv sync` already gives what an S3-backed store needs.
-- `convert-pdf` is what the current plans need to *acquire*: `dev-v2`, `dev-v2-m4`, `std-v3`, `ann-scratch` and
-  `links-scratch` convert with `pymupdf4llm-v1`; `std-v2` pins `docling-v2` and needs `--group convert`. The convert pin hashes the installed converter versions, so the venv decides the pin. A venv
-  without the tools makes `acquire` end `failed[environment]` with a line naming the missing tools and this
-  remedy; a plan line may opt out with `options.allow_degraded_convert: true` (D250). std-v3 also pins
-  `expect_pin: 625b4004…`, so another pymupdf4llm version is refused the same way. `uv lock --upgrade` therefore
-  leaves them where they are: `[tool.uv] constraint-dependencies` in `pyproject.toml` holds pymupdf4llm (and with it
-  pymupdf and pymupdf-layout), lxml, onnxruntime and playwright (D696); lift a hold deliberately, with a new
-  `expect_pin` (or, for playwright, the Chromium install below).
-- `uv sync` is exact: a later `uv sync` without `--group convert-pdf` uninstalls the converter tools. Run commands
-  with `uv run --no-sync …` (as every doc here does) so that running never re-syncs.
+- `convert-pdf` is what every current plan needs to *acquire*: the production plan `batch-2026-10a` and the dev and
+  scratch plans convert with `pymupdf4llm-v1`. Only the earlier production plan `std-v2` pins `docling-v2`, which
+  needs `--group convert` (`convert-pdf` plus docling). The convert pin hashes the installed converter versions, so
+  the venv decides the pin. A venv without the tools makes `acquire` end `failed[environment]` with a line naming
+  the missing tools and this remedy; a plan line may opt out with `options.allow_degraded_convert: true` (D250).
+  `batch-2026-10a` (like `std-v3`) also pins `expect_pin: 625b4004…`, so another pymupdf4llm version is refused the
+  same way. `uv lock --upgrade` therefore leaves them where they are: `[tool.uv] constraint-dependencies` in
+  `pyproject.toml` holds pymupdf4llm (and with it pymupdf and pymupdf-layout), lxml, onnxruntime and playwright
+  (D696); lift a hold deliberately, with a new `expect_pin` (or, for playwright, the Chromium install below).
 - Stages other than `acquire`, the store, `verify`, the folds and the consumer queries need only the base install.
 - The http lane's headless rung (stage option `headless: true`, off in every plan) needs a browser: the Playwright
   package comes with the base install (through fetchpdf), its Chromium does not. `uv run --no-sync playwright
@@ -50,7 +51,7 @@ cp .env.example .env             # .env is gitignored; fill in what you need
 | `STACK_MAILTO` | a contact address for arXiv, OpenAlex, Crossref, Unpaywall (acquire's oa lane halts without it) | environment, else seeded from the `STACK_ENV_FILE` file at CLI start |
 | `OPENALEX_API_KEY` | optional; keyed OpenAlex requests (metered, see §3); without it OpenAlex runs keyless with a warning | environment, else the file |
 | `SEMANTIC_SCHOLAR_API_KEY` | optional; the S2 collector and lookup, and acquire's oa lane's S2 requests (added by its request gate, D592), off the throttled keyless pool | environment, else the file |
-| `X_API_BEARER_TOKEN` | optional; `collect.x-lookup` (in no production plan) | environment, else the file |
+| `X_API_BEARER_TOKEN` | optional; `collect.x-lookup` (in no plan) | environment, else the file |
 | `STACK_S3_ENDPOINT_URL`, `STACK_S3_ACCESS_KEY_ID`, `STACK_S3_SECRET_ACCESS_KEY` (`STACK_S3_DEFAULT_REGION` optional) | an S3 store, `--store s3://<bucket>/<prefix>` (D321); its blobs are in its own prefix (D360). The older names `STACK_S3_ENDPOINT`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `STACK_S3_REGION` are still accepted; per setting the new name wins (D726) | the new name (environment, else the file), else the old name (environment, else the file) |
 | `STACK_ENV_FILE` | the path of that file, e.g. `STACK_ENV_FILE=.env` (relative to the current directory) | environment |
 | `STACK_STORE`, `STACK_PLAN` | defaults for `--store` and `--plan` | environment |
@@ -92,15 +93,14 @@ providers' 429 cooldown state).
 A store is a directory: `builds/` (build records, each build's run records under it), `runs/` (standalone run
 records), `data/` (parquet; overrides are a family here, `docs/howto/overrides.md`), `blobs/`, `releases/`, `cache/`.
 Or it is `s3://<bucket>/<prefix>`, worked on through a local mirror under `$STACK_MIRROR` (`docs/howto/s3-store.md`).
-`--store` (env `STACK_STORE`) defaults to `v4/store-dev` under the repository whatever the current directory. A clone has no store: `v4/store-dev/` and the other stores are
-gitignored and exist only on the author's machine (`.gitignore` names each; `v4/store-run-*/` is the pattern for new
-copies).
+`--store` (env `STACK_STORE`) defaults to `v4/store-dev` under the repository whatever the current directory. A
+clone has no store; `v4/store-dev/` (like the mirrors under `v4/mirror/`) is gitignored.
 
 - A writing command (`build`, `run`, `release`, `overrides add`) refuses a store directory that does not exist
   unless given `--create`; `fold`, `migrate`, `acquire reopen`, `verify` and `status` refuse it outright. An `s3://`
   store's mirror directory is created on first use.
 - To experiment on an existing store, copy it first, on the same filesystem so the copy is a reflink:
-  `cp -a --reflink=always v4/store-dev v4/store-run-<name>` (`v4/store-run-*/` is gitignored).
+  `cp -a --reflink=always <store> <copy>`. Never experiment on a store a cycle or a build uses.
 - There is no default plan: `run`, `release`, `fold`, the `eval` verbs `triage`, `screen`, `affiliation`,
   `model_roles`, `technique_roles` and `audit-prompts`, `diff` with `latest` and `acquire reopen` (except
   `--dry-run`) need `--plan` or `STACK_PLAN`; `build` takes the plan as its argument (a name under `configs/plans/` or a path).
@@ -116,7 +116,7 @@ web pages; merged, masked, skipped and failed rows on purpose; `tests/synth/worl
 ```bash
 M=$(mktemp -d)/stack-mock
 uv run --no-sync python -c "from tests.synth.world import build_world; build_world('$M')"
-uv run --no-sync stack --store $M verify                  # 47 checks: 47 ok
+uv run --no-sync stack --store $M verify                  # 47 checks: 43 ok, 4 skipped[structural]
 uv run --no-sync stack --store $M ls                      # each series directory and its head
 export STACK_WORKFLOWS_ROOT=tests/synth/stages
 uv run --no-sync stack --store $M build tests/synth/plans/synth-m5.yaml --dry-run   # what each line would pin
@@ -124,67 +124,65 @@ uv run --no-sync stack --store $M build tests/synth/plans/synth-m5.yaml         
 uv run --no-sync stack --store $M head data/corpus.build/main/   # the corpus file the build wrote (series main)
 uv run --no-sync stack --store $M --plan tests/synth/plans/synth-m5.yaml \
     release --in data/corpus.build/main/ --tag try-1
-uv run --no-sync stack --store $M verify                  # 47 checks: 46 ok, 1 skipped[no_gate]
+uv run --no-sync stack --store $M verify                  # 47 checks: 42 ok, 1 skipped[no_gate], 4 skipped[structural]
 unset STACK_WORKFLOWS_ROOT                                # echo_test is a real stage, not a stand-in
 uv run --no-sync stack --store $M --plan tests/synth/plans/synth-m5.yaml \
     run echo_test --in data/documents/main/       # one stage alone (warns: not in the plan)
 ```
 
 The build spends nothing. Reading the result: `docs/CONSUME.md` (run from `$M`, its entry query with the glob
-`builds/*.synth-m5/build.json.zst` returns the screened rows; `uv sync` installs the Python `duckdb` package, not
+`builds/*.synth-m5/build.json.zst` returns the screened rows; the install gives the Python `duckdb` package, not
 the `duckdb` CLI: `docs/howto/inspect.md`).
 
 ## 6. A first real build
 
-A real build calls the providers and OpenRouter. With `dev-v2-m4` (the dev plan: small windows, `max_rows` caps):
+A real build calls the providers and OpenRouter. Start with `dev-v2-m4` (the small dev plan: short windows,
+`max_rows` caps), in a store of its own; the production plan `batch-2026-10a` is a full weekly cycle
+(`docs/OPERATE.md`, `docs/DEPLOY-railway.md`).
 
 ```bash
-uv run --no-sync stack --store v4/store-run-mine build dev-v2-m4 --dry-run    # resolves; creates nothing
-STACK_ENV_FILE=.env uv run --no-sync stack --store v4/store-run-mine build dev-v2-m4 --create
+uv run --no-sync stack --store v4/store-dev build dev-v2-m4 --dry-run    # resolves; creates nothing
+STACK_ENV_FILE=.env uv run --no-sync stack --store v4/store-dev build dev-v2-m4 --create
 ```
 
 - Needs `OPENROUTER_API_KEY` and `STACK_MAILTO`, network access to arXiv, OpenAlex, Semantic Scholar, the forums,
   LessWrong/AF, five blog channels and the model-card pages, and the `convert-pdf` group (§1).
 - Spends at most the plan's line caps per build: triage $1.50, screen $3, affiliation $1.50 (with
   `OPENALEX_API_KEY` set, also up to $0.50 each for `collect.openalex` and `collect.openalex-lookup`, their default
-  `max_usd`), each run's spend in its record. Not measured from an empty store: the dev store was grown over several
-  rounds.
+  `max_usd`), each run's spend in its record. The spend of a first build from an empty store has not been measured.
 - `--skip 'collect.*'` leaves the collectors out (to rework what is already collected); `--max-usd
   annotate.screen=0.5` lowers one annotate line's cap. A capped stage leaves an `incomplete` build (exit 3) that
   the next build resumes (`docs/OPERATE.md`).
 
-On a copy of `v4/store-dev` as it stands (2026-10-13), its older-format files (`documents`, `corpus`,
-`screen_evidence`, `sources` at earlier versions) read upcast (D295); nothing needs migrating first. Optionally
-materialise them (`stack migrate upcast --family documents`, then `stack migrate upcast --family screen_evidence
---file rf3dzbg89bbra.screen_evidence`, the newest build's `screen_evidence`: `files.screen_evidence.file_id` in its
-build record).
+A store written by an older version of the code reads its older-format files upcast (D295); nothing needs
+migrating first. `stack migrate upcast --family <family>` (with `--file <file_id>` for a chain-of-one family such as
+`screen_evidence`) materialises them (`docs/howto/change-family-format.md`).
 
 ## 7. Tests and checks
 
 ```bash
 uv run --no-sync python tools/devtest.py               # dev tier, per edit: touched paths' tests + the smoke set, -n 2
 uv run --no-sync python tools/devtest.py --smoke       # the smoke set only
-uv run --no-sync pytest -m "not slow" -q -n 2          # the fast tier, at a sub-task's end (~3 min, 2026-10-27)
+uv run --no-sync pytest -m "not slow" -q -n 2          # the fast tier, at a sub-task's end (~3 min)
 uv run --no-sync pytest -m "e2e" -q -n 2               # an area marker: both tiers' tests of one area (table below)
-uv run --no-sync pytest -q -n 2                        # the full suite, at a sub-project's end (~20 min, 2026-10-27)
-uv run tools/check_all.py                              # the gate: configs, payloads, mypy (one file), the full suite at the default -n (6, memory-capped)
-uv run tools/check_all.py --tier fast -n 4             # the same legs with the fast tier (says it is not the gate)
+uv run --no-sync tools/check_all.py --no-sync          # the gate: configs, payloads, mypy (one file), the full suite (~13 min)
+uv run --no-sync tools/check_all.py --no-sync --tier fast   # the same legs with the fast tier (says it is not the gate)
 uv run --no-sync python tools/check_configs.py
 ```
 
-**Three tiers** (A11, D490, D729). *Dev*: `tools/devtest.py` maps the touched paths (`git diff --name-only HEAD`
+The gate's `--no-sync` runs every leg with `uv run --no-sync`, so it keeps the venv synced with the groups of §1.
+There is no CI: run the gate before committing anything under `stack/`, `workflows/` or `configs/`.
+
+**Three tiers** (D490, D729). *Dev*: `tools/devtest.py` maps the touched paths (`git diff --name-only HEAD`
 plus untracked files; `--base REF` adds a branch's commits; or pass paths) to test files through
 `tests/modules.toml`, adds every touched `tests/test_*.py` and the smoke set `tests/smoke.txt`, and runs them with
 `-m "not slow and not tools" -n 2`; `--touched` drops the smoke set, `--with-slow` adds each module's heavy files,
 `--list` prints the selection, `--fast-budget S` reports tests slower than S seconds, anything after `--` goes to
 pytest. *Fast*: `-m "not slow" -n 2`. *Full*: everything (`tools/check_all.py`; workers default to
-min(6, MemAvailable / 1.5 GB), at least 2; `-n N` or `$STACK_TEST_WORKERS` override; measured on the 8-core 16 GB box:
-full suite 1215 s at -n 2, 473 s at -n 4, 324-346 s at -n 6, 345-420 s at -n 8 (no gain; ~1 GB per worker, 6 GB used
-at -n 4 with the box otherwise idle), fast tier 179 s at -n 2, 73 s at -n 6); never `-n auto` while an e2e or a build runs on the
-machine. Timings are on an 8-core machine that was running other work at the same time; on an idle machine they are lower.
+min(6, MemAvailable / 1.5 GB), at least 2, about 1 GB per worker; `-n N` or `$STACK_TEST_WORKERS` override; more than
+6 gains nothing). Never `-n auto` while an e2e or a build runs on the machine.
 
-**What is `slow`.** `slow` is the only tier marker. A test is `slow` when it takes over ~1.5 s at `-n 2` on that
-machine, unless it is its family's representative in the fast tier (the fast tier keeps one case of each heavy path:
+**What is `slow`.** `slow` is the only tier marker. A test is `slow` when it takes over ~1.5 s at `-n 2`, unless it is its family's representative in the fast tier (the fast tier keeps one case of each heavy path:
 e.g. `FAST_IDS` in `tests/test_checks_fixtures.py`, `FAST_BATCHED` in `tests/test_checks_rows.py`,
 `_sibling_fast` in `tests/test_verify_projected.py`), and crash/restart subprocess tests and scenario worlds are
 `slow` whatever their time. Most of a slow test's cost is a full verify (every check over a store, ~5-7 s on a
@@ -220,9 +218,9 @@ look in a set's own `texts/` (a fresh freeze; gitignored) and then in the eval-t
 **Without the archive.** The texts, and the archived eval files below, are in archives in the maintainers' private
 storage (the store's bucket). Outside the maintainers, `tools/fetch_eval_texts.py` cannot read them, and:
 
-- the tests that need no eval texts and no network run in full (a CI job's selection):
-  `uv run --no-sync pytest -m "not slow and not evalsets" -q -n 2`; the `evalsets` tests that need a missing text or
-  file skip, and `stack eval` on such a set refuses;
+- the suite still runs: the `evalsets` tests that need a missing text or file skip (expected), and `stack eval` on
+  such a set refuses; `uv run --no-sync pytest -m "not slow and not evalsets" -q -n 2` is the selection that needs
+  no eval texts and no network;
 - each item in the tree pins its document's text by `doc_id`, title and the sha256 of the frozen text
   (`input.full_text_digest`, or the top-level `text_digest` of the older sets). The items carry no URL: a document
   in a released dataset has its `canonical_url` there (`docs/CONSUME.md`), from which the text can be fetched again
