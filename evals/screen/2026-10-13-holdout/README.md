@@ -48,3 +48,51 @@ $0.78 per 1,000 settled on texts of this length. Scored on the three golds (`res
 | v2-alt (Opus adjudicator) | 88.3 % / 0.769 | 90.0 % / 0.806 | 90.0 % / 0.804 | 91.2 % / 96.9 % |
 
 The headline differs by at most one item per question across the three golds; on this set tier 2 corrects none.
+
+## Record (as written 2026-10-13)
+The details as recorded when the set was frozen, labelled and run; the status at the top supersedes it.
+
+**Freeze.** 2026-10-13 04:38 UTC from a local store (not in the repository), documents head
+`rp0trgetr6tfz.documents` (575 current texts), run from an isolated export of HEAD `311e99f` plus the freezer's new
+`--exclude-set` / `--prefix` / `--split-all` options, because the shared worktree's uncommitted registry edits made the
+store unreadable; `manifest.json` records the worktree git state. The pool had changed since 2026-10-12a (more
+lab-blog pages, fewer forum posts left), hence the different mix.
+
+**Gold v1.** Two independent Opus sub-agents per item, 3 batches of 20, on whole texts; Codex was out of credits, so
+both labellers were Opus (weaker independence than the Opus + Codex protocol). Agreement: verdict 57/60, both
+questions 56/60; 4 adjudicated by an Opus adjudicator (sided with labeller 2 on all 4). Gold v1: Stack relevant 31 /
+borderline 2 / irrelevant 27; SR 32 / 3 / 25.
+
+**The run** (2026-10-13 04:43 UTC, run `20261013T044356Z_holdout_667ebb21`, in a local evals store, not in the
+repository), on gold v1: Stack 88.3 % (53/60, κ 0.77), SR 90.0 % (54/60, κ 0.81), overall keep 90.0 % (kept recall
+93.9 %, precision 96.9 %); escalation 2/60; $0.78 per 1,000 settled, $1.09 without provider cache, on texts of this
+length; settled $0.047. (The "kept recall 93.9 %" is the scorer's relevant-recall column; its kept-recall column reads
+86.1 %.)
+
+**Gold v2 protocol** (2026-10-13 12:44-12:52 UTC). Codex `gpt-6-sol` (`codex exec --skip-git-repo-check -m gpt-6-sol
+-s read-only -C <packet>`, default settings) labelled all 60 items independently in the Opus labellers' three batches
+of 20, with the same packets: the same prompt (`labels/label-prompt.md`), the rubric `evals/rubrics/screen-v2.md` as
+`rubric.md`, and the whole texts (byte-identical to `texts/*.txt.gz`). It never saw the Opus labels; its logs show it
+read only its packet. A disagreement is a different `verdict`, `stack_verdict` or `sr_verdict` against gold v1 (the
+scored fields). Each went to two blind adjudicators, labels anonymised as labeler_1/2 in a seeded order with both
+rationales and quotes shown: a fresh Codex `gpt-6-sol` session and a fresh Opus sub-agent. Gold v2 takes the Codex
+adjudicator's label (a cross-family adjudicator was preferred because both earlier labellers were Opus; rule fixed
+before the adjudications came back). Per row: `labelers` (opus-1, opus-2, codex-sol, each with derived
+`stack_verdict` / `sr_verdict`), `agreement` (all three agree on the scored fields), `agreement_detail`, `contested`
+(any labeller disagreement, v1 or v2), `label_v1` where changed, `adjudication_v1`, `adjudication` (both
+adjudicators, `adjudicators_agree`).
+
+**Agreement (60 items), Codex vs gold v1:** verdict 56/60, κ 0.871; Stack 57/60, κ 0.903; SR 56/60, κ 0.873; scope
+56/60, κ 0.877; keep/drop 58/60; sr_category on the 35 items both keep 31/35. For comparison the Opus pair: verdict
+57/60, κ 0.908; Stack 56/60, κ 0.876; SR 57/60, κ 0.909. Codex vs opus-1 verdict 55/60 (κ 0.843), vs opus-2 56/60
+(κ 0.871). On the 4 disagreements the Opus adjudicator sided with gold v1 on 3 and chose a third label on 1; the Codex
+adjudicator sided with Codex on 3 and chose a third label on 1. v12 reached `irrelevant` on 0044 and 0051 after a
+tier-2 escalation from `borderline`. Gold v2 changes 4 of 60 labels; contested 7/60 (v1: 4), all three labellers
+agree on 53/60. Base rates v2: verdict relevant 36 / borderline 1 / irrelevant 23; Stack 33 / 0 / 27 (v1 31 / 2 / 27);
+SR 35 / 1 / 24 (v1 32 / 3 / 25).
+
+**Re-score** (stored rows of `20261013T044356Z_holdout_667ebb21`, scored with `stack eval score --gold`; no new
+calls): Stack accuracy does not move (the four items swap which of them v12 gets right: 0007 and 0057 under v1, 0051
+and 0057 under v2); SR loses one item. Tier 2's two escalations (0044, 0051: `borderline` → `irrelevant`) turned two
+right answers wrong under v1 (gold `borderline`); under v2 (gold `relevant`) both are wrong before and after. Which
+family adjudicates decides the one item per question by which the three golds differ.

@@ -115,3 +115,63 @@ gemini-3.1-flash-lite far behind (output-cap failures at their default effort). 
   `adjudication/` from the labelling workspace (read only; its path is not recorded).
 - `uv run --no-sync python evals/technique_staged/2026-10-18c/scripts/derive.py [--write]` builds the set from 18b and
   `adjudication/`, and without `--write` checks it byte for byte.
+
+## Record (as written 2026-10-21)
+The reconciliation timing and the full tables of the other grading models, as recorded then; the status at the top
+supersedes them. The runs are in a local evals store (not in the repository).
+
+**Reconciliation timing.** Round 1 (25 items) ran 2026-10-18 01:59-02:13 UTC, when the Codex workspace ran out of
+credits; round 2 (the other 95) ran after the credit reset, 09:05-09:45 UTC.
+
+**Other grading models (2026-10-21).** Same configuration, `--models` changed. Gemini's full-set reservation ($14.4;
+expected $8.6 without cache) is over a $2 per-run cap, so it ran on 40 items (every third line of `items.jsonl`; bands
+<20k 14, 20-60k 12, 60-100k 6, >100k 8) in three `--items` parts, then one combined `--items` run from the response
+cache; luna, haiku and mimo are re-scored on the same 40 from their caches. mimo needs a local `llm.yaml` price
+(0.14 / 0.28) and an overlay route `xiaomi: deepinfra` (open / public_web), neither committed. Strict slugs, full
+gold:
+
+| model | items | run | strict P / R / F1 | tolerant P / R / F1 | len-w R | cells ≥ 2 F1 | USD / 1k docs | schema degraded | failed |
+|---|---|---|---|---|---|---|---|---|---|
+| gpt-6-luna | 40 | `20261021T002950Z_all_f0b845be` (cache) | 0.913 / 0.610 / 0.732 | 0.925 / 0.613 / 0.738 | 0.587 | 0.599 | 4.88 (120) | 40 | 0 |
+| google/gemini-3.8-flash | 40 | `20261021T002701Z_all_fe95446f` (parts `ace490f1`, `de551a8f`, `9c0ba655`) | 0.853 / 0.567 / 0.681 | 0.869 / 0.569 / 0.688 | 0.539 | 0.483 | 39 standalone, ~59 with cut-off retries | 1 | 0 (2 before re-run) |
+| anthropic/claude-haiku-5.5 | 120 | `20261021T000858Z_all_d82991e2` | 0.729 / 0.477 / 0.577 | 0.748 / 0.488 / 0.590 | 0.433 | 0.434 | 15.87 | 119 | 1 schema_invalid |
+| xiaomi/mimo-v2.6-flash | 120 | `20261021T001553Z_all_86ff873c` | 0.609 / 0.461 / 0.525 | 0.639 / 0.471 / 0.542 | 0.444 | 0.375 | 3.12 | 0 | 2 truncated |
+
+Paired bootstrap vs luna (`staged-compare`, 10k): Gemini (40) R −0.043 [−0.169, 0.084], P −0.060 [−0.105, −0.015],
+F1 −0.050 [−0.149, 0.038]; haiku (120) F1 −0.117 [−0.159, −0.081]; mimo (120) F1 −0.168 [−0.215, −0.129]. Gemini on
+the 40: recall <20k 0.80 (luna 0.67), 20-60k 0.46 (0.63), >100k 0.62 (0.57); its output reached the 16,000-token cap
+on the first attempt for 10 of 42 documents (two failed the 32,000-token retry too), mostly forum / url documents
+under 60k. Gemini and mimo accept the strict schema; haiku, like luna, falls back on every call. haiku's tokenizer
+counts 1.6x luna's prompt tokens and prices prompts over 100k tokens at 5x.
+
+**Further models on the same 40 items** (paired with the luna and Gemini rows above). Prices for
+gemini-3.1-flash-lite, deepseek-v4.1-flash-1017, nemotron-3.5-super-vl and mercury-3 and the routes `nvidia:
+deepinfra`, `inception: inception` (eval-only, open / public_web) were local, not committed. Gemini low effort =
+`--pin role=extract_staged_low`. "trunc" = rows whose first attempt hit the 16,000-token cap; failed rows score as
+empty.
+
+| model | run | strict P / R / F1 | tolerant P / R / F1 | len-w R | R high | cells ≥ 2 F1 | complete docs P / R / F1 (n) | failed | trunc | USD / 1k (standalone) | p50 s | F1 − luna [95 % CI] |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| gemini-3.8-flash, effort low | `20261021T011018Z_all_3b85dcbf` | 0.755 / 0.586 / 0.660 | 0.778 / 0.587 / 0.670 | 0.553 | 0.674 | 0.404 | (40) | 0 | 0 | 19.5 | 12 | −0.072 [−0.115, −0.029] |
+| openai/gpt-6-luna-pro | `20261021T005121Z_all_9326e30f` | 0.916 / 0.601 / 0.726 | 0.923 / 0.606 / 0.731 | 0.583 | 0.705 | 0.599 | (40) | 0 | 0 | 14.2 | 65 | −0.006 [−0.033, 0.021] |
+| deepseek/deepseek-v4.1-flash-1017 | `20261021T005121Z_all_07c958ac` | 0.847 / 0.644 / 0.732 | 0.856 / 0.649 / 0.738 | 0.581 | 0.740 | 0.614 | (40) | 0 | 1 | 5.85 | 134 | 0.000 [−0.064, 0.057] |
+| inception/mercury-3 | `20261021T005121Z_all_5747bff9` | 0.848 / 0.325 / 0.470 | 0.848 / 0.328 / 0.473 | 0.245 | 0.353 | 0.316 | 0.848 / 0.631 / 0.724 (32) | 8 | 25 | 13.5 | 99 | −0.262 [−0.429, −0.089] |
+| nvidia/nemotron-3.5-super-vl | `20261021T005121Z_all_450f1b8b` | 0.776 / 0.202 / 0.321 | 0.805 / 0.204 / 0.325 | 0.152 | 0.236 | 0.212 | 0.776 / 0.485 / 0.597 (27) | 13 | 31 | 23.1 | 106 | −0.410 [−0.547, −0.266] |
+| google/gemini-3.1-flash-lite | `20261021T005121Z_all_79e8e84b` | 0.370 / 0.215 / 0.272 | 0.389 / 0.215 / 0.277 | 0.195 | 0.244 | 0.132 | 0.370 / 0.275 / 0.315 (33) | 7 | 17 | 28.0 | 10 | −0.460 [−0.548, −0.373] |
+
+ds-1017: recall +0.034 [−0.062, 0.122], precision −0.066 [−0.127, −0.016]; luna-pro equals luna on every bootstrapped
+metric. The role's luna fallback answered one document in the luna-pro (g2-0100), ds-1017 (g2-0115) and flash-lite
+(g2-0061) runs, and in the first Gemini run (g2-0037: its one schema-degraded call is that luna answer). Median
+reasoning tokens per call: nemotron 14.7k, mercury 13.9k, ds-1017 11.9k, luna-pro 7.6k: the cap failures of nemotron
+and mercury follow from their default effort.
+
+**Low effort and the full set** (local prices / routes as above; low effort = `--pin role=extract_staged_low`):
+
+| model | docs | run | strict P / R / F1 | tolerant P / R / F1 | len-w R | R high | cells ≥ 2 F1 | complete docs P / R / F1 (n) | failed | USD / 1k (standalone) | F1 − luna [95 % CI] |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| deepseek/deepseek-v4.1-flash-1017 | 120 | `20261021T013225Z_all_650c714e` | 0.821 / 0.555 / 0.663 | 0.835 / 0.560 / 0.670 | 0.513 | 0.628 | 0.530 | 0.821 / 0.592 / 0.688 (117) | 3 truncated | 6.88 | −0.031 [−0.094, 0.023] vs `89829b05` |
+| inception/mercury-3, effort low | 40 | `20261021T015158Z_all_c16937b8` | 0.820 / 0.574 / 0.675 | 0.838 / 0.578 / 0.684 | 0.555 | 0.651 | 0.470 | 0.820 / 0.625 / 0.710 (39) | 1 truncated | 9.06 | −0.057 [−0.156, 0.014] |
+| nvidia/nemotron-3.5-super-vl, effort low | 40 | `20261021T015158Z_all_4af8c6f1` | 0.709 / 0.120 / 0.205 | 0.754 / 0.120 / 0.207 | 0.086 | 0.136 | 0.113 | 0.709 / 0.364 / 0.481 (23) | 9 truncated + 8 not attempted (budget) | 18.5 | −0.527 [−0.651, −0.381] |
+
+deepseek-1017 on 120: precision −0.078 [−0.107, −0.050], recall −0.009 [−0.089, 0.070]; the 40-item tie above does not
+hold on the full set. mercury low: precision −0.093 [−0.154, −0.036].

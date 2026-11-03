@@ -61,3 +61,68 @@ went because the longer name now has a node (longest span wins), not by a matche
 | openai/gpt-5.6-luna (v3's) | 0.680 / 0.799 / 0.735 | [−0.118, +0.052] | 0.833 | 0.897 | 0 | 6.27 |
 
 Luna's own run-to-run agreement on ≥ 2 cells is F1 0.879: every candidate is inside that noise; luna stayed.
+
+## Record (as written 2026-10-13)
+The measurements and findings as recorded when the set was labelled and run; the status at the top supersedes them.
+The runs are in a local evals store (not in the repository).
+
+**Purpose.** A quick eval: do newer models bring direct improvements, measured on a small set that can be run quickly
+(a more thorough iteration and eval to follow).
+
+**What the earlier pipeline had (no reusable gold).** No human gold for any of the three annotators. model_roles: a
+calibration of 10 documents × 5 judges, anchor = median of the five (its notes are not in this repository); exact
+agreement with the anchor opus-5 79.5 %, gpt-5.6-terra 79.3 %, gpt-5.6-luna 68.8 %, sonnet-5 48.2 %,
+deepseek-v4-flash 36.7 %; ≥ 2 recall terra/luna 0.94; $/doc terra 0.047, luna 0.0049. Production took gpt-5.6-luna on
+cost (2026-08-02), never re-measured. technique_roles: 23 documents, leave-one-out F1 luna 0.76, tencent/hy3 0.75,
+terra 0.62, deepseek-v4-flash P 0.81 R 0.51; a union of deepseek-v4-flash + luna-pro + hy3 was recommended.
+model_mentions: no eval. The earlier documents carry that pipeline's source ids and model-consensus outputs only, so
+this set is new.
+
+**Set details.** Production scoped the annotators to stack_relevance = relevant (D269); store head `rcprvcnepyb1g`
+(that of the screen set). The 21 items with a strong model mention are every such relevant item of the screen set
+except scr-0077, a 564k-character system card: beyond model_roles' 300k window and too long to label. For the 4
+without one, production answers model_roles `empty` without a call; they still test mention recall and technique
+rows. `split` dev/test alternates by length within channel group. Frozen by `scripts/freeze.py` with production code;
+`input_digest` = sha256 of the production user message; `stack eval` refused the set once production code no longer
+produced it.
+
+**Labelling.** Packets built by `scripts/packets.py`; the Opus labeller A was a sub-agent. Codex labelled batch 01 (3
+documents) and then ran out of credits ("Your workspace is out of credits", 13:00 UTC), so the second labeller on the
+other 22 is an independent second Opus agent ("opus2", same packet, no sight of A). Adjudicated labels
+`labels/adjudicated-batch-*.jsonl`. The adjudicator sided with A on most contested elements in batch 01 (40 of 47 vs
+Codex 3, third answer 4): a same-family preference is possible. Contested documents: model_roles 15/25 (57
+elements), technique_roles 19/25 (129).
+
+**model_mentions on the original gold** (no LLM; `stack eval model_mentions --set 2026-10-13a --split all`), micro
+over (item, node):
+
+| prediction | P | R | F1 |
+|---|---|---|---|
+| strong | 0.801 | 0.860 | 0.830 |
+| strong ∪ weak | 0.693 | 0.963 | 0.806 |
+| strong, lenient (ancestor = match) | 0.925 | 0.956 | 0.940 |
+
+43 gold mentions are not in the vocabulary (v0.4, 2026-08-02): newer releases (e.g. Opus 5.5, GPT-6 Astra) are
+missing, and their names produce strong false positives on an older sibling (`claude-opus-5` inside "Opus 5.5" on
+an-0003, an-0005, an-0019). Strict FNs are mostly family-vs-model granularity (the lenient row).
+
+**Vocabulary v0.5** (2026-10-13, D292). Not added (15): products and tools (Claude Code × 3, Dots, Grok Bot, Artex AI,
+Pangram, Hark.com), a hypothetical (Claude 8 Pantheon), a described classifier, and bare names the text gives no
+family for (Samuel's checkers learner, Beam, Griffin, Sydney, HIPM). Both vocabularies were scored on the v0.5 gold
+(`stack eval model_mentions --set 2026-10-13a --split all --gold gold-vocab-v0.5.jsonl`, v0.4 through
+`STACK_CONFIG_DIR` on a copy of `configs/` with the old file; runs `20261013T152334Z_all` (v0.4) and
+`20261013T152344Z_all` (v0.5); table in "Results" above). The old strong false positives that went: `claude-opus-5` on
+an-0003, an-0005, an-0019; on an-0019 also `claude-sonnet-5`, `deepseek-v4`, `embeddinggemma`, `gemini`, `glm-5`,
+`grok-4`, `mistral-large`, `nano-banana-2` (an-0019 has no strong FP left); on an-0010 `glm-5`, `nemotron-3`,
+`qwen3.8-max`. A `.<digit>` end guard in the matcher was tried and broke 65 of the 4,827 fixtures carried over from
+the earlier pipeline, which fold point releases into the major node on purpose (`claude-1.3` → `claude-1`,
+`imagen-3.0-generate-001` → `imagen-3`), so an unknown future point version ("Opus 5.7") would still resolve to its
+older sibling. New weak hits: bare "astra" (GPT-6 Astra) also hits "Astra Fellowship" (an-0010, an-0017) and "a
+monitor named Astra" (an-0011). Left as strict FNs: `gpt-6.1-luna` on an-0019 (the text writes only "GPT-6.1 Sol and
+Luna"; bare "luna" stays weak on gpt-5.6-luna), and `gpt-6-astra` / `inkling` where the texts use only the bare,
+weak name.
+
+**model_roles runs.** Run `20261013T131209Z_all_a1862291` (role `extract_main`, model overridden); luna repeat 2 in
+`20261013T132759Z_all_ff4a25ff`. Luna's F1 against gold moves 0.786 → 0.754 between repeats. haiku-5.5: every call is
+a strict-schema `http_400` then the degraded retry, 4 truncated attempts, ≈ 4× luna's cost. $/1k = settled OpenRouter
+cost × 1000/25 (4 documents make no call).

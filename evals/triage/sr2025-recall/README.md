@@ -5,8 +5,8 @@ Status: current (the recall measure of the Shallow Review scope; `stack.evals.sr
 Task: the triage gate's LLM question (`workflows/triage/ask.py`), as for `2026-10-12a`. **Every item is a Shallow
 Review 2025 inclusion**, so its gold is `relevant` / `fetch: true`. The set measures recall of the SR scope
 (`docs/scope/shallow-review.md`); precision cannot be measured here (there are no negatives). Built 2026-10-12 by
-`python -m stack.evals.sr recall` (`manifest.json` has the code digests, the documents head of the development
-store it resolved against, the sampling and resolution counts). Gold scope is `null` (not labelled `core` /
+`python -m stack.evals.sr recall` (`manifest.json` has the code digests, the documents head
+`rfm2d6vzwvmdd.documents` of the development store it resolved against, the sampling and resolution counts). Gold scope is `null` (not labelled `core` /
 `sr_only`). `items.jsonl` is not in the repository (long third-party excerpts, D795): `tools/fetch_eval_texts.py`
 fetches it into the eval-text cache.
 

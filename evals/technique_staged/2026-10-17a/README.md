@@ -73,3 +73,12 @@ The scorer takes `--length-shares screen_relevant | all_text | brief` (`stack/ev
 
 `manifest.json` `frozen_with`: taxonomy path / sha256 / version, rubric `rubric-v0.9-a` digest, prompt set
 `technique-staged-v1` and the digest of each prompt file per mode, segmenter `seg-v1`, lexical `lex-v2`.
+
+## Record (as written 2026-10-17)
+The comparisons declared before the first runs on this set, as recorded then.
+
+Primary: sweep-luna vs single-luna, slug-presence recall (no group nodes, no candidates), delivered over all 36
+documents, paired document bootstrap 95 % CI; co-primary: length-weighted recall and the precision difference.
+Secondary: staged-luna vs sweep-luna; union-of-3 single-luna vs sweep-luna; cells >= 2. Repeats: single-luna x3,
+sweep-luna x2, staged-luna x2 (each repeat its own P/S cache); others x1. Commands: the experiment's run book (not in
+this repository) and `stack eval --help`.

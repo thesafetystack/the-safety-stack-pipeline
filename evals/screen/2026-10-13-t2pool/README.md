@@ -22,3 +22,8 @@ development build (2026-10-13): real escalations on the production mix of long t
 
 Caveat: 15 items; differences of one or two answers are noise. The pool is borderline-only, so it measures what tier 2
 does, not tier 1.
+
+## Record (as written 2026-10-13)
+The source build is the development build of D234 (a two-pass build on a copy of the development store),
+screen_evidence `rk857m5bm4f6z`; the extraction read it from a local store, not in the repository. Codex was out of
+credits, which is why both labellers were Opus; the Opus adjudicator sided with labeller 2 twice and labeller 1 once.
