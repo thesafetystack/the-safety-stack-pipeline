@@ -10,7 +10,7 @@ for relevance, annotates them and releases the dataset.
 |---|---|
 | use the dataset | the dataset card on Hugging Face, https://huggingface.co/datasets/thesafetystack/the-safety-stack; every release ships its own `FORMAT.md` and `VOCABULARY.md` |
 | report a wrong annotation, a missing work, a takedown, or suggest a taxonomy change | the issue forms of the data repository, https://github.com/thesafetystack/the-safety-stack, or info@thesafetystack.ai |
-| run or change the pipeline | Setup below, then `docs/README.md` |
+| run or change the pipeline | Setup below, then `docs/README.md`; `CONTRIBUTING.md` |
 | work in this repository as a coding agent | `AGENTS.md` |
 
 ## Status
@@ -90,11 +90,11 @@ suite); there is no CI. Without the eval-text cache (below) the eval-set tests s
 |---|---|
 | `stack/` | The engine and the only installed package: store, stage runner, plans, builds, folds, checks, the LLM client, collect engines, the CLI (`stack/cli/`). |
 | `workflows/` | The stages, phase-first (`collect/<name>/`, `gather/`, `triage/`, `acquire/`, `annotate/<name>/`), each a `main.py` loaded by path, prompts beside it. |
-| `configs/` | The YAML registry (enums, channels, LLM roles, policies, the model vocabulary), the plans, the release configs and the dataset card templates (`configs/releases/`). |
+| `configs/` | The YAML registry (channels, LLM roles, the model vocabulary, ...), the plans, the release configs and the dataset card templates (`configs/README.md`). |
 | `taxonomy/`, `data-repo/` | The taxonomies the pipeline reads (below and `taxonomy/README.md`). |
-| `evals/` | Frozen eval sets and the judge evaluation behind each release's quality table (`stack eval`). |
+| `evals/` | Frozen eval sets and the judge evaluation behind each release's quality table (`evals/README.md`). |
 | `spec/` | Config and payload schemas still read by the code (`spec/README.md`). |
-| `tests/`, `tools/` | The suite (no database, no network) and the tools: the check gate, the dev-test runner, the scheduled cycle, operator probes. |
+| `tests/`, `tools/` | The suite (no database, no network) and the tools: the check gate, the dev-test runner, the scheduled cycle, operator probes (`tools/README.md`). |
 | `docs/` | The documentation (`docs/README.md`). |
 
 The default places of local stores (`v4/store-dev/`, the S3 mirrors `v4/mirror/`, eval runs `v4/evals-store/`)
