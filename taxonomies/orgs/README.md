@@ -12,10 +12,10 @@ Top level:
   registry, the models makers, the corpus's affiliation strings), `types` and `tags` (glosses), and the matcher's
   word lists: `countries`, `regions` (US states), `generic_words`, `unit_words`, `non_org`, and (0.2.2) `places`
   (city names that, after an organisation's name, are its address).
-- `entries`: 4,840 organisations, ordered by id.
+- `entries`: 4,841 organisations in 0.2.2 (4,840 in 0.2.0), ordered by id.
 
 Entry fields:
-- `id`, `name`, `type` (`university` 2,020, `company` 1,155, `institute` 780, `nonprofit` 368, `government` 244,
+- `id`, `name`, `type` (0.2.2: `university` 2,020, `company` 1,155, `institute` 781, `nonprofit` 368, `government` 244,
   `hospital` 176, `other` 97), `country` (ISO 3166-1 alpha-2), `parent` (the organisation a unit belongs to:
   `deepmind` under `google`).
 - `aliases`, and for the matcher `cased`, `segment_aliases`, `local_names`, `patterns`, `domains`.
