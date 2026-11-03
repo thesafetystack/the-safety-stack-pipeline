@@ -162,8 +162,9 @@ file's metadata and in the card), and ships the schema of each of its files besi
 uv run tools/release-validator.py <release directory> --rows all
 ```
 
-Run from a checkout of this repository, the checker also compares the release's schemas with the archived format
-and checks its taxonomy files against their schemas.
+Wherever it runs, the checker compares the release's schemas with the archived format (it carries their digests);
+run from a checkout of this repository, it compares them with the archived files here and also checks the release's
+taxonomy files against their schemas.
 
 ## Licences
 

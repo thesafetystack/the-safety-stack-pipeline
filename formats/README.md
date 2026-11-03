@@ -77,8 +77,9 @@ uv run tools/release-validator.py <release directory>              # a seeded sa
 uv run tools/release-validator.py <release directory> --rows all   # every row
 ```
 
-Run from a checkout of this repository, it also compares the release's schemas with the archive here and checks
-the shipped taxonomy files with `tools/taxonomy-schema-validator.py`. Exit codes: 0 valid, 1 invalid, 2 usage,
+It compares the release's schemas with the archived ones wherever it runs (by the digests it carries, as above);
+run from a checkout of this repository, it compares them with the archive here and also checks the shipped taxonomy
+files with `tools/taxonomy-schema-validator.py`. Exit codes: 0 valid, 1 invalid, 2 usage,
 3 unsupported format version (a major version the checker does not know, or a release from before 1.0.0, which has
 no `format_version`; the checks that do not depend on the format still run).
 
