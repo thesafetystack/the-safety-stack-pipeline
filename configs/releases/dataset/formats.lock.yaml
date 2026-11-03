@@ -1,0 +1,8 @@
+# sha256 of every archived format file the pipeline vendors (data-repo/formats/<major>.<minor>/, D805).
+# tests/test_release_format.py checks the vendored files against it; after a subtree pull that changes
+# them, review the change and renew it: uv run --no-sync python tools/release_format.py lock
+files:
+  1.0/config/configs.schema.json: e28ccc3dbc94cab138333c2db328de5dcc969b316574c33de24471bc234c0d0a
+  1.0/config/overrides.schema.json: ecdc5f591e05e420c6e45a9b3367ce14215e475b0521895b95e9fa19a44b5865
+  1.0/data/corpus.schema.json: 8912d5f08340310dc4d05cb92a7d6ce06d7c94b313818e3988f0c01030fbf344
+  1.0/release.schema.json: 61f5bdbf6e24e9a46f89420d36df49992c9600adf4fb62359bae9a62bf283761

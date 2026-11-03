@@ -167,7 +167,12 @@ RULES: list[tuple[str, Callable[[dict[str, Any]], None], str, str]] = [
      "major", "data/corpus.schema.json:published_precision: closed list"),
     ("a closed list opened", lambda s: _p(s[ROW], "published_precision").update(
         {"x-open": True, "x-values": _p(s[ROW], "published_precision").pop("enum")}),
-     "major", "data/corpus.schema.json:published_precision: opened list"),
+     "major", "data/corpus.schema.json:published_precision: no longer a closed list"),
+    ("an open list made a plain string",
+     lambda s: [_p(s[ROW], "content", "role").pop(k) for k in ("x-open", "x-values")],
+     "major", "data/corpus.schema.json:content.role: no longer an open list (a plain string)"),
+    ("the format_version pattern changed", lambda s: _p(s[REL], "format_version").update({"pattern": "^1\\.0\\.0$"}),
+     "major", "release.schema.json:format_version: other keywords changed"),
     ("an open-list value removed", lambda s: _p(s[ROW], "content", "role")["x-values"].remove("readme"),
      "major", "data/corpus.schema.json:content.role: open-list values removed: ['readme']"),
     ("a required key made optional", lambda s: s[REL]["required"].remove("stand_ins"),
@@ -259,12 +264,64 @@ def test_a_changed_format_under_an_archived_version_is_refused(tmp_path: Path, g
     assert not v.ok and v.needed == "minor" and "an archived format does not change" in v.lines[0]
 
 
-def test_archive_writes_and_refuses_a_dated_version(tmp_path: Path, gen: dict[str, Any]) -> None:
-    f = _formats(tmp_path)
+def test_archive_writes_and_never_silently_overwrites(tmp_path: Path, gen: dict[str, Any]) -> None:
+    import subprocess
+
+    f = _formats(tmp_path)  # 1.0.0 dated
     d = rf.write_archive(tmp_path, "1.1.0", gen)
     assert d == f / "1.1" and rf.read_dir(d) == gen
+    assert rf.write_archive(tmp_path, "1.0.0", gen) == f / "1.0"  # the same schemas: nothing to do
     with pytest.raises(SystemExit, match="dated"):
-        rf.write_archive(tmp_path, "1.0.0", gen)
+        rf.write_archive(tmp_path, "1.0.0", _with_field(gen), replace=True)
+    with pytest.raises(SystemExit, match="--replace"):  # 1.1 is undated: replaced only on request
+        rf.write_archive(tmp_path, "1.1.0", _with_field(gen))
+    assert rf.read_dir(f / "1.1") == gen
+    assert rf.read_dir(rf.write_archive(tmp_path, "1.1.0", _with_field(gen), replace=True)) == _with_field(gen)
+    for args in (["init", "-q"], ["add", "formats"], ["commit", "-q", "-m", "a"], ["tag", "format-1.1.0"]):
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.org", *args], cwd=tmp_path,
+                       check=True, capture_output=True)
+    with pytest.raises(SystemExit, match="tagged format-1.1.0"):  # tagged: never, whatever the changelog says
+        rf.write_archive(tmp_path, "1.1.0", gen, replace=True)
+
+
+def test_the_vendored_archive_matches_its_lock(tmp_path: Path) -> None:
+    assert rf.lock_problems(FORMATS) == []
+    f = tmp_path / "formats"
+    shutil.copytree(FORMATS, f)
+    p = f / "1.0" / ds.ROW_SCHEMA_FILE
+    p.write_text(p.read_text().replace('"x-arrow": "string"', '"x-arrow": "large_string"', 1))
+    (f / "1.0" / "extra.json").write_text("{}")
+    assert rf.lock_problems(f) == ["data-repo/formats/1.0/data/corpus.schema.json: sha256 differs from the lock",
+                                   "data-repo/formats/1.0/extra.json: not in the lock"]
+
+
+def _docker_keeps(rel: str, patterns: list[str]) -> bool:
+    """Whether ``.dockerignore`` ``patterns`` keep repo path ``rel`` in the image (the last matching pattern wins; a
+    pattern matches a path or any of its parent directories; ``**`` any directories, ``*`` within one)."""
+    import re
+
+    def rx(p: str) -> re.Pattern[str]:
+        out = ""
+        for tok in re.split(r"(\*\*/|\*\*|\*|\?)", p.strip("/")):
+            out += {"**/": "(?:.*/)?", "**": ".*", "*": "[^/]*", "?": "[^/]"}.get(tok, re.escape(tok))
+        return re.compile(out + r"\Z")
+
+    parts = rel.split("/")
+    keep = True
+    for pat in patterns:
+        neg, body = pat.startswith("!"), pat.removeprefix("!")
+        if any(rx(body).match("/".join(parts[:i])) for i in range(1, len(parts) + 1)):
+            keep = neg
+    return keep
+
+
+def test_the_image_keeps_the_archive_and_the_checker() -> None:
+    lines = [x.strip() for x in (REPO_ROOT / ".dockerignore").read_text().splitlines()]
+    pats = [x for x in lines if x and not x.startswith("#")]
+    files = sorted(p.relative_to(REPO_ROOT).as_posix() for p in FORMATS.rglob("*") if p.is_file())
+    files.append("data-repo/tools/release-validator.py")
+    assert all(_docker_keeps(f, pats) for f in files), [f for f in files if not _docker_keeps(f, pats)]
+    assert not _docker_keeps("data/corpus.parquet", pats) and not _docker_keeps("x/data/y", pats)
 
 
 # ---------------------------------------------------------------- the export on synthetic rows
@@ -276,6 +333,7 @@ def _corpus(n: int) -> tuple[pa.Table, dict[str, bytes]]:
     rows, texts = [], {}
     for i in range(n):
         r = document_row(i, state="acquired")
+        r["identity"]["members"][0]["key_kind"] = "doi"  # the synthetic world's `arxiv` is not a listed key kind
         body = f"# Document {i}\n\nThe text of document {i}.\n".encode()
         sha = hashlib.sha256(body).hexdigest()
         texts[sha] = body
@@ -391,6 +449,10 @@ def _bad_enum(rows: list[dict[str, Any]]) -> None:
     rows[1]["published_precision"] = "sometimes"
 
 
+def _new_role(rows: list[dict[str, Any]]) -> None:
+    rows[0]["content"]["role"] = "slides"
+
+
 def _dup(rows: list[dict[str, Any]]) -> None:
     rows[1]["doc_id"] = rows[0]["doc_id"]
 
@@ -415,6 +477,8 @@ NEGATIVE: list[tuple[str, Callable[[Path], None], str]] = [
     ("a schema that is not the archived one", lambda r: ((r / ds.OVERRIDES_SCHEMA_FILE).write_text(
         (r / ds.OVERRIDES_SCHEMA_FILE).read_text().replace('"metadata_fix",', "")), _rehash(r)),
      "release-validator: [archive] config/overrides.schema.json: differs from formats/1.0/"),
+    ("an unlisted open-list value", lambda r: (_rewrite_corpus(r, _new_role), _rehash(r)),
+     "content.role: values ['slides'] are not in its open list (x-values)"),
     ("an edited checker", lambda r: ((r / ds.VALIDATOR_FILE).write_text("# edited\n"), _rehash(r)),
      f"{ds.VALIDATOR_FILE}: not the vendored data repository's file"),
 ]

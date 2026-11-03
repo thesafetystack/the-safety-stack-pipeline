@@ -7,6 +7,9 @@
 **/.local
 data
 **/data
+# ...but the archived release formats' schemas the export compares against (data-repo/formats/<x.y>/data/, D805)
+!data-repo/formats/*/data
+!data-repo/formats/*/data/**
 v4/mirror
 v4/store-*
 .venv

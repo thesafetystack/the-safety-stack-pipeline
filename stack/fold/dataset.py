@@ -1989,7 +1989,7 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
                 files.append(e)
         doc["files"] = files
         _write_text(stage / "release.json", json.dumps(doc, indent=2, ensure_ascii=False, default=_json_default) + "\n")
-        problems = check_bundle(stage, m, cfg)
+        problems = check_bundle(stage, m, cfg, observed)
         if problems:
             raise DatasetError(f"{len(problems)} bundle check problem(s), nothing kept: " + "; ".join(problems[:8]))
         check_out_dir(dest, root)
@@ -2210,6 +2210,8 @@ def orgs_record(proj: Projection) -> dict[str, Any] | None:
 
 
 SCHEMA_DRAFT = "https://json-schema.org/draft/2020-12/schema"
+#: A release-relative path: not absolute, no ``..`` segment (``release.json`` ``files[].path``).
+SAFE_PATH = r"^(?![/\\])(?![A-Za-z]:)(?!(?:.*/)?\.\.(?:/|$)).+$"
 #: The taxonomy keys of ``release.json`` ``taxonomies`` in this format (a new key is a minor format version).
 TAXONOMY_NAMES = ("techniques", "models", "orgs")
 
@@ -2283,7 +2285,8 @@ def release_json_schema(m: Mapping_) -> dict[str, Any]:
         "contact": strings | {"description": "Where to write: corrections, takedowns."},
         "stand_ins": free("Documents and records whose annotation is a stand-in (diagnostic)."),
         "files": {"type": "array", "description": "Every other file of the release with its size and sha256.",
-                  "items": closed({"path": {"type": "string"}, "bytes": count, "sha256": sha, "rows": count},
+                  "items": closed({"path": {"type": "string", "pattern": SAFE_PATH}, "bytes": count, "sha256": sha,
+                                   "rows": count},
                                   "One file.", required=["path", "bytes", "sha256"]),
                   "allOf": [{"contains": {"properties": {"path": {"const": c}}, "required": ["path"]}}
                             for c in core]},
@@ -3095,14 +3098,16 @@ def release_validator() -> Any:
     return mod
 
 
-def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
+def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig,
+                 observed: Mapping[str, set[str]] | None = None) -> list[str]:
     """The written bundle's problems (module docstring). First the release checker every release ships
     (:func:`release_validator`, D803) over every row: the format version, the manifest, each file against its schema
     (all rows), doc ids, config and override ids, taxonomy pins and ids, the schemas equal to the archived format
     (``data-repo/formats/<major>.<minor>/``, required); then the pipeline's own policy checks: the arrow schema and
-    the file list are the mapping's, the shipped checker is the vendored file, every configs row is used, the kinds'
-    metadata, quote caps and cuts, abstracts, prose scrubs, inline texts, organisation fields, URLs, leaks, the
-    vocabulary's coverage."""
+    the file list are the mapping's, the shipped checker is the vendored file, every configs row is used, every value
+    of an open list is one of its listed values (a new one is a minor format version, D805; ``observed``: the values
+    per path as :func:`write_vocab` found them, else read here), the kinds' metadata, quote caps and cuts, abstracts,
+    prose scrubs, inline texts, organisation fields, URLs, leaks, the vocabulary's coverage."""
     probs: list[str] = []
     rep = release_validator().check_release(stage, rows="all", archive=DATA_REPO / "formats", require_archive=True)
     if rep.status != "valid":
@@ -3111,7 +3116,7 @@ def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
             _sha256_file(stage / VALIDATOR_FILE) != _sha256_file(DATA_REPO / VALIDATOR_FILE):
         probs.append(f"{VALIDATOR_FILE}: not the vendored data repository's file")
     try:
-        probs += _policy_problems(stage, m, cfg)
+        probs += _policy_problems(stage, m, cfg, observed)
     except Exception as exc:
         if not probs:
             raise  # the checker passed: a crash here is the pipeline's bug, not the bundle's
@@ -3120,10 +3125,19 @@ def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
     return probs
 
 
-def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
+def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
+                     observed: Mapping[str, set[str]] | None) -> list[str]:
     """:func:`check_bundle`'s own policy checks (its docstring)."""
     probs: list[str] = []
     corpus = stage / "data" / "corpus.parquet"
+    open_paths = [p for p, (_v, is_open) in m.enums.items() if is_open and p not in m.plain_enums]
+    if observed is None or set(open_paths) - set(observed):
+        observed = observed_values(corpus, m.schema, list(m.kinds), open_paths)
+    for p in open_paths:
+        new = sorted(observed[p] - set(m.enums[p][0]))
+        if new:
+            probs.append(f"{p}: values {new[:5]} are not in its open list (x-values): a value added to an open list "
+                         "is a new minor format version (mapping.yaml enum, format_version; tools/release_format.py)")
     pf = pq.ParquetFile(corpus)
     if not pf.schema_arrow.remove_metadata().equals(m.schema.remove_metadata(), check_metadata=False):
         probs.append("data/corpus.parquet: its arrow schema differs from the mapping's")
