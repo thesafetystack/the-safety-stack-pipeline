@@ -1,6 +1,6 @@
 # OpenAlex author ids for the researcher roster
 
-Generated 2026-10-13 00:00 UTC by `tools/resolve_openalex_authors.py` (round 5 (RUN) B7b, C4 of `docs/design/collection-yield.md`; coauthor evidence, T-ARX). For Tomáš: decide the ambiguous and not-found names below; the resolved ids are already in the roster.
+Generated 2026-10-13 00:00 UTC by `tools/resolve_openalex_authors.py` (round 5 (RUN) B7b, C4 of `docs/design/collection-yield.md`; coauthor evidence, T-ARX). Open: the ambiguous and not-found names below are undecided; the resolved ids are already in the roster.
 
 - Roster: `tests (fake roster)` version 1.1.0 → 1.3.0; 6 names considered.
 - Requests: autocomplete 6, details 2, orcid 1, search 1, works 1; OpenAlex cost $0.0018 (run `resolve-test`).

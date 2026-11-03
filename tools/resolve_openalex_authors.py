@@ -1086,8 +1086,8 @@ def report(decisions: list[Decision], *, meta: Mapping[str, Any]) -> str:
         "",
         (f"Generated {meta['date']} by `tools/resolve_openalex_authors.py` (round 5 (RUN) B7b, C4 of "
          "`docs/design/collection-yield.md`"
-         + ("; coauthor evidence, T-ARX" if co else "") + "). For Tomáš: decide the ambiguous and "
-         "not-found names below; the resolved ids are already in the roster."),
+         + ("; coauthor evidence, T-ARX" if co else "") + "). Open: the ambiguous and not-found names below "
+         "are undecided; the resolved ids are already in the roster."),
         "",
         (f"- Roster: `{meta['roster']}` version {meta['version_in']} → {meta['version_out']}; "
          f"{len(decisions)} names considered."),
