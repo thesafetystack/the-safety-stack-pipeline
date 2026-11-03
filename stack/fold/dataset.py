@@ -2982,6 +2982,18 @@ TYPE_LABELS = {"preprint": "preprints", "forum_post": "forum posts", "paper": "p
                "model_card": "model cards", "framework_policy": "safety frameworks", "book": "books"}
 
 
+def type_summary(doc_types: Sequence[tuple[str, int]], n: int) -> str:
+    """The card's breakdown by doc_type: the four largest labelled types, the system and model cards, and the rest
+    as ``and N others`` so the list adds up to ``n``."""
+    cards = sum(c for t, c in doc_types if t in ("system_card", "model_card"))
+    listed = [(t, c) for t, c in doc_types if t in TYPE_LABELS and t not in ("system_card", "model_card")][:4]
+    parts = [f"{_fmt(c)} {TYPE_LABELS[t]}" for t, c in listed]
+    if cards:
+        parts.append(f"{_fmt(cards)} system and model cards")
+    rest = n - sum(c for _t, c in listed) - cards
+    return ", ".join(parts) + (f", and {_fmt(rest)} others" if rest > 0 else "")
+
+
 def _size_category(n: int) -> str:
     for lim, name in ((1_000, "n<1K"), (10_000, "1K<n<10K"), (100_000, "10K<n<100K"), (1_000_000, "100K<n<1M")):
         if n < lim:
@@ -3033,11 +3045,6 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
     table = TABLE_HEAD + "".join(r + "\n" for r in field_rows(pa.struct(list(m.schema)), "", m)
                                  if r.split("`")[1].count(".") < 1)
     n = stats["n_docs"]
-    types = [(t, c) for t, c in stats["doc_types"] if t in TYPE_LABELS]
-    cards = sum(c for t, c in types if t in ("system_card", "model_card"))
-    parts = [f"{_fmt(c)} {TYPE_LABELS[t]}" for t, c in types[:4]]
-    if cards:
-        parts.append(f"{_fmt(cards)} system and model cards")
     coverage = ["| Document type (providers') | Documents |\n|---|---|\n"]
     coverage += [f"| {t if t != 'unknown' else 'none given (NULL)'} | {_fmt(c)} |\n" for t, c in stats["doc_types"]]
     coverage.append(f"\nPublished {stats['year_min']}-{stats['year_max']} ({_fmt(stats['undated'])} undated). "
@@ -3068,7 +3075,7 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
               "- `release.json` is the full record (every other file with size and sha256).\n")
     vals = {"release_id": doc["release_id"], "n_docs": _fmt(n), "year_min": stats["year_min"],
             "year_max": stats["year_max"], "recent_share": f"{_fmt(stats['recent'])}",
-            "recent_from": stats["recent_from"], "type_summary": ", ".join(parts),
+            "recent_from": stats["recent_from"], "type_summary": type_summary(stats["doc_types"], n),
             "n_techniques": _fmt(stats["n_techniques"]), "n_models": _fmt(stats["n_models"]),
             "n_groups": _fmt(stats["n_groups"]), "q_both": _fmt(stats["q_both"]), "q_s_only": _fmt(stats["q_s_only"]),
             "q_r_only": _fmt(stats["q_r_only"]),
