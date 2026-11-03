@@ -1,0 +1,3828 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:the-safety-stack:format:1.0:data/corpus.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "release_id": {
+      "type": "string",
+      "x-arrow": "string"
+    },
+    "doc_id": {
+      "type": "string",
+      "x-arrow": "string"
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-arrow": "string"
+    },
+    "abstract": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-arrow": "string"
+    },
+    "authors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-arrow": "string"
+          },
+          "orcid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-arrow": "string"
+          },
+          "affiliation_raw": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-arrow": "string"
+          }
+        },
+        "required": [
+          "name",
+          "orcid",
+          "affiliation_raw"
+        ],
+        "x-arrow": "struct"
+      },
+      "x-arrow": "list"
+    },
+    "published_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "x-arrow": "date32[day]"
+    },
+    "published_precision": {
+      "type": "string",
+      "x-arrow": "string",
+      "enum": [
+        "day",
+        "year_inferred",
+        "unknown"
+      ]
+    },
+    "doc_type": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-arrow": "string"
+    },
+    "is_withdrawn": {
+      "type": "boolean",
+      "x-arrow": "bool"
+    },
+    "canonical_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-arrow": "string"
+    },
+    "field_sources": {
+      "type": "array",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string",
+            "x-arrow": "string",
+            "x-open": true,
+            "x-values": [
+              "title",
+              "abstract",
+              "authors",
+              "published_at",
+              "doc_type"
+            ]
+          },
+          "source_id": {
+            "type": "string",
+            "x-arrow": "string"
+          },
+          "origin": {
+            "type": "string",
+            "x-arrow": "string",
+            "enum": [
+              "provider",
+              "human",
+              "import"
+            ]
+          }
+        },
+        "required": [
+          "field",
+          "source_id",
+          "origin"
+        ],
+        "x-arrow": "struct"
+      },
+      "x-arrow": "list"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "anchor_source_id": {
+          "type": "string",
+          "x-arrow": "string"
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-arrow": "string"
+          },
+          "x-arrow": "list"
+        },
+        "former_doc_ids": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-arrow": "string"
+          },
+          "x-arrow": "list"
+        },
+        "override_ids": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-arrow": "string"
+          },
+          "x-arrow": "list"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "x-arrow": "string"
+              },
+              "channel": {
+                "type": "string",
+                "x-arrow": "string"
+              },
+              "channel_class": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string",
+                "x-open": true,
+                "x-values": [
+                  "open",
+                  "public_web",
+                  "restricted",
+                  "api_tos",
+                  "api_abstract",
+                  "shadow"
+                ]
+              },
+              "key_kind": {
+                "type": "string",
+                "x-arrow": "string",
+                "x-open": true,
+                "x-values": [
+                  "doi",
+                  "fm_post",
+                  "url",
+                  "openalex",
+                  "s2",
+                  "pmid"
+                ]
+              },
+              "key_value": {
+                "type": "string",
+                "x-arrow": "string"
+              },
+              "canonical_url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              },
+              "title": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              },
+              "published_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "x-arrow": "timestamp[us, tz=UTC]"
+              },
+              "doc_type": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              },
+              "edge_kind": {
+                "type": "string",
+                "x-arrow": "string"
+              },
+              "edge_to_source_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              },
+              "override_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              },
+              "first_observed_at": {
+                "type": "string",
+                "format": "date-time",
+                "x-arrow": "timestamp[us, tz=UTC]"
+              },
+              "last_observed_at": {
+                "type": "string",
+                "format": "date-time",
+                "x-arrow": "timestamp[us, tz=UTC]"
+              },
+              "withdrawn_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "x-arrow": "timestamp[us, tz=UTC]"
+              },
+              "withdrawn_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              }
+            },
+            "required": [
+              "source_id",
+              "channel",
+              "channel_class",
+              "key_kind",
+              "key_value",
+              "canonical_url",
+              "title",
+              "published_at",
+              "doc_type",
+              "edge_kind",
+              "edge_to_source_id",
+              "override_id",
+              "first_observed_at",
+              "last_observed_at",
+              "withdrawn_at",
+              "withdrawn_reason"
+            ],
+            "x-arrow": "struct"
+          },
+          "x-arrow": "list"
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string",
+                "x-arrow": "string",
+                "x-open": true,
+                "x-values": [
+                  "arxiv",
+                  "doi",
+                  "openalex",
+                  "s2",
+                  "fm_post",
+                  "url",
+                  "pmid",
+                  "zenodo"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "x-arrow": "string"
+              },
+              "source_id": {
+                "type": "string",
+                "x-arrow": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "value",
+              "source_id"
+            ],
+            "x-arrow": "struct"
+          },
+          "x-arrow": "list"
+        }
+      },
+      "required": [
+        "anchor_source_id",
+        "channels",
+        "former_doc_ids",
+        "override_ids",
+        "members",
+        "keys"
+      ],
+      "x-arrow": "struct"
+    },
+    "content": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "x-arrow": "string"
+        },
+        "role": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "x-arrow": "string",
+          "x-open": true,
+          "x-values": [
+            "full_text",
+            "html",
+            "xml",
+            "post",
+            "page",
+            "readme",
+            "abstract"
+          ]
+        },
+        "quality": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "x-arrow": "string",
+          "enum": [
+            "ok",
+            "flagged",
+            "failed",
+            null
+          ]
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            },
+            "bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "x-arrow": "int64"
+            },
+            "media_type": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            },
+            "captured_at": {
+              "type": "string",
+              "format": "date-time",
+              "x-arrow": "timestamp[us, tz=UTC]"
+            },
+            "revision": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            }
+          },
+          "required": [
+            "url",
+            "sha256",
+            "bytes",
+            "media_type",
+            "captured_at",
+            "revision"
+          ],
+          "x-arrow": "struct"
+        },
+        "text": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            },
+            "bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "x-arrow": "int64"
+            },
+            "media_type": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            },
+            "converter": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            },
+            "body": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "x-arrow": "string"
+            }
+          },
+          "required": [
+            "sha256",
+            "bytes",
+            "media_type",
+            "converter",
+            "body"
+          ],
+          "x-arrow": "struct"
+        }
+      },
+      "required": [
+        "source_id",
+        "role",
+        "quality",
+        "source",
+        "text"
+      ],
+      "x-arrow": "struct"
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "abstract": {
+          "type": "string",
+          "x-arrow": "string",
+          "enum": [
+            "shipped",
+            "withheld_pending_rights_review",
+            "none"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "x-arrow": "string",
+          "enum": [
+            "not_distributed",
+            "inline"
+          ]
+        },
+        "quote_chars": {
+          "type": "integer",
+          "x-arrow": "int32"
+        },
+        "cuts": {
+          "type": "array",
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "x-arrow": "string"
+              },
+              "chars": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "x-arrow": "int32"
+              }
+            },
+            "required": [
+              "path",
+              "chars"
+            ],
+            "x-arrow": "struct"
+          },
+          "x-arrow": "list"
+        }
+      },
+      "required": [
+        "abstract",
+        "text",
+        "quote_chars",
+        "cuts"
+      ],
+      "x-arrow": "struct"
+    },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "screen": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "enum": [
+                    "relevant",
+                    "borderline",
+                    "irrelevant",
+                    null
+                  ]
+                },
+                "basis_role": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "buckets": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string",
+                    "x-open": true,
+                    "x-values": [
+                      "paper",
+                      "critique_commentary",
+                      "eval_report",
+                      "deployment_signal",
+                      "lab_safety_doc",
+                      "release_news",
+                      "incident",
+                      "offtopic"
+                    ]
+                  },
+                  "x-arrow": "list"
+                },
+                "quotes": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "offset": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "x-arrow": "int32"
+                      }
+                    },
+                    "required": [
+                      "text",
+                      "offset"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "off_topic_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "x-arrow": "double"
+                },
+                "reasoning": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "adjudication_tier": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "x-arrow": "int32"
+                },
+                "tier1_verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                }
+              },
+              "required": [
+                "verdict",
+                "basis_role",
+                "buckets",
+                "quotes",
+                "off_topic_reason",
+                "confidence",
+                "reasoning",
+                "adjudication_tier",
+                "tier1_verdict"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "doc_class": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "doc_type": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "self_published": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "x-arrow": "bool"
+                },
+                "primary_lang": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                }
+              },
+              "required": [
+                "doc_type",
+                "self_published",
+                "primary_lang"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "stack_relevance": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "enum": [
+                    "relevant",
+                    "borderline",
+                    "irrelevant",
+                    null
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "x-arrow": "double"
+                },
+                "quotes": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "offset": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "x-arrow": "int32"
+                      }
+                    },
+                    "required": [
+                      "text",
+                      "offset"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "basis_role": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "adjudication_tier": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "x-arrow": "int32"
+                },
+                "tier1_verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                }
+              },
+              "required": [
+                "verdict",
+                "confidence",
+                "quotes",
+                "basis_role",
+                "adjudication_tier",
+                "tier1_verdict"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "shallow_review_relevance": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "enum": [
+                    "relevant",
+                    "borderline",
+                    "irrelevant",
+                    null
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "x-arrow": "double"
+                },
+                "quotes": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "offset": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "x-arrow": "int32"
+                      }
+                    },
+                    "required": [
+                      "text",
+                      "offset"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "category": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "black_box",
+                    "evals",
+                    "theory",
+                    "white_box",
+                    "none",
+                    "multi_agent_first",
+                    "labs",
+                    "make_ai_solve_it",
+                    "safety_by_construction"
+                  ]
+                },
+                "agenda": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "basis_role": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "adjudication_tier": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "x-arrow": "int32"
+                },
+                "tier1_verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                }
+              },
+              "required": [
+                "verdict",
+                "confidence",
+                "quotes",
+                "category",
+                "agenda",
+                "basis_role",
+                "adjudication_tier",
+                "tier1_verdict"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "text_usability": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verdict": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "enum": [
+                    "usable",
+                    "degraded",
+                    "unusable",
+                    null
+                  ]
+                },
+                "issues": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string",
+                    "x-open": true,
+                    "x-values": [
+                      "not_body",
+                      "cut_off",
+                      "garbled_maths",
+                      "garbled_tables",
+                      "bad_encoding",
+                      "mostly_markup",
+                      "stub",
+                      "other"
+                    ]
+                  },
+                  "x-arrow": "list"
+                },
+                "note": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "basis_role": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "adjudication_tier": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "x-arrow": "int32"
+                }
+              },
+              "required": [
+                "verdict",
+                "issues",
+                "note",
+                "basis_role",
+                "adjudication_tier"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "affiliation": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "items": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "author_name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      },
+                      "author_surface": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      },
+                      "byline_index": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "x-arrow": "int32"
+                      },
+                      "orcid": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      },
+                      "resolution": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string",
+                        "x-open": true,
+                        "x-values": [
+                          "openalex",
+                          "text",
+                          "email_domain",
+                          "xml",
+                          "unknown"
+                        ]
+                      },
+                      "affiliations": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "surface": {
+                              "type": "string",
+                              "x-arrow": "string"
+                            },
+                            "org_slugs": {
+                              "type": "array",
+                              "items": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "x-arrow": "string"
+                              },
+                              "x-arrow": "list"
+                            },
+                            "org_ids": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "x-arrow": "string"
+                              },
+                              "x-arrow": "list"
+                            },
+                            "org_status": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "x-arrow": "string",
+                              "x-open": true,
+                              "x-values": [
+                                "matched",
+                                "ambiguous",
+                                "non_org",
+                                "generic",
+                                "unmatched"
+                              ]
+                            },
+                            "org_candidates": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": [
+                                  "array",
+                                  "null"
+                                ],
+                                "items": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "x-arrow": "string"
+                                },
+                                "x-arrow": "list"
+                              },
+                              "x-arrow": "list"
+                            }
+                          },
+                          "required": [
+                            "surface",
+                            "org_slugs",
+                            "org_ids",
+                            "org_status",
+                            "org_candidates"
+                          ],
+                          "x-arrow": "struct"
+                        },
+                        "x-arrow": "list"
+                      }
+                    },
+                    "required": [
+                      "author_name",
+                      "author_surface",
+                      "byline_index",
+                      "orcid",
+                      "resolution",
+                      "affiliations"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "affiliation_orgs": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "org_ids": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "vocab_version": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                }
+              },
+              "required": [
+                "org_ids",
+                "vocab_version"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "safety_techniques": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "doc_kind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "paper",
+                    "blogpost",
+                    "commentary",
+                    "model_card",
+                    "system_card",
+                    "technical_report",
+                    "eval_report",
+                    "news",
+                    "policy",
+                    "other"
+                  ]
+                },
+                "taxonomy_version": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "flags": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "techniques": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "slug": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "roles": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mentioned": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "cited_work": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "discussed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "used": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "evaluated": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "modified": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "introduced": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "analyzed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "attested_use": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "suspected_use": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "considered": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "critiqued": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          }
+                        },
+                        "required": [
+                          "mentioned",
+                          "cited_work",
+                          "discussed",
+                          "used",
+                          "evaluated",
+                          "modified",
+                          "introduced",
+                          "analyzed",
+                          "attested_use",
+                          "suspected_use",
+                          "considered",
+                          "critiqued"
+                        ],
+                        "x-arrow": "struct"
+                      },
+                      "quotes": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "text": {
+                              "type": "string",
+                              "x-arrow": "string"
+                            },
+                            "anchored": {
+                              "type": "boolean",
+                              "x-arrow": "bool"
+                            }
+                          },
+                          "required": [
+                            "text",
+                            "anchored"
+                          ],
+                          "x-arrow": "struct"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "flags": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "x-arrow": "string"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "note": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      }
+                    },
+                    "required": [
+                      "slug",
+                      "roles",
+                      "quotes",
+                      "flags",
+                      "note"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "extra_techniques": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "name_as_written": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "gloss": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      },
+                      "hint_technique": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      },
+                      "roles": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mentioned": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "cited_work": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "discussed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "used": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "evaluated": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "modified": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "introduced": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "analyzed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "attested_use": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "suspected_use": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "considered": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "critiqued": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          }
+                        },
+                        "required": [
+                          "mentioned",
+                          "cited_work",
+                          "discussed",
+                          "used",
+                          "evaluated",
+                          "modified",
+                          "introduced",
+                          "analyzed",
+                          "attested_use",
+                          "suspected_use",
+                          "considered",
+                          "critiqued"
+                        ],
+                        "x-arrow": "struct"
+                      },
+                      "quotes": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "text": {
+                              "type": "string",
+                              "x-arrow": "string"
+                            },
+                            "anchored": {
+                              "type": "boolean",
+                              "x-arrow": "bool"
+                            }
+                          },
+                          "required": [
+                            "text",
+                            "anchored"
+                          ],
+                          "x-arrow": "struct"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "flags": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "x-arrow": "string"
+                        },
+                        "x-arrow": "list"
+                      }
+                    },
+                    "required": [
+                      "name_as_written",
+                      "gloss",
+                      "hint_technique",
+                      "roles",
+                      "quotes",
+                      "flags"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "doc_kind",
+                "taxonomy_version",
+                "flags",
+                "techniques",
+                "extra_techniques"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "model_roles": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "doc_kind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "paper",
+                    "blogpost",
+                    "commentary",
+                    "model_card",
+                    "system_card",
+                    "technical_report",
+                    "eval_report",
+                    "news",
+                    "policy",
+                    "other"
+                  ]
+                },
+                "flags": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "models": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "node_id": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "matched_node_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      },
+                      "roles": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mentioned": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "cited_work": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "discussed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "usage_experience": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "built_on": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "instrument": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "modified": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "evaluated_behavioral": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "analyzed_internals": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "introduced": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          }
+                        },
+                        "required": [
+                          "mentioned",
+                          "cited_work",
+                          "discussed",
+                          "usage_experience",
+                          "built_on",
+                          "instrument",
+                          "modified",
+                          "evaluated_behavioral",
+                          "analyzed_internals",
+                          "introduced"
+                        ],
+                        "x-arrow": "struct"
+                      },
+                      "evidence": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "roles": {
+                              "type": "array",
+                              "items": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "x-arrow": "string"
+                              },
+                              "x-arrow": "list"
+                            },
+                            "quote": {
+                              "type": "string",
+                              "x-arrow": "string"
+                            }
+                          },
+                          "required": [
+                            "roles",
+                            "quote"
+                          ],
+                          "x-arrow": "struct"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "note": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      }
+                    },
+                    "required": [
+                      "node_id",
+                      "matched_node_id",
+                      "roles",
+                      "evidence",
+                      "note"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "variant_models": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "base_node_id": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "names_as_written": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "x-arrow": "string"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "quote": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "roles": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mentioned": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "cited_work": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "discussed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "usage_experience": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "built_on": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "instrument": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "modified": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "evaluated_behavioral": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "analyzed_internals": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "introduced": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          }
+                        },
+                        "required": [
+                          "mentioned",
+                          "cited_work",
+                          "discussed",
+                          "usage_experience",
+                          "built_on",
+                          "instrument",
+                          "modified",
+                          "evaluated_behavioral",
+                          "analyzed_internals",
+                          "introduced"
+                        ],
+                        "x-arrow": "struct"
+                      }
+                    },
+                    "required": [
+                      "base_node_id",
+                      "names_as_written",
+                      "quote",
+                      "roles"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "extra_models": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "name_as_written": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "quote": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "roles": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mentioned": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "cited_work": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "discussed": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "usage_experience": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "built_on": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "instrument": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "modified": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "evaluated_behavioral": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "analyzed_internals": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          },
+                          "introduced": {
+                            "type": "integer",
+                            "x-arrow": "int32"
+                          }
+                        },
+                        "required": [
+                          "mentioned",
+                          "cited_work",
+                          "discussed",
+                          "usage_experience",
+                          "built_on",
+                          "instrument",
+                          "modified",
+                          "evaluated_behavioral",
+                          "analyzed_internals",
+                          "introduced"
+                        ],
+                        "x-arrow": "struct"
+                      },
+                      "node_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "x-arrow": "string"
+                      }
+                    },
+                    "required": [
+                      "name_as_written",
+                      "quote",
+                      "roles",
+                      "node_id"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "doc_kind",
+                "flags",
+                "models",
+                "variant_models",
+                "extra_models"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "model_name_matches": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "matches": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "node_id": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "surfaces": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "x-arrow": "string"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "match_class": {
+                        "type": "string",
+                        "x-arrow": "string",
+                        "enum": [
+                          "strong",
+                          "weak"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "node_id",
+                      "surfaces",
+                      "match_class"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                },
+                "ambiguous": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "x-arrow": "string"
+                      },
+                      "candidates": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "x-arrow": "string"
+                        },
+                        "x-arrow": "list"
+                      },
+                      "match_class": {
+                        "type": "string",
+                        "x-arrow": "string",
+                        "enum": [
+                          "strong",
+                          "weak"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "text",
+                      "candidates",
+                      "match_class"
+                    ],
+                    "x-arrow": "struct"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "matches",
+                "ambiguous"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "translation": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "x-open": true,
+                  "x-values": [
+                    "screen",
+                    "doc_class",
+                    "stack_relevance",
+                    "shallow_review_relevance",
+                    "text_usability",
+                    "affiliation",
+                    "affiliation_orgs",
+                    "safety_techniques",
+                    "model_roles",
+                    "model_name_matches",
+                    "translation"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "x-arrow": "int32"
+                },
+                "status": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ok",
+                    "empty",
+                    "failed_permanent",
+                    "failed_transient",
+                    "quarantined",
+                    "skipped",
+                    "not_attempted",
+                    "partial"
+                  ]
+                },
+                "error_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "config_id": {
+                  "type": "string",
+                  "x-arrow": "string"
+                },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-arrow": "timestamp[us, tz=UTC]"
+                },
+                "origin": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "ai_check",
+                    "human",
+                    "computed",
+                    "rule",
+                    "import"
+                  ]
+                },
+                "annotator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "x-arrow": "string",
+                  "enum": [
+                    "pipeline",
+                    "override",
+                    "mixed"
+                  ]
+                },
+                "override_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                },
+                "override_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "x-arrow": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "version",
+                "status",
+                "error_class",
+                "config_id",
+                "decided_at",
+                "origin",
+                "annotator",
+                "provenance",
+                "override_ids",
+                "override_fields"
+              ],
+              "x-arrow": "struct"
+            },
+            "payload": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "from_lang": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "title_en": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "abstract_en": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string"
+                },
+                "method": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "x-arrow": "string",
+                  "enum": [
+                    "llm",
+                    "human",
+                    null
+                  ]
+                }
+              },
+              "required": [
+                "from_lang",
+                "title_en",
+                "abstract_en",
+                "method"
+              ],
+              "x-arrow": "struct"
+            }
+          },
+          "required": [
+            "metadata",
+            "payload"
+          ],
+          "x-arrow": "struct"
+        },
+        "other": {
+          "type": "array",
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "x-arrow": "string",
+                    "x-open": true,
+                    "x-values": [
+                      "screen",
+                      "doc_class",
+                      "stack_relevance",
+                      "shallow_review_relevance",
+                      "text_usability",
+                      "affiliation",
+                      "affiliation_orgs",
+                      "safety_techniques",
+                      "model_roles",
+                      "model_name_matches",
+                      "translation"
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "x-arrow": "int32"
+                  },
+                  "status": {
+                    "type": "string",
+                    "x-arrow": "string",
+                    "enum": [
+                      "ok",
+                      "empty",
+                      "failed_permanent",
+                      "failed_transient",
+                      "quarantined",
+                      "skipped",
+                      "not_attempted",
+                      "partial"
+                    ]
+                  },
+                  "error_class": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "config_id": {
+                    "type": "string",
+                    "x-arrow": "string"
+                  },
+                  "decided_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "x-arrow": "timestamp[us, tz=UTC]"
+                  },
+                  "origin": {
+                    "type": "string",
+                    "x-arrow": "string",
+                    "enum": [
+                      "ai_check",
+                      "human",
+                      "computed",
+                      "rule",
+                      "import"
+                    ]
+                  },
+                  "annotator": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "x-arrow": "string"
+                  },
+                  "provenance": {
+                    "type": "string",
+                    "x-arrow": "string",
+                    "enum": [
+                      "pipeline",
+                      "override",
+                      "mixed"
+                    ]
+                  },
+                  "override_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "x-arrow": "string"
+                    },
+                    "x-arrow": "list"
+                  },
+                  "override_fields": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "x-arrow": "string"
+                    },
+                    "x-arrow": "list"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "version",
+                  "status",
+                  "error_class",
+                  "config_id",
+                  "decided_at",
+                  "origin",
+                  "annotator",
+                  "provenance",
+                  "override_ids",
+                  "override_fields"
+                ],
+                "x-arrow": "struct"
+              },
+              "payload": {
+                "type": "string",
+                "x-arrow": "string"
+              },
+              "schema": {
+                "type": "string",
+                "x-arrow": "string"
+              }
+            },
+            "required": [
+              "metadata",
+              "payload",
+              "schema"
+            ],
+            "x-arrow": "struct"
+          },
+          "x-arrow": "list"
+        }
+      },
+      "required": [
+        "screen",
+        "doc_class",
+        "stack_relevance",
+        "shallow_review_relevance",
+        "text_usability",
+        "affiliation",
+        "affiliation_orgs",
+        "safety_techniques",
+        "model_roles",
+        "model_name_matches",
+        "translation",
+        "other"
+      ],
+      "x-arrow": "struct"
+    }
+  },
+  "required": [
+    "release_id",
+    "doc_id",
+    "title",
+    "abstract",
+    "authors",
+    "published_date",
+    "published_precision",
+    "doc_type",
+    "is_withdrawn",
+    "canonical_url",
+    "field_sources",
+    "identity",
+    "content",
+    "release",
+    "annotations"
+  ],
+  "x-arrow": "struct"
+}

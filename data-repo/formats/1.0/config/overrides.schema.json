@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:the-safety-stack:format:1.0:config/overrides.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "override_id",
+    "run_id",
+    "kind",
+    "target",
+    "operation",
+    "key",
+    "item_key",
+    "field",
+    "value",
+    "cuts",
+    "note",
+    "author",
+    "method",
+    "created_at"
+  ],
+  "properties": {
+    "override_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "scope_decision",
+        "stand_in_annotation",
+        "annotation_replacement",
+        "quarantine",
+        "identity_merge",
+        "identity_separation",
+        "metadata_fix",
+        "manual_source"
+      ]
+    },
+    "target": {
+      "type": "string"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "item_key": {
+      "type": "string"
+    },
+    "field": {
+      "type": "string"
+    },
+    "value": {},
+    "cuts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "chars"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "chars": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

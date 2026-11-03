@@ -17,6 +17,8 @@ its directory `<major>.<minor>/` is not edited after that.
 - Closed and open lists marked: a closed list is an `enum`; an open list carries `x-open: true` and its known values
   in `x-values`.
 - `tools/release-validator.py` in every release, byte-identical to this repository's.
+- A taxonomy version that a shipped taxonomy file refers to (`meta.references`) ships too, its `release.json` pin
+  marked `referenced_by` (models 1.1.0 refers to orgs 0.2.0), so every reference resolves within the release.
 
 ### Changed
 
