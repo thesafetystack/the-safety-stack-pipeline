@@ -9,8 +9,10 @@ Local runs never hit it: a checkout is writable, and the directory is created on
 close.
 
 :func:`connect` sets ``temp_directory`` to a directory of its own under :func:`temp_base`: ``$STACK_TMP``, else
-:func:`tempfile.gettempdir` (``$TMPDIR``: ``/work/scratch`` in the image, on the container's disk). The
-directory is named, not created: duckdb creates it on the first spill and removes it when the connection
+``$TMPDIR`` (``/work/scratch`` in the image), else :func:`tempfile.gettempdir`. ``$TMPDIR`` is read directly, not
+through :func:`tempfile.gettempdir`, which skips a ``$TMPDIR`` that is missing or not writable and silently returns
+``/tmp``, a small tmpfs on some machines (a local export of 2026-11-03, with neither variable set, ran out of temp
+space on a 2 GiB ``/tmp``; D806). The directory is named, not created: duckdb creates it on the first spill and removes it when the connection
 closes, so connections (in one process or several) never share one and a run that does not spill leaves
 nothing. The base must be an absolute, writable directory, checked at connect time: a bad ``STACK_TMP`` fails
 when the connection opens, not when a query first spills. Memory and thread limits stay with the call sites
@@ -37,12 +39,14 @@ TMP_ENV = "STACK_TMP"
 
 
 def temp_base() -> Path:
-    """``$STACK_TMP``, else :func:`tempfile.gettempdir`; created when absent. Refuses a relative ``STACK_TMP`` (it
-    would be relative to the working directory again) and a directory this process cannot write."""
-    raw = os.environ.get(TMP_ENV, "").strip()
+    """``$STACK_TMP``, else ``$TMPDIR``, else :func:`tempfile.gettempdir`; created when absent. Refuses a relative
+    base (it would be relative to the working directory again) and a directory this process cannot write.
+    ``$TMPDIR`` is read here, not through :mod:`tempfile` (module docstring)."""
+    var = next((v for v in (TMP_ENV, "TMPDIR") if os.environ.get(v, "").strip()), None)
+    raw = os.environ[var].strip() if var else ""
     base = Path(raw) if raw else Path(tempfile.gettempdir())
     if not base.is_absolute():
-        raise ValueError(f"${TMP_ENV} must be an absolute path, not {raw!r}")
+        raise ValueError(f"${var} must be an absolute path, not {raw!r}")
     base.mkdir(parents=True, exist_ok=True)
     if not os.access(base, os.W_OK | os.X_OK):
         raise PermissionError(f"duckdb temp base {base} is not writable (set ${TMP_ENV} or $TMPDIR)")

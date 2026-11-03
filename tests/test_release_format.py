@@ -450,6 +450,41 @@ def test_the_card_type_breakdown_adds_up_to_the_documents() -> None:
 
 
 @pytest.mark.slow
+def test_the_vocab_and_bundle_checks_unnest_without_a_lateral_join(public: Path, m: ds.Mapping_,
+                                                                   monkeypatch: pytest.MonkeyPatch) -> None:
+    """D806: write_vocab's and check_bundle's queries unnest in SELECT lists. A lateral ``FROM d, unnest(...)`` makes
+    duckdb carry the whole top-level column (all of ``annotations``) through a delim join: on the 2026-11-02 corpus
+    up to 3.2 GB of spill per query and ~4.5 min in all, which overran a 2 GiB /tmp. Every query they run is planned
+    here; none may hold a DELIM_SCAN."""
+    sqls: list[str] = []
+
+    class Recording:
+        def __init__(self, con: Any) -> None:
+            self._con = con
+
+        def execute(self, sql: str, *a: Any) -> Any:
+            sqls.append(sql)
+            return self._con.execute(sql, *a)
+
+        def __getattr__(self, name: str) -> Any:
+            return getattr(self._con, name)
+
+    real = ds.duck.connect
+    monkeypatch.setattr(ds.duck, "connect", lambda *a, **k: Recording(real(*a, **k)))
+    cfg = ds.load_dataset_config("dataset-public")
+    vocab = ds.yamlio.load(cfg.path(cfg.vocab).read_text("utf-8"))
+    ds.observed_values(public / "data" / "corpus.parquet", m.schema, list(m.kinds),
+                       [*(vocab.get("fields") or {}), *(vocab.get("patterns") or {})])
+    assert ds.check_bundle(public, m, cfg) == []
+    unnests = [s for s in sqls if s.lstrip().upper().startswith("SELECT") and "unnest(" in s]
+    assert len(unnests) > 20 and any("org_ids" in s for s in unnests)
+    con = real()
+    con.execute(f"CREATE VIEW d AS SELECT * FROM read_parquet('{public / 'data' / 'corpus.parquet'}')")
+    lateral = [s for s in unnests if "DELIM_SCAN" in con.execute("EXPLAIN " + s).fetchall()[0][1]]
+    assert lateral == [], lateral[:3]
+
+
+@pytest.mark.slow
 def test_the_internal_export_passes_too(tmp_path: Path) -> None:
     out, _secs = export(tmp_path, "internal", n=4)
     rep = ds.release_validator().check_release(out, rows="all", archive=FORMATS, require_archive=True)

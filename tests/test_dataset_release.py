@@ -795,8 +795,7 @@ def test_shipped_vocab_keeps_only_occurring_values() -> None:
 def test_values_sql_paths(m: Mapping_) -> None:
     assert ds.values_sql(m.schema, "doc_type") == "SELECT DISTINCT CAST(doc_type AS VARCHAR) FROM d"
     sql = ds.values_sql(m.schema, "identity.members[].channel_class")
-    assert sql == ("SELECT DISTINCT CAST(x2.channel_class AS VARCHAR) FROM d, unnest(identity.members) AS u1(x1)"
-                   .replace("x2", "x1"))
+    assert sql == "SELECT DISTINCT CAST(x1.channel_class AS VARCHAR) FROM (SELECT unnest(identity.members) AS x1 FROM d)"
     assert "unnest(annotations.screen.payload.buckets)" in str(ds.values_sql(m.schema, "annotations.screen.payload.buckets"))
     assert ds.values_sql(m.schema, "identity.nothing") is None
 
