@@ -1,10 +1,14 @@
 # technique_staged eval set 2026-10-18b: gold v2 (120 documents, taxonomy-v0.9-234)
 
+Superseded by its gold revision `2026-10-18c` (reconciliation completed, second verification) and by gold v3
+(`2026-10-23a`). Kept frozen: runs were reported on it, and 18c is derived from it. Whole texts are not in the
+repository (D790; `tools/fetch_eval_texts.py`).
+
 A new set (techpipe D630) for `stack eval technique_staged` against the 234-entry v0.9 draft
 `taxonomy/taxonomy-v0.9-234.yaml` (D625), frozen with prompt set technique-staged-v3. 120 documents drawn from a
 read-only production store copy, stratified by doc-type group and length band. Gold: two independent gpt-6-astra
-labellings, reconciled by gpt-6-astra on 25 items and by a deterministic merge rule on the other 95 (Codex ran out of
-credits), then a blind verification of 30 items (Opus labels, disputes adjudicated by Sonnet). Everything was made
+labellings, reconciled by gpt-6-astra on 25 items and by a deterministic merge rule on the other 95 (the reconciler was not
+available for them), then a blind verification of 30 items (Opus labels, disputes adjudicated by Sonnet). Everything was made
 outside the repository and staged here by `scripts/stage.py`.
 
 ## Composition
@@ -42,8 +46,7 @@ a role above `mentioned`; every level alternative is structurally linked to its 
 - L1 (`adj-X.jsonl`, `prompts/L1.md`, document-first) and L2 (`adj-Y.jsonl`, `prompts/L2.md`, inventory-first), both
   gpt-6-astra: 1,092 and 1,105 rows; L1 vs L2 slug F1 0.923 (group nodes out). Both are the same model, so the two
   labellings are correlated; 17a's cross-model A vs B agreement was 0.796.
-- Reconciliation (`astra-reconciler.jsonl`, `prompts/RECONCILE.md`, gpt-6-astra): 25 items, then the Codex workspace
-  ran out of credits (2026-10-18, 02:12 UTC). The other 95 items take the deterministic merge rule
+- Reconciliation (`astra-reconciler.jsonl`, `prompts/RECONCILE.md`, gpt-6-astra): 25 items; the other 95 items take the deterministic merge rule
   (`adjudication/scripts/merge.py`, its docstring is the rule): the union of the two labellings' slugs, sources X / Y,
   per role the maximum, a single-labeller row capped at `med`, quote and reason from the higher-confidence row.
   Calibrated against the reconciler on its 25 items: strict slug F1 0.976 (the merge keeps 8 rows the reconciler
@@ -56,8 +59,8 @@ a role above `mentioned`; every level alternative is structurally linked to its 
 - Disputes (`adjudication/scripts/disputes.py`): a slug only one of G0 and Opus gave, unless a level alternative of
   the other side; 110 slugs on 26 items. The labellers were blinded as P and Q with a seeded per-item swap (seed
   20261020; `verification.jsonl` keeps the key: `swap` true = gold shown as Q). The copied `disputes.py` has one
-  line removed (its leak-check pattern named workspace paths and a person), so it does not run as copied;
-  `packet.json` has both sha256.
+  line removed (a leak-check pattern naming private paths), so it does not run as copied; `packet.json` has both
+  sha256.
 - Adjudication: a Sonnet subagent (third model; Codex unavailable), with `prompts/VERIFY-ADJ.md`, which was written
   for a Codex adjudicator, behind an agent preamble. Verdicts (all slugs, group nodes included): gold-only slugs 31
   yes / 18 no / 19 borderline, Opus-only 7 yes / 13 no / 22 borderline; 8 verdicts named a better slug, all already
@@ -107,7 +110,7 @@ gold names entries the 214-entry file lacks).
 - `manifest.json`: counts, `gold.checks`, `frozen_with` (taxonomy, rubric-v0.9-c, the v3 prompt digests, segmenter and
   lexical versions, the labelling packet's digests), `sampling`, `verification` (with the estimates), `staging`.
 - `uv run --no-sync python evals/technique_staged/2026-10-18b/scripts/stage.py <WORKSPACE> <STORE_DIR> --check-pool
-  [--write]` stages the inputs from the labelling workspace and the store copy, both read only; neither path is
-  recorded. `uv run --no-sync python evals/technique_staged/2026-10-18b/scripts/freeze.py [--write]` builds items,
+  [--write]` stages the inputs from the labelling workspace and the store copy (both outside the repository, read
+  only; neither path is recorded). `uv run --no-sync python evals/technique_staged/2026-10-18b/scripts/freeze.py [--write]` builds items,
   gold and manifest from the staged files and, without `--write`, checks them byte for byte (`--allow-partial` only
   for a dry run on stand-in or incomplete labels).

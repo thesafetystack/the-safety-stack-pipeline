@@ -1,5 +1,8 @@
 # technique_staged eval set 2026-10-18a: 2026-10-17b with the `candidate:` rows mapped to taxonomy-v0.9-234
 
+Superseded by gold v2 (`2026-10-18b` / `2026-10-18c`, 120 documents) and gold v3 (`2026-10-23a`). Kept frozen for
+the runs scored on it and the tests.
+
 A gold revision of `2026-10-17b` (techpipe D627) for the 234-entry v0.9 draft `taxonomy/taxonomy-v0.9-234.yaml`
 (D625). Items, splits and texts are 17b's (and so 17a's), byte for byte: `items.jsonl` and `texts/` are copies with
 the same `items_sha256`, so a run made on 17a or 17b can be scored here. Only `gold.jsonl` and `manifest.json` differ.

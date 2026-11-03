@@ -1,16 +1,22 @@
 # Triage eval set `sr2025-recall` (recall only)
 
+Status: current (the recall measure of the Shallow Review scope; `stack.evals.sr`).
+
 Task: the triage gate's LLM question (`workflows/triage/ask.py`), as for `2026-10-12a`. **Every item is a Shallow
 Review 2025 inclusion**, so its gold is `relevant` / `fetch: true`. The set measures recall of the SR scope
 (`docs/scope/shallow-review.md`); precision cannot be measured here (there are no negatives). Built 2026-10-12 by
-`python -m stack.evals.sr recall` (track E2; `manifest.json` has the code digests, the documents head
-`rfm2d6vzwvmdd.documents` of `v4/store-dev` (gitignored; not in the repo), the sampling and resolution counts). Gold scope is `null` (not
-labelled `core` / `sr_only`).
+`python -m stack.evals.sr recall` (`manifest.json` has the code digests, the documents head of the development
+store it resolved against, the sampling and resolution counts). Gold scope is `null` (not labelled `core` /
+`sr_only`). `items.jsonl` is not in the repository (long third-party excerpts, D795): `tools/fetch_eval_texts.py`
+fetches it into the eval-text cache.
 
 ## Source
-SR's public included-items file `main-pipeline/data/2025-12-16-draft-post-review/papers.csv` from
-`github.com/arb-consulting/shallow-review-2025`, fetched 2026-10-12 16:32 UTC, copy in `source/papers.csv`
-(sha256 `29575445…`, 826 rows = agenda x link, 11 columns; `source/fetch.json`). One row has no link. 760 unique
+SR's public included-items file, `main-pipeline/data/2025-12-16-draft-post-review/papers.csv` in the external
+public Shallow Review repository `github.com/arb-consulting/shallow-review-2025` (not a path of this repository),
+fetched 2026-10-12 16:32 UTC (sha256 `29575445…`, 826 rows = agenda x link, 11 columns; `source/fetch.json` has the
+URL and hash). The copy `source/papers.csv` is not in the repository (some rows link shared documents, D796):
+`tools/fetch_eval_texts.py` fetches it into the cache, and `stack.evals.sr.fetch_csv` reads it there; a re-fetch from
+the public repository must match the recorded sha256. One row has no link. 760 unique
 links once a link listed under several agendas is merged (kept as `sr_agendas`; `stratum.sr_section` /
 `sr_agenda` are the first row's).
 
@@ -24,17 +30,17 @@ alignmentforum 3), other 25 (journal 7, openreview 6, org_site 6, lab 3, other 3
 take 3 per kind, then the group's pooled hash order. Split 75 / 75, 50/50 inside each kind.
 
 Each link is resolved to the record production's triage question would see, `document_text(row, excerpt)`:
-- **in `v4/store-dev`** (arXiv id, DOI, ForumMagnum id or URL match): the store row's own frozen item, `origin:
+- **in the development store** (arXiv id, DOI, ForumMagnum id or URL match): the store row's own frozen item, `origin:
   store`. One item (`sr-0045`, a semantic_scholar-anchored paper); its externally built record was byte-equal to
-  the store's. 21 lab links are in store-dev as url documents without abstract or excerpt (production fetches
+  the store's. 21 lab links are in the store as url documents without abstract or excerpt (production fetches
   them without asking the question) and were dropped.
 - **arXiv** (94 arXiv links, 3 of them relinked by the title check below; 14 other links resolved by title):
   the Atom API, parsed by `collect.arxiv_sweep.parse_entries`;
-  excerpt = the abstract minted as the collector mints it. On 5 store-dev arXiv rows this reproduced the store
+  excerpt = the abstract minted as the collector mints it. On 5 store arXiv rows this reproduced the store
   record exactly 4 times (the fifth differs in authors merged from another provider).
 - **LessWrong / Alignment Forum** (30): GraphQL for the title, then the forum search `collect.forums` reads; the
   hit's title, authors and body minted give production's LessWrong record exactly (all 30 found:
-  `excerpt_origin: lw_search_body`; 6 of 6 store-dev LessWrong rows reproduced byte-equal). AF links are given
+  `excerpt_origin: lw_search_body`; 6 of 6 store LessWrong rows reproduced byte-equal). AF links are given
   the `lesswrong` channel's record, see caveats.
 - **other kinds** (25): OpenAlex by DOI or exact folded title (11, `resolver: openalex`). OpenAlex's free daily
   budget for this IP ran out during the build (429, "Insufficient budget … resets at midnight UTC"; shared with the
@@ -42,7 +48,7 @@ Each link is resolved to the record production's triage question would see, `doc
   arxiv_title`, channel `arxiv`). Semantic Scholar's unauthenticated pool was tried first as the fallback and
   answered 429 through four retries.
 
-**SR title check** (added on the conductor's finding). Some papers.csv rows point at the wrong paper: the editor's
+**SR title check**. Some papers.csv rows point at the wrong paper: the editor's
 `link_text` names the intended one while the URL (and SR's `title` column, scraped from that URL) is another
 paper. Every resolved record's title is compared with the row's `link_text` (the `title` column only when the
 `link_text` is a scraping artefact such as `Unable to access: 429…` or under 12 folded characters): folded
@@ -75,10 +81,9 @@ openalex are all `open` (149 items).
   are one provider's, where a store row merges several (authors can differ), and a document production would
   first meet through another channel would carry that channel's record.
 - **Alignment Forum.** An AF post anchored on its `collect.af_graphql` member has only raw HTML in-band, so
-  production has no excerpt and does not ask the question (store-dev's one AF-anchored document is title-only).
+  production has no excerpt and does not ask the question (the store's one AF-anchored document was title-only).
   The 3 AF items carry the `lesswrong` channel's record, which production has only when the LessWrong member is
-  the anchor (gather anchors on the earliest observed member). `collect.lw_graphql` (in progress, track A2) also
-  mints `htmlBody` raw.
+  the anchor (gather anchors on the earliest observed member). `collect.lw_graphql` also mints `htmlBody` raw.
 - The 25 "other" items are biased toward documents with a scholarly record (OpenAlex or arXiv): lab and org pages
   rarely have one, and SR's URL-only items are mostly unaskable by production anyway.
 - SR includes items for agenda reasons (a lab's output, a field's framing), so a few positives may fall outside
@@ -88,10 +93,10 @@ openalex are all `open` (149 items).
   items a paraphrased `link_text` passes on word overlap, so a wrong link with a similar title would pass too.
 
 ## Use
-`STACK_ENV_FILE=../repo/.env uv run --no-sync stack eval triage --set sr2025-recall --split dev --models <ids>
+`STACK_ENV_FILE=.env uv run --no-sync stack eval triage --set sr2025-recall --split dev --models <ids>
 --max-usd X`; `stack eval score` reports recall (both `fetch_on`) and the skipped list for a recall-only set.
 
-## Results 2026-10-12 (track E2; runs under `v4/evals-store/triage/sr2025-recall/`, gitignored; not in the repo)
+## Results 2026-10-12
 
 Recall of SR's inclusions under `fetch_on: [relevant]` / `[relevant, borderline]` (after the link-text fix; deepseek
 skips the one `restricted` item on dev):

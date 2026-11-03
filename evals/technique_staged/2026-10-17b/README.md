@@ -1,9 +1,11 @@
 # technique_staged eval set 2026-10-17b: 2026-10-17a with the blind gold audit applied
 
+Superseded by `2026-10-18a` (its candidate rows remapped), then by gold v2 (`2026-10-18b` / `2026-10-18c`) and gold v3
+(`2026-10-23a`). Kept frozen for the runs scored on it and the tests.
+
 A gold revision of `2026-10-17a` (techpipe D610). Items, splits and texts are 17a's, byte for byte (`items.jsonl`
 and `texts/` are copies; the same `items_sha256`, so a run made on 17a can be scored here). Only `gold.jsonl` and
-`manifest.json` differ. 17a stays frozen and is still the set the earlier results were reported on; report both
-until one is retired. Provenance of the 17a gold: `../2026-10-17a/README.md`, `../2026-10-17a/adjudication/`.
+`manifest.json` differ. 17a stays frozen (the earlier results were reported on it). Provenance of the 17a gold: `../2026-10-17a/README.md`, `../2026-10-17a/adjudication/`.
 
 ## The audit (`adjudication/audit/`)
 A blind audit of 90 (item, slug) pairs on 2026-10-17, made after the first round of runs on 17a. Two Codex judges

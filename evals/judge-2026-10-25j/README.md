@@ -1,14 +1,34 @@
-# Judge eval sets 2026-10-25j (the judge-eval round): every LLM judgement of build ws1qpn8myzxah, judged by Opus 5.5, Sol 6.1 and Sonnet 5.5
+# Judge eval sets 2026-10-25j: the pipeline's LLM judgements checked by three strong judges
 
-Five independent samples of 100 documents, one per LLM judgement of the Stack v4 pipeline, labelled blind by three
-strong agentic judges (claude-opus-5-5 and, as a third judge added 2026-10-26, claude-sonnet-5-5 via the claude CLI;
-gpt-6.1-sol via the codex CLI), each confined to a read-only task directory. Production (luna) labels are recorded beside them for scoring. No text is in this
-directory: the documents are third-party content and sit in the private root (`EVAL104_PRIVATE`). Stability not
-promised.
+Status: current. This is the evaluation behind the quality table of every dataset release
+(`configs/releases/dataset-*.yaml` `judge_eval`).
 
-Status (2026-10-26): full run done (1,800 judge outputs: 100 items x 6 call types x 3 judges), validated, scored;
-labels, scores and disagreement lists are in each set directory. Opus and Sol ran 2026-10-25/26; Sonnet was added
-afterwards (2026-10-26 11:19-12:13Z) on the same, unchanged task dirs.
+**What was judged.** The production pipeline's LLM judgements on build `ws1qpn8myzxah` (2026-10-25), made by
+`openai/gpt-6-luna` ("luna" below): the triage relevance verdict, the screen (Stack and Shallow Review relevance,
+text usability, document class), author affiliations, model roles and techniques. One independent sample of 100
+documents per judgement (`triage/`, `screen/`, `affiliation/`, `model_roles/`, `technique_staged/`), plus `triage_w/`,
+a 200-document weighted triage supplement that estimates recall (`triage_w/README.md`).
+
+**By whom, and how.** Three strong agentic judges labelled every item blind: Claude Opus 5.5 and Claude Sonnet 5.5
+(through the `claude` CLI) and GPT Sol 6.1 (through the `codex` CLI), each confined to a read-only directory holding
+only the guide, the schema and the document, and nothing of production's output or the other judges'. The guides are
+the production prompts adapted only to the setting; the judges read the whole document text where production read a
+window. Production's labels are the prediction; the references are each judge, the **majority** (at least 2 of 3
+judges; the headline) and the two-judge **consensus** (Opus and Sol agree). The judges are not gold: see "Limits".
+
+**Where the results are.** Per set: `scores.md` (readable tables, opening with production vs majority and vs
+consensus) and `scores.json`; the judges' labels `labels-opus.jsonl`, `labels-sol.jsonl`, `labels-sonnet.jsonl`;
+production's labels `production.jsonl`; the items with sampling stratum and weight `items.jsonl`; disagreements
+`disagreements.jsonl`. A dataset release re-scores the stored judge labels against its own build ("Re-scoring at
+release time" below), so the numbers on a dataset card are that release's.
+
+**Not in the repository:** the document texts (third-party content) and the judges' task directories. They are kept
+in a private directory outside the repository, so the labels here can be read and re-scored but the judging cannot be
+re-run from a clone. Verbatim fields in the released labels (quotes, surfaces, names as written) are capped at 300
+characters.
+
+Full run 2026-10-25/26: 1,800 judge outputs (100 items x 6 call types x 3 judges), validated and scored; Sonnet was
+added as the third judge on 2026-10-26 on the same, unchanged task directories.
 
 ## Method
 
@@ -19,9 +39,9 @@ afterwards (2026-10-26 11:19-12:13Z) on the same, unchanged task dirs.
   Sonnet: the Opus command with `--model claude-sonnet-5-5`, nothing else changed (same jail, task dirs, guides,
   retry and usage-limit rules). The prompt is one short wrapper per call type, the same for every judge
   (`guides/prompt-<call>.txt`).
-- **Jail and blindness.** Each call runs in a user + mount + pid namespace (`jail.sh`): the task dir mounted
-  read-only as the working directory, fresh tmpfs `$HOME` and `/tmp`, only the CLI binaries and the CLI's own auth file
-  bind-mounted. A task dir holds only the guide, the schema, the document (`text.txt`; triage `record.txt`), `meta.md`
+- **Jail and blindness.** Each call runs in a user + mount + pid namespace (a jail script, not in the repository):
+  the task dir mounted read-only as the working directory, fresh tmpfs `$HOME` and `/tmp`, only the CLI binaries and
+  the CLI's own auth file bind-mounted. A task dir holds only the guide, the schema, the document (`text.txt`; triage `record.txt`), `meta.md`
   and the set's shared files; nothing about production output or the other judges. The runner checks the file list
   before each call; no Sol command named a path outside the task dir (pilot check). Residual: codex's shell can read
   its own auth file; every output is secret-scanned.
@@ -62,7 +82,7 @@ Exclusions between frame and eligible (`<set>/sampling.json`): documents of ever
 characters), and for affiliation / model_roles / technique_staged documents whose text blob is not in the local mirror
 (affiliation 42, the others 0). Screen has no blob condition (re-sampled 2026-10-25: the 2,129 screen documents
 missing from the mirror, 1,874 of them screen-irrelevant LessWrong posts, were a bias); the sampled items' missing
-blobs (2) were fetched read-only from the store by `scripts/fetch_blobs.py` into `EVAL104_PRIVATE/blobs-extra/`,
+blobs (2) were fetched read-only from the store by `scripts/fetch_blobs.py` into the private directory,
 sha256-checked. Strata: triage = evidence basis x production verdict, corpus sets =
 `doc_class.doc_type`; proportional allocation (largest remainder), so strata under 0.5 % of the frame get no item
 (system cards, eval reports, framework documents ...). Within a stratum, systematic sampling over a seeded sort
@@ -87,8 +107,10 @@ sha256-checked. Strata: triage = evidence basis x production verdict, corpus set
   validated labels (every `score.py` run checks). The dataset release reads it instead of the texts.
 - `<set>/manifest.json`; `guides/`: every guide variant, the shared rubric / catalogue files, the judge schemas and
   the one wrapper prompt per call type.
-- `scripts/`: `common.py` (paths from `EVAL104_DATA`, `EVAL104_PRIVATE`, `EVAL104_BLOBS_GLOB`, `EVAL104_JAIL`),
-  `sample.py`, `guides.py`, `freeze.py` (`--check-tasks`: re-derive items / production and verify every task dir
+- `scripts/`: `common.py` (paths from the environment: `EVAL104_DATA`, the build's `data/` directory, read only;
+  `EVAL104_PRIVATE`, the private directory outside the repository that holds sampling files, task directories and
+  runs; `EVAL104_BLOBS_GLOB`, the text blobs; `EVAL104_JAIL`, the jail script, not in the repository), `sample.py`,
+  `guides.py`, `freeze.py` (`--check-tasks`: re-derive items / production and verify every task dir
   byte for byte without writing), `fetch_blobs.py`, `run_judges.py`, `validate.py`, `score.py`, `release.py`,
   `secret_scan.py` (docstrings are the reference).
 
@@ -153,7 +175,7 @@ gleaning call, whose prior turn holds luna's answer): basis digest = current tex
 
 ## Running
 
-    source <impl dir>/env.sh   # sets the four variables and PYTHONPATH (private paths, not in this repo)
+    # with the four variables of `scripts/common.py` set and PYTHONPATH = the repository root
     $PY scripts/run_judges.py --dry-run            # jobs left (resumable; Opus 4, Sol 8, Sonnet 4 parallel)
     $PY scripts/validate.py && $PY scripts/score.py && $PY scripts/release.py
     $PY scripts/secret_scan.py <files to copy>     # before anything goes into the repository
@@ -179,5 +201,5 @@ technique_staged 40.85); 54 minutes wall at parallel 4, no usage-limit waits.
   vs 0.73 / 0.65), so where they agree Sol is outvoted. Both use `borderline` far more than Sol or production
   (screen overall verdict: Opus 22, Sonnet 22, Sol 9, production 2 of 100), which moves the majority towards
   borderline. Read the majority beside the consensus and the per-judge columns.
-- `collect.links` link selection is not covered (DESIGN.md). gitleaks is not installed: `secret_scan.py` runs its regex
-  and bucket-name rules only. One screen item (jscr-0011) fails the tier-1 rendered_digest check (see above).
+- `collect.links` link selection is not covered (`docs/DESIGN.md`). `secret_scan.py` runs its own regex and
+  bucket-name rules only (gitleaks was not available). One screen item (jscr-0011) fails the tier-1 rendered_digest check (see above).
