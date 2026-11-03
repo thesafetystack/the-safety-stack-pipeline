@@ -2345,11 +2345,14 @@ def _fmt(n: Any) -> str:
 
 def values_sql(schema: pa.Schema, path: str) -> str | None:
     """A SELECT of the distinct values (as text) at vocab ``path`` over view ``d`` (``a[].b``: list levels; a list leaf
-    is unnested); None when the path names no field of ``schema``."""
+    is unnested); None when the path names no field of ``schema``. Each list level is a subquery that unnests in its
+    SELECT list, so only the list travels: a lateral ``FROM d, unnest(...)`` carries every column of ``d`` along each
+    unnested row (on the 2026-11-02 corpus all paths took 165 s, the slowest 34 s, with up to 2.3 GB of spill; this
+    form 9.5 s; D806)."""
     parts = path.split(".")
     t: pa.DataType = pa.struct(list(schema))
     expr: str | None = None
-    froms = ["d"]
+    src = "d"
     for i, part in enumerate(parts):
         name = part.removesuffix("[]")
         if not pa.types.is_struct(t) or t.get_field_index(name) < 0:
@@ -2358,9 +2361,9 @@ def values_sql(schema: pa.Schema, path: str) -> str | None:
         expr = name if expr is None else f"{expr}.{name}"
         if pa.types.is_list(t) and (part.endswith("[]") or i == len(parts) - 1):
             alias = f"x{i}"
-            froms.append(f"unnest({expr}) AS u{i}({alias})")
+            src = f"(SELECT unnest({expr}) AS {alias} FROM {src})"
             expr, t = alias, t.value_type
-    return f"SELECT DISTINCT CAST({expr} AS VARCHAR) FROM {', '.join(froms)}"
+    return f"SELECT DISTINCT CAST({expr} AS VARCHAR) FROM {src}"
 
 
 def observed_values(corpus: Path, schema: pa.Schema, kinds: Sequence[str], paths: Iterable[str]) -> dict[str, set[str]]:
@@ -3259,20 +3262,22 @@ def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
             ovfs = [orgvocab.parse((stage / t_["path"]).read_bytes()) for t_ in tes]
             te = {"path": ", ".join(t_["path"] for t_ in tes)}
             ids = {o.id for ovf in ovfs for o in ovf.orgs}
-            src = f"FROM d, unnest(annotations.{k}.payload.items) AS u(it), unnest(it.affiliations) AS v(a)"
-            affs = f"{src} WHERE annotations.{k} IS NOT NULL"
-            used = {r[0] for r in q(f"SELECT DISTINCT o {src}, unnest(a.org_ids) AS w(o)")}
+            # one row per affiliation `a`, with whether the document's kf is decided; unnested in SELECT lists, as
+            # in values_sql (a lateral unnest over d carried all of annotations: 36 s and 3.2 GB of spill; D806)
+            dec = f"annotations.{kf}.metadata.status IN ('ok', 'empty')"
+            affs = (f"FROM (SELECT unnest(it.affiliations) AS a, decided FROM (SELECT unnest(annotations.{k}.payload."
+                    f"items) AS it, coalesce({dec}, false) AS decided FROM d WHERE annotations.{k} IS NOT NULL))")
+            used = {r[0] for r in q(f"SELECT DISTINCT o FROM (SELECT unnest(a.org_ids) AS o {affs})")}
             if used - ids:
                 probs.append(f"{k} org_ids {sorted(used - ids)[:3]} are not in {te['path']}")
             st = {r[0] for r in q(f"SELECT DISTINCT a.org_status {affs}")}
             if st - set(orgvocab.STATUSES):
                 probs.append(f"{k} org_status values {sorted(st - set(orgvocab.STATUSES))} are not matcher statuses")
-            bad = q(f"SELECT count(*) {affs} AND ((a.org_status = 'matched' AND len(a.org_ids) = 0) OR "
+            bad = q(f"SELECT count(*) {affs} WHERE ((a.org_status = 'matched' AND len(a.org_ids) = 0) OR "
                     "(a.org_status IN ('non_org', 'generic', 'unmatched') AND len(a.org_ids) > 0))")[0][0]
             if bad:
                 probs.append(f"{k}: {bad} affiliations whose org_status disagrees with their org_ids")
-            dec = f"annotations.{kf}.metadata.status IN ('ok', 'empty')"
-            bad = q(f"SELECT count(*) {affs} AND ((a.org_status IS NULL) = coalesce({dec}, false) "
+            bad = q(f"SELECT count(*) {affs} WHERE ((a.org_status IS NULL) = decided "
                     "OR (a.org_status IS NULL) <> (a.org_ids IS NULL) "
                     "OR (a.org_status IS NULL) <> (a.org_candidates IS NULL) "
                     "OR (len(a.org_candidates) > 0) <> (a.org_status = 'ambiguous'))")[0][0]
@@ -3328,7 +3333,7 @@ def _url_sql(path: str) -> str:
     if not sep:
         return f"SELECT {path} FROM d WHERE {path} IS NOT NULL"
     cond = " AND e.key_kind = 'url'" if leaf == "key_value" else ""
-    return f"SELECT e.{leaf} FROM d, unnest({lst}) AS u(e) WHERE e.{leaf} IS NOT NULL{cond}"
+    return f"SELECT e.{leaf} FROM (SELECT unnest({lst}) AS e FROM d) WHERE e.{leaf} IS NOT NULL{cond}"  # values_sql
 
 
 def bundle_files_problems(on_disk: Iterable[str], files: Mapping[str, Any]) -> list[str]:

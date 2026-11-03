@@ -114,6 +114,34 @@ def test_temp_base_defaults_to_tmpdir_and_refuses_bad_bases(tmp_path: Path, monk
             duck.connect()
 
 
+def test_temp_base_takes_tmpdir_as_set_never_tempfiles_fallback(tmp_path: Path,
+                                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+    """D806: a ``$TMPDIR`` that does not exist yet is created and used; :func:`tempfile.gettempdir` would skip it
+    and silently return ``/tmp`` (e.g. a volume mounted over ``/work`` would hide the image's ``/work/scratch``).
+    One this process cannot write, or a relative one, fails at connect time."""
+    import tempfile
+
+    monkeypatch.delenv(duck.TMP_ENV, raising=False)
+    missing = tmp_path / "work" / "scratch"
+    monkeypatch.setenv("TMPDIR", str(missing))
+    monkeypatch.setattr(tempfile, "tempdir", None)
+    assert Path(tempfile.gettempdir()) != missing  # the fallback this guards against
+    monkeypatch.setattr(tempfile, "tempdir", None)
+    assert duck.temp_base() == missing and missing.is_dir()
+    monkeypatch.setenv(duck.TMP_ENV, str(tmp_path / "stack"))
+    assert duck.temp_base() == tmp_path / "stack"  # STACK_TMP first
+    monkeypatch.delenv(duck.TMP_ENV)
+    monkeypatch.setenv("TMPDIR", "scratch")
+    with pytest.raises(ValueError, match=r"\$TMPDIR must be an absolute path"):
+        duck.connect()
+    if os.geteuid() != 0:
+        locked = tmp_path / "locked"
+        locked.mkdir(mode=0o555)
+        monkeypatch.setenv("TMPDIR", str(locked))
+        with pytest.raises(PermissionError, match="not writable"):
+            duck.connect()
+
+
 def _default_connection_uses(path: Path) -> list[str]:
     """``duckdb.<f>(`` calls and ``from duckdb import <f>`` of :data:`DEFAULT_CONNECTION` in one file."""
     tree = ast.parse(path.read_text("utf-8"), str(path))
