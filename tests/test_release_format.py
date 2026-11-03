@@ -438,6 +438,17 @@ def test_the_card_numbers_list_is_filled_from_the_export(public: Path) -> None:
     assert re.search(r"Collected from \d+ source channels", card)
 
 
+def test_the_card_type_breakdown_adds_up_to_the_documents() -> None:
+    """The numbers list's breakdown by doc_type ends with "and N others" when the listed types do not cover every
+    document (the 2026-11-03 card listed 41,082 of 41,435), and not when they do."""
+    types = [("preprint", 19_653), ("forum_post", 12_557), ("paper", 7_006), ("lab_blog", 1_754),
+             ("conference", 170), ("unknown", 79), ("journal", 75), ("model_card", 58), ("system_card", 54),
+             ("framework_policy", 15), ("book", 11), ("other", 3)]
+    assert ds.type_summary(types, 41_435) == ("19,653 preprints, 12,557 forum posts, 7,006 papers, 1,754 lab blog "
+                                              "posts, 112 system and model cards, and 353 others")
+    assert ds.type_summary([("preprint", 5), ("system_card", 2)], 7) == "5 preprints, 2 system and model cards"
+
+
 @pytest.mark.slow
 def test_the_internal_export_passes_too(tmp_path: Path) -> None:
     out, _secs = export(tmp_path, "internal", n=4)
