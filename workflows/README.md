@@ -5,7 +5,7 @@ the stage id `<phase>.<name>` (e.g. `annotate.screen` → `workflows/annotate/sc
 bare `<name>` → `workflows/<name>/main.py`). A stage is its module plus its line in a plan file
 (`configs/plans/*.yaml`; the line's keys are `stage, prior, in, out, budget, repeat, filter, reads,
 keys, miss_cap, require_complete, options`; `bump_on` is refused when not empty, D437, see `configs/plans/README.md`; prompt and model pins are the plan's
-`prompts:` block). There is no stage registry; v3's `configs/workflows.yaml` was retired at T4.5 (D42).
+`prompts:` block). There is no stage registry (v3's `configs/workflows.yaml` was retired, D42).
 
 **Dispatch convention** (D73): each stage's `main.py` exposes `run(ctx) -> StageResult`
 (optional `SUBSTAGES` / `PURE_SUBSTAGES`; optional `OPTIONS`, the `options` keys its code reads: any other key of
@@ -54,8 +54,7 @@ HTTP, lanes, S3); no test touches the network.
   annotator is `annotate/technique_staged/` (staged or single-call extraction against the technique catalogue; its
   `NOTES.md`). `annotate/translation/` (English versions of non-English titles and abstracts, D755) and
   `annotate/affiliation_orgs/` (affiliations matched to an organisation vocabulary, no model, D736). `doc_class` is a
-  record of `screen-v12` (D257); the former stand-alone annotator's prompt is
-  v3's `workflows/annotate/doc_class/classify.md`.
+  record of `screen-v12` (D257), no longer a stand-alone annotator.
 - `overrides/add/`: the stage `overrides.add` (`stack overrides add <file>`; one human-edited file into the
   `overrides` series, D338).
 - `fetch/metadata/`: not a stage; the shared code of `collect.openalex-lookup` and `collect.s2-lookup`.

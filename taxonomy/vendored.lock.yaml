@@ -11,9 +11,8 @@
 # a per-version path (taxonomy/models-<version>.yaml beside configs/models.yaml), which the dataset release resolves
 # by the sha256 a stored run pinned (stack/fold/dataset.py, D758), so rows judged under an earlier version export. A subtree pull that changes the
 # bytes of a file listed here fails the sha256 check: a released file does not change. A `tag` names the data
-# repository's annotated tag of that file; techniques-1.1.0, models-1.1.0 and orgs-0.2.0 (D738) are tagged when the
-# data repository branch is pushed. orgs-0.2.2 (D778) was written into the subtree here first: the data repository
-# takes the same bytes (and its tag) before this branch's subtree is pulled again.
+# repository's annotated tag of that file. orgs-0.2.2 (D778) was written into the subtree here first; the data
+# repository took the same bytes and tag.
 source_repository: thesafetystack/the-safety-stack
 subtree: data-repo
 files:

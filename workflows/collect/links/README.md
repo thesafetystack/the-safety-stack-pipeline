@@ -3,7 +3,7 @@
 Code: `stack/collect/links.py` (the module docstring is the contract); this directory holds the stage entry
 (`main.py`) and the selector prompt (`link-select-v1.md`). Tests: `tests/test_collect_links.py` (synthetic bodies,
 a fake model on the LLM client's transport protocol; no network). Design: `docs/design/link-crawling.md`
-revision 2 as amended by the round-4 L2 brief; decisions D222-D225 in `docs/DECISIONS.md`.
+revision 2, with the changes of decisions D222-D225 in `docs/DECISIONS.md`.
 
     STACK_ENV_FILE=.env uv run --no-sync stack run collect.links --plan <plan> --in data/sources.links/<series>/ \
       --in data/coverage.links/<series>/ --in data/documents/<series>/
@@ -40,7 +40,8 @@ hydrates (from the next gather's `documents` head).
   documents that stop qualifying), the `max_changed_targets` safety valve.
 - Downstream: the triage rule `selected_links` (fetch every `links_url`, `links_forum`, `links_paper` document),
   gather ranks the link channels after every other channel (`workflows/gather/merge.py` `PROVIDER_LAST`),
-  `stack build` passes the `documents` head (`stack/build.py` `DOCUMENT_COLLECTORS`), the plan `links-scratch`.
+  `stack build` passes the `documents` head (`stack/build.py` `DOCUMENT_COLLECTORS`); the plans `batch-2026-10a`
+  (production) and `links-scratch`.
 
 ## Not implemented (deferred) and what breaks without it
 
