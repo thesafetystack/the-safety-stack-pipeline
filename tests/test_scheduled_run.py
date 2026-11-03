@@ -359,6 +359,7 @@ def _canned_cycle(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, builds: list[
     monkeypatch.setattr(sr, "last_openalex_full", lambda *_a: sr.utcnow())
     monkeypatch.setattr(sr, "check_balances", lambda _s: [("openrouter", "OK", "$80 left")])
     monkeypatch.setattr(sr, "openalex_budget_stops", lambda *_a: [])
+    monkeypatch.setattr(sr, "s2_collect_note", lambda *_a: None)
     monkeypatch.setenv("STACK_SCHED_WORK", str(tmp_path))
     it = iter(builds)
     calls: list[list[str]] = []
@@ -424,6 +425,73 @@ def test_a_failed_openalex_resweep_warns_and_the_cycle_goes_on(hf: Any, monkeypa
     assert cyc.warnings[0].startswith("OpenAlex re-sweep failed (run r048 failed[s3_transient], rc=1)")
     assert cyc.steps[0]["step"] == "openalex-full" and cyc.steps[0]["tail"] == ["ClientError[SlowDown]"]
     assert hf.uploads == ["org/internal", "org/public"]
+
+
+def test_s2_collect_failed_permanent_and_broken_bounds_are_a_warn(hf: Any, monkeypatch: pytest.MonkeyPatch,
+                                                                   tmp_path: Path) -> None:
+    """D802: S2 runs standalone (D554), so the build's ``failed_permanent_note`` never sees its run; the cycle reads
+    the run record and WARNs on ``windows_failed_permanent.*`` and the broken upper bounds, once per S2 run (the
+    second run too). The cycle goes on (exit 0)."""
+    import json as _json
+
+    asked: list[str] = []
+
+    def cycle(note: Any) -> Any:
+        _fake, calls = _canned_cycle(monkeypatch, tmp_path, [("ok", []), ("ok", [])])
+        canned = sr.run_stack
+
+        def s2_incomplete(args: list[str], **kw: Any) -> Any:  # the first S2 run scope-incomplete: a second runs
+            if args[:2] == ["run", "collect.semantic_scholar"]:
+                calls.append(args)
+                n = sum(c[:2] == ["run", "collect.semantic_scholar"] for c in calls)
+                doc = {"run_id": f"rs2{n}", "status": "ok", "scope_complete": n > 1, "outputs": {}}
+                return sr.Result(0, _json.dumps(doc), [], 1.0)
+            return canned(args, **kw)
+
+        monkeypatch.setattr(sr, "run_stack", s2_incomplete)
+        monkeypatch.setattr(sr, "s2_collect_note", note)
+        cyc = sr.Cycle(sr.Settings.from_env(), dry=False)
+        assert cyc.run() == sr.EXIT_OK and cyc.outcome == "ok", cyc.errors
+        return cyc
+
+    def note(store: str, run_id: str) -> str | None:
+        asked.append(run_id)
+        return f"collect.semantic_scholar run {run_id}: 1 coverage window(s) failed_permanent" if run_id == "rs21" \
+            else None
+
+    cyc = cycle(note)
+    assert asked == ["rs21", "rs22"]
+    assert cyc.warnings == ["collect.semantic_scholar run rs21: 1 coverage window(s) failed_permanent"]
+    # a note that cannot be read is a WARN, never the cycle's crash
+    cyc = cycle(lambda *_a: 1 / 0)  # (the same day's second release adds the fake hub's tag WARNs)
+    assert [w for w in cyc.warnings if w.startswith("s2-")] == ["s2-collect: run rs21's counts not read: ZeroDivisionError",
+                            "s2-collect-2: run rs22's counts not read: ZeroDivisionError"]
+
+
+def test_s2_collect_note_reads_the_run_record(monkeypatch: pytest.MonkeyPatch) -> None:
+    """D802: the note names the failed_permanent windows (the build's text) and the broken upper bounds; a run
+    without either gives none; a run the index does not list is said."""
+    import types
+
+    import stack.cli.common
+    import stack.store.index
+    import stack.store.remote
+
+    rec = lambda rid, counts: types.SimpleNamespace(record=types.SimpleNamespace(
+        stage="collect.semantic_scholar", run_id=rid, counts=counts))
+    runs = [rec("rbad", {"windows_failed_permanent": 1, "windows_failed_permanent.query_invalid": 1,
+                         "upper_bound_ignored": 2, "upper_bound_fallback": 1}),
+            rec("rok", {"windows_ok": 5, "upper_bound_ignored": 0})]
+    monkeypatch.setattr(stack.cli.common, "mirror_base", lambda: None)
+    monkeypatch.setattr(stack.store.remote, "resolve_store", lambda store, **_k: store)
+    monkeypatch.setattr(stack.store.index, "store_index", lambda root, **_k: types.SimpleNamespace(runs=runs))
+    note = sr.s2_collect_note("store", "rbad")
+    assert note is not None
+    assert "1 coverage window(s) failed_permanent (query_invalid x1)" in note
+    assert note.endswith("S2 ignored a year span's upper bound x2, the span re-asked open-ended x1 (D802)")
+    assert sr.s2_collect_note("store", "rok") is None
+    assert sr.s2_collect_note("store", "rgone") == ("S2 collect run rgone: no run record in the store index (its "
+                                                    "counts were not checked)")
 
 
 def test_cycle_sequence_resume_stage_and_publish(hf: Any, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

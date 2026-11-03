@@ -494,6 +494,29 @@ def test_partial_window_waits_and_page_budget_moves_on(tmp_path: Path, world: Wo
     assert asked.counts["http_requests"] == 1 and asked.counts["windows_partial"] == 1
 
 
+@pytest.mark.slow  # real store + runner
+def test_s2_default_year_spans_over_passes(tmp_path: Path, world: World, roster: Path) -> None:
+    """S2 at its default ``split_years`` (D801; the harness pins 0): the first pass from the channel floor is cut
+    in year spans, and the world's search answers a paper dated today to every range, so the first bounded span
+    proves the upper bound ignored and is asked again open above (D802), banking [floor, today] in one ``ok``
+    window: two requests, scope complete. The next pass asks nothing."""
+    from workflows.collect.semantic_scholar.main import DEFAULT_SPLIT_YEARS
+
+    plan = plan_for(roster, {"collect.semantic_scholar": {"max_pages": 0, "split_years": DEFAULT_SPLIT_YEARS}})
+    store, stage = tmp_path / "store", "collect.semantic_scholar"
+    p1, p2 = run_pass(store, plan, world, (stage,)), run_pass(store, plan, world, (stage,))
+    rec1 = p1[stage]["rec"]
+    sent = [urllib.parse.parse_qs(urllib.parse.urlsplit(u).query)["publicationDateOrYear"][0]
+            for _, u, _ in world.calls if "semanticscholar" in u]
+    assert len(sent) == 2 and sent[1].endswith(":") and not sent[0].endswith(":"), sent
+    assert sent[0].split(":")[0] == sent[1].split(":")[0]  # the fallback asks from the span's own lower bound
+    assert (rec1.counts["upper_bound_ignored"], rec1.counts["upper_bound_fallback"], rec1.scope_complete) == (
+        1, 1, True)
+    cov = read_view(resolve(store, sdir("coverage.semantic_scholar"))).to_pylist()
+    assert [(r["status"], r["window_end_at"].date()) for r in cov] == [("ok", TODAY)]
+    assert p2[stage]["requests"] == 0 and p2[stage]["rec"].counts["already_covered"] == 1
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # (d) a provider retry_after holds the channel
 # ─────────────────────────────────────────────────────────────────────────────

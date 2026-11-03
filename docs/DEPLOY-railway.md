@@ -33,7 +33,8 @@ the documents acquire covers.
    failed re-sweep is a WARN and the cycle goes on (the builds' incremental pass still runs; the re-sweep publishes
    nothing, so it is due again next cycle and starts over: D789).
 3. Standalone `collect.semantic_scholar` (again once when scope-incomplete) and `collect.arxiv_sweep` (drained after
-   45 min).
+   45 min). An S2 run with `failed_permanent` windows or a year span whose upper bound S2 ignored is a WARN (read
+   from its run record: S2 runs outside the builds, whose warning would say it; D802).
 4. Build 1 (collectors and gather), standalone `collect.s2-lookup`, then one-pass builds of every other line until
    one ends `ok` or is short only on collector lines (at most 5). A build short on triage or an annotate line is
    followed by another; a reason outside the expected ones (acquire's clock, `pending` and `halted`, `budget`,
@@ -117,7 +118,7 @@ error, then every warning, then the steps and, unless OK, the cycle's log tail. 
 | Severity | When |
 |---|---|
 | ERROR | the cycle exits non-zero: refused to start (preflight, `hold.json`, lock held, a live job), halted (a failed run or build, no progress), no releasable build after 5 builds or a cap/stop before one (a tail build over `STACK_SCHED_TAIL_MAX_PCT`, or of unknown size, is not releasable), the lock lost or unreadable before the export or the upload (nothing released), export or upload failed (incl. the private repo not private); or a balance at or below zero; or a run of the cycle stopped on its OpenAlex budget; or a crash |
-| WARN | the cycle published, but: a build short only on collector lines, or only on acquire's retry tail within `STACK_SCHED_TAIL_MAX_PCT` (also after a cap, `hold.json` or a signal before the catch-up build), was released; a build had an unexpected incomplete reason (retried); a build was retried after a transient failure; the OpenAlex re-sweep failed (D789); the S2 collect stayed short; a balance below its threshold or a balance check that failed; a re-upload found the release tag already there; a preflight warning (an optional key absent, no mail channel) |
+| WARN | the cycle published, but: a build short only on collector lines, or only on acquire's retry tail within `STACK_SCHED_TAIL_MAX_PCT` (also after a cap, `hold.json` or a signal before the catch-up build), was released; a build had an unexpected incomplete reason (retried); a build was retried after a transient failure; the OpenAlex re-sweep failed (D789); the S2 collect stayed short, or a run of it had `failed_permanent` windows or a broken year-span upper bound (D802); a balance below its threshold or a balance check that failed; a re-upload found the release tag already there; a preflight warning (an optional key absent, no mail channel) |
 | OK | none of these |
 
 Channel: `STACK_SCHED_ALERT=resend` (Resend's HTTP API, `POST https://api.resend.com/emails`, Bearer key; free tier
