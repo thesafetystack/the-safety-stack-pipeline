@@ -26,15 +26,11 @@ D243-D247 (X2).
 
 **Endpoints and tier.** Threads whose root is at most 6.5 days old use recent search (`GET /2/tweets/search/recent`,
 7-day window); **older threads need full-archive search (`GET /2/tweets/search/all`)**. The project's pay-per-use
-tier allows it: live on 2026-10-12, `search/all` answered 200 with `x-rate-limit-limit` 300 per 15 min (RUNLOG (X)
-2026-10-12 21:10, "Account tier"), and again on 2026-10-13 (RUNLOG (X2), D247). The thread query names the
+tier allows it: live on 2026-10-12 and 2026-10-13, `search/all` answered 200 with `x-rate-limit-limit` 300 per
+15 min (D247). The thread query names the
 author's handle in `to:`: full-archive search ignores `to:<numeric id>` (D247). If a tier without full-archive
 access is ever used, an old thread's search fails (`provider_auth` or `query_invalid`), the post is written as a
 `pending` post row and the search counts against `miss_cap`.
-
-**Rows before round 5** (one post row per looked-up post with the thread folded into its record; only in the
-gitignored scratch stores `v4/store-x-scratch/` and `v4/store-links-scratch/`) are not migrated: they stay done, and
-a thread row written later merges with them on `x_post` (the pointer takes the thread's newer text).
 
 **Not implemented / not wired:**
 - Relayed link rows (proposal §4.9): `xapi.relayed_urls(record)` lists the URLs; writing them as link-channel rows
