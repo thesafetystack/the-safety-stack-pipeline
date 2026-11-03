@@ -1,6 +1,6 @@
 # OpenAlex author ids for the researcher roster
 
-Generated 2026-10-13 14:21 UTC by `tools/resolve_openalex_authors.py` (round 5 (RUN) B7b, C4 of `docs/design/collection-yield.md`; coauthor evidence, T-ARX). For Tomáš: decide the ambiguous and not-found names below; the resolved ids are already in the roster.
+Generated 2026-10-13 14:21 UTC by `tools/resolve_openalex_authors.py` (round 5 (RUN) B7b, C4 of `docs/design/collection-yield.md`; coauthor evidence, T-ARX). Open: the ambiguous and not-found names below are undecided; the resolved ids are already in the roster.
 
 - Roster: `configs/rosters/researchers.yaml` version 1.2.0 → 1.3.1; 2239 names considered.
 - Name rule: the round-5 B7b cache (live run `resolve-oa-authors-1791874758`, $0.6891). Coauthor evidence, live 2026-10-13 (keyed, OpenAlex ledger): `resolve-oa-authors-1791897217` (works 280 pages, details 37; $0.0317), `resolve-oa-authors-1791897746` (round 2: works 87, details 10; $0.0097), `resolve-oa-authors-1791898437` (works 5, details 1; $0.0006), `resolve-oa-authors-1791900892` (with the guard: works 5, details 1; $0.0006); probe and check fetches $0.0004. This report: decided offline from the caches with `--rounds 2` over roster 1.2.0 (the 1.3.0 ids are recomputed, not read).

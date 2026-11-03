@@ -30,7 +30,7 @@ parquet files and blobs, no database), which replaced v3; v1, v3 and their code 
 | `collection-yield.md` | Which queries, authors and feeds flood the pipeline; the backfill cuts of 2026-10 (`configs/channels.yaml` cites it). |
 | `license-classes.md` | The channels' licence classes (D8). |
 | `link-crawling.md` | Outbound links of linking documents as candidate sources (`collect.links`). |
-| `openalex-author-ids.md` | OpenAlex author ids for the researcher roster (`tools/resolve_openalex_authors.py`). |
+| `openalex-author-ids.md` | OpenAlex author ids for the researcher roster: an open worksheet (the ambiguous and not-found names are undecided), written by `tools/resolve_openalex_authors.py`. |
 | `short-field-translation.md` | English translations of non-English titles and abstracts (D755). |
 | `technique-quality-2026-10.md` | Technique extraction quality, October 2026: what was tried, measured and decided. |
 | `url-normalisation.md` | The URL module (`stack/urls.py`) and its rules. |
