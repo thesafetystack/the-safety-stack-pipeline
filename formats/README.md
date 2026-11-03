@@ -12,12 +12,16 @@ version.
   `title`, `examples` and `$comment` (prose, which a patch version may change). The paths mirror the release:
   `release.schema.json`, `data/corpus.schema.json`, `config/configs.schema.json`, `config/overrides.schema.json`.
 - `CHANGELOG.md`: one entry per version ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/)); an entry is
-  dated when the first release of that version is published.
+  dated when the maintainer tags the version (`format-<version>`).
 - `../tools/release-validator.py`: the checker. Every release ships a byte-identical copy as
   `tools/release-validator.py`.
 
-A directory is written once, by the pipeline (below), and never edited after its changelog entry is dated; CI
-refuses such an edit. A patch version changes prose only, so it has no directory of its own.
+A directory is written once, by the pipeline (below), and never edited once its version is tagged and its changelog
+entry dated. CI refuses such an edit: a directory must equal its tree at every tag `format-<major>.<minor>.<patch>`,
+no file of a directory whose entry was dated at the base of a push or pull request may change, and a dated entry
+may not lose or change its date. The checker carries the digests of every archived format's schemas
+(`FORMAT_DIGESTS` in `tools/release-validator.py`), so a release's own copy, run anywhere, detects schemas that are
+not their format's; CI checks them against the archive. A patch version changes prose only, so it has no directory of its own.
 
 ## The schemas
 
@@ -50,6 +54,7 @@ do not know, and tolerate new values in open lists.
 | a field or file removed or renamed | major |
 | a JSON type or an `x-arrow` type changed | major |
 | a field that may now be null (nullability loosened) | major |
+| a field that is no longer required (it may be absent) | major |
 | any change to a closed list (a value added, removed or renamed; a list opened or closed) | major |
 | a value removed from an open list | major |
 | a change in meaning (declared by hand, with a changelog entry) | major |
@@ -58,6 +63,7 @@ do not know, and tolerate new values in open lists.
 | a value added to an open list | minor |
 | a new taxonomy key in `release.json` | minor |
 | a field that may no longer be null (nullability tightened) | minor |
+| a field that is now required | minor |
 | prose and descriptions only | patch |
 
 What is structural is exactly what the stripped schemas say: names, JSON types, `x-arrow`, nullability, `required`,
@@ -84,12 +90,14 @@ no `format_version`; the checks that do not depend on the format still run).
    it prints the bump needed and refuses a declared version below it. A change in meaning the classifier cannot see
    is declared by hand: a major version and a changelog entry saying what changed.
 2. **The archive is written here.** `release_format.py archive --data-repo <checkout of this repository>` writes
-   `formats/<major>.<minor>/`; add the `CHANGELOG.md` entry (undated) in the same commit, and a new major version of
-   the checker where the checks change (`tools/release-validator.py`, `SUPPORTED_MAJORS`). Run
-   `uv run tools/release-validator.py --formats` and `uv run tools/test_release_validator.py`.
-3. **The maintainer** reviews, pushes, and tags the commit `format-<version>` (an annotated tag). These are the stop
-   points: no tag and no push without the maintainer.
-4. **The pipeline pulls** this repository's subtree (`git subtree pull --prefix=data-repo ... --squash`); its tests
-   then find the archive equal to what it generates.
-5. **When the first release of the version is published**, the maintainer dates its changelog entry; from then on
-   the directory is never edited (a fix is a new version).
+   `formats/<major>.<minor>/` (run in the pipeline, pointed at a checkout of this repository; it refuses to change
+   a dated or tagged directory, and changes an undated one only with `--replace`); add the `CHANGELOG.md` entry
+   (undated) in the same commit, the schemas' digests (`--formats` prints them) in `FORMAT_DIGESTS` of
+   `tools/release-validator.py`, and a new major version of the checker where the checks change
+   (`SUPPORTED_MAJORS`). Run `uv run tools/release-validator.py --formats` and `uv run tools/test_release_validator.py`.
+3. **The maintainer** reviews, pushes, tags the commit `format-<version>` (an annotated tag) and, in the same step,
+   dates the changelog entry. These are the stop points: no tag, no date and no push without the maintainer. From
+   then on the directory is never edited (a fix is a new version).
+4. **The pipeline pulls** this repository's subtree (`git subtree pull --prefix=data-repo ... --squash`) and renews
+   its lock of the archive (`tools/release_format.py lock`); its tests then find the archive equal to what it
+   generates.
