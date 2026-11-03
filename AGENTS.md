@@ -79,7 +79,8 @@ spend is in its run record. Full list: `.env.example`; details: `docs/SETUP.md`.
 - Test on the synthetic world (`tests/synth/world.py`, `STACK_WORKFLOWS_ROOT=tests/synth/stages`) and the fakes in
   `tests/fakes/`; no test touches the network. Experiment on a copy of a store, never on one a cycle or a build uses.
 - A decision that changes behaviour gets a row in `docs/DECISIONS.md` (the next free `D<n>`, appended; a later row
-  amends an earlier one, decided rows are not edited); code comments and docs cite it as `D<n>`.
+  amends an earlier one, decided rows are not edited); code comments and docs cite it as `D<n>`. D0-D800 are in
+  `docs/repo-history/decisions-D1-D800.md`.
 
 ## Keeping the repository publishable
 

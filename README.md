@@ -82,7 +82,7 @@ suite); there is no CI. Without the eval-text cache (below) the eval-set tests s
 | `docs/DEPLOY-railway.md` | The production cycle: what it does, the image, the services and variables, operating it. |
 | `docs/howto/` | Task pages: inspect a build, why a document is missing, S3 stores, overrides, add a collector or an annotator, change a prompt pin or a family format, the dataset release. |
 | `workflows/README.md`, `configs/plans/README.md` | How a stage is written and which prompts the plans pin; the plan file and the plans in the tree. |
-| `docs/DESIGN.md`, `docs/DECISIONS.md` | The design, and every implementation decision (`D<n>`). Where the design and the code disagree, the code wins. |
+| `docs/DESIGN.md`, `docs/DECISIONS.md` | The design, and every implementation decision (`D<n>`; D0-D800 in `docs/repo-history/`). Where the design and the code disagree, the code wins. |
 
 ## Layout
 
