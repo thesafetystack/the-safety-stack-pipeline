@@ -4,11 +4,11 @@
 that followed are D780-D786). Prepared on 2026-10-26; run before the first deploy: the entrypoint's dry run against
 the production S3 store (read-only), the dataset exports from a cold mirror, the targeted tests
 (`tests/test_scheduled_run.py`, every Hugging Face and email call on fakes). The measurements behind the design are
-in design notes that are not in this repository; the design itself is this page and `DESIGN.md`. Decisions by Tomáš
-(2026-10-26): weekly on Sunday 00:00 UTC, up to 5 builds, $100 / 20 h caps, a 24 GB replica on Railway Pro, publish
+in design notes that are not in this repository; the design itself is this page and `DESIGN.md`. Decided on
+2026-10-26: weekly on Sunday 00:00 UTC, up to 5 builds, spend and wall caps, a 24 GB replica on Railway Pro, publish
 on every successful cycle, one summary email per cycle titled by its worst severity, release a build short only on
-collectors, clean tagged releases, balance alerts, a Monday watchdog. Tomáš 2026-10-28: a build short only on
-acquire's retry tail is released too, and an acquire halt ends the cycle's builds (below). Tomáš 2026-10-30: such a
+collectors, clean tagged releases, balance alerts, a Monday watchdog. Amended on 2026-10-28: a build short only on
+acquire's retry tail is released too, and an acquire halt ends the cycle's builds (below); and on 2026-10-30: such a
 build is also released when a cap or stop comes before the catch-up build, and only while its tail is at most 5% of
 the documents acquire covers.
 
@@ -85,7 +85,9 @@ the documents acquire covers.
 7. Balance checks at the start and the end (below), then the summary (`cycles/<id>/summary.json`, `log.txt`,
    `cycles/latest.json`) on the ops prefix and on stdout, and **one email per cycle** (below).
 
-Exit 0 ok, 1 failed, halted or upload refused, 3 incomplete (resumed by the next cycle), 4 refused. Caps:
+Exit 0 ok, 1 failed, halted or upload refused, 3 incomplete (resumed by the next cycle), 4 refused. Caps (the
+defaults below are the code's, `tools/scheduled_run.py` `Settings`; production currently sets
+`STACK_SCHED_MAX_USD=50` and runs with no wall or build cap in effect):
 `STACK_SCHED_MAX_USD` ($100, every job the cycle started: settled spend plus the open reservations of jobs that are
 not live, D797; annotate lines get `--max-usd` of what is left; triage's
 $20 per run cannot be lowered), `STACK_SCHED_MAX_WALL_H` (20 h: a Sunday 00:00 start ends by 20:00 UTC, before
@@ -190,10 +192,11 @@ Variables (sealed where marked: sealed values are hidden in the UI and the API, 
 | `STACK_SCHED_ALERT`, `RESEND_API_KEY` (sealed), `STACK_SCHED_ALERT_FROM`, `STACK_SCHED_ALERT_TO` | `resend`, the key, a sender on the verified domain, the recipients, e.g. `info@thesafetystack.ai` (comma-separated) |
 | `OPENROUTER_MANAGEMENT_KEY` (sealed, optional) | reads the account's credits; cannot make completion calls |
 | `ANTHROPIC_API_KEY` (sealed) | only when a plan pin routes to Anthropic (D722); the preflight says so |
-| `STACK_SCHED_EXPECT_PLAN_DIGEST` | `ff4932034e2e136dd61eb6293d924555da22b9b2f1732f6914869a52173a1af7` for `batch-2026-10a` revision 12 at this commit (D800: the S2 collector's per-query cap `max_records` 250000, was 100000; before it, revision 11 `8c4eb6954977d8d8007dccf28b46be94eb9fcf9fd1416a37d1191583b1405a76` (D779: revision 10's accepted configs, the Chinese coverage's translation stage and feed, organisations 0.2.2 and matcher 4), revision 10 on orgs 0.2.0 was `415b9dfcdca23a1544dc542c8accb79df9636f002de09cb8f2ad82f6385fc56c` (D758), revision 9 `c24a6aef8fc5302a6decaeea18c2ef409488360fc1441c9053165a61a2c57623` (D738), revision 8 with D760 `b6796f5949c7876df4f742986f78da41d3bdb2d5d23039108832ba2150aa6da6`, before D760 `9a0293054e0afd3bb8f09de17dad816d2c23084dc08e0c96582183029d543a27` (D736, D737); revision 7 `a9a43bf0b1b275a161f1f037724a7885fe7ca2815528203f885d596d2ef78ffa`) (`python -c "from stack.plan import load_plan; print(load_plan('configs/plans/batch-2026-10a.yaml').plan_digest)"`). Before the first cycle of revision 11 the operator imports the two prepared override files (a cycle never runs `stack overrides add`): `configs/overrides/china_coverage.yaml` and `configs/overrides/data_quality_2026_10.yaml`, each with `--dry-run` first (D779) |
+| `STACK_SCHED_EXPECT_PLAN_DIGEST` | `ff4932034e2e136dd61eb6293d924555da22b9b2f1732f6914869a52173a1af7`: `batch-2026-10a` revision 12 (D800); a plan revision moves it (`python -c "from stack.plan import load_plan; print(load_plan('configs/plans/batch-2026-10a.yaml').plan_digest)"`), and the cycle refuses to start until the variable is updated. Earlier revisions' digests: `docs/repo-history/superseded-records.md`. A plan revision's operator steps (override imports): `docs/howto/full-run.md` |
 | `RAILWAY_DEPLOYMENT_DRAINING_SECONDS` | 3600: a redeploy SIGTERMs the running deployment with 0 s grace by default, then SIGKILLs |
 
-Optional: `STACK_SCHED_MAX_USD` (100), `STACK_SCHED_MAX_WALL_H` (20), `STACK_SCHED_MAX_BUILDS` (5),
+Optional (code defaults in parentheses): `STACK_SCHED_MAX_USD` (100; production currently 50),
+`STACK_SCHED_MAX_WALL_H` (20), `STACK_SCHED_MAX_BUILDS` (5) (production currently runs with neither in effect),
 `STACK_SCHED_ARXIV_MAX_MIN` (45), `STACK_SCHED_OPENALEX_FULL` (`auto`/`1`/`0`), `STACK_SCHED_OPENALEX_FULL_DAYS` (6),
 `STACK_SCHED_RELEASE` (`export`/`off`), `STACK_SCHED_UPLOAD` (`1`/`0`), `STACK_SCHED_RELEASE_ALLOW_INCOMPLETE` (`1`/`0`),
 `STACK_SCHED_TAIL_MAX_PCT` (5, percent; step 4),
