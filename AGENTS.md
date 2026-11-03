@@ -1,67 +1,66 @@
 # the-safety-stack-pipeline — AGENTS.md
 
-Reconstructing the AI safety "stack" deployed at frontier labs from public evidence.
+The pipeline that builds The Safety Stack dataset: collect documents on technical AI safety, triage, fetch, screen,
+annotate, release. Read this before editing anything. Humans start at `README.md`; the docs' map is
+`docs/README.md`, the design `docs/DESIGN.md`.
 
-Read this before editing anything. Human-facing detail is in `README.md` (setup, first offline run); the v4 docs'
-map is `docs/README.md` (operate, consume, how-tos), the design `docs/DESIGN.md`.
+This repository is public, and production runs from it: a weekly cycle on Railway (`tools/scheduled_run.py cycle`,
+`docs/DEPLOY-railway.md`) built from branch `deploy/railway`, which the maintainers fast-forward to reviewed commits
+of `main`. Work on a branch off `main`; never push to `deploy/railway`.
 
-v4 is the only supported code in this repository and the production pipeline: its cycle runs weekly on Railway
-since 2026-10-31 (`docs/DEPLOY-railway.md`).
+## Architecture
 
-## Current — this is v4
-
-- **`stack/`** — the engine, and the only installed package (`pyproject.toml` → `packages = ["stack"]`; `workflows/`
-  is imported by name from the repo root in a few places, which the editable install allows): the file
-  store (`stack/store/`), the stage runner (`stack/stage_runner.py`), plans, builds, folds (`stack/fold/`), checks,
-  the LLM client and its per-run ledger (`stack/llm/`), collect engines, the CLI (`stack/cli/`).
+- **`stack/`** — the engine and the only installed package (`pyproject.toml` → `packages = ["stack"]`; `workflows/`
+  is imported by name from the repo root in a few places, which the editable install allows): the file store
+  (`stack/store/`), the stage runner (`stack/stage_runner.py`), plans, builds, folds (`stack/fold/`), checks, the
+  LLM client and its per-run ledger (`stack/llm/`), collect engines, the CLI (`stack/cli/`).
 - **`workflows/`** — the stages. `stack/stage_runner.py` (`stage_module_path`) loads `workflows/<phase>/<name>/main.py`
   by path for stage `<phase>.<name>`; a stage exposes `run(ctx) -> StageResult` and optionally `SUBSTAGES`
   (`workflows/README.md`). Order: `collect`, `gather`, `triage`, `acquire`, `fold.corpus`, `annotate`, `fold.build`,
   `fold.release`, `fold.compact` (`PHASE_ORDER`). There is no stage registry: a stage is its module plus a line in a
-  plan (`configs/plans/*.yaml`). Prompts are co-located as `<name>.md` and pinned by the plan's `prompts:`.
-- Also current: `configs/` (versioned YAML registry, plans, release configs), `evals/`, `spec/schemas/` and
-  `spec/types/` (still read; `spec/README.md`), `tests/`, `tools/`, `docs/` (the documentation; `docs/README.md` is its map).
+  plan (`configs/plans/*.yaml`; production: `batch-2026-10a`). Prompts are co-located as `<name>.md` and pinned by
+  the plan's `prompts:`.
+- **`configs/`** — the versioned YAML registry, plans, release configs; `configs/releases/dataset/` holds the dataset
+  card and FORMAT templates (`README.card.md`, `FORMAT.head.md`), filled by `stack/fold/dataset.py` at export.
+- Also: `evals/` (frozen eval sets, the judge evaluation), `spec/schemas/` and `spec/types/` (still read;
+  `spec/README.md`), `tests/`, `tools/`, `docs/`.
 
-Authority rule: the code and the schema artifacts it reads (`stack/schemas/`, the `configs/` keys that code reads,
-`spec/schemas/config/`) are normative for anything mechanical; `docs/DESIGN.md` and `docs/DECISIONS.md` for semantics.
-Where they disagree on a mechanic, the code wins. Not normative: `docs/DESIGN.md` App. A (a copy, patched to the
-code on 2026-10-13), most of `spec/types/interfaces.py` (v3's DB layer; `spec/README.md` says which parts are
-implemented). v3's other payload and aggregate schemas, the `enums.yaml` vocabularies only they named, and v3's
-`policies.yaml` keys other than `anchoring` were retired with v3 (read by nothing; removed, see below).
+**Authority.** The code and the schema artifacts it reads (`stack/schemas/`, the `configs/` keys that code reads,
+`spec/schemas/config/`) are normative for anything mechanical; `docs/DESIGN.md` and `docs/DECISIONS.md` for
+semantics. Where they disagree on a mechanic, the code wins. Not normative: `docs/DESIGN.md` App. A (a copy, patched
+to the code on 2026-10-13) and most of `spec/types/interfaces.py` (`spec/README.md` says which parts are implemented).
 
-## Removed from this repository
-
-What was removed, and what remains of it: `README.md`, "Removed, and where it lives".
-
-## Taxonomy files
-
-| Dir | What it is |
-|---|---|
-| `taxonomy/` | `taxonomy-v0.8.yaml` (read by `annotate.technique_roles`; not yet graduated into the pin), the v0.9 catalogues `annotate.technique_staged` and the eval sets pin, `techniques-1.1.0.yaml` (the production pin, D738), the organisation vocabularies (`orgs-0.2.2.yaml` the production one, D778; `stack/orgvocab.py`) and `vendored.lock.yaml`; see `taxonomy/README.md`. The registry's taxonomy pin is the **copy in `configs/`**, per `configs/registry.yaml`. |
-| `data-repo/` | The data repository (thesafetystack/the-safety-stack) as a git subtree: `taxonomy/techniques-1.1.0.yaml`, `taxonomy/techniques-1.0.0.yaml`, `taxonomy/taxonomy-v0.9.1.yaml`, `taxonomy/orgs-0.2.0.yaml`, `taxonomy/orgs-0.2.2.yaml`, `taxonomy/models-{1.0.0,1.1.0}.yaml` and `configs/models.yaml` (models 1.1.0) are relative symlinks into its `taxonomies/`, and `stack/catalogue.py` reads its JSON Schemas (`taxonomy/vendored.lock.yaml`, `tests/test_vendored_taxonomies.py`). Do not edit it here; update with `git subtree pull` (`taxonomy/README.md`); orgs 0.2.2 is the one exception, written here first (D778), which the data repository takes byte for byte. |
+**Taxonomies.** `data-repo/` is the data repository (thesafetystack/the-safety-stack) as a squashed git subtree; the
+files the pipeline reads are relative symlinks from `taxonomy/` and `configs/models.yaml` into its `taxonomies/`,
+pinned by tag and sha256 in `taxonomy/vendored.lock.yaml` (`tests/test_vendored_taxonomies.py`), and
+`stack/catalogue.py` reads its JSON Schemas. Do not edit `data-repo/` here: change the data repository and `git
+subtree pull` (`taxonomy/README.md`). The other files in `taxonomy/` are older or draft catalogues still read by
+eval sets and non-production stages.
 
 ## Commands
 
 ```bash
-uv sync --group convert-pdf                                # once; acquire needs the converter tools (docs/SETUP.md)
-uv run tools/check_all.py                                  # the gate: configs, payloads, mypy (one file), full suite -n 2. No CI.
-uv run --no-sync python tools/devtest.py                   # per edit: touched paths' tests + smoke (docs/SETUP.md §7)
-uv run --no-sync pytest -m "not slow" -q -n 2              # the fast tier (~3 min) at a sub-task's end; the full suite at the end
-uv run --no-sync pytest -m "e2e" -q -n 2                   # an area (e2e, checks, evalsets): its fast and slow tests (SETUP §7)
-uv run --no-sync stack build <plan> --dry-run              # the usual entry; also: run, fold, verify, head, status,
-                                                           #   ls, release, diff, chain, eval, migrate, acquire,
-                                                           #   overrides, store
-uv run --no-sync python tools/probe_collect.py ...         # one live collect query, nothing written (also probe_filters.py)
+uv sync --frozen --group convert-pdf --group release      # never a plain `uv sync` (it drops these groups)
+uv run --no-sync tools/check_all.py --no-sync             # the gate: configs, payloads, mypy (one file), full suite. No CI.
+uv run --no-sync python tools/devtest.py                  # per edit: touched paths' tests + smoke (docs/SETUP.md §7)
+uv run --no-sync pytest -m "not slow" -q -n 2             # the fast tier (~3 min) at a sub-task's end
+uv run --no-sync pytest -m "e2e" -q -n 2                  # an area (e2e, checks, evalsets): its fast and slow tests
+uv run --no-sync stack build <plan> --dry-run             # the usual entry; also: run, fold, verify, head, status,
+                                                          #   stop, ls, show, release, export, diff, chain, eval,
+                                                          #   migrate, acquire, overrides, store
+uv run --no-sync python tools/probe_collect.py ...        # one live collect query, nothing written (also probe_filters.py)
 ```
 
-Env: `STACK_STORE`, `STACK_PLAN` (CLI defaults; no default plan), `STACK_ENV_FILE` (path of the key file: keys
-`OPENROUTER_API_KEY`, `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` (direct LLM providers, D714 / D722),
-`X_API_BEARER_TOKEN`, `OPENALEX_API_KEY`, `SEMANTIC_SCHOLAR_API_KEY`, the S3 store settings `STACK_S3_ENDPOINT_URL`,
-`STACK_S3_ACCESS_KEY_ID`, `STACK_S3_SECRET_ACCESS_KEY`, `STACK_S3_DEFAULT_REGION` (older names `STACK_S3_ENDPOINT`,
-`AWS_*`, `STACK_S3_REGION` still accepted, a new name in either source winning, D726) and `STACK_MAILTO` are read from
-it by name, an environment variable winning).
-Never source `.env`. Each run's spend is in its run record (no host-wide ledgers). Full list: `.env.example`; details
-`docs/SETUP.md`.
+The full gate takes ~13 minutes at the default workers; without the eval-text cache (`docs/SETUP.md` §7) the
+eval-set tests skip, which is expected. Run it before committing anything under `stack/`, `workflows/` or `configs/`.
+
+Env: `STACK_STORE`, `STACK_PLAN` (CLI defaults; no default plan) and `STACK_ENV_FILE` (the path of the key file).
+Keys and the S3 store settings are read by name from the environment, else from that file: the LLM keys
+(`OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`), the provider keys (`OPENALEX_API_KEY`,
+`SEMANTIC_SCHOLAR_API_KEY`, `X_API_BEARER_TOKEN`), `STACK_S3_ENDPOINT_URL`, `STACK_S3_ACCESS_KEY_ID`,
+`STACK_S3_SECRET_ACCESS_KEY`, `STACK_S3_DEFAULT_REGION` (older names still accepted, D726) and `STACK_MAILTO`.
+Never source `.env`. The scheduled cycle's settings are `STACK_SCHED_*` (`tools/scheduled_run.py`). Each run's
+spend is in its run record. Full list: `.env.example`; details: `docs/SETUP.md`.
 
 ## Conventions
 
@@ -73,5 +72,21 @@ Never source `.env`. Each run's spend is in its run record (no host-wide ledgers
   new family is a schema in `stack/schemas/families/`, a new annotate payload an entry in
   `stack/schemas/payloads/registry.py`; either is a family format change, a new version in
   `stack/schemas/upcasters.py` (`docs/howto/change-family-format.md`, `docs/howto/add-annotator.md`).
+- A changed prompt gets a new file name and a new pin; editing a pinned file re-asks every document in scope
+  (`docs/howto/change-prompt-pin.md`). A plan change that production runs moves its plan digest, which the cycle
+  checks (`STACK_SCHED_EXPECT_PLAN_DIGEST`, `docs/DEPLOY-railway.md`).
 - Test on the synthetic world (`tests/synth/world.py`, `STACK_WORKFLOWS_ROOT=tests/synth/stages`) and the fakes in
-  `tests/fakes/`; experiment on a reflink copy of a store (`v4/store-run-*/` is gitignored), never on `v4/store-dev`.
+  `tests/fakes/`; no test touches the network. Experiment on a copy of a store, never on one a cycle or a build uses.
+- A decision that changes behaviour gets a row in `docs/DECISIONS.md` (the next free `D<n>`, appended; a later row
+  amends an earlier one, decided rows are not edited); code comments and docs cite it as `D<n>`.
+
+## Keeping the repository publishable
+
+- No secrets or key values anywhere, error bodies and logs included; no bucket names (write `s3://<bucket>/<prefix>`);
+  no local or private filesystem paths.
+- No links to link-shared documents or chats (Google Docs and Drive, chat shares, Notion, Dropbox):
+  `tests/test_public_tree.py` scans every tracked text file for them (`stack.fold.dataset.SHARED_LINKS`).
+- No third-party document text in the tree: eval texts and long excerpts live outside it, pinned by sha256 (D790,
+  D793, D795; `tools/fetch_eval_texts.py`).
+- Material removed from the tree is described in `README.md` ("What is not in this repository"); a name of it in an
+  older comment or `DECISIONS.md` row is provenance, not a path to follow.
