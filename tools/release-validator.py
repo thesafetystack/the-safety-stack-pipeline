@@ -26,10 +26,13 @@ repository as `tools/release-validator.py` and in every release as `tools/releas
   of `config/configs.json`, and an `override:<ids>` config's ids lines of `config/overrides.jsonl`; override ids
   unique; every override id a row names a line, of a kind that fits where the row names it; each line's target and
   key of the shape its kind takes (an override may name a document absent from the release, such as an exclusion).
-- **taxonomies** (format 1): every file `release.json` pins exists with its sha256; the ids of every record resolve
-  in the taxonomy file its config pinned (organisations: the version the row's `affiliation_orgs` record names; a
-  technique record of an override config: its `taxonomy_version`). Run from a checkout of the data repository, every
-  shipped taxonomy file also goes through `tools/taxonomy-schema-validator.py` with that repository's schemas.
+- **taxonomies** (format 1): every file `release.json` pins exists with its sha256, and so does every version a
+  shipped file's `meta.references` names (models 1.1.0 names its organisations' version); the ids of every record
+  resolve in the taxonomy file its config pinned (organisations: the version the row's `affiliation_orgs` record
+  names; a technique record of an override config: its `taxonomy_version`). Run from a checkout of the data
+  repository, a shipped taxonomy file of a version the repository has must be byte-identical to it (whose schema
+  check is the repository's CI); any other goes through `tools/taxonomy-schema-validator.py` with the repository's
+  schemas.
 - **archive**: run from a checkout of the data repository, the release's schemas, stripped of description, title,
   examples and $comment, equal `formats/<major>.<minor>/` (objects compared without key order, `required`, `enum`,
   `type` and `x-values` as sets).
@@ -70,8 +73,10 @@ SUPPORTED_MAJORS = (1,)
 EXIT_OK, EXIT_INVALID, EXIT_USAGE, EXIT_UNSUPPORTED = 0, 1, 2, 3
 DEFAULT_SAMPLE = 1000
 TOOLS = Path(__file__).resolve().parent
-#: The data repository this file sits in, when it does (tools/ beside taxonomies/ and formats/).
-DATA_REPO = TOOLS.parent if (TOOLS.parent / "taxonomies").is_dir() else None
+#: The data repository this file sits in, when it does (not a release's tools/: a release has taxonomies/ too, but
+#: not the taxonomy validator and the taxonomies' schemas).
+DATA_REPO = TOOLS.parent if (TOOLS / "taxonomy-schema-validator.py").is_file() and \
+    (TOOLS.parent / "taxonomies" / "schemas").is_dir() else None
 ID_PREFIX = "urn:the-safety-stack:format"
 #: The schema files of a format-1 release (and of its archive directory), by path.
 SCHEMA_FILES_1 = ("release.schema.json", "data/corpus.schema.json", "config/configs.schema.json",
@@ -710,6 +715,7 @@ def check_taxonomies(root: Path, doc: dict[str, Any], rep: Report) -> None:
     pins = {(name, t.get("version")): t for name, ts in (doc.get("taxonomies") or {}).items()
             for t in (ts if isinstance(ts, list) else [ts]) if isinstance(t, dict)}
     files: dict[tuple[str, str], set[str]] = {}
+    refs: dict[tuple[str, str], dict[str, Any]] = {}
     for (name, ver), t in sorted(pins.items()):
         p = root / str(t.get("path"))
         if not p.is_file():
@@ -725,16 +731,30 @@ def check_taxonomies(root: Path, doc: dict[str, Any], rep: Report) -> None:
             continue
         if str(data.get("version")) != str(ver) and not str(ver).startswith(str(data.get("version")) + "."):
             rep.add("taxonomies", str(t.get("path")), f"version field {data.get('version')!r}, pinned as {ver}")
+        refs[(name, ver)] = dict((data.get("meta") or {}).get("references") or {})
+    for (name, ver), want in sorted(refs.items()):
+        for rname, rver in sorted(want.items()):
+            if (str(rname), str(rver)) not in pins:
+                rep.add("taxonomies", str(pins[(name, ver)].get("path")),
+                        f"refers to {rname} {rver} (meta.references), which the release does not ship")
     tv = _taxonomy_validator()
     if tv is None:
         rep.not_checked.append("taxonomy files against their schemas: run from a checkout of the data repository "
                                "(tools/taxonomy-schema-validator.py)")
     else:
-        for (name, _v), t in sorted(pins.items()):
+        # a file of a version this repository has must be that file, byte for byte (a released file is never
+        # edited; its schema check is this repository's CI); any other goes through the taxonomy validator
+        for (name, ver), t in sorted(pins.items()):
             p = root / str(t.get("path"))
-            if p.is_file():
-                for e in tv.problems(p, schema_dir=DATA_REPO / "taxonomies" / name / "schemas"):
-                    rep.add("taxonomies", str(t.get("path")), e)
+            own = DATA_REPO / "taxonomies" / name / f"{name}-{ver}.yaml" if DATA_REPO else None
+            if not p.is_file():
+                continue
+            if own is not None and own.is_file():
+                if sha256_file(own) != sha256_file(p):
+                    rep.add("taxonomies", str(t.get("path")), f"differs from this repository's {name} {ver}")
+                continue
+            for e in tv.problems(p, schema_dir=DATA_REPO / "taxonomies" / name / "schemas"):
+                rep.add("taxonomies", str(t.get("path")), e)
     try:
         cfgs = {c["config_id"]: c for c in _read_json(root / "config" / "configs.json")}
     except (OSError, ValueError, KeyError, TypeError):

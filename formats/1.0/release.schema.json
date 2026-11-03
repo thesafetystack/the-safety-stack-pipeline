@@ -1,0 +1,422 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:the-safety-stack:format:1.0:release.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "release_id",
+    "format_version",
+    "variant",
+    "hf_repo",
+    "created_at",
+    "parent_release",
+    "build",
+    "rows",
+    "taxonomies",
+    "stages",
+    "orgs",
+    "configs",
+    "annotations",
+    "overrides",
+    "remap",
+    "policy",
+    "quality",
+    "licence",
+    "contact",
+    "stand_ins",
+    "files"
+  ],
+  "properties": {
+    "release_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "format_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.(0|[1-9][0-9]*)$"
+    },
+    "variant": {
+      "enum": [
+        "public",
+        "internal"
+      ]
+    },
+    "hf_repo": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "parent_release": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "build": {
+      "type": "object"
+    },
+    "rows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "in",
+        "filtered_out",
+        "dropped",
+        "out"
+      ],
+      "properties": {
+        "in": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "filtered_out": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dropped": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "out": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "taxonomies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "techniques": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "sha256",
+              "path"
+            ],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^taxonomies/[^/]+\\.yaml$"
+              },
+              "referenced_by": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "sha256",
+              "path"
+            ],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^taxonomies/[^/]+\\.yaml$"
+              },
+              "referenced_by": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "orgs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "sha256",
+              "path"
+            ],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^taxonomies/[^/]+\\.yaml$"
+              },
+              "referenced_by": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stages": {
+      "type": "object"
+    },
+    "orgs": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "configs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "count"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "annotations": {
+      "type": "object"
+    },
+    "overrides": {
+      "type": "object"
+    },
+    "remap": {
+      "type": "object"
+    },
+    "policy": {
+      "type": "object"
+    },
+    "quality": {
+      "type": "object"
+    },
+    "licence": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "stand_ins": {
+      "type": "object"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "FORMAT.md"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "LICENSE"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "README.md"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "VOCABULARY.md"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "config/configs.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "config/configs.schema.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "config/overrides.jsonl"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "config/overrides.schema.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "data/corpus.parquet"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "data/corpus.schema.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "release.schema.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "tools/release-validator.py"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

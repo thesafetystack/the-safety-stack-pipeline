@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:the-safety-stack:format:1.0:config/configs.schema.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "config_id": {
+        "type": "string"
+      },
+      "kinds": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "stage": {
+        "type": "string"
+      },
+      "prompt_name": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "prompt_version": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "model": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "provider": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "parameters": {
+        "type": "string"
+      },
+      "taxonomy": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "sha256",
+          "path"
+        ]
+      },
+      "components": {
+        "type": "string"
+      },
+      "defined_in": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "code_digest": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "config_digest": {
+        "type": "string"
+      },
+      "release_ids": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "override_ids": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "note": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "config_id",
+      "kinds",
+      "stage",
+      "prompt_name",
+      "prompt_version",
+      "model",
+      "provider",
+      "parameters",
+      "taxonomy",
+      "components",
+      "defined_in",
+      "code_digest",
+      "config_digest",
+      "release_ids",
+      "override_ids",
+      "note"
+    ]
+  }
+}

@@ -83,7 +83,8 @@ RELEASE = {"$schema": S2020, "$id": URN + "release.schema.json", "type": "object
            "properties": {"release_id": {"type": "string"},
                           "format_version": {"type": "string", "pattern": "^1\\.0\\.(0|[1-9][0-9]*)$"},
                           "taxonomies": {"type": "object"},
-                          "files": {"type": "array", "items": {"type": "object", "required": ["path", "bytes", "sha256"]},
+                          "files": {"type": "array",
+                                    "items": {"type": "object", "required": ["path", "bytes", "sha256"]},
                                     "allOf": [{"contains": {"properties": {"path": {"const": p}}}} for p in CORE]}}}
 
 
@@ -121,8 +122,11 @@ def sha(p: Path) -> str:
 
 def write(root: Path, rows: list[dict[str, Any]] | None = None, *, configs: list[dict[str, Any]] | None = None,
           overrides: list[dict[str, Any]] | None = None, version: str | None = "1.0.0",
-          corpus_schema: dict[str, Any] | None = None, release_schema: dict[str, Any] | None = None) -> Path:
-    """A release directory (every file listed in release.json with its sha256)."""
+          corpus_schema: dict[str, Any] | None = None, release_schema: dict[str, Any] | None = None,
+          taxa: tuple[str, ...] = (), tweak: str | None = None) -> Path:
+    """A release directory (every file listed in release.json with its sha256); ``taxa``: more taxonomy files of
+    this repository (``<name>-<version>``) pinned beside techniques 1.1.0; ``tweak``: a line appended to the shipped
+    techniques file."""
     root.mkdir(parents=True, exist_ok=True)
     (root / "data").mkdir()
     (root / "config").mkdir()
@@ -140,10 +144,19 @@ def write(root: Path, rows: list[dict[str, Any]] | None = None, *, configs: list
         {"config_id": TCID, "taxonomy": tax, "override_ids": []}]))
     (root / "config" / "overrides.jsonl").write_text("".join(json.dumps(o) + "\n" for o in (overrides or [])))
     shutil.copyfile(TECHNIQUES, root / tax["path"])
+    pins = {"techniques": [{k: tax[k] for k in ("version", "sha256", "path")}]}
+    if tweak:
+        with open(root / tax["path"], "a") as f:
+            f.write(tweak)
+        pins["techniques"][0]["sha256"] = sha(root / tax["path"])
+    for t in taxa:
+        name, ver = t.split("-", 1)
+        src = TOOLS.parent / "taxonomies" / name / f"{t}.yaml"
+        shutil.copyfile(src, root / "taxonomies" / f"{t}.yaml")
+        pins.setdefault(name, []).append({"version": ver, "sha256": sha(src), "path": f"taxonomies/{t}.yaml"})
     files = [{"path": p.relative_to(root).as_posix(), "bytes": p.stat().st_size, "sha256": sha(p)}
              for p in sorted(root.rglob("*")) if p.is_file()]
-    doc: dict[str, Any] = {"release_id": "2026-11-03", "taxonomies": {"techniques": [
-        {k: tax[k] for k in ("version", "sha256", "path")}]}, "files": files}
+    doc: dict[str, Any] = {"release_id": "2026-11-03", "taxonomies": pins, "files": files}
     if version is not None:
         doc["format_version"] = version
     (root / "release.json").write_text(json.dumps(doc))
@@ -167,9 +180,13 @@ def test_a_valid_release_passes(good: Path) -> None:
     assert rep.checks["taxonomies"] == "1 files pinned; 2 id values resolved"
 
 
-def test_the_cli_exit_codes(good: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    assert rv.main([str(good), "--rows", "all"]) == rv.EXIT_OK
+def test_the_cli_exit_codes(good: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    none = tmp_path / "no-archive"  # the fixture's toy format is not this repository's archived 1.0
+    assert rv.main([str(good), "--rows", "all", "--archive", str(none)]) == rv.EXIT_OK
     assert capsys.readouterr().out.rstrip().endswith("VALID")
+    assert rv.main([str(good)]) == rv.EXIT_INVALID  # against formats/1.0/ of this repository
+    assert "[archive] data/corpus.schema.json: differs from formats/1.0/data/corpus.schema.json" in \
+        capsys.readouterr().out
     with pytest.raises(SystemExit) as e:
         rv.main([str(good), "--rows", "some"])
     assert e.value.code == rv.EXIT_USAGE
@@ -298,8 +315,34 @@ def test_an_unresolved_taxonomy_id(tmp_path: Path) -> None:
     bad["annotations"]["safety_techniques"]["payload"]["techniques"] = [{"slug": "no-such-technique"}]
     bad["annotations"]["safety_techniques"]["payload"]["extra_techniques"] = [{"hint_technique": "rlhf"}]
     rep = rv.check_release(write(tmp_path / "r", [row("sdoc000000001"), bad]), archive=False)
-    assert problems(rep, "taxonomies") == ["annotations.safety_techniques.payload.techniques[].slug: 'no-such-technique' "
-                                           "is not an id of techniques 1.1.0: 1 value(s), e.g. doc_id sdoc000000002"]
+    assert problems(rep, "taxonomies") == ["annotations.safety_techniques.payload.techniques[].slug: "
+                                           "'no-such-technique' is not an id of techniques 1.1.0: 1 value(s), e.g. "
+                                           "doc_id sdoc000000002"]
+
+
+def test_a_referenced_taxonomy_version_must_ship(tmp_path: Path) -> None:
+    rep = rv.check_release(write(tmp_path / "r", taxa=("models-1.1.0",)), archive=False)
+    assert problems(rep, "taxonomies") == ["taxonomies/models-1.1.0.yaml: refers to orgs 0.2.0 (meta.references), "
+                                           "which the release does not ship"]
+    rep = rv.check_release(write(tmp_path / "r2", taxa=("models-1.1.0", "orgs-0.2.0")), archive=False)
+    assert rep.status == "valid", rep.text()
+
+
+def test_a_taxonomy_file_must_be_this_repositorys(tmp_path: Path) -> None:
+    rep = rv.check_release(write(tmp_path / "r", tweak="# edited\n"), archive=False)
+    assert problems(rep, "taxonomies") == ["taxonomies/techniques-1.1.0.yaml: differs from this repository's "
+                                           "techniques 1.1.0"]
+
+
+def test_a_taxonomy_version_this_repository_lacks_goes_to_the_taxonomy_validator(tmp_path: Path) -> None:
+    root = write(tmp_path / "r", tweak="bogus_top_level_key: 1\n")
+    doc = json.loads((root / "release.json").read_text())
+    doc["taxonomies"]["techniques"][0]["version"] = "1.9.0"  # pinned as a version the repository does not have
+    (root / "release.json").write_text(json.dumps(doc))
+    got = problems(rv.check_release(root, archive=False), "taxonomies")
+    assert "taxonomies/techniques-1.1.0.yaml: version field '1.1.0', pinned as 1.9.0" in got
+    assert any(g.startswith("taxonomies/techniques-1.1.0.yaml: schema: (top): Additional properties") for g in got), got
+    assert not any("differs from this repository" in g for g in got)
 
 
 # ---------------------------------------------------------------- the fast row check agrees with jsonschema
@@ -394,7 +437,7 @@ def test_an_edit_to_a_dated_format_is_refused(tmp_path: Path, entry: str, flagge
     p.write_text(p.read_text().replace('"array"', '"object"', 1))
     _git(tmp_path, "commit", "-q", "-am", "edit")
     got = rv.check_formats(f, "HEAD~1")
-    assert got == ([f"formats/1.0/config/configs.schema.json: changed since HEAD~1 (M), but format 1.0 was dated "
+    assert got == (["formats/1.0/config/configs.schema.json: changed since HEAD~1 (M), but format 1.0 was dated "
                     "there; an archived format is never edited"] if flagged else [])
 
 
