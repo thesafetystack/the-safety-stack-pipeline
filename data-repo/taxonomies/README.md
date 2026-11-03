@@ -40,5 +40,5 @@ ids, parents and children that resolve, and every reference to another vocabular
   that version. A dataset release records which version of each taxonomy it used, with the file's sha256.
 - A change of structure alone (a new schema) is a minor version: techniques 1.1.0 is 1.0.0's content in the
   envelope, and the annotation prompts built from either are the same text.
-- 0.x versions (techniques 0.9.1, models 0.9.0, orgs 0.2.0) carry none of these guarantees; the 0.9 files stay for
-  reference.
+- 0.x versions (techniques 0.9.1, models 0.9.0, orgs 0.2.0 and 0.2.2) carry none of these guarantees; the 0.9 files
+  stay for reference.

@@ -22,7 +22,8 @@ The dataset is one deliverable of the project: public documents on technical AI 
 LessWrong and Alignment Forum posts, lab blog posts, system and model cards), each annotated by a language model with
 which techniques of the techniques taxonomy it engages with and in what role (uses, evaluates, proposes, critiques,
 reports a lab using it), which AI models of the models catalogue it names and in what role, its document class, and,
-for papers with a full text (PDF, arXiv HTML or publisher XML), its authors' affiliations. The taxonomies and per-field provenance ship with the
+for papers with a full text (PDF, arXiv HTML or publisher XML), its authors' affiliations and the organisations they
+name. The taxonomies and per-field provenance ship with the
 data.
 
 It is not the catalogue: there are no per-technique summaries of evidence and no deployment status yet. It is not a
@@ -41,9 +42,11 @@ lab or a technique.
 |---|---|
 | This repository (`thesafetystack/the-safety-stack` on GitHub) | the taxonomies (exact files of every version, schemas, changelogs); the taxonomy validator ([tools/](tools/)); issue forms for corrections, takedowns and suggestions |
 | [Hugging Face, `thesafetystack/the-safety-stack`](https://huggingface.co/datasets/thesafetystack/the-safety-stack) | the dataset: the data file, the dataset card with the annotation quality figures, the format and vocabulary documentation, the taxonomy files used, the overrides applied, the manifest; one tagged revision per release |
+| [`thesafetystack/the-safety-stack-pipeline`](https://github.com/thesafetystack/the-safety-stack-pipeline) on GitHub | the pipeline that builds the dataset: collection, screening, annotation, release |
 | [thesafetystack.ai](https://thesafetystack.ai) | the project site |
 
-Neither this repository nor the Hugging Face dataset is public yet.
+The pipeline carries this repository as a git subtree (`data-repo/`) and reads the taxonomy files from it, each
+pinned by tag and sha256. Taxonomy changes are made here and then pulled into the pipeline.
 
 The published dataset contains no document texts and, for now, no abstracts. An internal variant with abstracts and
 full texts exists for the maintainers and is not distributed.
@@ -52,13 +55,11 @@ full texts exists for the maintainers and is not distributed.
 
 The [dataset card](https://huggingface.co/datasets/thesafetystack/the-safety-stack) is the place to start; it
 describes the files and how to load them. The data is one parquet file, one row per document with every annotation
-nested in it, which DuckDB reads straight from the hub (while the dataset is private, with a Hugging Face token that
-has read access to it in `HF_TOKEN`):
+nested in it, which DuckDB reads straight from the hub:
 
 ```python
 import duckdb
 con = duckdb.connect()
-con.execute("CREATE SECRET hf (TYPE huggingface, PROVIDER credential_chain)")  # reads HF_TOKEN; while private
 con.execute("CREATE VIEW d AS SELECT * FROM 'hf://datasets/thesafetystack/the-safety-stack/data/corpus.parquet'")
 # documents whose own work uses RLHF (role strength 2 or more of 4: at least "minor but real")
 con.sql("""
@@ -77,8 +78,6 @@ The current release, its documentation and its figures are on Hugging Face, not 
   sentence) in the [dataset's files](https://huggingface.co/datasets/thesafetystack/the-safety-stack).
 - **Quality:** the card's "Annotation quality" section: how far the annotations agree with three language-model
   judges, with intervals and caveats.
-- **Releases:** each release is a revision of the Hugging Face dataset tagged `release-<date>`; its `release.json`
-  names the format and the taxonomy versions it uses.
 
 ### What is included
 
@@ -117,8 +116,8 @@ Three vocabularies, in [taxonomies/](taxonomies/):
   and 9 group nodes. Current version 1.1.0 (1.0.0's content in the shared file structure).
 - [models](taxonomies/models/): 1,877 AI model families, groups and models, with 134 makers. Current version 1.1.0:
   makers and labs are references to the organisations vocabulary.
-- [orgs](taxonomies/orgs/): 4,840 organisations named in author affiliations, and the models' makers. Version 0.2.0,
-  a draft (0.x: ids may still change).
+- [orgs](taxonomies/orgs/): 4,841 organisations named in author affiliations, and the models' makers. Current
+  version 0.2.2, a draft (0.x: ids may still change); models 1.1.0 refers to 0.2.0.
 
 Each version is a separate file, `<name>-<major>.<minor>.<patch>.yaml`, tagged with its file name without `.yaml`
 (`techniques-1.1.0`, `models-1.1.0`). A released file is never edited; a change is a new file with a CHANGELOG entry.
@@ -131,7 +130,7 @@ From 1.0.0 on:
 - The definitions (techniques) and glosses (models) in a released file are the text the annotation model was shown
   when annotating with that version.
 
-The 0.x files (techniques 0.9.1, models 0.9.0, orgs 0.2.0) carry no such guarantee. Check a file with
+The 0.x files (techniques 0.9.1, models 0.9.0, orgs 0.2.0 and 0.2.2) carry no such guarantee. Check a file with
 `uv run tools/taxonomy-schema-validator.py --all`; CI runs it on every push and pull request.
 
 ## Releases
