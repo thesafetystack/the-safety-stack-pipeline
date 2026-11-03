@@ -11,7 +11,9 @@ A taxonomy file is named `<name>-<major>.<minor>.<patch>.yaml`. A file in the ca
 `meta.schema` (`<name>-<n>`: `schemas/<name>-<n>.schema.json` in its own directory, which refers to the shared
 `taxonomies/schemas/catalogue-0.schema.json`); an older file is validated against `schemas/<name>-<major>.schema.json`,
 `<major>` from the file name. `--all` takes every YAML file directly under `taxonomies/*/`; one that is not named that
-way fails.
+way fails. As a module, `problems(path, schema_dir=...)` also checks a file outside this layout (a release's flat
+`taxonomies/`, with this repository's schemas); its models file's organisations then resolve in the
+`orgs-<version>.yaml` beside it.
 
 Every file: no mapping repeats a key, the schema holds, and the file name's version starts with the file's
 `version` field (component-wise: `0.9` matches `0.9.1`).
@@ -96,8 +98,10 @@ def check_models_envelope(doc: dict, path: Path) -> list[str]:
     nodes = {e["id"] for e in doc["entries"]}
     orgs_version = doc["meta"]["references"]["orgs"]
     orgs_path = path.parent.parent / "orgs" / f"orgs-{orgs_version}.yaml"
+    if not orgs_path.is_file() and path.parent.name != "models":  # a flat directory (a release's taxonomies/)
+        orgs_path = path.parent / f"orgs-{orgs_version}.yaml"
     if not orgs_path.is_file():
-        return [f"meta.references.orgs {orgs_version!r}: no file orgs/{orgs_path.name}"]
+        return [f"meta.references.orgs {orgs_version!r}: no file {orgs_path.parent.name}/{orgs_path.name}"]
     orgs = {o["id"]: o for o in yaml.load(orgs_path.read_text("utf-8"), Loader=UniqueKeyLoader)["entries"]}
     names: dict[str, set[str]] = {}
     for e in doc["entries"]:
@@ -178,7 +182,9 @@ def version_matches(field: object, file_version: str) -> bool:
     return file_version.split(".")[: len(head)] == head
 
 
-def problems(path: Path) -> list[str]:
+def problems(path: Path, schema_dir: Path | None = None) -> list[str]:
+    """What is wrong with taxonomy file ``path``; its schemas are in ``schema_dir`` (default: ``schemas/`` beside
+    it)."""
     m = FILE_NAME.match(path.name)
     if m is None:
         return ["file name is not <name>-<major>.<minor>.<patch>.yaml"]
@@ -192,9 +198,9 @@ def problems(path: Path) -> list[str]:
     schema_name = str(meta["schema"]) if envelope else f"{name}-{version.split('.')[0]}"
     if envelope and not schema_name.startswith(f"{name}-"):
         return [f"meta.schema {schema_name!r} is not a schema of {name}"]
-    schema_path = path.parent / "schemas" / f"{schema_name}.schema.json"
+    schema_path = (schema_dir or path.parent / "schemas") / f"{schema_name}.schema.json"
     if not schema_path.is_file():
-        return [f"no schema {schema_path.name} in {path.parent.name}/schemas/"]
+        return [f"no schema {schema_path.name} in {schema_path.parent.parent.name}/{schema_path.parent.name}/"]
     validator = Draft202012Validator(json.loads(schema_path.read_text("utf-8")), registry=registry())
     errors = sorted(validator.iter_errors(doc), key=lambda e: [str(x) for x in e.absolute_path])
     out = [f"schema: {'/'.join(map(str, e.absolute_path)) or '(top)'}: {e.message[:200]}" for e in errors]

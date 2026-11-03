@@ -11,3 +11,23 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv run tools/taxonomy-schema-validator.py --all
+
+  formats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - name: the release checker's tests
+        run: uv run tools/test_release_validator.py
+      - name: the archived formats, and no edit to a dated one
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$BASE" ] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            uv run tools/release-validator.py --formats --since "$BASE"
+          else
+            base=$(git merge-base HEAD origin/main 2>/dev/null || true)
+            uv run tools/release-validator.py --formats ${base:+--since "$base"}
+          fi

@@ -1,7 +1,8 @@
 # AGENTS.md
 
 The taxonomies of The Safety Stack (techniques, models, organisations): versioned YAML files, their JSON Schemas and
-a validator. Humans start at `README.md`; reports go through the issue forms (`CONTRIBUTING.md`).
+a validator; and the archive of the dataset's release formats (`formats/`) with the release checker. Humans start at
+`README.md`; reports go through the issue forms (`CONTRIBUTING.md`).
 
 ## Rules
 
@@ -18,10 +19,27 @@ a validator. Humans start at `README.md`; reports go through the issue forms (`C
   `taxonomies/schemas/catalogue-0.schema.json`.
 - Licences: everything outside `tools/` is CC0 1.0, `tools/` MIT.
 
+## Release formats
+
+- `formats/<major>.<minor>/` holds a format's schemas as the pipeline generates and strips them
+  (`formats/README.md`: the compatibility rules and how a version is cut). It is written by the pipeline's
+  `tools/release_format.py archive`, never by hand, and never edited once its `formats/CHANGELOG.md` entry is
+  dated (CI refuses it). A format change starts in the pipeline; a new directory comes with its changelog entry
+  (undated) in the same commit.
+- `tools/release-validator.py` is shipped byte-identical in every release and read by the pipeline (through its
+  `data-repo/` subtree) on every export. A change to it is a change of every future release's checker: keep its
+  checks within what the format promises, keep its tests (`tools/test_release_validator.py`, negative fixtures
+  included) passing, and add a major to `SUPPORTED_MAJORS` only with that major's checks.
+- Tags `format-<version>` and the date of a changelog entry are the maintainer's.
+
 ## Check
 
 ```bash
-uv run tools/taxonomy-schema-validator.py --all     # every file; CI runs the same on every push and pull request
+uv run tools/taxonomy-schema-validator.py --all     # every taxonomy file
+uv run tools/test_release_validator.py              # the release checker's tests
+uv run tools/release-validator.py --formats         # the archive of formats (CI adds --since <base>)
 ```
+
+CI runs all three on every push and pull request.
 
 Tags and pushes are made only on the maintainer's explicit instruction.
