@@ -23,9 +23,10 @@ a validator; and the archive of the dataset's release formats (`formats/`) with 
 
 - `formats/<major>.<minor>/` holds a format's schemas as the pipeline generates and strips them
   (`formats/README.md`: the compatibility rules and how a version is cut). It is written by the pipeline's
-  `tools/release_format.py archive`, never by hand, and never edited once its `formats/CHANGELOG.md` entry is
-  dated (CI refuses it). A format change starts in the pipeline; a new directory comes with its changelog entry
-  (undated) in the same commit.
+  `tools/release_format.py archive`, never by hand, and never edited once its version is tagged `format-<version>`
+  and its `formats/CHANGELOG.md` entry dated (the maintainer does both in one step; CI refuses the edit). A format
+  change starts in the pipeline; a new directory comes with its changelog entry (undated) and its digests in
+  `FORMAT_DIGESTS` of `tools/release-validator.py` in the same commit.
 - `tools/release-validator.py` is shipped byte-identical in every release and read by the pipeline (through its
   `data-repo/` subtree) on every export. A change to it is a change of every future release's checker: keep its
   checks within what the format promises, keep its tests (`tools/test_release_validator.py`, negative fixtures

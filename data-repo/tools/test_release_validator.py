@@ -51,6 +51,7 @@ def _obj(props: dict[str, Any], nullable: bool = False, arrow: str = "struct") -
 META = _obj({"config_id": _s("string", "string"), "override_ids": _s("array", "list", items=_s("string", "string")),
              "decided_at": _s(["string", "null"], "timestamp[us, tz=UTC]", format="date-time")})
 CORPUS = {"$schema": S2020, "$id": URN + "data/corpus.schema.json", "title": "one row", **_obj({
+    "release_id": _s("string", "string"),
     "doc_id": _s("string", "string", description="Document id."),
     "published_date": _s(["string", "null"], "date32[day]", format="date"),
     "identity": _obj({"override_ids": _s("array", "list", items=_s("string", "string")),
@@ -104,7 +105,7 @@ TCID = "safety_techniques:t-v1:m:11111111"
 
 def row(doc: str, **kw: Any) -> dict[str, Any]:
     meta = {"config_id": CID, "override_ids": [], "decided_at": AT}
-    r = {"doc_id": doc, "published_date": dt.date(2025, 1, 2),
+    r = {"release_id": "2026-11-03", "doc_id": doc, "published_date": dt.date(2025, 1, 2),
          "identity": {"override_ids": [], "members": [{"override_id": None}]},
          "annotations": {"screen": {"metadata": meta, "payload": {"verdict": "relevant", "buckets": ["paper"]}},
                          "safety_techniques": {"metadata": {**meta, "config_id": TCID},
@@ -123,17 +124,22 @@ def sha(p: Path) -> str:
 def write(root: Path, rows: list[dict[str, Any]] | None = None, *, configs: list[dict[str, Any]] | None = None,
           overrides: list[dict[str, Any]] | None = None, version: str | None = "1.0.0",
           corpus_schema: dict[str, Any] | None = None, release_schema: dict[str, Any] | None = None,
-          taxa: tuple[str, ...] = (), tweak: str | None = None) -> Path:
+          taxa: tuple[str, ...] = (), tweak: str | None = None, kv: dict[str, str] | None = None,
+          card: str | None = None) -> Path:
     """A release directory (every file listed in release.json with its sha256); ``taxa``: more taxonomy files of
     this repository (``<name>-<version>``) pinned beside techniques 1.1.0; ``tweak``: a line appended to the shipped
-    techniques file."""
+    techniques file; ``kv``: the parquet key-value metadata (default: the version and release id); ``card``: the
+    README.md (default: front matter with the version)."""
     root.mkdir(parents=True, exist_ok=True)
     (root / "data").mkdir()
     (root / "config").mkdir()
     (root / "taxonomies").mkdir()
     cs = corpus_schema or CORPUS
+    meta = kv if kv is not None else {"format_version": version or "", "release_id": "2026-11-03"}
     pq.write_table(pa.Table.from_pylist(rows if rows is not None else [row("sdoc000000001"), row("sdoc000000002")],
-                                        schema=pa.schema(list(arrow(cs)))), root / "data" / "corpus.parquet")
+                                        schema=pa.schema(list(arrow(cs)), metadata=meta)),
+                   root / "data" / "corpus.parquet")
+    (root / "README.md").write_text(card if card is not None else f"---\nformat_version: {version}\n---\n\n# Card\n")
     for rel, js in (("data/corpus.schema.json", cs), ("config/configs.schema.json", CONFIGS),
                     ("config/overrides.schema.json", OVERRIDES), ("release.schema.json", release_schema or RELEASE)):
         (root / rel).write_text(json.dumps(js, indent=2))
@@ -408,14 +414,22 @@ def _formats(root: Path, entry: str) -> Path:
     return f
 
 
+def _digests(f: Path) -> dict[str, dict[str, str]]:
+    return {d.name: {p.relative_to(d).as_posix(): rv.schema_digest(json.loads(p.read_text()))
+                     for p in d.rglob("*.json")} for d in f.iterdir() if d.is_dir()}
+
+
 def test_check_formats(tmp_path: Path) -> None:
     f = _formats(tmp_path, "## [1.0.0]")
-    assert rv.check_formats(f) == []
+    toy = _digests(f)
+    assert rv.check_formats(f, digests=toy) == []
+    assert rv.check_formats(f) == [f"formats/1.0/{rel}: tools/release-validator.py FORMAT_DIGESTS does not have its "
+                                   f"digest ({toy['1.0'][rel]})" for rel in sorted(rv.SCHEMA_FILES_1)]
     (f / "1.0" / "data" / "corpus.schema.json").write_text(json.dumps(CORPUS))  # not stripped
     (f / "1.0" / "extra.json").write_text("{}")
     (f / "1.1").mkdir()
     (f / "CHANGELOG.md").write_text("# Changelog\n")
-    got = rv.check_formats(f)
+    got = rv.check_formats(f, digests=toy)
     assert "formats/1.0: no entry [1.0.<patch>] in formats/CHANGELOG.md" in got
     assert "formats/1.0/data/corpus.schema.json: keeps description, title, examples or $comment" in got
     assert "formats/1.0/extra.json: not a schema file of the format" in got
@@ -427,18 +441,49 @@ def _git(cwd: Path, *args: str) -> None:
                    capture_output=True)
 
 
-@pytest.mark.parametrize(("entry", "flagged"), [("## [1.0.0] - 2026-11-20", True), ("## [1.0.0]", False)])
+def _edit(f: Path) -> None:
+    p = f / "1.0" / "config" / "configs.schema.json"
+    p.write_text(p.read_text().replace('"array"', '"object"', 1))
+
+
+@pytest.mark.parametrize(("entry", "flagged"), [("## [1.0.0] - 2026-11-20", True), ("## [1.0.0]", False),
+                                                ("## [1.0.0] \u2013 2026-11-20", True),  # an en dash dates it too
+                                                ("## [1.0.0] \u2014 2026-11-20", True)])
 def test_an_edit_to_a_dated_format_is_refused(tmp_path: Path, entry: str, flagged: bool) -> None:
     f = _formats(tmp_path, entry)
     _git(tmp_path, "init", "-q")
     _git(tmp_path, "add", "formats")
     _git(tmp_path, "commit", "-q", "-m", "archive")
-    p = f / "1.0" / "config" / "configs.schema.json"
-    p.write_text(p.read_text().replace('"array"', '"object"', 1))
+    _edit(f)
     _git(tmp_path, "commit", "-q", "-am", "edit")
-    got = rv.check_formats(f, "HEAD~1")
+    got = rv.check_formats(f, "HEAD~1", digests=_digests(f))
     assert got == (["formats/1.0/config/configs.schema.json: changed since HEAD~1 (M), but format 1.0 was dated "
                     "there; an archived format is never edited"] if flagged else [])
+
+
+def test_undating_an_entry_is_refused(tmp_path: Path) -> None:
+    f = _formats(tmp_path, "## [1.0.0] - 2026-11-20")
+    _git(tmp_path, "init", "-q")
+    _git(tmp_path, "add", "formats")
+    _git(tmp_path, "commit", "-q", "-m", "archive")
+    (f / "CHANGELOG.md").write_text("# Changelog\n\n## [1.0.0]\n\n- First.\n")  # undated, to edit in a later push
+    _git(tmp_path, "commit", "-q", "-am", "undate")
+    assert rv.check_formats(f, "HEAD~1", digests=_digests(f)) == [
+        "formats/CHANGELOG.md [1.0.0]: dated 2026-11-20 at HEAD~1, undated now; a dated entry stays as it is"]
+
+
+def test_a_tagged_format_never_changes(tmp_path: Path) -> None:
+    """Undate, edit, date again across pushes: each push's --since check passes, the tag does not."""
+    f = _formats(tmp_path, "## [1.0.0]")
+    _git(tmp_path, "init", "-q")
+    _git(tmp_path, "add", "formats")
+    _git(tmp_path, "commit", "-q", "-m", "archive")
+    _git(tmp_path, "tag", "format-1.0.0")
+    assert rv.check_formats(f, digests=_digests(f)) == []
+    _edit(f)
+    _git(tmp_path, "commit", "-q", "-am", "edit while undated")
+    assert rv.check_formats(f, "HEAD~1", digests=_digests(f)) == [
+        "formats/1.0/config/configs.schema.json: differs from tag format-1.0.0 (M); an archived format is never edited"]
 
 
 def test_the_archive_compare_of_a_release(tmp_path: Path, good: Path) -> None:
@@ -452,6 +497,78 @@ def test_the_archive_compare_of_a_release(tmp_path: Path, good: Path) -> None:
     got = problems(rv.check_release(good, archive=f), "archive")
     assert len(got) == 1 and got[0].startswith("config/overrides.schema.json: differs from "
                                                "formats/1.0/config/overrides.schema.json: /properties/kind/enum")
+
+
+
+# ---------------------------------------------------------------- the version in every place; paths; status
+@pytest.mark.parametrize(("kw", "want"), [
+    ({"kv": {"release_id": "2026-11-03"}}, "data/corpus.parquet: its key-value metadata has no format_version"),
+    ({"kv": {"format_version": "1.0.1", "release_id": "2026-11-03"}},
+     "data/corpus.parquet: key-value format_version '1.0.1', release.json '1.0.0'"),
+    ({"kv": {"format_version": "1.0.0", "release_id": "2026-11-02"}},
+     "data/corpus.parquet: key-value release_id '2026-11-02', release.json '2026-11-03'"),
+    ({"rows": [row("sdoc000000001", release_id="2026-11-02")]},
+     "data/corpus.parquet release_id: rows carry ['2026-11-02'], release.json '2026-11-03'"),
+    ({"card": "# Card without front matter\n"}, "README.md: no YAML front matter"),
+    ({"card": "---\nformat_version: 1.0.9\n---\n"}, "README.md: front matter format_version '1.0.9', release.json "
+                                                     "'1.0.0'"),
+])
+def test_the_version_and_release_id_agree_everywhere(tmp_path: Path, kw: dict[str, Any], want: str) -> None:
+    rep = rv.check_release(write(tmp_path / "r", **kw), archive=False)
+    assert problems(rep, "versions") == [want], rep.text()
+
+
+@pytest.mark.parametrize("path", ["../outside.txt", "/etc/hostname", "data/../../outside.txt"])
+def test_a_listed_path_outside_the_release_is_refused_unread(tmp_path: Path, good: Path, path: str) -> None:
+    (tmp_path / "outside.txt").write_text("x")
+    doc = json.loads((good / "release.json").read_text())
+    doc["files"].append({"path": path, "bytes": 1, "sha256": "0" * 64})
+    (good / "release.json").write_text(json.dumps(doc))
+    assert problems(rv.check_release(good, archive=False), "manifest") == [
+        f"{path}: a path outside the release directory (absolute or with ..)"]
+
+
+def test_a_failing_format_independent_check_is_invalid_whatever_the_version(tmp_path: Path) -> None:
+    own = {**RELEASE, "required": ["files"], "properties": {**RELEASE["properties"], "format_version": {}}}
+    root = write(tmp_path / "r", version="2.0.0", release_schema=own)
+    assert rv.check_release(root, archive=False).exit_code == rv.EXIT_UNSUPPORTED
+    (root / "config" / "configs.json").write_text("[]")
+    rep = rv.check_release(root, archive=False)
+    assert rep.status == "invalid" and rep.exit_code == rv.EXIT_INVALID
+
+
+def test_a_standalone_run_compares_the_schemas_with_its_digests(tmp_path: Path, good: Path,
+                                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    """Outside a checkout of this repository (a release's own copy), the archived schemas' digests in this file."""
+    f = _formats(tmp_path, "## [1.0.0]")
+    monkeypatch.setattr(rv, "DATA_REPO", None)
+    monkeypatch.setattr(rv, "FORMAT_DIGESTS", _digests(f))
+    assert rv.check_release(good).status == "valid"
+    js = json.loads((good / "config" / "overrides.schema.json").read_text())
+    js["properties"]["kind"]["description"] = "Reworded."  # prose: the same format
+    (good / "config" / "overrides.schema.json").write_text(json.dumps(js))
+    _rehash(good)
+    assert rv.check_release(good).status == "valid"
+    js["properties"]["kind"]["enum"].append("manual_source")  # structure: not the archived format
+    (good / "config" / "overrides.schema.json").write_text(json.dumps(js))
+    _rehash(good)
+    assert problems(rv.check_release(good), "archive") == [
+        "config/overrides.schema.json: differs from format 1.0 as archived (this checker's digest of "
+        "formats/1.0/config/overrides.schema.json)"]
+    monkeypatch.setattr(rv, "FORMAT_DIGESTS", {})
+    rep = rv.check_release(good)
+    assert rep.status == "valid" and any("knows no digests of format 1.0" in x for x in rep.not_checked)
+
+
+def _rehash(root: Path) -> None:
+    doc = json.loads((root / "release.json").read_text())
+    for fe in doc["files"]:
+        fe["bytes"], fe["sha256"] = (root / fe["path"]).stat().st_size, sha(root / fe["path"])
+    (root / "release.json").write_text(json.dumps(doc))
+
+
+def test_the_repositorys_archive_has_its_digests_here() -> None:
+    assert rv.check_formats(TOOLS.parent / "formats") == []
 
 
 if __name__ == "__main__":
