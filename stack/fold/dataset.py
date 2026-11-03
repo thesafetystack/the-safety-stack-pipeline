@@ -3048,6 +3048,14 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
                         f"{lang} {_fmt(c)}" for lang, c in stats["languages"]) + ".\n")
     org_vals = _orgs_vals(doc)
     coverage.append(f"\n{org_vals['orgs_coverage']}\n")
+    # the numbers list: organisations in the shipped vocabulary; the triage count the quality section prints
+    n_orgs = len((yamlio.load((stage / org_vals["orgs_file"]).read_text("utf-8")) or {}).get("entries") or [])
+    if not n_orgs:
+        raise DatasetError(f"{org_vals['orgs_file']}: the card would count 0 organisations (no `entries`)")
+    triage_not_relevant = (jev.record.get("missed_relevant") or {}).get("not_relevant_records")
+    if triage_not_relevant is None:
+        raise DatasetError("judge eval: the record has no missed_relevant.not_relevant_records (the card's selection "
+                           "line)")
     pol = doc["policy"]
     record = (f"- Release `{doc['release_id']}`, variant `{doc['variant']}`, created {doc['created_at']}.\n"
               f"- Built from pipeline build `{doc['build']['build_id']}` (plan `{doc['build']['plan']}`, "
@@ -3073,6 +3081,8 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
             "early_other": _fmt(stats["early"]["other"]), "early_before": EARLY_BEFORE,
             "files_table": files_table(m, stage, counts), "release_record": record, "field_table": table,
             "rows_in": _fmt(doc["rows"]["in"]), "format_version": doc["format_version"],
+            "screened_out": _fmt(doc["rows"]["filtered_out"]), "triage_not_relevant": _fmt(triage_not_relevant),
+            "n_channels": _fmt(len(stats["channels"])), "n_orgs": _fmt(n_orgs),
             "quality_section": jev.section.rstrip(), **org_vals,
             # the bundle: what is written so far, plus this card and release.json
             "n_files": sum(p.is_file() for p in stage.rglob("*")) + 2}
