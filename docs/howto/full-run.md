@@ -154,3 +154,6 @@ Some revisions add prepared overrides to the store before their first build (the
 D768, D772, D774). The manual sources in the first three are URLs and ids of the works; the other overrides
 (`lineage_origins.yaml`'s screen and relevance verdicts, all of `data_quality_2026_10.yaml`) name documents of series
 `batch-import` by their ids, so they apply only to that series.
+
+The estimates made before the 2026-10 full fetch, the standalone S2 collect's expected times and the open choices of
+that time: `docs/repo-history/superseded-records.md`.

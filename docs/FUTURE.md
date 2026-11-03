@@ -15,6 +15,9 @@ the code on 2026-11-03.
   `(conversation_id, author)`, D243-D247) is implemented and tested on fakes and a scratch store, and is in no plan;
   its plan line is in `workflows/collect/x-lookup/README.md`. Full-archive search (`/2/tweets/search/all`) works on
   the current API tier (D247), so threads older than a week can be searched.
+- **`same_as` links between documents.** Not to be built: replaced by alternate keys (storing alternate URLs is
+  simpler than a dedicated `same_as` relation). Implemented as the key adders and matchers of
+  `stack/identity.py` (D251-D253; `docs/howto/duplicates-and-urls.md`).
 
 ## Egress and fetch safety (D651, D680)
 
@@ -57,3 +60,5 @@ Open choices also recorded as decision rows are not repeated (D291-D293, D303).
 - **Gate standings refuse an unreadable superseded `documents` file** (`stack/gate.py` `standings`, through the one
   read path of D298). Every file in the stores of 2026-10-13 read, so nothing changed then. Default: refuse. Open for
   confirmation.
+
+Items resolved since they were listed here: `docs/repo-history/superseded-records.md`.

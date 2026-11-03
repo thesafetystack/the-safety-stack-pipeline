@@ -149,4 +149,4 @@ came from collectors that already deduplicate within a channel by slug, and no t
 new rules matter for link targets (§3.4 of `docs/design/link-crawling.md`: collisions, `www.` pairs, DOI-in-path
 papers) and for manual sources; the synthetic test shows a `www.`/bare merge and an OpenReview split end to end. A
 migration run writes one chain: a first attempt that wrote two chains' parts in one run failed before publishing (two
-staged files of one family shared a file name).
+staged files of one family shared a file name). The result table of that run: `docs/repo-history/superseded-records.md`.
