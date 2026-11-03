@@ -7,8 +7,8 @@ repository (D790; `tools/fetch_eval_texts.py`).
 A new set (techpipe D630) for `stack eval technique_staged` against the 234-entry v0.9 draft
 `taxonomy/taxonomy-v0.9-234.yaml` (D625), frozen with prompt set technique-staged-v3. 120 documents drawn from a
 read-only production store copy, stratified by doc-type group and length band. Gold: two independent gpt-6-astra
-labellings, reconciled by gpt-6-astra on 25 items and by a deterministic merge rule on the other 95 (the reconciler was not
-available for them), then a blind verification of 30 items (Opus labels, disputes adjudicated by Sonnet). Everything was made
+labellings, reconciled by gpt-6-astra on 25 items and by a deterministic merge rule on the other 95 (the Codex workspace
+ran out of credits), then a blind verification of 30 items (Opus labels, disputes adjudicated by Sonnet). Everything was made
 outside the repository and staged here by `scripts/stage.py`.
 
 ## Composition
@@ -46,7 +46,8 @@ a role above `mentioned`; every level alternative is structurally linked to its 
 - L1 (`adj-X.jsonl`, `prompts/L1.md`, document-first) and L2 (`adj-Y.jsonl`, `prompts/L2.md`, inventory-first), both
   gpt-6-astra: 1,092 and 1,105 rows; L1 vs L2 slug F1 0.923 (group nodes out). Both are the same model, so the two
   labellings are correlated; 17a's cross-model A vs B agreement was 0.796.
-- Reconciliation (`astra-reconciler.jsonl`, `prompts/RECONCILE.md`, gpt-6-astra): 25 items; the other 95 items take the deterministic merge rule
+- Reconciliation (`astra-reconciler.jsonl`, `prompts/RECONCILE.md`, gpt-6-astra): 25 items, then the Codex workspace
+  ran out of credits (2026-10-18, 02:12 UTC). The other 95 items take the deterministic merge rule
   (`adjudication/scripts/merge.py`, its docstring is the rule): the union of the two labellings' slugs, sources X / Y,
   per role the maximum, a single-labeller row capped at `med`, quote and reason from the higher-confidence row.
   Calibrated against the reconciler on its 25 items: strict slug F1 0.976 (the merge keeps 8 rows the reconciler

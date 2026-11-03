@@ -21,8 +21,10 @@ directory outside the repository.
 
 ## Sets
 
-Status: **current** (in use as a measure or reference), **superseded** (kept as the record of a decision or for the
-tests), **protocol** (a gate or confirmation run once under a protocol fixed in advance; closed).
+Status: **current** (in use as a measure or reference), **current (non-production stage)** (the set of an annotator
+stage that is in the code but not in the production plan), **superseded** (kept as the record of a decision or for
+the tests), **protocol** (a gate or confirmation run once under a protocol fixed in advance; closed). Where a README
+keeps the measurements recorded at the time, they are under "Record (as written …)", below its current status.
 
 | task | set | status | what |
 |---|---|---|---|
@@ -40,7 +42,7 @@ tests), **protocol** (a gate or confirmation run once under a protocol fixed in 
 | model_roles | `2026-10-16a` | superseded by `2026-10-17a` | 2026-10-13a re-frozen at the D591 merge |
 | model_roles | `2026-10-17a` | current | 37 items with gold; the scored model_roles set |
 | model_roles | `2026-10-23a` | current (inputs only) | Gold v3 sample (100 documents); `model-roles-v3b` chosen on it (D708) |
-| technique_roles | `2026-10-13a` | superseded (stage not in production) | 25 documents; the technique_roles stage's own set |
+| technique_roles | `2026-10-13a` | current (non-production stage) | 25 documents; the technique_roles stage's own set |
 | technique_staged | `2026-10-17a`, `-17b`, `-18a` | superseded by `2026-10-18c`, `2026-10-23a` | Gold v1 (36 documents) and its revisions |
 | technique_staged | `2026-10-18b` | superseded by `2026-10-18c` | Gold v2, 120 documents |
 | technique_staged | `2026-10-18c` | superseded by `2026-10-23a` | Gold v2 revised; held-out set of D708 |
