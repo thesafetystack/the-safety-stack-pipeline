@@ -4,7 +4,8 @@ A plan is one YAML file here: the stages a build runs, their pins, caps and opti
 `stack/plan.py` (pydantic, unknown keys refused); `uv run --no-sync python -c "from stack.plan import load_plan;
 load_plan('configs/plans/<plan>.yaml')"` checks one. A plan names a **series**: its lines read and write
 `data/<family>/<series>/` directories, and a build continues from each directory's head, whichever build or run
-wrote it. The plans in the tree set `series: <plan name>` (std-v3 reads and writes `data/<family>/std-v3/`, D378).
+wrote it. Most plans in the tree set `series: <plan name>` (std-v3 reads and writes `data/<family>/std-v3/`, D378);
+the production plan's series is `batch-import`.
 Plans that share a series (e.g. a collect-only and an acquire-only plan, or dated plans sharing a `weekly` series)
 extend the same directories; nothing is selected by plan name (`docs/OPERATE.md`, "Data files: series and chains").
 The series is document identity (ids are minted per series): a build into a series with no `documents` while
@@ -15,12 +16,12 @@ plan and keep it (the full fetch: `batch-import`; the e2e basis: `main`).
 
 | Plan | Use |
 |---|---|
-| `batch-2026-10a.yaml` | The full fetch of 2026-10 into series `batch-import` (window 2025-10-01 to now, backfilled from 2024-01-01 by its revision 2, from 2020-01-01 by its revision 3 (D641) and from 2015-01-01, the forums from 2006-01-01, by its revision 4 (D646, with the two legacy concept groups; af_graphql holes in bounded spans, D645); revision 5, D663: OpenAlex conference papers and the pre-2020 cut exception, so one full OpenAlex re-sweep, roster ids, the S2 exception, so one S2 re-sweep, triage v4 with a re-ask of its question scope (screen v13 staged for the screen's next change), the manual sources through `collect.manual` and `collect.links`; revision 7, D710: the corpus annotations `annotate.technique_staged` and `annotate.model_roles` on the screen-relevant rows, first as a pilot of `max_rows: 1000`); forums holes sent only their upper bound, `query_from` for the one query still over the 10,000-hit cap, D642; `docs/howto/full-run.md`): std-v3's collectors plus forums and `collect.feeds`, triage `title_basis`, acquire newest first with `arxiv_pdf: on_miss`, 256 LLM workers since D692 (32 before). Run as two builds (its header: the lookups need a gather before them); its runs are recorded in the store's run records. |
-| `std-v3.yaml` | The full-run plan: backfill from 2025-10-01 and the weekly runs (`docs/howto/full-run.md`); its real runs are recorded in the store's run records. |
-| `std-v2.yaml` | The production shape before round 5's full-run changes; `std-v3` is std-v2 plus those. |
+| `batch-2026-10a.yaml` | **Production**: the plan the weekly cycle builds (`docs/DEPLOY-railway.md`), series `batch-import`. Its first revision was the full fetch of 2026-10 from 2025-10-01; later revisions backfilled to 2015 (the forums to 2006) and added the link, manual and feed collectors, `annotate.technique_staged`, `model_roles`, `affiliation_orgs` and `translation`. The plan's header lists every revision with its D-number; how to run a full fetch or backfill with it: `docs/howto/full-run.md`. |
+| `std-v3.yaml` | The earlier full-run plan (backfill from 2025-10-01, weekly runs), superseded by `batch-2026-10a`; kept for its stored runs and tests. |
+| `std-v2.yaml` | The production shape before `std-v3`'s full-run changes; `std-v3` is std-v2 plus those. |
 | `dev-v2-m4.yaml` | The dev store's real plan: small collector windows, `max_rows` caps, dev budgets. |
-| `ann-scratch.yaml` | A round-5 copy of `dev-v2-m4` (screen-v11, no worker counts; the header says what moved on since) plus the `model_roles` (model mentions and roles in one stage, D591) and `technique_roles` lines (round 5 real runs). |
-| `links-scratch.yaml` | Round 4's link collection: `collect.feeds`, `collect.manual`, `collect.links` (postponed; `docs/FUTURE.md`). |
+| `ann-scratch.yaml` | A copy of `dev-v2-m4` (screen-v11, no worker counts; the header says what moved on since) plus the `model_roles` (model mentions and roles in one stage, D591) and `technique_roles` lines, for the annotators' first real runs. |
+| `links-scratch.yaml` | The first link-collection plan: `collect.feeds`, `collect.manual`, `collect.links` (all three now run in production; the newsletters' link harvest is still off, `docs/FUTURE.md`). |
 | `dev-v2.yaml` | The synthetic test worlds' plan, pinned by test fixtures; a sql-only gate. Not for real stores. |
 
 What each plan is and what loads it. Every file here is validated by `tests/test_plan_files.py` and
@@ -28,12 +29,12 @@ What each plan is and what loads it. Every file here is validated by `tests/test
 
 | Plan | Kind | Loaded by |
 |---|---|---|
-| `batch-2026-10a` | production (the full fetch, series `batch-import`) | the real builds; `tests/test_plan_files.py` |
-| `std-v3` | production | the real builds; `tests/test_cli.py`, `tests/test_plan_files.py` |
+| `batch-2026-10a` | production (series `batch-import`) | the weekly cycle (`STACK_SCHED_PLAN`); `tests/test_plan_files.py` |
+| `std-v3` | production before `batch-2026-10a`, superseded by it | `tests/test_cli.py`, `tests/test_plan_files.py` |
 | `std-v2` | production before `std-v3`, superseded by it | `tests/test_stage_runner.py`, `tests/test_affiliation_stage.py` |
 | `dev-v2-m4` | dev plan (the dev store) | `tests/test_screen_sr_schema.py`; the example in `stack/annotations.py` |
 | `ann-scratch` | scratch plan (annotator real runs) | `tests/test_annotate_inputs.py` |
-| `links-scratch` | scratch plan (link collection, postponed) | `tests/test_collect_manual.py` |
+| `links-scratch` | scratch plan (link collection) | `tests/test_collect_manual.py` |
 | `dev-v2` | test fixture | the synthetic worlds and fakes (`tests/synth/world.py`, `tests/fakes/annotate.py`); 35 files under `tests/` name it |
 
 ## Fields
