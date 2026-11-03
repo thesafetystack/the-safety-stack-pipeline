@@ -6,7 +6,8 @@ annotate, release. Read this before editing anything. Humans start at `README.md
 
 This repository is public, and production runs from it: a weekly cycle on Railway (`tools/scheduled_run.py cycle`,
 `docs/DEPLOY-railway.md`) built from branch `deploy/railway`, which the maintainers fast-forward to reviewed commits
-of `main`. Work on a branch off `main`; never push to `deploy/railway`.
+of `main`. Work on a branch off `main`; push (to `deploy/railway` or anywhere) only on the maintainer's explicit
+instruction.
 
 ## Architecture
 

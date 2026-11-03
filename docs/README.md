@@ -1,58 +1,61 @@
 # The docs: map, references, words
 
-The pipeline runs in production as a weekly cycle on Railway (`DEPLOY-railway.md`). "v4" is the working label of
-its file-based design (a store of immutable parquet files and blobs, no database), which replaced v3; older labels
-(v1, v3, M1-M5) name generations and plans that are not in this repository.
+Start with the root `README.md`, then `CONCEPTS.md`, `SETUP.md`, `OPERATE.md` and `CONSUME.md`; `howto/inspect.md`
+shows a build from the inside. "v4" is the working name of the pipeline's file-based design (a store of immutable
+parquet files and blobs, no database), which replaced v3; v1, v3 and their code are not in this repository.
 
 ## Docs
-
-Start with `CONCEPTS.md` after the root `README.md`; then `SETUP.md`, `OPERATE.md` and `CONSUME.md`.
 
 | Doc | What it holds |
 |---|---|
 | `CONCEPTS.md` | The concepts the other docs assume: store, families, series and chains, runs and builds, plans and stages, the `documents` row, identity, roles and snapshots, pins and digests, folds, verify. |
 | `SETUP.md` | Install, `.env` and keys, spend caps, stores, the offline route, a first real build, tests. |
-| `OPERATE.md` | Commands; builds, overrides and passes; `incomplete` builds; standalone runs (`--in`, `--out`); the store, jobs and upload (the S3 mirror, data files in series directories and the publish rule, ticks and liveness, logs, recovery, `store push`, two writers and their repair, spend, crash leftovers, `stack status`; inspecting a document and a build with `stack show`); verify; the convert pin; failed fetches; family format changes; keeping answers across a config change (accepted configs); re-keying. |
-| `CONSUME.md` | What a consumer opens; the entry query; the duckdb macros; annotation records; text quality; releases and the site query. |
-| `howto/` | `inspect.md` (what a build fetched), `why-missing.md`, `full-run.md`, `s3-store.md`, `container-lifecycle.md`, `concurrency.md`, `overrides.md`, `duplicates-and-urls.md`, `add-collector.md`, `add-feed.md`, `add-annotator.md`, `change-prompt-pin.md`, `change-family-format.md`, `dataset-release.md`. |
-| `DEPLOY-railway.md` | The scheduled production cycle on Railway (deployed; cycles since 2026-10-31, D780-D786): what a cycle does, the image, the services and variables, release gating, operating it (`tools/scheduled_run.py`). |
-| `FUTURE.md` | Postponed work: what is built but not in a production plan, and what is not to be built. |
-| `DESIGN.md` | The design (v4f): families, blocks, states, stage contracts, folds, identity, checks (App. B), schemas (App. A). Written before the implementation; its "Deltas" block and per-subsection "Stale" notes say where the code moved on, and where they disagree the code wins. |
-| `DECISIONS.md` | Every decision taken while implementing, one row each, append-only: a later row amends or supersedes an earlier one. A row marked "default taken" is in force until a later row overrides it. |
+| `OPERATE.md` | Running builds and stages: plans, overrides and passes, `incomplete` builds, standalone runs, the store, jobs and upload, spend, verify, the convert pin, failed fetches, family format changes, keeping answers across a config change, re-keying. |
+| `CONSUME.md` | Reading a build or a release: the files, the entry query, the duckdb macros, annotation records, text quality. |
+| `DEPLOY-railway.md` | The production cycle on Railway: what a cycle does, the image, the services and variables, release gating, operating it (`tools/scheduled_run.py`). |
+| `FUTURE.md` | Postponed work: what is built but not in a production plan, what is not decided, and other open items. |
+| `DESIGN.md` | The design: families, blocks, states, stage contracts, folds, identity, checks (App. B), schemas (App. A). Written before the implementation; its "Stale" notes say where the code moved on, and where they disagree the code wins. |
+| `DECISIONS.md` | Every decision taken while implementing, one row each (`D<n>`), append-only: a later row amends or supersedes an earlier one. A row marked "default taken" is in force until a later row overrides it. |
 
-Removed material (the M1-M5 plan, whose §9 is now `FUTURE.md`; implementation boards; design mocks; status notes):
-root `README.md`, "What is not in this repository".
+**How-tos** (`howto/`): `inspect.md` (what a build fetched), `why-missing.md` (why a document is not in a build),
+`full-run.md` (the full fetch), `s3-store.md`, `container-lifecycle.md`, `concurrency.md`, `overrides.md`,
+`duplicates-and-urls.md`, `add-collector.md`, `add-feed.md`, `add-annotator.md`, `change-prompt-pin.md`,
+`change-family-format.md`, `dataset-release.md`.
 
-Gitignored, local to the machine that ran them: `v4/store-dev/` (the dev store), the other `v4/store-*/` copies,
-`v4/evals-store/` (eval runs), `v4/mirror/` (the local mirrors of `s3://` stores). Each run's spend is in its run record
-(`SETUP.md` §3).
+**Design notes** (`design/`), each the record of one piece of work; code comments cite their sections:
 
-## The S3 store: implemented and not
+| Note | Subject |
+|---|---|
+| `catalogue-envelope.md` | One structure for the taxonomy files (techniques 1.1.0, models 1.1.0, orgs 0.2.x). |
+| `collection-yield.md` | Which queries, authors and feeds flood the pipeline; the backfill cuts of 2026-10 (`configs/channels.yaml` cites it). |
+| `license-classes.md` | The channels' licence classes (D8). |
+| `link-crawling.md` | Outbound links of linking documents as candidate sources (`collect.links`). |
+| `openalex-author-ids.md` | OpenAlex author ids for the researcher roster (`tools/resolve_openalex_authors.py`). |
+| `short-field-translation.md` | English translations of non-English titles and abstracts (D755). |
+| `technique-quality-2026-10.md` | Technique extraction quality, October 2026: what was tried, measured and decided. |
+| `url-normalisation.md` | The URL module (`stack/urls.py`) and its rules. |
 
-Implemented (D320-D366; the series layout, D372-D375; `OPERATE.md`, "The store, jobs and
-upload"): `s3://<bucket>/<prefix>` stores with a local mirror, records as the index, data files in series directories
-`data/<family>/<series>/` with one publish rule and create-only data PUTs, runs that stand alone on explicit `--in`
-paths, jobs with ticks, markers and logs, upload per run at publish, `--no-upload`,
-recovery at an uploading job's start, `stack store push` and `--check`, self-cancel on failing ticks, flat blobs in
-the store's prefix, spend in run records with per-run caps, `stack status` over the index. Not implemented: data gc
-(none; D356), the arXiv PDF background lane, and any lock (one writer per store is a discipline). The
-one-off migration of existing stores to the new layout is a script outside this repository. The S3 parts are tested
-against an in-memory fake (`tests/fakes/s3.py`); runs against a real bucket are in the stores' run records.
+**Scope notes** (`scope/`): `shallow-review.md` (the Shallow Review's scope, which the `shallow_review_relevance`
+screen question asks about) and `sr-2025-repo-criteria.md` (the screening criteria of the Shallow Review 2025
+repository, as implemented there).
 
-Reading order for a newcomer: the root `README.md`, `CONCEPTS.md`, `SETUP.md`, `OPERATE.md`, `CONSUME.md`,
-`howto/inspect.md`; for the design behind them, DESIGN §0 (one-page map), §2 (consumer interface), §3 (stage contracts)
-and App. A, read with their "Stale" notes; a v3 developer starts with DESIGN §11 (v3 → v4 glossary) and §9.
+Elsewhere: `workflows/README.md` (stages and prompts), `configs/README.md` and `configs/plans/README.md`,
+`taxonomy/README.md`, `evals/README.md`, `tools/README.md`, `spec/README.md`.
+
+Gitignored, local to the machine that ran them: `v4/store-dev/` (the CLI's default store), other `v4/store-*/`
+copies, `v4/evals-store/` (eval runs), `v4/mirror/` (local mirrors of `s3://` stores). S3 stores are implemented
+with a local mirror, upload at publish and recovery (`OPERATE.md`, "The store, jobs and upload"; `howto/s3-store.md`);
+there is no data garbage collection (D356) and no lock: one writer per store is a discipline.
 
 ## References used across the docs
 
-- `D<n>`: a row of `DECISIONS.md`; `D<n> (X)` names the track that took it.
+- `D<n>`: a row of `DECISIONS.md`; `D<n> (X)` names the line of work that took it.
 - `X6`, `V11`, `S7`, …: checks of DESIGN Appendix B, as `stack verify` prints them.
-- Other labels in older rows and code comments (milestones `M1`-`M5` and tasks `T<n.m>` of the M1-M5 plan, `PLAN §n`,
-  rounds 2-5, track letters and names such as `A` or `T-S3`, review findings such as `R<n>-<m>`, design-review rules
-  `C<n>`, `E<n>`, `F<n>`) name plans, boards and reviews that are not in this repository; the sentence they annotate
-  states the rule. `C#` in `DECISIONS.md` is a different list (census contradictions).
-- People: Tomáš Gavenčiak (owner; decides the "default taken, for Tomáš" rows), Dan (v3 developer),
-  Jake (author of the technique catalogue `taxonomy/taxonomy-v0.8.yaml`).
+- Older rows and code comments also carry labels of plans, task boards and reviews that are not in this repository
+  (milestones `M1`-`M5`, tasks `T<n.m>`, rounds, track letters, review findings `R<n>-<m>`); the sentence they
+  annotate states the rule. `C#` in `DECISIONS.md` is a different list (census contradictions).
+- People named in the docs: Tomáš Gavenčiak (maintainer), Dan (the v3 developer), Jake (author of the technique
+  catalogue `taxonomy/taxonomy-v0.8.yaml`).
 
 ## Words that mean several things
 
