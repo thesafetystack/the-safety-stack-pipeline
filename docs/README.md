@@ -15,7 +15,7 @@ parquet files and blobs, no database), which replaced v3; v1, v3 and their code 
 | `DEPLOY-railway.md` | The production cycle on Railway: what a cycle does, the image, the services and variables, release gating, operating it (`tools/scheduled_run.py`). |
 | `FUTURE.md` | Postponed work: what is built but not in a production plan, what is not to be built, what is not decided, and other open items. |
 | `DESIGN.md` | The design: families, blocks, states, stage contracts, folds, identity, checks (App. B), schemas (App. A). Written before the implementation; its "Stale" notes say where the code moved on, and where they disagree the code wins. Read §0 (one-page map), §2 (consumer interface), §3 (stage contracts) and App. A with their "Stale" notes; a v3 developer starts with §11 (v3 → v4 glossary) and §9. |
-| `DECISIONS.md` | Every decision taken while implementing, one row each (`D<n>`), append-only: a later row amends or supersedes an earlier one. A row marked "default taken" is in force until a later row overrides it. |
+| `DECISIONS.md` | Every decision taken while implementing, one row each (`D<n>`), append-only: a later row amends or supersedes an earlier one. A row marked "default taken" is in force until a later row overrides it. D801 on; D0-D800 are in `repo-history/decisions-D1-D800.md`. |
 
 **How-tos** (`howto/`): `inspect.md` (what a build fetched), `why-missing.md` (why a document is not in a build),
 `full-run.md` (the full fetch), `s3-store.md`, `container-lifecycle.md`, `concurrency.md`, `overrides.md`,
@@ -40,7 +40,7 @@ screen question asks about) and `sr-2025-repo-criteria.md` (the screening criter
 repository, as implemented there).
 
 **Context** (`repo-history/`): `pre-repo-history.md` (how the pipeline was developed before this repository, and
-who did the work) and `superseded-records.md` (passages moved out of the current docs: estimates, development-store
+who did the work), `decisions-D1-D800.md` (the decisions up to D800, as written) and `superseded-records.md` (passages moved out of the current docs: estimates, development-store
 results, the design's provenance, resolved items).
 
 Elsewhere: `workflows/README.md` (stages and prompts), `configs/README.md` and `configs/plans/README.md`,
@@ -53,7 +53,8 @@ there is no data garbage collection (D356) and no lock: one writer per store is 
 
 ## References used across the docs
 
-- `D<n>`: a row of `DECISIONS.md`; `D<n> (X)` names the line of work that took it.
+- `D<n>`: a row of `DECISIONS.md` (from D801) or of `repo-history/decisions-D1-D800.md` (D0-D800); `D<n> (X)` names
+  the line of work that took it.
 - `X6`, `V11`, `S7`, …: checks of DESIGN Appendix B, as `stack verify` prints them.
 - `(C<n>)`, `(E<n>)`, `F<n>` in `DESIGN.md`: rules of the design review's contract (DESIGN header), which is not in
   this repository; the sentence they annotate states the rule. B1-B3 are the design's three branches.
