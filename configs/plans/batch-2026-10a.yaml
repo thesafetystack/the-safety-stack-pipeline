@@ -133,6 +133,14 @@
 # operator imports both prepared override files (`stack overrides add <file> --out data/overrides/batch-import/`,
 # `--dry-run` first): configs/overrides/china_coverage.yaml and configs/overrides/data_quality_2026_10.yaml (D768,
 # D772, D774). The plan digest changes (D779 has the value and what a first build asks).
+# Revision 12, the S2 cap (2026-11-02, D800): collect.semantic_scholar's `max_records` (the per-query result cap)
+# moves from 100000 to 250000. A query with no coverage yet is sent no date filter on its first pass (the floor
+# 2015-01-01 is below the channel's `from_date` 2020-01-01) and pages its whole history; one query, by inference
+# `group:llm-safety` of revision 11 (~115-120k papers), exceeds 100,000, so its pass was truncated, claimed nothing
+# and stayed due, and every cycle's S2 run ended scope-incomplete (run rt4ppc7m3cs7m, 2026-10-31: 100,000 papers in
+# 101 pages, one query truncated). Its clean first pass is ~120 pages (~30-40 min at the observed ~15 s a page);
+# after it the query is incremental like the other 59. The coverage key leaves `max_records` out, so nothing is
+# re-swept: only the S2 collector line digest and the plan digest change (D800 has the value).
 # Differences from the e2e basis plan std-2026-10-14a (RUNLOG (E2E); it was std-v3 with a 1,024-token triage role,
 # acquire newest first and 32 LLM workers):
 # - series `batch-import`; no e2e caps: no acquire `max_rows`, no screen `max_rows`, no `--filter`;
@@ -252,7 +260,7 @@ stages:
        legacy-alignment, legacy-safety]}}
   - {stage: collect.openalex, out: {kind: full}, prior: [sources, coverage], options: {from: "2015-01-01", max_records: 100000, max_usd: 3.00,
      author_ids: true}}
-  - {stage: collect.semantic_scholar, out: {kind: full}, prior: [sources, coverage], options: {from: "2015-01-01", max_records: 100000}}
+  - {stage: collect.semantic_scholar, out: {kind: full}, prior: [sources, coverage], options: {from: "2015-01-01", max_records: 250000}}
   - {stage: collect.forums, out: {kind: full}, prior: [sources, coverage], options: {from: "2006-01-01", max_records: 40000,
      # revision 3 (D642): the one query whose hole [2020-01-02, 2025-10-01) is over ForumMagnum's 10,000-hit cap
      # even with the hole's upper bound and the karma floor sent (10,384 hits): its 2024 hole failed in every build

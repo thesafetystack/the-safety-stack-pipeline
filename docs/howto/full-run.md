@@ -107,13 +107,13 @@ record's `incomplete` lists `{stage, run_id, reasons}`, the CLI repeats them on 
 
    `--new-series` is needed on this first run: it pins no `sources` of its own (the directory is empty) and
    `documents/batch-import/` has no file until build 1's gather publishes, while `main` has documents (D491). A later
-   run pins its own `sources` and needs no flag. The run reads the plan's line (from 2025-10-01, `max_records`
-   100000). It cannot make build 1 fail: build 1 writes neither of its directories (`head_moved` is per destination
-   directory), its verify accepts the new files, and a skipped line is no `incomplete` entry (D554). Expected time
-   (D550, a virtual-clock test of 62 pages at one request per 2.5 s): ~3 min without 429s, ~6 min at 25 %, ~24 min at
-   49 % (the e2e took 61 min). Check its record: `scope_complete` true; else the reasons (`windows_failed`: a page
-   still 429'd after six waits; `halted`: a `Retry-After` above 60 s; `limit`) and run the same command again (only
-   due queries are asked).
+   run pins its own `sources` and needs no flag. The run reads the plan's line (from 2025-10-01 in the first revision,
+   `max_records` 100000; 250000 since revision 12, D800). It cannot make build 1 fail: build 1 writes neither of its
+   directories (`head_moved` is per destination directory), its verify accepts the new files, and a skipped line is no
+   `incomplete` entry (D554). Expected time (D550, a virtual-clock test of 62 pages at one request per 2.5 s): ~3 min
+   without 429s, ~6 min at 25 %, ~24 min at 49 % (the e2e took 61 min). Check its record: `scope_complete` true; else
+   the reasons (`windows_failed`: a page still 429'd after six waits; `halted`: a `Retry-After` above 60 s; `limit`)
+   and run the same command again (only due queries are asked).
 3. **After build 1 and the S2 run have ended**: review build 1's `incomplete[].reasons` (step 6) and run the S2
    lookup:
 
