@@ -206,10 +206,10 @@ them before it exits. `llm_mode: batch` lines are not interrupted inside their b
 bounds it); their replay then admits nothing new. gather and the folds run to their end.
 
 **How long it takes.** Up to 30 s for a stop request to be read, up to the wait (120 s) for the work in flight,
-then the publish (blob uploads first) and, for a build, verify over the store and the build record. At the
-production store's size verify takes about half an hour for a build with triage, acquire and the annotate lines (it
-grows with the build's acquire runs, each a full `documents` file), 8-15 min for a build of collectors and gather. A
-supervisor that escalates to SIGKILL must allow for all of it:
+then the publish (blob uploads first) and, for a build, verify over the store and the build record. Verify's time
+at full scale: 29-38 min for a build with triage, acquire and the annotate lines on the 227k-row batch store from
+Railway (2026-10-27 and 2026-10-31; it grows with the build's acquire runs, each a full `documents` file); build 1
+(collectors and gather) 8-15 min. A supervisor that escalates to SIGKILL must allow for all of it:
 `systemd-run -p TimeoutStopSec=60min …` (the default is 90 s), `docker stop -t 3600`. Or drain with `stack stop`
 and stop the supervisor when `stack status` shows the job finished. A SIGKILL leaves a dead job (below).
 
@@ -746,7 +746,8 @@ What runs:
   file checks, the pair checks against their base views, V7, V8), and the build checks (X2-X25) on that build.
   `--build <id|path|latest>` (`latest`: the newest finished build, `ok` or `incomplete`, the default's build; D703)
   or `--series S` (its newest finished build) picks another build; `--run <run_id>`
-  (repeatable) checks those runs' files instead; `--no-build-set` leaves the build checks out.
+  (repeatable) checks those runs' files instead; `--no-build-set` leaves the build checks out. About 14 min for a
+  build of the 2015 backfill's size.
 - **Structural** (`stack verify --structural`; every build at its start and its finish): file damage over the whole
   store, without reading a data file in full: S1 from each file's footer, V11 (every chain resolves; keys unique in
   the files from its newest full file to the head), X23 (every base a published file of its directory), X1 (every
@@ -755,7 +756,7 @@ What runs:
   70 s on the production store). A failure at a build's start ends the build `failed[verify]` before any run
   (`verify_start` in the record).
 - **Full** (`stack verify --full`; `stack build --verify-full` at the finish): every check on every file, and every
-  local data file re-hashed against its record. About 2 h and 3.6 GB at the production store's size: run it
+  local data file re-hashed against its record. About 1 h 50 min and 3.6 GB at the 2015 backfill's size: run it
   explicitly, after changing a check, the registry or a schema, and before a release, never while a build runs.
 
 A check of a part that did not run prints `skipped[structural]`, `skipped[files]` or `skipped[build_set]`. The last

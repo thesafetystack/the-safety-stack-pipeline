@@ -113,9 +113,12 @@ data-repository commit the subtree holds.
 ## What is not in this repository
 
 This repository starts from a cleaned tree (2026-11): earlier pipeline generations and prototypes, the taxonomy's
-working history, run logs and status notes are not included. Comments, docstrings and older `docs/DECISIONS.md` rows
-still name some of that material (an `attic/` path, a `RUNLOG` entry, a `v4/<doc>` path, a commit id that does not
-resolve here); the sentence around such a name states what matters. The one live read of the removed material, the
+working history, run logs and status notes are not included. The work before it took place in an earlier,
+pre-publication repository, now archived; `docs/repo-history/pre-repo-history.md` summarises it (who did what, June
+to November 2026). Commit ids cited in `docs/DECISIONS.md` and in data and run records refer to that repository and
+do not resolve in this one. Comments, docstrings and older `docs/DECISIONS.md` rows still name some of the removed
+material (an `attic/` path, a `RUNLOG` entry, a `v4/<doc>` path); the sentence around such a name states what
+matters. The one live read of the removed material, the
 v1 search config the OpenAlex parity tests compare against, is `tests/fixtures/v1-search_config.yaml`.
 
 Third-party text is not in the tree either: the frozen eval sets' document texts and the eval files with long

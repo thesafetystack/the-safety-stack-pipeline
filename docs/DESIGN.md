@@ -12,7 +12,8 @@ build and release one `fold`. Markers in the text: B1, B2, B3 are the design's t
 versions; fold and consumers); a `(C<n>)`, `(E<n>)` or `F<n>` citation names a rule in the design notes, which are
 not in this repository, and the sentence it annotates states the rule; "ran" means checked on a mock or probe at the
 time, the rest is argued; v3 `file:line` citations are to the earlier pipeline (at its commit 9312c8c), which is not
-in this repository.
+in this repository. How the design was made (its branches, critics and review contract):
+`docs/repo-history/superseded-records.md`.
 
 **Deltas (checked 2026-10-14).** The code implements this design with the changes below; where a section disagrees,
 the code and `docs/DECISIONS.md` win. Lines that are only history are left as written.
