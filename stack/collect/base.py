@@ -1009,11 +1009,16 @@ class Collector:
 
     def last_attempt(self, channel: str, query: str | Mapping[str, Any]) -> Row | None:
         """The own chain's newest charged coverage row for ``(channel, query_digest)`` (max
-        ``last_attempt_at``; an uncharged halt row has none of its own), or ``None``."""
+        ``last_attempt_at``; an uncharged halt row has none of its own), or ``None``. A run that
+        writes several windows of one query (a hole and its tail, date sub-windows, S2's year spans)
+        stamps them all with its ``now``; on that tie the row that is not ``ok`` wins, a failed one
+        before a ``partial`` (D802), so :meth:`due` sees the cap (``capped_not_due``, D492) or the
+        failure rather than whichever ``ok`` row the view lists first."""
         qd = query_digest(query)
         rows = [r for r in self._coverage_view if r["channel"] == channel
                 and r["query_digest"] == qd and r["last_attempt_at"] is not None]
-        return max(rows, key=lambda r: r["last_attempt_at"]) if rows else None
+        rank = {"ok": 0, "partial": 1}  # anything else (failed_*) ranks 2
+        return max(rows, key=lambda r: (r["last_attempt_at"], rank.get(r["status"], 2))) if rows else None
 
     def held_until(self, channel: str) -> dt.datetime | None:
         """The latest provider ``retry_after`` still in the future among the own chain's

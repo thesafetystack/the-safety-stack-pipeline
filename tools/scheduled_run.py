@@ -946,6 +946,20 @@ class Cycle:
             step["tail"] = r.tail[-40:]
         return step
 
+    def s2_note(self, st: dict[str, Any]) -> None:
+        """A WARN for the S2 collect run's ``failed_permanent`` windows and broken upper bounds (:func:`s2_collect_note`,
+        D802); a check that fails is a WARN too."""
+        if not st.get("run_id"):
+            self.warn(f"{st['step']}: no run id printed (its counts were not checked)")
+            return
+        try:
+            note = s2_collect_note(self.s.store, str(st["run_id"]))
+        except Exception as exc:  # noqa: BLE001 - a check that fails is a WARN, never the cycle's crash
+            self.warn(f"{st['step']}: run {st['run_id']}'s counts not read: {type(exc).__name__}")
+            return
+        if note:
+            self.warn(note)
+
     def build(self, label: str, skips: list[str]) -> tuple[dict[str, Any], Result]:
         remaining = self.s.max_usd - spend_since(self.t0iso)
         args = ["build", self.s.plan, "--json", *skips, *max_usd_args(self.caps, remaining),
@@ -1177,11 +1191,13 @@ class Cycle:
                                  ("sources.semantic_scholar", "coverage.semantic_scholar"))
             if st["rc"] != 0:
                 return self.halt("S2 collect failed")
+            self.s2_note(st)
             if st["scope_complete"] is False and self.check():
                 st = self.standalone("s2-collect-2", "collect.semantic_scholar",
                                      ("sources.semantic_scholar", "coverage.semantic_scholar"))
                 if st["rc"] != 0:
                     return self.halt("S2 collect (second run) failed")
+                self.s2_note(st)
                 if st["scope_complete"] is False:
                     self.warn("S2 collect still scope-incomplete after a second run (due queries wait for next week)")
         # 3. arXiv sweep (standalone, drained after its time cap; what it did not reach stays due)
@@ -1671,6 +1687,29 @@ def openalex_budget_stops(store: str, since: str) -> list[str]:
     idx = store_index(resolve_store(store, mirror_base=mirror_base()), refresh=True)
     return [f"{e.record.stage} {e.record.run_id}" for e in idx.runs
             if str(e.record.started_at) >= since and (e.record.counts or {}).get("openalex_budget_stop")]
+
+
+def s2_collect_note(store: str, run_id: str) -> str | None:
+    """The WARN text for a standalone S2 collect run (D802), from its run record: the build's
+    ``failed_permanent_note`` (``windows_failed_permanent.<class>`` counts; S2 runs outside the builds, D554, so no
+    build record says it) and S2's ``upper_bound_ignored`` / ``upper_bound_fallback`` counts; ``None`` when all are
+    zero. A record the index does not list is said, not skipped."""
+    from stack.build import failed_permanent_note
+    from stack.cli.common import mirror_base
+    from stack.store.index import store_index
+    from stack.store.remote import resolve_store
+
+    idx = store_index(resolve_store(store, mirror_base=mirror_base()), refresh=True)
+    rec = next((e.record for e in idx.runs if e.record.run_id == run_id), None)
+    if rec is None:
+        return f"S2 collect run {run_id}: no run record in the store index (its counts were not checked)"
+    c = rec.counts or {}
+    ignored, fallback = int(c.get("upper_bound_ignored") or 0), int(c.get("upper_bound_fallback") or 0)
+    notes = [failed_permanent_note(rec)]
+    if ignored or fallback:
+        notes.append(f"{rec.stage} run {run_id}: S2 ignored a year span's upper bound x{ignored}, the span re-asked "
+                     f"open-ended x{fallback} (D802)")
+    return "; ".join(n for n in notes if n) or None
 
 
 def release_tag(rid: str) -> str:

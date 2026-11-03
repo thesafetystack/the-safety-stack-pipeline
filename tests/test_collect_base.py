@@ -505,6 +505,36 @@ def test_a_capped_unit_not_asked_again_keeps_the_scope_short() -> None:
     assert (w.outcome[0], w.capped) == ("partial", False)
 
 
+def test_last_attempt_prefers_the_row_that_is_not_ok_on_a_tie() -> None:
+    """D802: one run writing several windows of a query (S2's year spans, a hole and its tail, date sub-windows)
+    stamps them all with one ``last_attempt_at``; on that tie the row that is not ``ok`` is the newest attempt, a
+    failed one before a ``partial``, whatever the view's order, so :meth:`due` holds a capped unit back
+    (``capped_not_due``) and a failed one stays due. An older ``partial`` does not outrank a newer ``ok``."""
+    from stack.collect.base import Collector, query_digest
+
+    d = lambda s: dt.datetime.fromisoformat(s).replace(tzinfo=dt.UTC)
+    row = lambda start, status, at: {"channel": "fake", "query_digest": query_digest("p"),
+                                     "window_start_at": d(start), "window_end_at": d(start), "status": status,
+                                     "retry_after": None, "last_attempt_at": d(at)}
+    c = Collector.__new__(Collector)
+    c.now, c.counts, c.held = d("2026-10-13T12:00:00"), {}, None
+    run = "2026-10-13T06:00:00"
+    for order in ([row("2023-01-01", "ok", run), row("2024-01-01", "ok", run), row("2025-01-01", "partial", run)],
+                  [row("2025-01-01", "partial", run), row("2023-01-01", "ok", run)]):
+        for rows in (order, order[::-1]):
+            c._coverage_view = rows
+            last = c.last_attempt("fake", "p")
+            assert last is not None and last["status"] == "partial"
+    c.counts = {}
+    assert c.due("fake", "p", relist_after=dt.timedelta(hours=12), partial_due=False) is False
+    assert c.counts == {"not_due": 1, "capped_not_due": 1}
+    c._coverage_view = [row("2023-01-01", "ok", run), row("2024-01-01", "failed_transient", run),
+                        row("2025-01-01", "partial", run)]
+    assert c.last_attempt("fake", "p")["status"] == "failed_transient"  # type: ignore[index]
+    c._coverage_view = [row("2025-01-01", "partial", "2026-10-12T06:00:00"), row("2023-01-01", "ok", run)]
+    assert c.last_attempt("fake", "p")["status"] == "ok"  # type: ignore[index]
+
+
 def test_date_windows_split_ascending_and_end_at_the_end() -> None:
     """Round 5 (RUN) B7a: consecutive fixed-length spans, the last one ending at ``end``; no split
     when the span fits or ``days`` is 0; a reversed window is refused."""

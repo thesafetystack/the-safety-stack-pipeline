@@ -850,32 +850,176 @@ def test_s2_year_spans_bank_and_resume_after_a_failed_span(tmp_path: pathlib.Pat
     assert _cov(cov3) == [("2026-03-10", "2026-03-17", "ok")]
 
 
+def _drop_upper_bound(server: Any) -> Any:
+    """A sender over ``server`` that drops ``<to>`` from ``publicationDateOrYear`` (S2 ignoring the upper bound)."""
+
+    def send(method: str, url: str, **kw: Any) -> Any:
+        parts = urllib.parse.urlsplit(url)
+        q = [(k, v.partition(":")[0] + ":" if k == "publicationDateOrYear" else v)
+             for k, v in urllib.parse.parse_qsl(parts.query)]
+        return server(method, parts._replace(query=urllib.parse.urlencode(q)).geturl(), **kw)
+
+    return send
+
+
 @pytest.mark.usefixtures("no_keyword_cuts")
-def test_s2_ignored_upper_bound_claims_nothing(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
-    """D801's third backstop: a server that drops the upper bound returns later papers in a bounded
-    span; that span claims nothing (failed_permanent[query_invalid], the dates in its error), its
-    sequence stops, and its papers are still observed."""
+@pytest.mark.parametrize("budget", [None, 1], ids=["fallback", "no-page-left"])
+def test_s2_ignored_upper_bound_falls_back_open_ended(tmp_path: pathlib.Path, monkeypatch: Any,
+                                                      budget: int | None) -> None:
+    """D801's third backstop, D802's fallback: a server that drops the upper bound returns later papers in a
+    bounded span; that answer claims nothing, and the span is asked again open above from the same lower bound,
+    which banks [s, today] (one ok window; the later spans are not asked). With no page of the run's budget left
+    for the fallback the span is failed_permanent[query_invalid] (the dates in its error) and the run a budget stop.
+    Its papers are observed either way."""
     for var in _ENV:
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setattr(time, "sleep", lambda s: None)
     g1, _ = _first_two_groups()
     store = tmp_path / "store"
     server = _s2_server([_paper("a", "2024-07-01"), _paper("b", "2025-03-03")])
-
-    def send(method: str, url: str, **kw: Any) -> Any:  # drops `<to>` from publicationDateOrYear
-        parts = urllib.parse.urlsplit(url)
-        q = [(k, v.partition(":")[0] + ":" if k == "publicationDateOrYear" else v)
-             for k, v in urllib.parse.parse_qsl(parts.query)]
-        return server(method, parts._replace(query=urllib.parse.urlencode(q)).geturl(), **kw)
-
-    monkeypatch.setattr("stack.collect.base.urllib_send", send)
+    monkeypatch.setattr("stack.collect.base.urllib_send", _drop_upper_bound(server))
     monkeypatch.setattr("stack.collect.base.utcnow", lambda: dt.datetime(2026, 3, 10, 12, tzinfo=dt.UTC))
-    rec = run_line(store, _plan(queries=[g1["query"]], **{"from": "2024-06-01"}), "collect.semantic_scholar")
+    opts: dict[str, Any] = {"queries": [g1["query"]], "from": "2024-06-01"}
+    if budget:
+        opts["max_pages"] = budget
+    rec = run_line(store, _plan(**opts), "collect.semantic_scholar")
     assert rec.status == "ok", rec.error
-    assert len(server.urls) == 1 and rec.counts["upper_bound_ignored"] == 1
+    assert rec.counts["upper_bound_ignored"] == 1 and rec.counts["spans"] == 1
     (cov,) = _view(store, "coverage.semantic_scholar")
-    assert (cov["status"], cov["error_class"], cov["window_start_at"].date().isoformat(),
-            cov["window_end_at"].date().isoformat()) == ("failed_permanent", "query_invalid", "2024-06-01", "2024-06-01")
-    assert "2024-12-31" in cov["error"] and "2025-03-03" in cov["error"]
-    assert rec.counts["windows_failed_permanent.query_invalid"] == 1
+    if budget is None:
+        assert len(server.urls) == 2 and rec.counts["upper_bound_fallback"] == 1 and rec.scope_complete is True
+        assert (cov["status"], cov["window_start_at"].date().isoformat(), cov["window_end_at"].date().isoformat(),
+                cov["error"]) == ("ok", "2024-06-01", "2026-03-10", None)
+        assert "windows_failed_permanent.query_invalid" not in rec.counts
+    else:
+        assert len(server.urls) == 1 and rec.counts["upper_bound_fallback"] == 0
+        assert rec.scope_complete is False and rec.counts["budget_stopped"] == 1
+        assert (cov["status"], cov["error_class"], cov["window_start_at"].date().isoformat(),
+                cov["window_end_at"].date().isoformat()) == ("failed_permanent", "query_invalid", "2024-06-01",
+                                                             "2024-06-01")
+        assert "2024-12-31" in cov["error"] and "2025-03-03" in cov["error"]
+        assert rec.counts["windows_failed_permanent.query_invalid"] == 1
     assert len(_view(store, "sources.semantic_scholar")) == 2
+
+
+def _late_record_sender(server: Any, span: str, late: dict[str, Any]) -> Any:
+    """A sender over ``server`` that adds ``late`` to the answer of every request bounded above by ``span``'s
+    ``%3A<to>`` (S2 honours the bound but one record comes back dated after it)."""
+    import json
+
+    from stack.http import HttpResponse
+
+    def send(method: str, url: str, **kw: Any) -> Any:
+        resp = server(method, url, **kw)
+        if span in url:
+            body = json.loads(resp.body)
+            body["data"].append(late)
+            return HttpResponse(200, {"content-type": "application/json"}, json.dumps(body).encode(), url)
+        return resp
+
+    return send
+
+
+@pytest.mark.usefixtures("no_keyword_cuts")
+def test_s2_one_late_record_does_not_block_the_tail(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
+    """D802 (the review's reproduction of D801's defect): S2 honours the bound, but one record in the 2024 span
+    comes back dated 2025-02-02 (its date moved between index and answer). The span is asked again open above and
+    banks [2024-01-01, today], so the 2025 and 2026 spans are covered, the weekly tails go on, and a paper that
+    appears later is collected. Under D801 every run re-asked the 2024 span, failed it failed_permanent with the
+    scope complete, and never asked a later one."""
+    for var in _ENV:
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    g1, _ = _first_two_groups()
+    store = tmp_path / "store"
+    corpus = [_paper("a", "2021-07-01"), _paper("d", "2024-02-02"), _paper("f", "2025-06-06")]
+    server = _s2_server(corpus)
+    late = {**_paper("x", "2024-12-20"), "publicationDate": "2025-02-02"}
+    monkeypatch.setattr("stack.collect.base.urllib_send", _late_record_sender(server, "%3A2024-12-31", late))
+    opts = {"queries": [g1["query"]], "from": "2021-06-01"}
+    t = dt.datetime(2026, 3, 10, 12, tzinfo=dt.UTC)
+    sent: list[list[str]] = []
+    for week in range(3):
+        if week == 2:
+            corpus.append(_paper("g", "2026-03-15"))  # a new paper appears
+        monkeypatch.setattr("stack.collect.base.utcnow", lambda week=week: t + dt.timedelta(days=7 * week))
+        n = len(server.urls)
+        rec = run_line(store, _plan(**opts), "collect.semantic_scholar", kind="full" if week == 0 else "part")
+        assert rec.status == "ok", rec.error
+        assert rec.scope_complete is True
+        assert rec.counts["upper_bound_ignored"] == rec.counts["upper_bound_fallback"] == int(week == 0)
+        sent.append(_sent(server)[n:])
+    assert sent == [["2021-06-01:2022-12-31", "2023-01-01:2023-12-31", "2024-01-01:2024-12-31", "2024-01-01:"],
+                    ["2026-02-08:"], ["2026-02-15:"]]
+    assert [w for w in _cov(_view(store, "coverage.semantic_scholar"))] == [
+        ("2021-06-01", "2023-01-01", "ok"), ("2023-01-01", "2024-01-01", "ok"), ("2024-01-01", "2026-03-10", "ok"),
+        ("2026-03-10", "2026-03-17", "ok"), ("2026-03-17", "2026-03-24", "ok")]
+    got = {r["identity"]["external_id"] for r in _view(store, "sources.semantic_scholar")}
+    assert got == {f"10.5555/{c}" for c in "adfgx"}
+
+
+@pytest.mark.usefixtures("no_keyword_cuts")
+def test_s2_late_record_in_a_hole_span_covers_the_rest(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
+    """D802 in a hole: the floor moved back, the hole's 2024 span answers a record dated after its last day; that
+    span is asked again open above and banks [2024-01-01, today], which covers the rest of the hole and the tail
+    (the 2025 hole span and the tail are not asked); the next run asks nothing."""
+    for var in _ENV:
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    g1, _ = _first_two_groups()
+    store = tmp_path / "store"
+    corpus = [_paper("p", "2023-05-01"), _paper("q", "2024-06-01"), _paper("r", "2025-03-01"),
+              _paper("s", "2025-11-01")]
+    server = _s2_server(corpus)
+    late = {**_paper("x", "2024-12-20"), "publicationDate": "2025-02-02"}
+    monkeypatch.setattr("stack.collect.base.urllib_send", _late_record_sender(server, "%3A2024-12-31", late))
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: dt.datetime(2025, 12, 1, 12, tzinfo=dt.UTC))
+    q = {"queries": [g1["query"]]}
+    assert run_line(store, _plan(**q, **{"from": "2025-10-01"}), "collect.semantic_scholar").status == "ok"
+    n = len(server.urls)
+    rec = run_line(store, _plan(**q, **{"from": "2023-03-01"}), "collect.semantic_scholar", kind="part")
+    assert rec.status == "ok", rec.error
+    assert _sent(server)[n:] == ["2023-03-01:2023-12-31", "2024-01-01:2024-12-31", "2024-01-01:"]
+    assert (rec.counts["upper_bound_ignored"], rec.counts["upper_bound_fallback"], rec.scope_complete) == (1, 1, True)
+    assert _cov(_view(store, "coverage.semantic_scholar")) == [
+        ("2023-03-01", "2024-01-01", "ok"), ("2024-01-01", "2025-12-01", "ok"), ("2025-10-01", "2025-12-01", "ok")]
+    got = {r["identity"]["external_id"] for r in _view(store, "sources.semantic_scholar")}
+    assert got == {f"10.5555/{c}" for c in "pqrsx"}
+    n = len(server.urls)
+    rec = run_line(store, _plan(**q, **{"from": "2023-03-01"}), "collect.semantic_scholar", kind="part")
+    assert rec.status == "ok" and _sent(server)[n:] == [] and rec.counts["already_covered"] == 1
+
+
+@pytest.mark.usefixtures("no_keyword_cuts")
+@pytest.mark.parametrize("split", [0, 4], ids=["one-span", "year-spans"])
+def test_s2_capped_span_not_asked_again_within_relist_after(tmp_path: pathlib.Path, monkeypatch: Any,
+                                                             split: int) -> None:
+    """D492 with D801's spans (D802): a pass the cap cuts is not asked again within ``relist_after_h`` (12 h),
+    counted ``capped_not_due``. With year spans the capped span's ``partial`` row shares ``last_attempt_at`` with
+    the run's ok spans; :meth:`~stack.collect.base.Collector.last_attempt` must pick the ``partial`` one (before
+    D802 it picked the first ok row and the next run re-asked the capped span)."""
+    for var in _ENV:
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    g1, _ = _first_two_groups()
+    store = tmp_path / "store"
+    corpus = [_paper("a", "2021-07-01"), _paper("b", "2023-05-05"), _paper("c", "2024-02-02"),
+              _paper("d", "2024-03-03"), _paper("e", "2024-04-04")]
+    server = _s2_server(corpus, page=1)
+    monkeypatch.setattr("stack.collect.base.urllib_send", server)
+    day1 = dt.datetime(2026, 3, 10, 12, tzinfo=dt.UTC)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: day1)
+    opts = {"queries": [g1["query"]], "from": "2021-06-01", "max_records": 2, "split_years": split}
+    rec1 = run_line(store, _plan(**opts), "collect.semantic_scholar")
+    assert rec1.status == "ok", rec1.error
+    assert rec1.counts["windows_capped"] == 1 and rec1.scope_complete is False
+    statuses = sorted(r["status"] for r in _view(store, "coverage.semantic_scholar"))
+    assert statuses == (["partial"] if split == 0 else ["ok", "ok", "partial"])
+    n = len(server.urls)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: day1 + dt.timedelta(hours=1))
+    rec2 = run_line(store, _plan(**opts), "collect.semantic_scholar", kind="part")
+    assert rec2.status == "ok", rec2.error
+    assert _sent(server)[n:] == [] and rec2.counts["capped_not_due"] == 1 and rec2.scope_complete is False
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: day1 + dt.timedelta(hours=13))
+    rec3 = run_line(store, _plan(**opts), "collect.semantic_scholar", kind="part")
+    assert rec3.status == "ok" and len(server.urls) > n  # past the relist interval it is asked again
