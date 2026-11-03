@@ -5,6 +5,7 @@ the bucket scan and the settings. The cycle itself runs only against a real stor
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import shutil
 import sys
@@ -333,7 +334,8 @@ def test_upload_refuses_a_release_its_checker_refuses(hf: Any, monkeypatch: pyte
     monkeypatch.setattr(sr, "check_staged", check)
     assert sr.upload(sr.Settings.from_env(), ops, "2026-11-01", dry=False) == sr.EXIT_FAILED
     assert checked == ["internal", "public"] and hf.uploads == []  # both checked before anything goes up
-    assert "ERROR: public: the release's own checker" in capsys.readouterr().out
+    assert "ERROR: public: the release checker (data-repo/tools/release-validator.py --rows all) refuses it" in \
+        capsys.readouterr().out
 
 
 def _stage_dir(ops: Any, rid: str, dirs: dict[str, Path]) -> None:
@@ -377,12 +379,42 @@ def test_upload_runs_the_releases_own_checker(hf: Any, monkeypatch: pytest.Monke
     assert hf.uploads == []
 
 
+def test_check_staged_never_runs_the_staged_checker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A staged checker that is not the image's is refused unread (a writer of the staging prefix could run code with
+    the job's keys, or ship a checker that passes everything); the image's runs isolated, without the keys."""
+    marker = tmp_path / "ran"
+    (tmp_path / "rel" / "tools").mkdir(parents=True)
+    (tmp_path / "rel" / "tools" / "release-validator.py").write_text(
+        f"import os, pathlib; pathlib.Path({str(marker)!r}).write_text(os.environ.get('HF_TOKEN', ''))\n")
+    monkeypatch.setenv("HF_TOKEN", "hf-secret")
+    assert REAL_CHECK_STAGED(tmp_path / "rel") == [
+        "tools/release-validator.py: not this image's data-repo/tools/release-validator.py (sha256 differs); not run"]
+    assert not marker.exists()
+    shutil.copyfile(sr.OWN_CHECKER, tmp_path / "rel" / "tools" / "release-validator.py")
+    seen: dict[str, Any] = {}
+
+    def run(cmd: list[str], **kw: Any) -> Any:
+        seen.update(cmd=cmd, env=kw["env"])
+        return sr.subprocess.CompletedProcess(cmd, 0, "VALID", "")
+
+    monkeypatch.setattr(sr.subprocess, "run", run)
+    assert REAL_CHECK_STAGED(tmp_path / "rel") == []
+    assert seen["cmd"][:3] == [sys.executable, "-I", str(sr.OWN_CHECKER)] and seen["cmd"][-2:] == ["--rows", "all"]
+    assert set(seen["env"]) <= set(sr.CHECK_ENV) and "HF_TOKEN" not in seen["env"]
+
+
 def test_check_staged_refuses_a_release_without_its_checker(tmp_path: Path) -> None:
     (tmp_path / "release.json").write_text('{"release_id": "2026-10-30", "format": "2026-10-30"}')
     assert sr.check_staged(tmp_path) == ["tools/release-validator.py: missing (a release from before format 1.0.0?)"]
     (tmp_path / "tools").mkdir()
-    shutil.copyfile(sr.REPO / "data-repo" / "tools" / "release-validator.py", tmp_path / "tools" / "release-validator.py")
-    got = sr.check_staged(tmp_path)
+    tool = tmp_path / "tools" / "release-validator.py"
+    shutil.copyfile(sr.OWN_CHECKER, tool)
+    got = sr.check_staged(tmp_path)  # a file release.json does not list: invalid, whatever the version
+    assert got[0] == "exit 1" and got[-1] == "INVALID", got
+    listed = {"path": "tools/release-validator.py", "bytes": tool.stat().st_size, "sha256": sr.sha256_file(tool)}
+    (tmp_path / "release.json").write_text(json.dumps({"release_id": "2026-10-30", "format": "2026-10-30",
+                                                       "files": [listed]}))
+    got = sr.check_staged(tmp_path)  # a release from before format 1.0.0: unsupported
     assert got[0] == "exit 3" and got[-1] == "UNSUPPORTED FORMAT VERSION", got
 
 

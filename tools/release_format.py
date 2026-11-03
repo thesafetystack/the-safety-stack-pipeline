@@ -26,8 +26,11 @@ an entry for the declared version; then ``archive`` writes the directory into a 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,6 +39,7 @@ from typing import Any
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from stack import yamlio  # noqa: E402
 from stack.fold import dataset as ds  # noqa: E402
 
 LEVELS = ("none", "patch", "minor", "major")
@@ -101,8 +105,8 @@ def flatten(schemas: dict[str, dict[str, Any]]) -> dict[str, Row]:
                     rest.setdefault("allOf", []).append(c)
                 else:
                     out[f"file:{p}"] = Row("file", (), None, False, None, False, (), True, "")
-        if rel == ds.RELEASE_SCHEMA_FILE and path == "format_version" and "pattern" in rest:
-            rest["pattern"] = VERSION_PATTERN  # names the version itself: not a difference between versions
+        if rel == ds.RELEASE_SCHEMA_FILE and path == "format_version" and rest.get("pattern") == version_pattern(mm):
+            rest["pattern"] = VERSION_PATTERN  # the format's own version: not a difference between versions
         if js.get("additionalProperties") not in (None, False, True):
             walk(rel, js["additionalProperties"], f"{path}.*", True)
         elif "additionalProperties" in js:
@@ -118,9 +122,17 @@ def flatten(schemas: dict[str, dict[str, Any]]) -> dict[str, Row]:
         if "items" in js:
             walk(rel, js["items"], path + "[]", True)
 
+    rid = str((schemas.get(ds.RELEASE_SCHEMA_FILE) or {}).get("$id", ""))
+    mm = rid.split(":")[-2] if rid.count(":") >= 2 else ""
     for rel, js in sorted(schemas.items()):
         walk(rel, js, "", True)
     return out
+
+
+def version_pattern(mm: str) -> str:
+    """``release.schema.json``'s ``format_version`` pattern of format ``<major>.<minor>`` (the generator's)."""
+    major, _, minor = mm.partition(".")
+    return f"^{major}\\.{minor}\\.(0|[1-9][0-9]*)$"
 
 
 def classify(old: dict[str, Row], new: dict[str, Row]) -> list[tuple[str, str]]:
@@ -145,9 +157,12 @@ def classify(old: dict[str, Row], new: dict[str, Row]) -> list[tuple[str, str]]:
         if a.required != b.required:
             out.append(("major", f"{p}: no longer required") if a.required else ("minor", f"{p}: now required"))
         if a.enum != b.enum:
-            out.append(("major", f"{p}: closed list {list(a.enum or [])} -> {list(b.enum or [])}"))
+            out.append(("major", f"{p}: no longer a closed list" if b.enum is None else
+                        f"{p}: now a closed list {list(b.enum)}" if a.enum is None else
+                        f"{p}: closed list {list(a.enum)} -> {list(b.enum)}"))
         if a.open != b.open:
-            out.append(("major", f"{p}: {'opened' if b.open else 'closed'} list"))
+            out.append(("major", f"{p}: now an open list" if b.open else
+                        f"{p}: no longer an open list ({'closed' if b.enum is not None else 'a plain string'})"))
         elif a.open:
             gone, added = set(a.values) - set(b.values), set(b.values) - set(a.values)
             if gone:
@@ -246,28 +261,85 @@ def check(formats: Path, version: str, schemas: dict[str, dict[str, Any]]) -> Ve
     return Verdict(False, lines + no_entry + [then], changes, need, have, enough, has_entry)
 
 
-def write_archive(data_repo: Path, version: str, schemas: dict[str, dict[str, Any]]) -> Path:
+def write_archive(data_repo: Path, version: str, schemas: dict[str, dict[str, Any]], *, replace: bool = False) -> Path:
+    """Write ``formats/<major>.<minor>/`` into the data-repository checkout ``data_repo``. An existing directory with
+    the same schemas is left as it is; one with other schemas is replaced only with ``replace`` and only while the
+    version is neither dated in ``formats/CHANGELOG.md`` nor tagged ``format-<major>.<minor>.*`` there."""
     v = parse(version)
     mm = f"{v[0]}.{v[1]}"
     formats = data_repo / "formats"
+    d = formats / mm
     if not formats.is_dir():
         raise SystemExit(f"{formats}: not a checkout of the data repository (no formats/)")
-    dated = {k.rsplit(".", 1)[0] for k, d in rv().changelog_entries(
-        (formats / "CHANGELOG.md").read_text("utf-8")).items() if d} if (formats / "CHANGELOG.md").is_file() else set()
-    if mm in dated and (formats / mm).is_dir():
-        raise SystemExit(f"formats/{mm}/: its changelog entry is dated; an archived format is never edited")
+    if d.is_dir():
+        have = read_dir(d)
+        if {rel: rv().canonical(js) for rel, js in have.items()} == \
+                {rel: rv().canonical(js) for rel, js in schemas.items()} and \
+                {p.relative_to(d).as_posix() for p in d.rglob("*") if p.is_file()} == set(schemas):
+            return d
+        dated = {k.rsplit(".", 1)[0] for k, dd in rv().changelog_entries(
+            (formats / "CHANGELOG.md").read_text("utf-8")).items() if dd} if (formats / "CHANGELOG.md").is_file() \
+            else set()
+        try:
+            tags = subprocess.run(["git", "tag", "-l", f"format-{mm}.*"], cwd=data_repo, check=True,
+                                  capture_output=True, text=True).stdout.split()
+        except (subprocess.CalledProcessError, OSError):
+            tags = []
+        if mm in dated or tags:
+            raise SystemExit(f"formats/{mm}/: {'tagged ' + ', '.join(tags) if tags else 'its changelog entry is dated'}"
+                             "; an archived format is never edited (declare a new version)")
+        if not replace:
+            raise SystemExit(f"formats/{mm}/ exists with other schemas; it is not dated or tagged yet, so --replace "
+                             "may overwrite it (review the difference: tools/release_format.py check --formats ...)")
+        shutil.rmtree(d)
     for rel, js in schemas.items():
-        p = formats / mm / rel
+        p = d / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(js, indent=2, ensure_ascii=False) + "\n", "utf-8")
-    return formats / mm
+    return d
+
+
+# ---------------------------------------------------------------- the pipeline's lock of the vendored archive
+LOCK = ds.DATASET_DIR / "formats.lock.yaml"
+
+
+def archive_digests(formats: Path) -> dict[str, str]:
+    """sha256 of every file of every ``formats/<major>.<minor>/`` (paths relative to ``formats/``)."""
+    return {p.relative_to(formats).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+            for d in sorted(formats.glob("*")) if d.is_dir() for p in sorted(d.rglob("*")) if p.is_file()}
+
+
+def lock_problems(formats: Path, lock: Path = LOCK) -> list[str]:
+    """The vendored archive against the pipeline's lock (D805): a subtree pull that changes, adds or removes an
+    archived file fails until the lock is renewed (``tools/release_format.py lock``), so the change is seen."""
+    if not lock.is_file():
+        return [f"{lock.name}: missing (tools/release_format.py lock)"]
+    want = (yamlio.load(lock.read_text("utf-8")) or {}).get("files") or {}
+    have = archive_digests(formats)
+    out = []
+    for p in sorted(set(want) | set(have)):
+        if want.get(p) != have.get(p):
+            why = "not in the lock" if p not in want else "not in the archive" if p not in have else \
+                "sha256 differs from the lock"
+            out.append(f"data-repo/formats/{p}: {why}")
+    return out
+
+
+def write_lock(formats: Path, lock: Path = LOCK) -> None:
+    lines = ["# sha256 of every archived format file the pipeline vendors (data-repo/formats/<major>.<minor>/, D805).",
+             "# tests/test_release_format.py checks the vendored files against it; after a subtree pull that changes",
+             "# them, review the change and renew it: uv run --no-sync python tools/release_format.py lock", "files:"]
+    lines += [f"  {p}: {h}" for p, h in archive_digests(formats).items()]
+    lock.write_text("\n".join(lines) + "\n", "utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("command", nargs="?", default="check", choices=("check", "generate", "strip", "archive"))
+    ap.add_argument("command", nargs="?", default="check", choices=("check", "generate", "strip", "archive", "lock"))
     ap.add_argument("--out", type=Path, help="generate, strip: the directory to write the schemas into")
     ap.add_argument("--data-repo", type=Path, help="archive: a checkout of the data repository")
+    ap.add_argument("--replace", action="store_true",
+                    help="archive: overwrite a directory with other schemas (refused once dated or tagged)")
     ap.add_argument("--formats", type=Path, default=ds.DATA_REPO / "formats",
                     help="check: the archive (default: the vendored data-repo/formats)")
     a = ap.parse_args(argv)
@@ -284,12 +356,17 @@ def main(argv: list[str] | None = None) -> int:
     if a.command == "archive":
         if a.data_repo is None:
             ap.error("archive: --data-repo PATH")
-        d = write_archive(a.data_repo, m.format_version, stripped(gen))
+        d = write_archive(a.data_repo, m.format_version, stripped(gen), replace=a.replace)
         print(f"wrote {d}; add its formats/CHANGELOG.md entry [{m.format_version}] in the same commit")
         return 0
+    if a.command == "lock":
+        write_lock(a.formats)
+        print(f"wrote {LOCK.relative_to(REPO)} ({len(archive_digests(a.formats))} files)")
+        return 0
     verdict = check(a.formats, m.format_version, stripped(gen))
-    print("\n".join(verdict.lines))
-    return 0 if verdict.ok else 1
+    locked = lock_problems(a.formats) if a.formats == ds.DATA_REPO / "formats" else []
+    print("\n".join(verdict.lines + locked))
+    return 0 if verdict.ok and not locked else 1
 
 
 if __name__ == "__main__":

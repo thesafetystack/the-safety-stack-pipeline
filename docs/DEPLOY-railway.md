@@ -76,9 +76,10 @@ the documents acquire covers.
    last.
 6. **Upload** of both variants to their Hugging Face repos (`hf_repo` of `configs/releases/dataset-*.yaml`). Both
    variants are first fetched back from the staging prefix (sha256 against the manifest, the bucket-name scan) and
-   each is checked by the release checker it ships, as a consumer would run it (`tools/release-validator.py <dir>
-   --rows all`, every row; D804): a variant it refuses (an unsupported format version included) uploads nothing and
-   the cycle fails (ERROR). The internal variant's repo must be private, before and after: if it is not, nothing (more) is uploaded, the cycle
+   each is checked, every row, by the image's release checker (`data-repo/tools/release-validator.py <dir> --rows
+   all`, run with `python -I` and only PATH, HOME and TMPDIR of the environment; the copy the variant ships must be
+   byte-identical to it, else it is refused unrun; D804, D805): a variant it refuses (an unsupported format version
+   included) uploads nothing and the cycle fails (ERROR). The internal variant's repo must be private, before and after: if it is not, nothing (more) is uploaded, the cycle
    fails (ERROR). The job never changes any repo's visibility; the public variant's repo is uploaded to whatever its
    visibility (it is private now; the maintainers make it public by hand). Each variant is **one commit** that makes the repo
    tree exactly the release (files a release no longer has are deleted in the same commit; `.gitattributes` stays),

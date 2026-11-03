@@ -17,7 +17,7 @@ releasable) build it exports
 both dataset variants (``stack export --config dataset-public|dataset-internal``), checks them, stages them under the
 ops prefix and uploads them to their Hugging Face repos (every successful weekly run publishes). The summary's ``release.quality`` (:func:`release_quality_summary`) carries the release's judge-eval
 coverage and triage's agreement with the screen from its ``release.json`` (D728). The upload refuses, and the cycle fails and alerts, when a staged variant fails its own
-release checker (``tools/release-validator.py --rows all``, the copy it ships, D803) or the internal variant's repo is not private; it
+release checker (``data-repo/tools/release-validator.py --rows all``, the image's, to which the copy it ships must be identical; D804, D805) or the internal variant's repo is not private; it
 never changes a repo's visibility (the public repo is uploaded to whatever its visibility). Every ``stack`` command
 is a child process of this one; nothing here writes the store itself.
 
@@ -1516,16 +1516,30 @@ class Cycle:
 CHECK_TIMEOUT_S = 1800
 
 
+#: The image's release checker (the vendored data repository's): the one :func:`check_staged` runs.
+OWN_CHECKER = REPO / "data-repo" / "tools" / "release-validator.py"
+#: The only environment the checker gets: no keys, no store settings.
+CHECK_ENV = ("PATH", "HOME", "TMPDIR")
+
+
 def check_staged(d: Path) -> list[str]:
-    """Run the release's own checker, as a consumer would (``tools/release-validator.py <dir> --rows all``: the copy
-    the release ships, every row, D803), on the staged variant ``d`` fetched for upload; its output's last lines when
-    it does not pass (an unsupported format version, a release from before format 1.0.0, included), else []."""
-    tool = d / "tools" / "release-validator.py"
-    if not tool.is_file():
-        return [f"{tool.relative_to(d)}: missing (a release from before format 1.0.0?)"]
+    """Check the staged variant ``d`` fetched for upload with the release checker, every row (D804, D805): the
+    image's own ``data-repo/tools/release-validator.py``, never the staged copy, which must be byte-identical to it
+    (whoever can write the staging prefix could otherwise run code here, with the job's keys, or ship a checker that
+    passes everything). It runs with ``python -I`` and only :data:`CHECK_ENV` of the environment; run from the
+    vendored data repository it also compares the schemas with the archive and the taxonomy files with the
+    repository's. Its output's last lines when it does not pass (an unsupported format version, a release from before
+    format 1.0.0, included), else []."""
+    staged = d / "tools" / "release-validator.py"
+    if not staged.is_file():
+        return [f"{staged.relative_to(d)}: missing (a release from before format 1.0.0?)"]
+    if sha256_file(staged) != sha256_file(OWN_CHECKER):
+        return [f"{staged.relative_to(d)}: not this image's data-repo/tools/release-validator.py (sha256 differs); "
+                "not run"]
+    env = {k: os.environ[k] for k in CHECK_ENV if k in os.environ}
     try:
-        r = subprocess.run([sys.executable, str(tool), str(d), "--rows", "all"], capture_output=True, text=True,
-                           timeout=CHECK_TIMEOUT_S, check=False)
+        r = subprocess.run([sys.executable, "-I", str(OWN_CHECKER), str(d), "--rows", "all"], capture_output=True,
+                           text=True, timeout=CHECK_TIMEOUT_S, check=False, env=env, cwd=str(d))
     except subprocess.TimeoutExpired:
         return [f"the checker ran over {CHECK_TIMEOUT_S} s"]
     if r.returncode == 0:
@@ -1545,7 +1559,7 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
     tagged), on the repo's head as read just before (``parent_commit``: a concurrent push fails the commit), and
     the commit is tagged :func:`release_tag` (an existing tag is a WARN, never moved). Before anything is uploaded,
     both variants are fetched from the staging prefix, checked against the manifest's sha256 and for the bucket name,
-    and each goes through its own release checker (:func:`check_staged`, D803); any failure uploads nothing."""
+    and each goes through the release checker (:func:`check_staged`, D804, D805); any failure uploads nothing."""
     man = ops.get_json(f"{ns}releases/{rid}/manifest.json")
     if man is None:
         log(f"REFUSED: no staged release {rid} ({ns}releases/{rid}/manifest.json on the ops prefix)")
@@ -1600,10 +1614,10 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
             return EXIT_FAILED
         problems = check_staged(d)
         if problems:
-            log(f"ERROR: {v}: the release's own checker (tools/release-validator.py --rows all) refuses it; nothing "
-                "uploaded: " + " | ".join(problems[-8:]))
+            log(f"ERROR: {v}: the release checker (data-repo/tools/release-validator.py --rows all) refuses it; "
+                "nothing uploaded: " + " | ".join(problems[-8:]))
             return EXIT_FAILED
-        log(f"release {rid} {v}: tools/release-validator.py --rows all: valid")
+        log(f"release {rid} {v}: data-repo/tools/release-validator.py --rows all: valid")
     for v in ("internal", "public"):
         repo = repos[v]
         d = work / v

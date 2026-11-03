@@ -25,7 +25,8 @@ release format has its own version (`format_version`, D803, below). About 100 s 
 
 `stack export` uploads nothing. To publish by hand, run a cycle by hand (`docs/DEPLOY-railway.md`): it exports,
 stages and uploads as above; before uploading, each staged variant fetched back from the ops prefix goes through the
-release checker it ships (`tools/release-validator.py <dir> --rows all`, D804), and a variant it refuses uploads
+image's release checker (`data-repo/tools/release-validator.py <dir> --rows all`, isolated and without the job's
+keys; the copy the variant ships must be byte-identical to it; D804, D805), and a variant it refuses uploads
 nothing. `python tools/scheduled_run.py upload --release-id <id>` uploads a
 release staged on the ops prefix (one whose upload failed, or that a lost lock kept from uploading); nothing uploads
 a directory exported by hand.
@@ -63,14 +64,18 @@ To change the format:
    archive change). Otherwise it classifies the change against the highest archived version below the declared one
    and says the bump needed; set `format_version` to at least that (a change of meaning the classifier cannot see is
    a major version, declared by hand).
-2. In a checkout of the data repository, `tools/release_format.py archive --data-repo <checkout>` writes
-   `formats/<major>.<minor>/`; add the version's `formats/CHANGELOG.md` entry (undated) in the same commit, with a
-   new `SUPPORTED_MAJORS` and checks in `tools/release-validator.py` for a new major. Run its checks
-   (`data-repo/AGENTS.md`).
-3. The maintainer reviews, pushes and tags `format-<version>` there; then pull the subtree here
-   (`taxonomy/README.md`). `tools/release_format.py check` and the tests pass again.
-4. The first release of the version is published; the maintainer dates the changelog entry. From then on that
-   directory is never edited.
+2. Here, in the pipeline, `uv run --no-sync python tools/release_format.py archive --data-repo <checkout of the data
+   repository>` writes `formats/<major>.<minor>/` into that checkout (never into `data-repo/` here). It refuses to
+   change a directory whose version is tagged or dated there, and changes an undated one only with `--replace`.
+   In the data repository add, in the same commit, the version's `formats/CHANGELOG.md` entry (undated), the
+   schemas' digests in `FORMAT_DIGESTS` of `tools/release-validator.py` (its `--formats` prints them), and for a new
+   major `SUPPORTED_MAJORS` and its checks. Run its checks (`data-repo/AGENTS.md`).
+3. The maintainer reviews, pushes, tags `format-<version>` there and dates the changelog entry in the same step; from
+   then on that directory is never edited (the data repository's CI compares it with the tag).
+4. Pull the subtree here (`taxonomy/README.md`) and renew the lock of the vendored archive,
+   `configs/releases/dataset/formats.lock.yaml` (`tools/release_format.py lock`; `tests/test_release_format.py` fails
+   on any archived file that differs from it, so a change arriving by subtree pull is seen).
+   `tools/release_format.py check` and the tests pass again.
 
 Where things are: `stack/fold/dataset.py` (module docstring: inputs, row, variants, bundle), `configs/releases/
 dataset-{public,internal}.yaml`, `configs/releases/dataset/` (`mapping.yaml`: the schema and its descriptions;
