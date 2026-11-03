@@ -1,21 +1,25 @@
 # technique_staged eval set 2026-10-23a: gold v3 sample (100 documents, input-only; adjudicated reference, no `gold.jsonl`)
 
+Status: current. The production technique prompts were chosen on this sample (D708); its adjudicated reference
+(`adjudication/reference-v3x.jsonl`) is the technique-presence reference of the 2026-10-27 technique round
+(`docs/design/technique-quality-2026-10.md`).
+
 A new set for `stack eval technique_staged`, frozen with prompt set `technique-staged-v3` and the production taxonomy
 `taxonomy/taxonomy-v0.9.1.yaml`. 100 documents drawn from the 2026-10-23 build's screen-relevant corpus (all licence
 classes, degraded texts included), **shared with `evals/model_roles/2026-10-23a`** (same item ids g3-0001..g3-0100,
-same texts). There is no `gold.jsonl` (absent here, empty in the private copy): the set was labelled blind by strong
+same texts). There is no `gold.jsonl` (absent here, empty in the private copy of the set): the set was labelled blind by strong
 agentic labellers (Opus 5.5 and Sonnet 5.5 as Claude Code subagents, Sol 6.1 through Codex CLI, two repeats each)
 and adjudicated into the slug-level reference for technique presence `adjudication/reference-v3x.jsonl`
 (2026-10-27; "Adjudicated reference" below), which `stack eval`'s gold scoring does not read.
 
 ## Where the set lives
 The sample includes `restricted` texts, so **no text is in the repository**. This directory holds `items.jsonl` and
-`manifest.json` (byte-identical to the private copy), the sample (`sources/`), the scripts and the labelling
-material (`labelling/`). The complete set (the same two files, `texts/g3-NNNN.txt.gz`, an empty `gold.jsonl`) sits
-in a private evals root outside the repository, written by `scripts/freeze.py`. Run with `--evals <private root>`:
+`manifest.json`, the sample (`sources/`), the scripts and the labelling material (`labelling/`). The complete set (the
+same two files, `texts/g3-NNNN.txt.gz`, an empty `gold.jsonl`), written by `scripts/freeze.py`, is kept in a private
+directory outside the repository. With it, run with `--evals <private evals directory>`:
 
     uv run --no-sync stack --plan configs/plans/ann-scratch.yaml eval technique_staged --set 2026-10-23a \
-        --evals <PRIVATE_EVALS_ROOT> --split all --models openai/gpt-6-luna --prompt technique-staged-v3 \
+        --evals <private evals directory> --split all --models openai/gpt-6-luna --prompt technique-staged-v3 \
         --pin mode=single --pin role=extract_staged --pin taxonomy=taxonomy/taxonomy-v0.9.1.yaml --max-usd 2.5
 
 (`--max-usd` must cover the no-cache reservation, $1.62.) With no gold the run is scored for cost, latency and
@@ -63,9 +67,9 @@ failures only.
   year_bucket, mention_bucket} and `weight`.
 - `manifest.json`: counts, `frozen_with` (taxonomy v0.9.1 path / sha256 / version, rubric, prompt digests, segmenter and
   lexical versions), the sampling summary, `input_only: true`, `gold: null`.
-- `scripts/freeze.py <STORE_DIR> <FRAME_PARQUET> <PRIVATE_EVALS_ROOT> [--write]` writes (or checks byte for byte)
-  both 2026-10-23a sets: the private copies and this directory's items/manifest.
-- `scripts/packets.py <PRIVATE_EVALS_ROOT> <FRAME_PARQUET> <OUT>` builds the labelling packets in a private directory:
+- `scripts/freeze.py <STORE_DIR> <FRAME_PARQUET> <private evals directory> [--write]` writes (or checks byte for
+  byte) both 2026-10-23a sets: the private copies and this directory's items/manifest.
+- `scripts/packets.py <private evals directory> <FRAME_PARQUET> <OUT>` builds the labelling packets in a private directory:
   per document the text, a metadata header and the production model menu; the shared files of each task; one
   isolated session directory per (task, labeller, repeat) with its batch prompts; `packet.json` with every file's
   sha256.

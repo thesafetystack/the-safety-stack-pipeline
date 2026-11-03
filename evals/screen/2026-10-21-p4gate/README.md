@@ -1,9 +1,11 @@
-# Screen gate set `2026-10-21-p4gate` (promotion gate of the P4 technique-provenance clause, scope R2 D1)
+# Screen gate set `2026-10-21-p4gate` (promotion gate of the P4 technique-provenance clause, D657)
 
 The screen half of the P4 promotion gate. Protocol, exclusions, labellers, thresholds and the two run arms are in
 `evals/triage/2026-10-21-p4gate/README.md`. All items are split `test`. **Result: KEEP OFF.**
 
 ## Items (`items.jsonl`, 93; `texts/<item_id>.txt.gz`)
+- `items.jsonl` and `texts/` are not in the repository (third-party text, D790/D795): `tools/fetch_eval_texts.py`
+  fetches them into the eval-text cache.
 - Frozen with `stack.evals.freeze.screen_cands`: `input.text` = the tier-1 text as production truncates it, the whole
   text in `texts/`, from the same documents head and code (`c692e0c`) as the triage set. Licence: open 86, restricted
   5, public_web 2. Each item carries `input.published_at` / `input.channels` for screen-v13's record lines.
@@ -32,7 +34,7 @@ The screen half of the P4 promotion gate. Protocol, exclusions, labellers, thres
   `gold-as-written.jsonl`. Strata: lineage_positive 40 (2015-19: 18, 2020-23: 22), expected_drop 12, negative_control 12,
   modern_control 17, ordinary_relevant 12.
 
-## Runs 2026-10-21 (openai/gpt-6-luna, tier 1 only, `--no-tier2`, `--repeat 2`; not in the repo)
+## Runs 2026-10-21 (openai/gpt-6-luna, tier 1 only, `--no-tier2`, `--repeat 2`)
 
 | arm | stratum (n) | base S keep r1/r2 | p4 S keep r1/r2 |
 |---|---|---|---|

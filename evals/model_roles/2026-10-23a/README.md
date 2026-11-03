@@ -1,5 +1,8 @@
 # model_roles eval set 2026-10-23a: gold v3 sample (100 documents, input-only, no `gold.jsonl`)
 
+Status: current as the record of the production prompt choice (`model-roles-v3b`, D708); not scorable from this
+repository (no texts, no gold).
+
 The 100 documents of `evals/technique_staged/2026-10-23a` (same item ids g3-0001..g3-0100, same texts, same sample,
 weights and splits; sampling, exclusions and the allocation table are in that README), frozen for `stack eval
 model_roles` with vocabulary v0.9 (`configs/models.yaml` sha256 `ce35fb957299…`) and prompt `model-roles-v2`, as
@@ -8,13 +11,13 @@ Sol 6.1, two repeats each) and the production prompt `model-roles-v3b` was chose
 are not in this repository.
 
 ## Where the set lives
-No text is in the repository (the sample includes `restricted` texts). This directory holds `items.jsonl` and
-`manifest.json` (byte-identical to the private copy) and the labelling material (`labelling/`); the complete set
-(plus `texts/` and an empty `gold.jsonl`) is in a private evals root, written by
-`evals/technique_staged/2026-10-23a/scripts/freeze.py`. Run:
+No text is in the repository (the sample includes `restricted` texts). This directory holds `items.jsonl`,
+`manifest.json` and the labelling material (`labelling/`); the complete set (plus `texts/` and an empty
+`gold.jsonl`), written by `evals/technique_staged/2026-10-23a/scripts/freeze.py`, is kept in a private directory
+outside the repository. With it:
 
     uv run --no-sync stack --plan configs/plans/ann-scratch.yaml eval model_roles --set 2026-10-23a \
-        --evals <PRIVATE_EVALS_ROOT> --split all --models openai/gpt-6-luna --max-usd 2.0
+        --evals <private evals directory> --split all --models openai/gpt-6-luna --max-usd 2.0
 
 (prompt `model-roles-v2` and role `extract_main` are the defaults; no-cache reservation $1.14).
 

@@ -4,7 +4,7 @@
 and its low-confidence `not_relevant` rows, labelled blind by the same judges as the proportional `triage/` set
 (Opus 5.5, Sol 6.1, Sonnet 5.5) with the same jail, wrapper prompt, guides and schema (sha256-checked against
 `guides/` for every item). Scored with design weights, so the numbers are population estimates. No text is here: the
-rendered records are in `EVAL104_PRIVATE/tasks/triage_w/`.
+rendered records are in the private directory outside the repository (`../README.md`).
 
 Why: triage only gates fetching (a document that already has text skips it); its costly error is a false negative,
 a relevant document never fetched. The proportional set has 9 production positives, too few to estimate recall.
@@ -13,12 +13,12 @@ a relevant document never fetched. The proportional set has 9 production positiv
 
 - **Population**: the triage frame of `scripts/sample.py` (149,644 `documents` rows in state acquired with an LLM
   triage verdict; 28 retired rows out). By production verdict: not_relevant 135,483, relevant 8,726, borderline
-  5,435 (the brief's 135,507 / 8,729 / 5,436 include the 28 retired rows).
+  5,435 (135,507 / 8,729 / 5,436 with the 28 retired rows).
 - **Exclusions**: every existing eval set (`common.existing_eval_keys`, as for `triage/`: 103) and every document
   of the five 2026-10-25j sets, the 100 jtri items included (151 matched); eligible 149,390.
 - **Strata and allocation**: relevant 30, borderline 30, not_relevant split by production confidence (discrete, steps
-  of 0.01) at <= 0.94 (13.0 % of not_relevant), 0.95-0.98 (36.8 %), 0.99 (50.2 %), allocated 70 / 40 / 30. The
-  lowest-decile cut the brief suggested falls inside the 0.94 mass point (<= 0.93 is 7.6 %, <= 0.94 13.0 %); 0.94 was
+  of 0.01) at <= 0.94 (13.0 % of not_relevant), 0.95-0.98 (36.8 %), 0.99 (50.2 %), allocated 70 / 40 / 30. A
+  lowest-decile cut falls inside the 0.94 mass point (<= 0.93 is 7.6 %, <= 0.94 13.0 %); 0.94 was
   taken. Evidence basis (fields / title) is stratified implicitly (first sort key). `sampling.json` has the stratum
   sizes, weights, cut points, the full not_relevant confidence distribution and the per-stratum basis split.
 - **Selection**: systematic within stratum over units sorted by (basis, anchor channel, year bucket, unit key); seed
@@ -65,12 +65,13 @@ bounds (2,340 and 3,352 documents pooled) are the honest uncertainty there, not 
 `sample.jsonl`, `sampling.json`, `items.jsonl`, `production.jsonl`, `manifest.json` (freeze);
 `labels-{opus,sol,sonnet}.jsonl` (`release.release_set`, same capping: verbatim fields at 300 characters at a word
 boundary with "…"); `scores.md`, `scores.json`, `disagreements.jsonl` (items where production and the judges do not
-all agree, with stratum and weight). A dataset release re-scores this set on its own build with the strata
+all agree, with stratum and weight); `existing-eval-keys.json`, the keys (doc ids, text digests, normalised titles)
+of the earlier eval sets that the frame excludes, which the release reads instead of those sets' items (D795). A dataset release re-scores this set on its own build with the strata
 recomputed there (`stack.evals.release_quality`, D728; `../README.md`, "Re-scoring at release time").
 
 ## Running
 
-    source <impl dir>/env.sh
+    # environment as for the parent set (`../README.md`, "Running")
     $PY scripts/triage_w.py sample && $PY scripts/triage_w.py freeze
     $PY scripts/triage_w.py run --judges opus,sol,sonnet --parallel-opus 2 --parallel-sol 6 --parallel-sonnet 2
     $PY scripts/triage_w.py validate && $PY scripts/score_triage_w.py && $PY scripts/triage_w.py release

@@ -1,9 +1,14 @@
 # technique_staged eval set 2026-10-17a: 36 documents, gold on taxonomy v0.9
 
+Superseded: the first technique_staged gold, revised as `2026-10-17b` (blind audit) and `2026-10-18a` (taxonomy
+v0.9-234), then replaced by gold v2 (`2026-10-18b` / `2026-10-18c`) and gold v3 (`2026-10-23a`, on which the
+production prompts were chosen, D708). Kept frozen: tests read it, and `stack/evals/technique_staged.py` takes its
+length-band shares from "Length weighting" below. Whole texts are not in the repository (D790;
+`tools/fetch_eval_texts.py`).
+
 The set for `annotate.technique_staged` (techpipe, D606): one gold for all four modes (`single`, `sweep`,
 `staged`, `lexical`) and for any model, scored by `stack eval technique_staged` / `stack eval score` /
-`staged-compare` / `staged-table` (D607; `stack/evals/technique_staged.py`). Experimental: no production
-decision rests on it alone (LLM-only gold, 36 documents).
+`staged-compare` / `staged-table` (D607; `stack/evals/technique_staged.py`). LLM-only gold, 36 documents.
 
 ## Items (36; dev/test 20/16; results are reported over all 36, `--split all`)
 - **an-0001..an-0025**: the technique_roles 2026-10-13a documents (doc_id, source_item, split, stratum, licence
@@ -43,7 +48,7 @@ that band. Shares computed read-only on 2026-10-17 by `scripts/length_bands.py <
 |---|---|---|---|---|---|
 | `screen_relevant` (**default**): newest relevance-screen verdict `relevant` | 12,568 | 0.0489 | 0.2641 | 0.4135 | 0.2736 |
 | `all_text`: every document with a text | 43,968 | 0.4698 | 0.1667 | 0.2252 | 0.1383 |
-| `brief`: the eval brief's fallback numbers | — | 0.20 | 0.25 | 0.28 | 0.27 |
+| `brief`: fallback numbers set when the eval was designed | — | 0.20 | 0.25 | 0.28 | 0.27 |
 
 Method notes. The store copy carries no `stack_relevance` verdict (the column is null on every document), so the
 first-choice population, documents whose `stack_relevance` verdict is `relevant`, could not be measured. Its
@@ -68,10 +73,3 @@ The scorer takes `--length-shares screen_relevant | all_text | brief` (`stack/ev
 
 `manifest.json` `frozen_with`: taxonomy path / sha256 / version, rubric `rubric-v0.9-a` digest, prompt set
 `technique-staged-v1` and the digest of each prompt file per mode, segmenter `seg-v1`, lexical `lex-v2`.
-
-## Predeclared comparisons (design E1-E3)
-Primary: sweep-luna vs single-luna, slug-presence recall (no group nodes, no candidates), delivered over all 36
-documents, paired document bootstrap 95 % CI; co-primary: length-weighted recall and the precision difference.
-Secondary: staged-luna vs sweep-luna; union-of-3 single-luna vs sweep-luna; cells >= 2. Repeats: single-luna x3,
-sweep-luna x2, staged-luna x2 (each repeat its own P/S cache); others x1. Commands: the run book of the
-experiment (outside the repository) and `stack eval --help`.

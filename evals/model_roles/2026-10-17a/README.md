@@ -1,10 +1,12 @@
 # model_roles eval set 2026-10-17a: every document judged, prompt model-roles-v2
 
-The current model_roles set, for `annotate.model_roles` registry version 3: every document in scope gets a judge
-call (an empty or weak-only menu included), prompts are files (`model-roles-v2` the default), and the judge may
-refine a family, weak or product-name row to the specific model the document determines (`refined_name`). Earlier
-sets stay as they were: `2026-10-13a` (the labelling record) and `2026-10-16a` (the merge, D591; refused by the
-current code: its items were frozen without calls and with the older menu text).
+Status: current. The scored model_roles set (`stack eval model_roles --set 2026-10-17a`), for `annotate.model_roles`
+registry version 3: every document in scope gets a judge call (an empty or weak-only menu included), prompts are
+files (`model-roles-v2` the code default), and the judge may refine a family, weak or product-name row to the
+specific model the document determines (`refined_name`). The production prompt `model-roles-v3b` was chosen on the
+larger, unscored gold-v3 sample `2026-10-23a` (D708). Earlier sets: `2026-10-13a` (the labelling record) and
+`2026-10-16a` (the merge, D591), both superseded by this one. Whole texts are not in the repository (D790;
+`tools/fetch_eval_texts.py`); the synthetic texts are (`synthetic/`).
 
 ## Set (37 items, dev/test 21/16)
 - **an-0001..an-0025**: 2026-10-16a's documents, texts byte-identical (the 2026-10-13a selection: 25 screened-in
@@ -32,16 +34,8 @@ document window, truncation note and menu text, prompt-independent) and `input_d
 `model-roles-v2`). `stack eval` refuses the set when production builds other fills; the whole message is compared
 only for `model-roles-v2`, so `--prompt model-roles-v1` (or a new version) runs on the same set.
 
-**Catalogue v0.5 → v0.7** (the re-freeze): menus changed on 16 of 37 items.
-- *Nodes* (4 items): an-0001 nllb-200 → nllb (NLLB-200 folded into the family); an-0017 + llama-fine-tunes,
-  qwen3.5-9b, qwen3.6-27b, qwen3.6-35b-a3b, − alpaca-7b, qwen3.5-397b-a17b (Alpaca removed; Qwen sizes split out);
-  an-0019 − kimi-k3-swarm ("K3 Swarm" now an alias on kimi-k3); an-0021 qwen3.6 → qwen3.6-35b-a3b.
-- *Text only* (12 items: an-0002, -0003, -0004, -0005, -0007, -0009, -0010, -0011, -0015, -0016, -0022, -0023):
-  names, makers (DeepMind models now `google`) or glosses changed; no node moved.
-- *Score risk*: the gold follows every node change (the v0.7 remap below), so no gold row is off its menu. Left
-  by design: an-0035 / an-0036 (the concretization items: the menu has the family, gold the refined node; a judge that
-  does not refine scores a spurious family row and misses the gold row). Fixed in this re-freeze: an-0022 (asked since
-  2026-10-17a, but its weak gpt-6-astra and janus entries had no gold rows: added, see below).
+**Catalogue v0.5 → v0.7** (the first re-freeze, D595): menus changed on 16 of 37 items (4 with node changes, 12
+text only); the gold follows every node change (the `section: v0.7` remap below).
 
 **Catalogue v0.7 → v0.9** (the second re-freeze, in place; no LLM call): menus changed on 17 of 37 items.
 - *Nodes* (10 items): an-0001 − nllb (node removed, no alias); an-0010 qwen3.8-27b → qwen3.8 (the stub is gone, "qwen
@@ -126,7 +120,7 @@ set, same menus). The matcher alone (no LLM): `uv run --no-sync stack eval model
 all`.
 
 ## Results
-Baseline runs with the production pin (`configs/plans/ann-scratch.yaml`: `model-roles-v2`, `openai/gpt-6-luna`,
+Baseline runs with the `ann-scratch` pin (`configs/plans/ann-scratch.yaml`: `model-roles-v2`, `openai/gpt-6-luna`,
 role `extract_main`), `--split all`, 2 repeats, the README's command. Cells = (node, role) at strength ≥ 2, micro over
 (item, repeat).
 
@@ -165,7 +159,7 @@ vs luna 0.799 / 0.772; test 0.808 vs 0.776 / 0.837): an-0010 tp / fp / fn luna 2
 37 / 8 / 1; an-0018 false positives 9 → 1. Gemini accepts the strict schema (0 degraded); prompt-cache share 0 % on
 this task. mimo: 244 repairs, precision 0.35.
 
-Round 2 (2026-10-21; local prices / routes as in the technique set README; Gemini low effort = a local `extract_main`
+Further models (2026-10-21; local prices / routes as in `evals/technique_staged/2026-10-18c/README.md`; Gemini low effort = a local `extract_main`
 with `reasoning_effort: low`). F1 − luna = paired item bootstrap against luna's same repeat on the same items.
 
 | model | rows | run | cells≥2 P / R / F1 | cells≥1 F1 | nodes F1 | repeat agree | failed | USD / 1k | F1 − luna [95 % CI] |
@@ -177,7 +171,7 @@ with `reasoning_effort: low`). F1 − luna = paired item bootstrap against luna'
 | google/gemini-3.1-flash-lite, repeat 1 | 37 | `20261021T010841Z_all_3bbed08a` | 0.596 / 0.788 / 0.679 | 0.620 | 0.902 | - | 0 | 5.98 | −0.115 [−0.222, 0.024] |
 | google/gemini-3.8-flash effort low, repeat 1, first 16 dev items | 16 | `20261021T010920Z_dev_83156a35` | 0.873 / 0.824 / 0.848 | 0.937 | 0.975 | - | 0 | 21.1 | +0.054 [−0.003, 0.133] (Gemini default on the same items 0.914) |
 
-Round 3 (2026-10-21): `inception/mercury-3` at reasoning effort low (local `extract_main` with `reasoning_effort: low`),
+Low effort (2026-10-21): `inception/mercury-3` at reasoning effort low (local `extract_main` with `reasoning_effort: low`),
 repeat 1, `20261021T015848Z_all_ecc213fa`: 37 / 37 answered, cells≥2 P / R / F1 0.897 / 0.806 / 0.850, cells≥1 F1 0.894,
 nodes F1 0.966, schema degraded 0, USD 4.28 / 1k docs. Paired item bootstrap of cells≥2 F1: − luna repeat 1 +0.056
 [−0.006, 0.123], − luna repeat 2 +0.061 [−0.021, 0.127], − Gemini 3.8 Flash repeat 1 −0.040 [−0.104, 0.005].

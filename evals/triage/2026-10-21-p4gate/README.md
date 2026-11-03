@@ -1,17 +1,18 @@
-# Triage gate set `2026-10-21-p4gate` (promotion gate of the P4 technique-provenance clause, scope R2 D1)
+# Triage gate set `2026-10-21-p4gate` (promotion gate of the P4 technique-provenance clause, D657)
 
 **Use:** the independent evaluation that decides whether `safety-relevance-v4-p4` / `screen-v13-p4` (the S-only
 technique-provenance clause) replace `safety-relevance-v4` / `screen-v13` in the next plan revision. All items are split
 `test`. Nothing is tuned on this set. The screen half is `evals/screen/2026-10-21-p4gate/`. **Result: KEEP OFF**
-(below).
+(below): the p4 prompt names stay unpinned.
 
 ## Items (`items.jsonl`, 92)
 - **Frozen** 2026-10-21 from a read-only mirror of the production store (documents head `r1sh6c9jm6de2`, series
-  `batch-import`) at code `c692e0c`. `manifest.json` records the git state; other agents' uncommitted files made it dirty.
+  `batch-import`) at code `c692e0c`. `manifest.json` records the git state (the tree was dirty). `items.jsonl` is not in
+  the repository (long third-party excerpts, D795): `tools/fetch_eval_texts.py` fetches it into the eval-text cache.
   The record is `stack.evals.freeze.triage_cands`'s, i.e. `document_text`, record version 1. Each item also carries
   `input.published_at` and `input.channels`, the two fields record version 2 adds (see "Harness limits").
-- **Unused records only.** Excluded: every document (by doc id, normalised title or arXiv id) in the round-2 scope
-  review's C13 sets, its audit samples and landmark lists, and every set under `evals/`. Also excluded: 43 documents whose
+- **Unused records only.** Excluded: every document (by doc id, normalised title or arXiv id) in the pre-2020 scope
+  review's evaluation sets, its audit samples and landmark lists, and every set under `evals/`. Also excluded: 43 documents whose
   in-band excerpt blob was missing from the mirror, since their record could not be rebuilt as production saw it.
 - **Seeded draw** (seed `d1-p4gate-2026-10-21`, order sha256(seed + doc_id); papers only, years 2015-2026, rows
   production actually triaged). The pools:
@@ -57,10 +58,10 @@ no difference.
 - (iv) Screen R agreement: no net regression.
 - Minimum 12 lineage positives and 10 per other gated stratum, else INCONCLUSIVE (→ KEEP OFF).
 
-## Runs 2026-10-21 (openai/gpt-6-luna, the plan's model; not in the repo)
+## Runs 2026-10-21 (openai/gpt-6-luna, the plan's model)
 Two arms with identical items and prompts:
-- **lines**: production inputs, record version 2 with `Published:`/`Source:`. The runs used a scratch copy of the repo
-  with a 30-line harness patch that rebuilds the record by `record_text(<prompt>, …)` from the frozen fields. The patch
+- **lines**: production inputs, record version 2 with `Published:`/`Source:`. The runs used a scratch copy of the repository
+  with a 30-line harness patch (not committed) that rebuilds the record by `record_text(<prompt>, …)` from the frozen fields. The patch
   checks that version 1 still equals the frozen record.
 - **frozen**: the repository's harness, which sends the frozen version-1 record.
 
