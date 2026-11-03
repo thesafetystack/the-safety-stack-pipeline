@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import importlib.util
 import re
+import shutil
 import sys
 from pathlib import Path
 from typing import Any
@@ -189,6 +190,9 @@ def test_json_doc_skips_lines_that_only_look_like_json() -> None:
         {"run_id": "r1", "status": "ok"}
 
 
+REAL_CHECK_STAGED = sr.check_staged
+
+
 class FakeHf:
     """huggingface_hub.HfApi stand-in: repo privacy, trees, single commits with adds and deletes, tags. Changing a
     repo's visibility is never allowed (the pipeline never changes a repo's visibility)."""
@@ -257,6 +261,9 @@ def hf(env: None, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Any:
     fake_hub.CommitOperationDelete = type("CommitOperationDelete", (), {  # type: ignore[attr-defined]
         "__init__": lambda self, path_in_repo, is_folder: setattr(self, "path_in_repo", path_in_repo)})
     monkeypatch.setitem(sys.modules, "huggingface_hub", fake_hub)
+    # the staged fakes are one release.json each, not releases: the checker is stubbed here and run for real in
+    # test_upload_runs_the_releases_own_checker
+    monkeypatch.setattr(sr, "check_staged", lambda d: [])
     return FakeHf
 
 
@@ -311,6 +318,72 @@ def test_upload_refuses_a_file_changed_after_staging(hf: Any) -> None:
     ops.b.put("releases/2026-11-01/cyc/internal/release.json", b"tampered")
     assert sr.upload(sr.Settings.from_env(), ops, "2026-11-01", dry=False) == sr.EXIT_FAILED
     assert hf.uploads == []
+
+
+def test_upload_refuses_a_release_its_checker_refuses(hf: Any, monkeypatch: pytest.MonkeyPatch,
+                                                     capsys: pytest.CaptureFixture[str]) -> None:
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _staged(ops, "2026-11-01")
+    checked: list[str] = []
+
+    def check(d: Path) -> list[str]:
+        checked.append(d.name)
+        return ["exit 1", "[rows] data/corpus.parquet doc_id: 1 row(s)"] if d.name == "public" else []
+
+    monkeypatch.setattr(sr, "check_staged", check)
+    assert sr.upload(sr.Settings.from_env(), ops, "2026-11-01", dry=False) == sr.EXIT_FAILED
+    assert checked == ["internal", "public"] and hf.uploads == []  # both checked before anything goes up
+    assert "ERROR: public: the release's own checker" in capsys.readouterr().out
+
+
+def _stage_dir(ops: Any, rid: str, dirs: dict[str, Path]) -> None:
+    """Stage real release directories as the cycle does (files under the prefix, the manifest last)."""
+    files = {v: [{"path": p.relative_to(d).as_posix(), "bytes": p.stat().st_size, "sha256": sr.sha256_file(p)}
+                 for p in sorted(d.rglob("*")) if p.is_file()] for v, d in dirs.items()}
+    for v, d in dirs.items():
+        for f in files[v]:
+            ops.b.put(f"releases/{rid}/cyc/{v}/{f['path']}", (d / f["path"]).read_bytes())
+    ops.put_json(f"releases/{rid}/manifest.json", {
+        "release_id": rid, "prefix": f"releases/{rid}/cyc",
+        "variants": {v: {"hf_repo": f"org/{v}", "rows": 1, "files": files[v]} for v in dirs}})
+
+
+@pytest.mark.slow
+def test_upload_runs_the_releases_own_checker(hf: Any, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The real check_staged (the shipped tools/release-validator.py, every row) over synthetic exports: valid ones
+    upload; a variant with a row its schema refuses (re-staged with matching sha256s) uploads nothing."""
+    from tests.test_release_format import _rehash, _rewrite_corpus, export
+
+    monkeypatch.setattr(sr, "check_staged", REAL_CHECK_STAGED)
+    pub, _s = export(tmp_path / "p")
+    intern, _s = export(tmp_path / "i", "internal", n=4)
+    assert sr.check_staged(pub) == [] and sr.check_staged(intern) == []
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _stage_dir(ops, "2026-11-03", {"public": pub, "internal": intern})
+    assert sr.upload(sr.Settings.from_env(), ops, "2026-11-03", dry=False) == sr.EXIT_OK
+    assert hf.uploads == ["org/internal", "org/public"]
+
+    def bad(rows: list[dict[str, Any]]) -> None:
+        rows[0]["release"]["abstract"] = "leaked"  # a closed list's unknown value
+
+    _rewrite_corpus(pub, bad)
+    _rehash(pub)
+    got = sr.check_staged(pub)
+    assert got[0] == "exit 1" and any("release.abstract" in x for x in got), got
+    hf.uploads.clear()
+    ops2 = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _stage_dir(ops2, "2026-11-04", {"public": pub, "internal": intern})
+    assert sr.upload(sr.Settings.from_env(), ops2, "2026-11-04", dry=False) == sr.EXIT_FAILED
+    assert hf.uploads == []
+
+
+def test_check_staged_refuses_a_release_without_its_checker(tmp_path: Path) -> None:
+    (tmp_path / "release.json").write_text('{"release_id": "2026-10-30", "format": "2026-10-30"}')
+    assert sr.check_staged(tmp_path) == ["tools/release-validator.py: missing (a release from before format 1.0.0?)"]
+    (tmp_path / "tools").mkdir()
+    shutil.copyfile(sr.REPO / "data-repo" / "tools" / "release-validator.py", tmp_path / "tools" / "release-validator.py")
+    got = sr.check_staged(tmp_path)
+    assert got[0] == "exit 3" and got[-1] == "UNSUPPORTED FORMAT VERSION", got
 
 
 def test_upload_refused_in_test_mode(hf: Any, monkeypatch: pytest.MonkeyPatch) -> None:

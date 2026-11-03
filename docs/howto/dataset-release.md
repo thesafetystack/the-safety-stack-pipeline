@@ -24,7 +24,9 @@ release format has its own version (`format_version`, D803, below). About 100 s 
 (the internal variant adds ~30 s for 2.4 GB of text; the release checker, D803, adds ~30 s and ~40 s). Every check in `mapping.yaml` runs over the written stage; any problem keeps nothing and names the problem.
 
 `stack export` uploads nothing. To publish by hand, run a cycle by hand (`docs/DEPLOY-railway.md`): it exports,
-stages and uploads as above. `python tools/scheduled_run.py upload --release-id <id>` uploads a
+stages and uploads as above; before uploading, each staged variant fetched back from the ops prefix goes through the
+release checker it ships (`tools/release-validator.py <dir> --rows all`, D804), and a variant it refuses uploads
+nothing. `python tools/scheduled_run.py upload --release-id <id>` uploads a
 release staged on the ops prefix (one whose upload failed, or that a lost lock kept from uploading); nothing uploads
 a directory exported by hand.
 
