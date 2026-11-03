@@ -255,7 +255,8 @@
         ],
         "properties": {
           "path": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?![/\\\\])(?![A-Za-z]:)(?!(?:.*/)?\\.\\.(?:/|$)).+$"
           },
           "bytes": {
             "type": "integer",

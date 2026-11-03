@@ -2,8 +2,8 @@
 
 The format of a release of The Safety Stack dataset ([README.md](README.md): what is structural, the compatibility
 rules, how a version is cut). Versions follow semantic versioning from the reader's side: a patch changes prose only,
-a minor only adds, a major removes or changes. An entry is dated when the first release of its version is published;
-its directory `<major>.<minor>/` is not edited after that.
+a minor only adds, a major removes or changes. An entry is dated when the maintainer tags its version
+(`format-<version>`); its directory `<major>.<minor>/` is not edited after that.
 
 ## [1.0.0]
 
@@ -14,6 +14,7 @@ its directory `<major>.<minor>/` is not edited after that.
 - A schema next to each file it describes: `release.schema.json` (the manifest), `data/corpus.schema.json` (one row,
   with the exact Arrow type of every node as `x-arrow`), `config/configs.schema.json` and
   `config/overrides.schema.json` (one line).
+- `release.json` `files[].path` is a path inside the release (no absolute path, no `..` segment).
 - Closed and open lists marked: a closed list is an `enum`; an open list carries `x-open: true` and its known values
   in `x-values`.
 - `tools/release-validator.py` in every release, byte-identical to this repository's.

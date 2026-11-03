@@ -12,12 +12,16 @@ A release (format 1.0.0 on) names its format in `release.json` `format_version`;
 repository as `tools/release-validator.py` and in every release as `tools/release-validator.py`. The checks:
 
 - **version**: `format_version` of `release.json`. A format whose major version this checker does not know (or a
-  release without the field: the dated releases before 1.0.0) is an *unsupported format version*: exit code 3, and
-  only the checks that do not depend on the format run (manifest, sibling schemas, rows), not "invalid". A newer
-  minor version of a known major is checked as that major: a minor version only adds.
+  release without the field: the dated releases before 1.0.0) is an *unsupported format version*: only the checks
+  that do not depend on the format run (manifest, sibling schemas, rows); when they pass, exit code 3, not
+  "invalid"; when one fails, the release is invalid (exit code 1) whatever its version. A newer minor version of a
+  known major is checked as that major: a minor version only adds.
 - **manifest**: `release.json` against `release.schema.json`; every file it lists exists with its size and sha256;
   no file it does not list is present (`release.json` itself aside; the hosting's hidden top-level entries, such as
-  `.gitattributes` and `.cache/` of a Hugging Face download, are ignored and reported).
+  `.gitattributes` and `.cache/` of a Hugging Face download, are ignored and reported). A listed path that leaves
+  the release directory (absolute, or `..`) is a problem; the checker reads nothing outside the directory.
+- **versions** (format 1): the parquet key-value metadata `format_version` and `release_id`, every row's
+  `release_id` and the card's front matter `format_version` (`README.md`) agree with `release.json`.
 - **schemas**: every `<stem>.schema.json` validates its sibling `<stem>.json` (whole), `<stem>.jsonl` (each line) or
   `<stem>.parquet` (the footer's Arrow schema against the `x-arrow` keyword of every node; then the rows).
 - **rows**: the parquet rows as JSON values (dates and timestamps as ISO strings), with format checking: a seeded
@@ -33,13 +37,16 @@ repository as `tools/release-validator.py` and in every release as `tools/releas
   repository, a shipped taxonomy file of a version the repository has must be byte-identical to it (whose schema
   check is the repository's CI); any other goes through `tools/taxonomy-schema-validator.py` with the repository's
   schemas.
-- **archive**: run from a checkout of the data repository, the release's schemas, stripped of description, title,
-  examples and $comment, equal `formats/<major>.<minor>/` (objects compared without key order, `required`, `enum`,
-  `type` and `x-values` as sets).
+- **archive**: the release's schemas, stripped of description, title, examples and $comment, equal its format's
+  archived ones (objects compared without key order, `required`, `enum`, `type` and `x-values` as sets): run from a
+  checkout of the data repository, `formats/<major>.<minor>/`; anywhere else, the digests of the archived schemas
+  this file carries (`FORMAT_DIGESTS`).
 
 `--formats` checks the archive itself: each `formats/<major>.<minor>/` holds the format's schema files, valid JSON
-Schemas (2020-12) with the format's `$id`, already stripped, with an entry in `formats/CHANGELOG.md`; with `--since
-<ref>`, no file of a directory whose changelog entry was dated at `<ref>` has changed since.
+Schemas (2020-12) with the format's `$id`, already stripped, with an entry in `formats/CHANGELOG.md` and their digests
+in `FORMAT_DIGESTS`; each equals its tree at every tag `format-<major>.<minor>.<patch>`; with `--since <ref>`, no
+file of a directory whose changelog entry was dated at `<ref>` has changed since, and no entry dated at `<ref>` has
+lost or changed its date.
 
 Exit codes: 0 valid; 1 invalid; 2 usage; 3 unsupported format version. Also usable as a module:
 `check_release(path, rows=...)` returns a :class:`Report`.
@@ -81,6 +88,15 @@ ID_PREFIX = "urn:the-safety-stack:format"
 #: The schema files of a format-1 release (and of its archive directory), by path.
 SCHEMA_FILES_1 = ("release.schema.json", "data/corpus.schema.json", "config/configs.schema.json",
                   "config/overrides.schema.json")
+#: :func:`schema_digest` of each archived format's schemas (``formats/<major>.<minor>/``), so that a run outside this
+#: repository (a release's own copy) still detects a release whose schemas differ from its format's; ``--formats``
+#: checks these against the archive. A new format version adds its entry here.
+FORMAT_DIGESTS: dict[str, dict[str, str]] = {
+    "1.0": {"release.schema.json": "ad19047ab4620266e7df250bdf683cb02984e76cafe47c6f588edf81dd03038c",
+            "data/corpus.schema.json": "69e90ef81144c777eb63c66cd088a9a6171a6398893abc828f282c365ed65aaf",
+            "config/configs.schema.json": "58785249d2869ab0bd663984651faeb43514bbe23260ae10d556c763bb278d9e",
+            "config/overrides.schema.json": "c509924344f1bcecbf8e2c708968d86fb6aab4c008d3b1e9a97fbc9f4bb20eef"},
+}
 STRIP_KEYS = frozenset({"description", "title", "examples", "$comment"})
 SET_KEYS = frozenset({"required", "enum", "type", "x-values"})
 #: Keywords whose value is a map from names to subschemas (the names are not keywords).
@@ -89,7 +105,8 @@ NAMED_SCHEMAS = frozenset({"properties", "$defs", "patternProperties", "dependen
 DATA_KEYS = frozenset({"enum", "const", "required", "x-values", "default", "examples", "x-arrow", "x-open"})
 DOC_ID = re.compile(r"^[0-9a-z]{13}$")
 VERSION = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
-CHANGELOG_ENTRY = re.compile(r"^## \[(\d+\.\d+\.\d+)\](?:\s*-\s*(\d{4}-\d{2}-\d{2}))?", re.M)
+#: A changelog entry's heading: ``## [<version>]``, dated with any dash (``-``, en dash, em dash) and an ISO date.
+CHANGELOG_ENTRY = re.compile(r"^## \[(\d+\.\d+\.\d+)\](?:[ \t]*[-\u2013\u2014][ \t]*(\d{4}-\d{2}-\d{2}))?", re.M)
 
 
 # ---------------------------------------------------------------- the report
@@ -125,9 +142,11 @@ class Report:
 
     @property
     def status(self) -> str:
-        if not self.supported:
-            return "unsupported"
-        return "invalid" if self.problems else "valid"
+        """``invalid`` when any check that ran found a problem (a format-independent one included, whatever the
+        version); else ``unsupported`` for a format this checker does not know; else ``valid``."""
+        if self.problems:
+            return "invalid"
+        return "valid" if self.supported else "unsupported"
 
     @property
     def exit_code(self) -> int:
@@ -435,8 +454,11 @@ def check_manifest(root: Path, doc: dict[str, Any], rep: Report) -> None:
         if not isinstance(fe, dict) or not isinstance(fe.get("path"), str):
             rep.add("manifest", "release.json files", f"an entry without a path: {fe!r}"[:160])
             continue
+        p = inside(root, fe["path"])
+        if p is None:
+            rep.add("manifest", fe["path"], "a path outside the release directory (absolute or with ..)")
+            continue
         listed[fe["path"]] = fe
-        p = root / fe["path"]
         if not p.is_file():
             rep.add("manifest", fe["path"], "listed in release.json, missing")
         elif p.stat().st_size != fe.get("bytes") or sha256_file(p) != fe.get("sha256"):
@@ -448,6 +470,19 @@ def check_manifest(root: Path, doc: dict[str, Any], rep: Report) -> None:
     for extra in sorted(on_disk - set(listed) - {"release.json"}):
         rep.add("manifest", extra, "present but not listed in release.json")
     rep.checks["manifest"] = f"{len(listed)} files listed"
+
+
+def inside(root: Path, rel: str) -> Path | None:
+    """``root / rel`` when that stays inside ``root`` (no absolute path, no ``..`` out of it), else None: the checker
+    reads nothing outside the release directory."""
+    if not rel or rel.startswith(("/", "\\")) or re.match(r"^[A-Za-z]:", rel):
+        return None
+    p = root / rel
+    try:
+        p.resolve().relative_to(root.resolve())
+    except ValueError:
+        return None
+    return p
 
 
 def _sibling(sch: Path) -> Path | None:
@@ -717,9 +752,10 @@ def check_taxonomies(root: Path, doc: dict[str, Any], rep: Report) -> None:
     files: dict[tuple[str, str], set[str]] = {}
     refs: dict[tuple[str, str], dict[str, Any]] = {}
     for (name, ver), t in sorted(pins.items()):
-        p = root / str(t.get("path"))
-        if not p.is_file():
-            rep.add("taxonomies", str(t.get("path")), f"pinned {name} {ver}: missing")
+        p = inside(root, str(t.get("path")))
+        if p is None or not p.is_file():
+            rep.add("taxonomies", str(t.get("path")), f"pinned {name} {ver}: missing"
+                    + (" (a path outside the release directory)" if p is None else ""))
             continue
         if sha256_file(p) != t.get("sha256"):
             rep.add("taxonomies", str(t.get("path")), f"pinned {name} {ver}: sha256 differs from release.json")
@@ -745,9 +781,9 @@ def check_taxonomies(root: Path, doc: dict[str, Any], rep: Report) -> None:
         # a file of a version this repository has must be that file, byte for byte (a released file is never
         # edited; its schema check is this repository's CI); any other goes through the taxonomy validator
         for (name, ver), t in sorted(pins.items()):
-            p = root / str(t.get("path"))
+            p = inside(root, str(t.get("path")))
             own = DATA_REPO / "taxonomies" / name / f"{name}-{ver}.yaml" if DATA_REPO else None
-            if not p.is_file():
+            if p is None or not p.is_file():
                 continue
             if own is not None and own.is_file():
                 if sha256_file(own) != sha256_file(p):
@@ -808,8 +844,60 @@ def check_taxonomies(root: Path, doc: dict[str, Any], rep: Report) -> None:
 
 
 # -- the archive
+def front_matter(text: str) -> dict[str, Any] | None:
+    """The YAML front matter of a Markdown file (between a first line ``---`` and the next ``---``), or None."""
+    m = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n", text, re.S)
+    if m is None:
+        return None
+    try:
+        data = yaml.safe_load(m.group(1))
+    except yaml.YAMLError:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def check_versions(root: Path, doc: dict[str, Any], rep: Report) -> None:
+    """Format 1: the format version and the release id agree wherever the release states them: ``release.json``, the
+    parquet key-value metadata (``format_version``, ``release_id``), every row's ``release_id``, the card's front
+    matter (``README.md`` ``format_version``)."""
+    fv, rid = doc.get("format_version"), doc.get("release_id")
+    corpus = root / "data" / "corpus.parquet"
+    if corpus.is_file():
+        pf = pq.ParquetFile(corpus)
+        kv = pf.schema_arrow.metadata or {}
+        for key, want in (("format_version", fv), ("release_id", rid)):
+            got = kv.get(key.encode())
+            if got is None:
+                rep.add("versions", "data/corpus.parquet", f"its key-value metadata has no {key}")
+            elif got.decode("utf-8", "replace") != want:
+                rep.add("versions", "data/corpus.parquet", f"key-value {key} {got.decode('utf-8', 'replace')!r}, "
+                                                           f"release.json {want!r}")
+        if "release_id" in pf.schema_arrow.names:
+            ids = set(pc.unique(pf.read(columns=["release_id"]).column(0)).to_pylist())
+            if ids != {rid}:
+                rep.add("versions", "data/corpus.parquet release_id", f"rows carry {sorted(map(str, ids))[:3]}, "
+                                                                      f"release.json {rid!r}")
+    card = root / "README.md"
+    front = front_matter(card.read_text("utf-8")) if card.is_file() else None
+    if front is None:
+        rep.add("versions", "README.md", "no YAML front matter")
+    elif str(front.get("format_version")) != fv:
+        rep.add("versions", "README.md", f"front matter format_version {front.get('format_version')!r}, release.json "
+                                         f"{fv!r}")
+    rep.checks["versions"] = f"format_version {fv}, release_id {rid}"
+
+
+def schema_digest(js: Any) -> str:
+    """The sha256 of a schema stripped and made canonical (:func:`strip_schema`, :func:`canonical`), as JSON with sorted
+    keys: equal digests, equal structure."""
+    text = json.dumps(canonical(strip_schema(js)), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 def check_archive(root: Path, version: str, schemas: dict[str, Any], archive: Path | None, require: bool,
-                  rep: Report) -> None:
+                  rep: Report, digests: bool = False) -> None:
+    """The release's stripped schemas against ``archive/<major>.<minor>/``; without that directory, with ``digests``,
+    against :data:`FORMAT_DIGESTS`."""
     mm = ".".join(version.split(".")[:2])
     d = archive / mm if archive is not None else None
     if d is None or not d.is_dir():
@@ -817,8 +905,19 @@ def check_archive(root: Path, version: str, schemas: dict[str, Any], archive: Pa
         msg = f"archive: no formats/{mm}/ {where}"
         if require:
             rep.add("archive", f"formats/{mm}", msg)
-        else:
+            return
+        if not digests:
             rep.not_checked.append(msg)
+            return
+        known = FORMAT_DIGESTS.get(mm)
+        if known is None:
+            rep.not_checked.append(f"{msg}, and this checker knows no digests of format {mm}")
+            return
+        for rel in SCHEMA_FILES_1:  # the stripped schemas against this checker's digests of the archived ones
+            if rel in schemas and schema_digest(schemas[rel]) != known.get(rel):
+                rep.add("archive", rel, f"differs from format {mm} as archived (this checker's digest of "
+                                        f"formats/{mm}/{rel})")
+        rep.checks["archive"] = f"format {mm}: the schemas' digests compared"
         return
     for rel in SCHEMA_FILES_1:
         a = d / rel
@@ -837,8 +936,9 @@ def check_archive(root: Path, version: str, schemas: dict[str, Any], archive: Pa
 def check_release(path: str | Path, *, rows: str | int = DEFAULT_SAMPLE, seed: int = 0,
                   archive: str | Path | None | bool = True, require_archive: bool = False) -> Report:
     """Check the release directory ``path`` (module docstring). ``rows``: ``"all"`` or a sample size. ``archive``:
-    the ``formats/`` directory to compare the schemas with (True: this repository's, when this file sits in one;
-    False/None: none); ``require_archive``: a missing archive directory is a problem, not a check left out."""
+    the ``formats/`` directory to compare the schemas with (True: this repository's, when this file sits in one, else
+    :data:`FORMAT_DIGESTS`; a path: that directory; False/None: no comparison); ``require_archive``: a missing archive
+    directory is a problem, not a check left out."""
     root = Path(path)
     rep = Report(str(path))
     try:
@@ -863,9 +963,13 @@ def check_release(path: str | Path, *, rows: str | int = DEFAULT_SAMPLE, seed: i
     if (root / "data" / "corpus.parquet").is_file():
         _guarded(rep, "ids", check_ids, root, rep)
         _guarded(rep, "taxonomies", check_taxonomies, root, doc, rep)
+    _guarded(rep, "versions", check_versions, root, doc, rep)
     arch = (DATA_REPO / "formats" if DATA_REPO is not None else None) if archive is True else \
         (Path(archive) if archive else None)
-    _guarded(rep, "archive", check_archive, root, str(v), schemas, arch, require_archive, rep)
+    if archive is False or archive is None:
+        rep.not_checked.append("archive: comparison turned off")
+    else:  # archive=True and no checkout in reach: this file's digests of the archived schemas
+        _guarded(rep, "archive", check_archive, root, str(v), schemas, arch, require_archive, rep, archive is True)
     return rep
 
 
@@ -885,8 +989,11 @@ def changelog_entries(text: str) -> dict[str, str | None]:
     return {m.group(1): m.group(2) for m in CHANGELOG_ENTRY.finditer(text)}
 
 
-def check_formats(formats: Path, since: str | None = None) -> list[str]:
-    """The archive (module docstring, ``--formats``); a list of problems."""
+def check_formats(formats: Path, since: str | None = None,
+                  digests: dict[str, dict[str, str]] | None = None) -> list[str]:
+    """The archive (module docstring, ``--formats``; ``digests``: :data:`FORMAT_DIGESTS` unless given); a list of
+    problems."""
+    digests = FORMAT_DIGESTS if digests is None else digests
     probs: list[str] = []
     log_p = formats / "CHANGELOG.md"
     entries = changelog_entries(log_p.read_text("utf-8")) if log_p.is_file() else {}
@@ -915,9 +1022,31 @@ def check_formats(formats: Path, since: str | None = None) -> list[str]:
                 probs.append(f"formats/{mm}/{rel}: $id {js.get('$id')!r}, expected {ID_PREFIX}:{mm}:{rel}")
             if strip_schema(js) != js:
                 probs.append(f"formats/{mm}/{rel}: keeps description, title, examples or $comment")
+            if schema_digest(js) != digests.get(mm, {}).get(rel):
+                probs.append(f"formats/{mm}/{rel}: tools/release-validator.py FORMAT_DIGESTS does not have its digest "
+                             f"({schema_digest(js)})")
+    probs += _against_tags(formats, [d.name for d in dirs])
     if since:
         probs += _edited_since(formats, since)
     return probs
+
+
+def _against_tags(formats: Path, dirs: list[str]) -> list[str]:
+    """Each ``formats/<x.y>/`` equals its tree at every tag ``format-<x.y>.<patch>`` (the maintainer tags a version
+    when it is cut; from then on its directory is never edited, whatever the changelog says). Outside a git work
+    tree nothing is compared."""
+    try:
+        top = Path(_git("rev-parse", "--show-toplevel", cwd=formats).strip())
+    except (subprocess.CalledProcessError, OSError):
+        return []
+    rel = formats.resolve().relative_to(top).as_posix()
+    out = []
+    for mm in dirs:
+        for tag in _git("tag", "-l", f"format-{mm}.*", cwd=top).split():
+            for line in _git("diff", "--name-status", tag, "--", f"{rel}/{mm}", cwd=top).splitlines():
+                status, path = line.split("\t")[0], line.split("\t")[-1]
+                out.append(f"{path}: differs from tag {tag} ({status}); an archived format is never edited")
+    return out
 
 
 def _git(*args: str, cwd: Path) -> str:
@@ -933,8 +1062,14 @@ def _edited_since(formats: Path, ref: str) -> list[str]:
         old_log = _git("show", f"{ref}:{rel}/CHANGELOG.md", cwd=top)
     except subprocess.CalledProcessError:
         old_log = ""
-    dated = {v.rsplit(".", 1)[0] for v, d in changelog_entries(old_log).items() if d}
-    out = []
+    old = changelog_entries(old_log)
+    dated = {v.rsplit(".", 1)[0] for v, d in old.items() if d}
+    try:
+        now = changelog_entries((formats / "CHANGELOG.md").read_text("utf-8"))
+    except OSError:
+        now = {}
+    out = [f"formats/CHANGELOG.md [{v}]: dated {d} at {ref}, {('dated ' + now[v]) if now.get(v) else 'undated'} now; a "
+           "dated entry stays as it is" for v, d in sorted(old.items()) if d and now.get(v) != d]
     for line in _git("diff", "--name-status", "--diff-filter=MDRT", ref, "--", rel, cwd=top).splitlines():
         status, path = line.split("\t")[0], line.split("\t")[1]
         m = re.match(rf"^{re.escape(rel)}/((?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*))/", path)
