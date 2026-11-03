@@ -765,12 +765,13 @@ def test_inline_text_body(m: Mapping_) -> None:
 
 # ---------------------------------------------------------------- review round: schemas, vocab, views
 def test_payload_and_record_schemas_validate_their_own_targets(m: Mapping_, tmp_path: Path) -> None:
-    """schema.json (D725): self-contained; a kind's record and payload subschemas validate their own targets only."""
+    """The row schema (D725; data/corpus.schema.json from D803): self-contained; a kind's record and payload
+    subschemas validate their own targets only."""
     import jsonschema
 
-    ds.write_row_schema(tmp_path, m)
-    row_js = json.loads((tmp_path / "schema.json").read_text())
-    assert row_js["$id"] == "schema.json" and "$ref" not in json.dumps(row_js)
+    ds.write_format_schemas(tmp_path, m, ds.load_dataset_config("dataset-public"))
+    row_js = json.loads((tmp_path / "data" / "corpus.schema.json").read_text())
+    assert row_js["$id"] == "urn:the-safety-stack:format:1.0:data/corpus.schema.json" and "$ref" not in json.dumps(row_js)
     jsonschema.Draft202012Validator.check_schema(row_js)
     ann = _proj(m, _inputs([])).annotations(_row())
     for kind in ("screen", "safety_techniques", "model_roles", "model_name_matches"):
@@ -875,8 +876,9 @@ def test_prefetch_texts_fills_a_fresh_mirror(tmp_path: Path, monkeypatch: pytest
 
 # ---------------------------------------------------------------- the slim bundle (D725); the card's quality table
 JUDGE_EVAL = "evals/judge-2026-10-25j"
-BUNDLE = {"README.md", "LICENSE", "FORMAT.md", "VOCABULARY.md", "schema.json", "release.json", "data/corpus.parquet",
-          "config/configs.json", "config/overrides.jsonl"}
+BUNDLE = {"README.md", "LICENSE", "FORMAT.md", "VOCABULARY.md", "release.json", "data/corpus.parquet",
+          "config/configs.json", "config/overrides.jsonl", "release.schema.json", "data/corpus.schema.json",
+          "config/configs.schema.json", "config/overrides.schema.json", "tools/release-validator.py"}
 DROPPED = ("data/configs.parquet", "examples/", "prompts/", "schema/", "QUALITY.md", "CHANGELOG.md", "SHA256SUMS",
            "annotations.yaml", "remap.jsonl", "vocab.yaml", "VOCAB.md", "overrides/", "views/")
 
@@ -907,8 +909,10 @@ def test_mapping_files_are_the_slim_bundle() -> None:
     assert ds.bundle_files_problems(BUNDLE | taxa, files) == []
     assert ds.bundle_files_problems(BUNDLE | taxa | {"SHA256SUMS", "prompts/a.md"}, files) == [
         "files written that the mapping does not list: ['SHA256SUMS', 'prompts/a.md']"]
-    assert ds.bundle_files_problems(BUNDLE - {"schema.json"} | taxa, files) == [
-        "files of the mapping not written: ['schema.json']"]
+    assert ds.bundle_files_problems(BUNDLE - {"data/corpus.schema.json"} | taxa, files) == [
+        "files of the mapping not written: ['data/corpus.schema.json']"]
+    assert ds.bundle_files_problems(BUNDLE | taxa | {"schema.json"}, files) == [
+        "files written that the mapping does not list: ['schema.json']"]  # moved to data/corpus.schema.json (D803)
     assert ds.bundle_files_problems(BUNDLE, files) == ["no file under taxonomies/"]
 
 

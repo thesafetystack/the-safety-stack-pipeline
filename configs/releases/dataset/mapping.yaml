@@ -1,18 +1,23 @@
 # The Safety Stack: the dataset release row as a projection of the internal corpus row.
-# The format id is the release id: the export's UTC date (`stack export --release-id` overrides it).
+# The release id is the export's UTC date (`stack export --release-id` overrides it); the release format has its own
+# version, `format_version` below (D803).
 #
 # The one hand-maintained description of the released schema. stack/fold/dataset.py reads it to build the release
 # parquet from a build's corpus and generates from it: the arrow schema, the parquet field descriptions, the row's JSON
-# Schema (schema.json, every kind's record and payload inline), FORMAT.md's field tables and the card's field table. Types and nullability of an `internal` entry come from the
+# Schema (data/corpus.schema.json, every kind's record and payload inline) and the other files' schemas, FORMAT.md's
+# field tables and the card's field table. Types and nullability of an `internal` entry come from the
 # internal pyarrow schema (stack.schemas; a field declared with a trailing `_` is non-nullable) and the code refuses an
 # entry whose `internal` path does not exist. A `transform` entry is implemented in code under its public path (the code
 # refuses a transform it does not implement and an implementation without an entry) and declares `type` and `nullable`.
 #
 # Conventions: `public` and `internal` are dotted paths; `[]` marks a list level. An entry without `internal` or
 # `transform` is a struct that only groups its children. Children of a mapped struct that are not listed are DROPPED
-# (allow-list). `enum` lists the values a reader may rely on (`open: true`: more may appear; the build fails on an
-# unlisted value of a closed enum); `pattern` documents a free string's grammar (not validated). `exclude` on a list
-# entry drops elements by field value. `rename_internal: true` marks a public name the pipeline should adopt too.
+# (allow-list). `enum` lists the values a reader may rely on, and is set once per field: a list is closed (the build
+# fails on an unlisted value; it changes only in a major format version) or `open: true` (more values may appear; a
+# minor version may add one to the list); `in_schema: false` on an open list keeps its values out of the format (a
+# plain string whose values VOCABULARY.md describes, such as the providers' doc_type). `pattern` documents a free
+# string's grammar (not validated). `exclude` on a list entry drops elements by field value. `rename_internal: true`
+# marks a public name the pipeline should adopt too.
 #
 # Annotations: `annotations` is one struct with one typed column per kind; each kind is {metadata, payload}. `metadata`
 # is ONE struct type shared by every kind (`meta:` below), so a reader can UNION the kinds' metadata
@@ -22,6 +27,11 @@
 # JSON with the id of its JSON Schema (empty in this release; a non-empty one needs a `json_kinds` entry).
 
 internal: {family: documents, family_version: 6, registry: stack.schemas.payloads.registry.REGISTRY}
+
+# The release format's version (D803): release.json, the parquet key-value metadata and the card carry it, and the
+# schemas the export writes must equal data-repo/formats/<major>.<minor>/ (tools/release_format.py classifies a
+# change and writes a new version there; data-repo/formats/README.md has the rules).
+format_version: 1.0.0
 
 rows:
   filter: screen_relevant        # stack.query named filter: screen ok and verdict relevant
@@ -142,7 +152,7 @@ fields:
     doc: "How precise published_date is: `unknown` = no date; `year_inferred` = the date is exactly midnight UTC on 1 January, the providers' placeholder for a year-only date (a genuine midnight-1-January date is marked the same); `day` otherwise."
   - public: doc_type
     internal: metadata.doc_type
-    enum: {values: [preprint, paper, conference, journal, forum_post, lab_blog, system_card, model_card, framework_policy, book, other], open: true}
+    enum: {values: [preprint, paper, conference, journal, forum_post, lab_blog, system_card, model_card, framework_policy, book, other], open: true, in_schema: false}
     doc: "Document type from the providers and collectors (the merged metadata.doc_type: the form and venue, e.g. an arXiv record is a preprint whatever it contains), or a maintainers' fix (field_sources origin `human`). NULL where the collector gave none (hand-added and newsletter-linked URLs and papers). Two model-assigned types also exist: annotations.doc_class.payload.doc_type (the screen call; filled for every screened row) and doc_kind of safety_techniques and model_roles (the genre each annotator read the document as); FORMAT.md says which to use for what, VOCABULARY.md lists all three."
   - public: is_withdrawn
     internal: metadata.is_withdrawn
@@ -157,7 +167,7 @@ fields:
     doc: Provenance of each merged bibliographic field (title, abstract, authors, published date, doc_type).
   - public: field_sources[].field
     internal: metadata.field_sources[].field
-    enum: [title, abstract, authors, published_at, doc_type]
+    enum: {values: [title, abstract, authors, published_at, doc_type], open: true}
     doc: The field (published_at = published_date).
   - public: field_sources[].source_id
     internal: metadata.field_sources[].source_id
@@ -195,7 +205,7 @@ fields:
   - public: identity.members[].channel_class
     internal: identity.members[].license_class
     rename_internal: true
-    enum: [open, public_web, restricted, api_tos, api_abstract, shadow]
+    enum: {values: [open, public_web, restricted, api_tos, api_abstract, shadow], open: true}
     doc: "Our distribution-policy class for the member's CHANNEL, not a statement about the work or its licence (a Semantic Scholar record of an arXiv preprint shows `restricted` while its arXiv member shows `open`). VOCABULARY.md defines the values."
   - public: identity.members[].key_kind
     internal: identity.members[].key_kind
@@ -262,7 +272,7 @@ fields:
     doc: Member whose fetched content is the text.
   - public: content.role
     internal: content.current_role
-    enum: [full_text, html, xml, post, page, readme, abstract]
+    enum: {values: [full_text, html, xml, post, page, readme, abstract], open: true}
     doc: Kind of content the text came from (`html` = arXiv LaTeXML page; `full_text` = PDF; `post` = forum post body; `page` = web page; `xml` = publisher XML).
   - public: content.quality
     internal: content.current_text_quality
@@ -362,7 +372,7 @@ fields:
   - public: annotations.screen
     internal: annotations.screen.payload
     keep: [verdict, basis_role, buckets, quotes, off_topic_reason, confidence, reasoning, adjudication_tier, tier1_verdict]
-    enums: {verdict: [relevant, borderline, irrelevant], buckets: [paper, critique_commentary, eval_report, deployment_signal, lab_safety_doc, release_news, incident, offtopic]}
+    enums: {verdict: [relevant, borderline, irrelevant], buckets: {values: [paper, critique_commentary, eval_report, deployment_signal, lab_safety_doc, release_news, incident, offtopic], open: true}}
     doc: "The relevance screen: one call answers the Stack question (stack_relevance), the Shallow Review question (shallow_review_relevance), the text's usability (text_usability) and the document class (doc_class); this record is the call-level verdict."
     docs:
       verdict: "Call-level verdict = the more inclusive of the two question verdicts (stack_relevance, shallow_review_relevance): relevant if either is. Every shipped row is relevant."
@@ -389,20 +399,20 @@ fields:
     internal: annotations.sr_relevance.payload
     rename_internal: consider
     keep: [verdict, confidence, quotes, category, agenda, basis_role, adjudication_tier, tier1_verdict]
-    enums: {verdict: [relevant, borderline, irrelevant], category: [black_box, evals, theory, white_box, none, multi_agent_first, labs, make_ai_solve_it, safety_by_construction]}
+    enums: {verdict: [relevant, borderline, irrelevant], category: {values: [black_box, evals, theory, white_box, none, multi_agent_first, labs, make_ai_solve_it, safety_by_construction], open: true}}
     patterns: {agenda: "<slug> | new:<slug>"}
     doc: "Question R of the screen call: is the document in the Shallow Review of AI safety's scope."
     docs: {verdict: "relevant | borderline | irrelevant to the Shallow Review of AI safety's scope (question R).", confidence: "The model's self-reported confidence (0-1).", quotes: "Supporting excerpts {text, offset}; capped.", category: Shallow Review top-level category., agenda: "Shallow Review agenda slug (`new:<slug>` = proposed by the model, not in the Shallow Review list).", basis_role: Content role judged., adjudication_tier: "1 | 2.", tier1_verdict: "The first pass's verdict."}
   - public: annotations.text_usability
     internal: annotations.text_usability.payload
     keep: [verdict, issues, note, basis_role, adjudication_tier]
-    enums: {verdict: [usable, degraded, unusable], issues: [not_body, cut_off, garbled_maths, garbled_tables, bad_encoding, mostly_markup, stub, other]}
+    enums: {verdict: [usable, degraded, unusable], issues: {values: [not_body, cut_off, garbled_maths, garbled_tables, bad_encoding, mostly_markup, stub, other], open: true}}
     doc: The screen call's view of whether the converted text is usable as the document body.
     docs: {verdict: Is the converted text usable as the document body., issues: Problems found., note: "Model free text (uncapped) describing the extracted text.", basis_role: Content role judged., adjudication_tier: "1 | 2."}
   - public: annotations.affiliation
     internal: annotations.affiliation.payload
     keep: ["items[].author_name", "items[].author_surface", "items[].byline_index", "items[].orcid", "items[].resolution", "items[].affiliations[].surface", "items[].affiliations[].org_slugs", "items[].affiliations[].org_ids", "items[].affiliations[].org_status", "items[].affiliations[].org_candidates"]
-    enums: {"items[].resolution": [openalex, text, email_domain, xml, unknown], "items[].affiliations[].org_status": [matched, ambiguous, non_org, generic, unmatched]}
+    enums: {"items[].resolution": {values: [openalex, text, email_domain, xml, unknown], open: true}, "items[].affiliations[].org_status": {values: [matched, ambiguous, non_org, generic, unmatched], open: true}}
     doc: Author affiliations read from the byline (run only where doc_type is paper, preprint, conference or journal and content.role is full_text, html or xml).
     docs:
       "items[]": One item per byline author, in byline order.
@@ -431,7 +441,7 @@ fields:
            "techniques[].slug", "techniques[].roles", "techniques[].quotes", "techniques[].flags", "techniques[].note",
            "extra_techniques[].name_as_written", "extra_techniques[].gloss", "extra_techniques[].hint_technique", "extra_techniques[].roles", "extra_techniques[].quotes", "extra_techniques[].flags"]
     renames: {"techniques[].quotes[].anchored": "techniques[].quotes[].verified", "extra_techniques[].quotes[].anchored": "extra_techniques[].quotes[].verified"}
-    enums: {doc_kind: [paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other]}
+    enums: {doc_kind: {values: [paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other], open: true}}
     patterns: {flags: "no_techniques_found | menu_gap:<surface>", "techniques[].flags": "recommended | rejected | supportive | confirmed | claims_absent | quote_unverified | variant:<name>"}
     doc: Which safety techniques of the techniques taxonomy the document engages with, in which roles and how prominently.
     docs:
@@ -457,7 +467,7 @@ fields:
            "models[].node_id", "models[].matched_node_id", "models[].roles", "models[].evidence", "models[].note",
            "variant_models[].base_node_id", "variant_models[].names_as_written", "variant_models[].quote", "variant_models[].roles",
            "extra_models[].name_as_written", "extra_models[].quote", "extra_models[].roles", "extra_models[].node_id"]
-    enums: {doc_kind: [paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other]}
+    enums: {doc_kind: {values: [paper, blogpost, commentary, model_card, system_card, technical_report, eval_report, news, policy, other], open: true}}
     patterns: {flags: "subsumed:<node>:<by> | bib_only:<node> | matcher_fp:<node> | not_found:<node> (plus rare malformed values)"}
     doc: Which AI models of the models catalogue the document names and which roles they play in it.
     docs:
@@ -573,7 +583,11 @@ files:
   config/configs.json: "One entry per config_id: the call that produced annotations (stage, prompt name and digests, model, parameters, taxonomy pin) or the overrides that supplied them."
   config/overrides.jsonl: "The active overrides of the pipeline's output (maintainers' decisions and stand-in annotations), one line each: override_id, run_id, kind, target, operation, key, field, value, note, author, method, created_at."
   taxonomies/: "The techniques taxonomy and the models catalogue the annotations were graded against (byte-identical to the pinned versions; one file per version: annotations kept from an earlier config ship their version beside the current one), and the organisation vocabulary affiliations' org_ids resolve in (byte-identical to the versions the annotations pinned; sha256 of each in release.json, which lists every version per name, oldest first)."
-  schema.json: "JSON Schema of one row, self-contained: every kind's record and payload inline."
+  data/corpus.schema.json: "JSON Schema (2020-12) of one row of data/corpus.parquet, self-contained: every kind's record and payload inline; every node's exact Arrow type as x-arrow; closed lists as enum, open lists as x-open with their known values in x-values."
+  release.schema.json: "JSON Schema of release.json: strict on the release's identity, format version, taxonomy pins and file list; the diagnostic sections are free objects."
+  config/configs.schema.json: "JSON Schema of config/configs.json (an array of configs; the JSON-encoded fields stay strings)."
+  config/overrides.schema.json: "JSON Schema of one line of config/overrides.jsonl: the fields and the closed list of kinds; the value per kind is described in FORMAT.md."
+  tools/release-validator.py: "The release checker (`uv run tools/release-validator.py . --rows all`), byte-identical to the taxonomies repository's: the format version, every file against release.json and its schema, the ids, the taxonomy pins."
   VOCABULARY.md: "A sentence for every value word that occurs in this release, and a glossary."
   FORMAT.md: "The file format: every field, the ids and where they resolve, the rules and the recipes."
   README.md: "The dataset card, with the annotation quality table."

@@ -1,5 +1,6 @@
-"""The dataset release (format = the dated release id): the public row format of The Safety Stack as a projection of a build's
-corpus, written as a self-describing bundle (one variant per call).
+"""The dataset release (a dated release id; a release format with its own semantic version, D803): the public row
+format of The Safety Stack as a projection of a build's corpus, written as a self-describing bundle (one variant per
+call).
 
 A **dataset config** (``configs/releases/dataset-<variant>.yaml``, :class:`DatasetConfig`, ``format: dataset``) names
 the variant (``public`` or ``internal``, the contentful one) and the shared files under ``configs/releases/dataset/``:
@@ -51,13 +52,17 @@ byte for byte).
 name and version a shipped config or one of the build's own annotate runs pinned, so rows accepted from an earlier
 config ship their version beside the current one, D758; ``release.json`` ``taxonomies`` lists per name the versions,
 oldest first; two files of one name and version with different bytes are refused),
-``schema.json`` (the row's JSON Schema, every kind's record and payload inline), ``VOCABULARY.md``, ``FORMAT.md``
+the format's schemas (D803, :func:`format_schemas`: ``release.schema.json``, ``data/corpus.schema.json`` (the row's,
+every kind's record and payload inline, every node's ``x-arrow``), ``config/configs.schema.json``,
+``config/overrides.schema.json``; equal to ``data-repo/formats/<major>.<minor>/`` of the mapping's ``format_version``
+once stripped), ``tools/release-validator.py`` (the data repository's checker, byte-identical), every taxonomy version a
+shipped one's ``meta.references`` names (``referenced_by`` in its pin), ``VOCABULARY.md``, ``FORMAT.md``
 and ``README.md`` (generated tables in authored templates; the card carries the quality table), ``LICENSE`` and
-``release.json`` (the manifest: every other file with bytes and sha256, rows for tables; ``stages``: per annotate
+``release.json`` (the manifest: ``format_version``, every other file with bytes and sha256, rows for tables; ``stages``: per annotate
 stage of the build, what it ships, D758: its selection digest, its target config and its accepted earlier configs
 as the stage's run recorded them from the plan line, each with ``config_id`` (the one most of its documents carry), ``config_ids`` and the shipped documents under it;
-FORMAT.md one sentence per accepted config). :func:`check_bundle` runs
-the mapping's checks over the written stage before it is renamed into place; any problem keeps nothing.
+FORMAT.md one sentence per accepted config). :func:`check_bundle` runs the release checker over every row and the
+pipeline's own checks over the written stage before it is renamed into place; any problem keeps nothing.
 """
 
 from __future__ import annotations
@@ -177,8 +182,18 @@ URL_SAS_PARAMS = frozenset({"sig", "sv", "se", "st", "sp", "sr", "spr", "srt", "
 #: The bundle's fixed paths (D725); the taxonomies are ``taxonomies/<name>-<version>.yaml``.
 CONFIGS_FILE = "config/configs.json"
 OVERRIDES_FILE = "config/overrides.jsonl"
-ROW_SCHEMA_FILE = "schema.json"
+ROW_SCHEMA_FILE = "data/corpus.schema.json"
+RELEASE_SCHEMA_FILE = "release.schema.json"
+CONFIGS_SCHEMA_FILE = "config/configs.schema.json"
+OVERRIDES_SCHEMA_FILE = "config/overrides.schema.json"
+#: The schema files of a release (format 1, D803), each beside the file it describes.
+FORMAT_SCHEMA_FILES = (RELEASE_SCHEMA_FILE, ROW_SCHEMA_FILE, CONFIGS_SCHEMA_FILE, OVERRIDES_SCHEMA_FILE)
 VOCABULARY_FILE = "VOCABULARY.md"
+#: The release checker, shipped byte-identical from the vendored data repository (D803).
+VALIDATOR_FILE = "tools/release-validator.py"
+DATA_REPO = REPO_ROOT / "data-repo"
+FORMAT_ID_PREFIX = "urn:the-safety-stack:format"
+FORMAT_VERSION = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 
 
 class DatasetError(FoldError):
@@ -350,6 +365,10 @@ class Mapping_:
         self.path = path
         self.raw: dict[str, Any] = yamlio.load(path.read_text("utf-8"))
         r = self.raw
+        #: The release format's version (D803); its major.minor names the archived schemas in data-repo/formats/.
+        self.format_version = str(r.get("format_version") or "")
+        if not FORMAT_VERSION.match(self.format_version):
+            raise DatasetError(f"mapping: format_version {r.get('format_version')!r} is not <major>.<minor>.<patch>")
         self.variants: dict[str, dict[str, Any]] = r["variants"]
         self.quote_paths: list[str] = list(r["quote_paths"])
         self.surface_paths: list[str] = list(r["surface_paths"])
@@ -383,6 +402,9 @@ class Mapping_:
         self.meta_type = self._meta_type()
         self.root = self._build_tree()
         self.schema = pa.schema([self._field(n) for n in self.root.children])
+        #: public path -> (values, open); ``plain_enums``: the open ones whose values stay out of the schemas
+        #: (``in_schema: false``: a plain string VOCABULARY.md describes)
+        self.plain_enums: set[str] = set()
         self.enums = self._enums()
         self.transforms = sorted(e["transform"] for e in self.entries.values() if "transform" in e)
 
@@ -516,7 +538,13 @@ class Mapping_:
 
         def put(path: str, spec: Any) -> None:
             if isinstance(spec, dict):
+                unknown = set(spec) - {"values", "open", "in_schema"}
+                if unknown or (spec.get("in_schema") is False and not spec.get("open")):
+                    raise DatasetError(f"mapping {path}: enum keys are values, open and in_schema (false only on an "
+                                       f"open list); got {sorted(spec)}")
                 out[path] = ([str(v) for v in spec["values"]], bool(spec.get("open")))
+                if spec.get("in_schema") is False:
+                    self.plain_enums.add(path)
             else:
                 out[path] = ([str(v) for v in spec], False)
 
@@ -1639,20 +1667,34 @@ OVERRIDES_FIELDS: dict[str, str] = {
 
 
 # ---------------------------------------------------------------- JSON Schema from arrow
+def arrow_kind(t: pa.DataType) -> str:
+    """The ``x-arrow`` of a schema node (D803): ``struct``, ``list`` or the leaf's exact Arrow type as pyarrow prints
+    it (``string``, ``int32``, ``date32[day]``, ``timestamp[us, tz=UTC]``)."""
+    return "struct" if pa.types.is_struct(t) else "list" if pa.types.is_list(t) else str(t)
+
+
 def json_schema(t: pa.DataType, nullable: bool, desc: str | None = None,
-                enums: Mapping[str, tuple[list[str], bool]] | None = None, path: str = "") -> dict[str, Any]:
+                enums: Mapping[str, tuple[list[str], bool]] | None = None, path: str = "", *,
+                plain: frozenset[str] | set[str] = frozenset(), arrow: bool = True) -> dict[str, Any]:
+    """The JSON Schema of arrow type ``t`` (every object closed, every field required; nullable = ``null`` among the
+    types; dates and timestamps as ISO strings). ``arrow``: each node's ``x-arrow``. ``enums`` (path -> values, open):
+    a closed list is an ``enum``; an open one ``x-open: true`` with its known values in ``x-values``, except the
+    ``plain`` paths (no list in the schema; D803)."""
     def typ(base: str) -> Any:
         return [base, "null"] if nullable else base
+
+    def sub(ft: pa.DataType, fnull: bool, fdesc: str | None, fpath: str) -> dict[str, Any]:
+        return json_schema(ft, fnull, fdesc, enums, fpath, plain=plain, arrow=arrow)
 
     if pa.types.is_struct(t):
         out: dict[str, Any] = {"type": typ("object"), "additionalProperties": False, "properties": {},
                                "required": [f.name for f in t]}
         for f in t:
             d = (f.metadata or {}).get(b"description")
-            out["properties"][f.name] = json_schema(f.type, f.nullable, d.decode() if d else None, enums,
-                                                    f"{path}.{f.name}" if path else f.name)
+            out["properties"][f.name] = sub(f.type, f.nullable, d.decode() if d else None,
+                                            f"{path}.{f.name}" if path else f.name)
     elif pa.types.is_list(t):
-        out = {"type": typ("array"), "items": json_schema(t.value_type, t.value_field.nullable, None, enums, path + "[]")}
+        out = {"type": typ("array"), "items": sub(t.value_type, t.value_field.nullable, None, path + "[]")}
     elif pa.types.is_string(t) or pa.types.is_large_string(t):
         out = {"type": typ("string")}
     elif pa.types.is_boolean(t):
@@ -1667,15 +1709,22 @@ def json_schema(t: pa.DataType, nullable: bool, desc: str | None = None,
         out = {"type": typ("string"), "format": "date-time"}
     else:
         raise DatasetError(f"json_schema: no mapping for {t}")
+    if arrow:
+        out["x-arrow"] = arrow_kind(t)
     if desc:
         out["description"] = desc
     if enums is not None:
         star = re.sub(r"^annotations\.[^.]+\.metadata\.", "annotations.*.metadata.", path)
-        hit = enums.get(path) or enums.get(path.removesuffix("[]")) or enums.get(star)
-        if hit is not None and not hit[1]:
-            vals: list[Any] = list(hit[0])
+        key = next((k for k in (path, path.removesuffix("[]"), star) if k in enums), None)
+        if key is not None and key not in plain:
+            vals, is_open = enums[key]
             out_t = out if "items" not in out else out["items"]
-            out_t["enum"] = vals + ([None] if nullable else [])
+            if is_open:
+                out_t["x-open"] = True
+                out_t["x-values"] = list(vals)
+            else:
+                out_t["enum"] = list(vals) + ([None] if (out_t is out and nullable) or
+                                              (out_t is not out and t.value_field.nullable) else [])
     return out
 
 
@@ -1813,7 +1862,7 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
     m = Mapping_(cfg.path(cfg.mapping))
     check_transforms(m)
     when = (now or dt.datetime.now(dt.UTC)).astimezone(dt.UTC)
-    rid = release_id or when.date().isoformat()  # the release id is the export's UTC date (format id = release id)
+    rid = release_id or when.date().isoformat()  # the release id is the export's UTC date; the format has a version
     dest = check_out_dir(out, root)
     tbl, h, _cpath = corpus_input(root, corpus_key, fold_config="build")
     bid, status = release_gate(root, h["file_id"], allow_incomplete=allow_incomplete)
@@ -1833,7 +1882,7 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
         shutil.rmtree(stage)
     (stage / "data").mkdir(parents=True)
     dropped: Counter[str] = Counter()
-    schema = m.schema.with_metadata({b"stack.format": rid.encode(), b"release_id": rid.encode(),
+    schema = m.schema.with_metadata({b"format_version": m.format_version.encode(), b"release_id": rid.encode(),
                                      b"variant": cfg.variant.encode(),
                                      b"quote_cap_chars": str(proj.cap).encode()})
     n_out = 0
@@ -1881,13 +1930,15 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
         _write_text(stage / CONFIGS_FILE, json.dumps(cfg_rows, indent=2, ensure_ascii=False) + "\n")
         counts[CONFIGS_FILE] = len(cfg_rows)
         taxonomies = write_taxonomies(stage, proj)
-        write_row_schema(stage, m)
+        write_format_schemas(stage, m, cfg)
+        (stage / VALIDATOR_FILE).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(DATA_REPO / VALIDATOR_FILE, stage / VALIDATOR_FILE)  # byte-identical (D803)
         observed = write_vocab(stage, m, cfg)
         tdir = cfg.path(cfg.templates)
         shutil.copyfile(tdir / "LICENSE", stage / "LICENSE")
         jev = judge_eval(cfg.judge_eval, bid, rescored)
         doc: dict[str, Any] = {
-            "release_id": rid, "format": rid, "variant": cfg.variant, "hf_repo": cfg.hf_repo,
+            "release_id": rid, "format_version": m.format_version, "variant": cfg.variant, "hf_repo": cfg.hf_repo,
             "created_at": when.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "parent_release": None,
             "build": {"build_id": bid, "status": inp.build_status.get("status"), "plan": inp.build.get("plan"),
@@ -1968,7 +2019,9 @@ def version_key(v: str) -> tuple[int, ...]:
 def write_taxonomies(stage: Path, proj: Projection) -> dict[str, list[dict[str, Any]]]:
     """Copy one file per (name, version) the shipped configs and the build's own configs pin (module docstring,
     Bundle); ``release.json`` ``taxonomies``: per name its versions, oldest first. Two sha256 for one name and version
-    are refused (one bundle path cannot hold both)."""
+    are refused (one bundle path cannot hold both). A shipped file's ``meta.references`` (models 1.1.0 names its
+    organisation vocabulary's version) ship too, from the vendored files (:data:`VENDORED_LOCK`, by tag), each with
+    ``referenced_by`` when no annotation pins it, so every reference of the bundle resolves in it (D803)."""
     found: dict[tuple[str, str], dict[str, Any]] = {}
     for t in [c.taxonomy for c in proj.configs.values() if c.taxonomy] + proj.build_taxonomies():
         key = (t["name"], t["version"])
@@ -1976,6 +2029,29 @@ def write_taxonomies(stage: Path, proj: Projection) -> dict[str, list[dict[str, 
         if have["sha256"] != t["sha256"]:
             raise DatasetError(f"taxonomies: {t['name']} {t['version']} pinned with two sha256 ({have['sha256'][:12]}…, "
                                f"{t['sha256'][:12]}…): one bundle file per name and version")
+    lock = (yamlio.load(VENDORED_LOCK.read_text("utf-8")) or {}).get("files") or {}
+    by_tag = {str(e.get("tag")): (p, str(e.get("sha256"))) for p, e in lock.items()}
+    deps: dict[tuple[str, str], set[str]] = {}
+    todo = list(found.values())
+    while todo:
+        t = todo.pop()
+        data = yamlio.load((REPO_ROOT / proj.taxonomy_src[t["sha256"]]).read_text("utf-8")) or {}
+        for rname, rver in ((data.get("meta") or {}).get("references") or {}).items():
+            key = (str(rname), str(rver))
+            if key in found:
+                if key in deps:
+                    deps[key].add(t["path"])
+                continue
+            hit = by_tag.get(f"{rname}-{rver}")
+            if hit is None or _file_sha256(hit[0]) != hit[1]:
+                raise DatasetError(f"taxonomies: {t['path']} refers to {rname} {rver} (meta.references), which is "
+                                   f"not a vendored file of {VENDORED_LOCK.name} with its sha256: the bundle cannot "
+                                   "ship it")
+            proj.taxonomy_src[hit[1]] = hit[0]
+            found[key] = {"name": key[0], "version": key[1], "sha256": hit[1],
+                          "path": f"taxonomies/{key[0]}-{key[1]}.yaml"}
+            deps[key] = {t["path"]}
+            todo.append(found[key])
     out: dict[str, list[dict[str, Any]]] = {}
     for (name, ver), t in sorted(found.items(), key=lambda kv: (kv[0][0], version_key(kv[0][1]))):
         dst = stage / t["path"]
@@ -1983,16 +2059,19 @@ def write_taxonomies(stage: Path, proj: Projection) -> dict[str, list[dict[str, 
         shutil.copyfile(REPO_ROOT / proj.taxonomy_src[t["sha256"]], dst)
         if _sha256_file(dst) != t["sha256"]:
             raise DatasetError(f"taxonomy {t['path']}: copied bytes differ from the pinned sha256")
-        out.setdefault(name, []).append({"version": ver, "sha256": t["sha256"], "path": t["path"]})
+        out.setdefault(name, []).append({"version": ver, "sha256": t["sha256"], "path": t["path"]}
+                                        | ({"referenced_by": sorted(deps[(name, ver)])} if (name, ver) in deps else {}))
     return out
 
 
 def newest_taxonomy(doc: Mapping[str, Any], name: str) -> dict[str, Any] | None:
     """The newest bundled version of taxonomy ``name`` in ``release.json`` ``taxonomies`` (a list per name; a release
-    before D758 had one entry, a mapping), or ``None``."""
+    before D758 had one entry, a mapping) that an annotation pinned (not a file shipped only because another refers to
+    it, D803), or ``None``."""
     t = (doc.get("taxonomies") or {}).get(name)
     if isinstance(t, list):
-        return t[-1] if t else None
+        pinned = [x for x in t if not x.get("referenced_by")]
+        return pinned[-1] if pinned else None
     return t or None
 
 
@@ -2042,16 +2121,22 @@ def taxonomy_sizes(name: str, data: Mapping[str, Any], path: str) -> dict[str, i
 def taxonomy_layouts(doc: Mapping[str, Any], stage: Path) -> str:
     """FORMAT's paragraph on the shipped taxonomy files (``release.json`` ``taxonomies``): how many, that the newest of
     each name is in the catalogue envelope (an earlier-layout newest file is refused), and the layout of each earlier
-    version shipped beside it and why (D758)."""
-    files, older = [], []
+    version shipped beside it and why (D758); a file shipped only because another refers to it (``referenced_by``,
+    D803) is named with that file."""
+    files, older, refs = [], [], []
     for name, ts in (doc.get("taxonomies") or {}).items():
         ts = ts if isinstance(ts, list) else [ts]
-        for i, t in enumerate(ts):
+        for t in ts:
             files.append(f"`{t['path']}`")
+            if t.get("referenced_by"):
+                refs.append(f"`{t['path']}` because {' and '.join(f'`{r}`' for r in t['referenced_by'])} "
+                            f"refer{'s' if len(t['referenced_by']) == 1 else ''} to it")
+        pinned = [t for t in ts if not t.get("referenced_by")]
+        for i, t in enumerate(pinned):
             lay = taxonomy_layout(name, yamlio.load((stage / t["path"]).read_text("utf-8")) or {}, t["path"])
-            if i == len(ts) - 1 and lay != "envelope":
+            if i == len(pinned) - 1 and lay != "envelope":
                 raise DatasetError(f"{t['path']}: the newest {name} file is not in the catalogue envelope")
-            if i < len(ts) - 1:
+            if i < len(pinned) - 1:
                 older.append(f"`{t['path']}` is in " + EARLIER_LAYOUT[name][1] if lay == "earlier" else
                              f"`{t['path']}` is in the catalogue envelope too")
     n = len(files)
@@ -2063,6 +2148,9 @@ def taxonomy_layouts(doc: Mapping[str, Any], stage: Path) -> str:
         out += (" An earlier version ships beside the newest where rows carry annotations made under an earlier config "
                 "that pinned it and accepted for the current config (listed under \"Annotations kept from an earlier config\" below; "
                 "`config/configs.json` `taxonomy` names each config's file): " + "; ".join(older) + ".")
+    if refs:
+        out += (" A file no annotation uses ships where another shipped file refers to its version "
+                "(`meta.references`), so every reference resolves within the release: " + "; ".join(refs) + ".")
     return out
 
 
@@ -2121,20 +2209,126 @@ def orgs_record(proj: Projection) -> dict[str, Any] | None:
             "with_org_ids": c["with_org_ids"], "by_status": {k: c[k] for k in keys}}
 
 
+SCHEMA_DRAFT = "https://json-schema.org/draft/2020-12/schema"
+#: The taxonomy keys of ``release.json`` ``taxonomies`` in this format (a new key is a minor format version).
+TAXONOMY_NAMES = ("techniques", "models", "orgs")
+
+
+def format_id(m: Mapping_, rel: str) -> str:
+    """A schema's ``$id`` (D803): ``urn:the-safety-stack:format:<major>.<minor>:<path>``, an identifier that
+    implies nothing that resolves."""
+    return f"{FORMAT_ID_PREFIX}:{'.'.join(m.format_version.split('.')[:2])}:{rel}"
+
+
 def row_json_schema(m: Mapping_) -> dict[str, Any]:
-    """``schema.json``: the JSON Schema of one row, self-contained (every kind's record and payload inline, no
-    ``$ref``); a kind's record is ``properties.annotations.properties.<kind>``, its payload that record's
-    ``properties.payload``."""
-    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": ROW_SCHEMA_FILE,
-            "title": "The Safety Stack: one document row", **json_schema(pa.struct(list(m.schema)), False, None, m.enums)}
+    """``data/corpus.schema.json``: the JSON Schema of one row, self-contained (every kind's record and payload inline,
+    no ``$ref``; every node's ``x-arrow``; open lists marked, D803); a kind's record is
+    ``properties.annotations.properties.<kind>``, its payload that record's ``properties.payload``."""
+    return {"$schema": SCHEMA_DRAFT, "$id": format_id(m, ROW_SCHEMA_FILE),
+            "title": "The Safety Stack: one document row of data/corpus.parquet",
+            **json_schema(pa.struct(list(m.schema)), False, None, m.enums, plain=m.plain_enums)}
 
 
-def write_row_schema(stage: Path, m: Mapping_) -> None:
-    _write_text(stage / ROW_SCHEMA_FILE, json.dumps(row_json_schema(m), indent=2, ensure_ascii=False) + "\n")
+def release_json_schema(m: Mapping_) -> dict[str, Any]:
+    """``release.schema.json`` (D803): ``release.json`` strict where a reader relies on it (ids, format version,
+    variant, row counts, taxonomy pins, configs, licence and contact, the file list, which must contain every file of
+    the mapping's ``files:``); the diagnostic sections free objects. Every key is required."""
+    major, minor = m.format_version.split(".")[:2]
+    sha = {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    count = {"type": "integer", "minimum": 0}
+
+    def free(desc: str, nullable: bool = False) -> dict[str, Any]:
+        return {"type": ["object", "null"] if nullable else "object", "description": desc}
+
+    def closed(props: dict[str, Any], desc: str, required: Sequence[str] | None = None) -> dict[str, Any]:
+        return {"type": "object", "additionalProperties": False,
+                "required": list(props) if required is None else list(required), "properties": props,
+                "description": desc}
+
+    strings = {"type": "object", "additionalProperties": {"type": "string"}}
+    pin = closed({"version": {"type": "string"}, "sha256": sha,
+                  "path": {"type": "string", "pattern": "^taxonomies/[^/]+\\.yaml$"},
+                  "referenced_by": {"type": "array", "items": {"type": "string"},
+                                    "description": "Shipped as a dependency: the taxonomy files whose "
+                                                   "meta.references name this version (no annotation pins it)."}},
+                 "One shipped taxonomy file.", required=["version", "sha256", "path"])
+    core = sorted(k for k in (m.raw.get("files") or {}) if not k.endswith("/") and k != "release.json")
+    props: dict[str, Any] = {
+        "release_id": {"type": "string", "minLength": 1,
+                       "description": "The release (the export's UTC date unless named otherwise); the rows' "
+                                      "release_id and the tag release-<release_id>."},
+        "format_version": {"type": "string", "pattern": f"^{major}\\.{minor}\\.(0|[1-9][0-9]*)$",
+                           "description": "The release format's version (data-repo formats/)."},
+        "variant": {"enum": list(m.variants), "description": "Which variant of the release this is."},
+        "hf_repo": {"type": "string", "description": "The Hugging Face dataset repository it is published to."},
+        "created_at": {"type": "string", "format": "date-time", "description": "When the export ran (UTC)."},
+        "parent_release": {"type": ["string", "null"], "description": "The release this one revises, if any."},
+        "build": free("The pipeline build it was exported from (diagnostic)."),
+        "rows": closed({"in": count, "filtered_out": count,
+                        "dropped": {"type": "object", "additionalProperties": count}, "out": count},
+                       "Row counts: the build's documents, those the row filter left out, those dropped by reason, "
+                       "and the rows shipped."),
+        "taxonomies": {"type": "object", "additionalProperties": False,
+                       "properties": {n: {"type": "array", "items": pin} for n in TAXONOMY_NAMES},
+                       "description": "Per taxonomy, every shipped version, oldest first."},
+        "stages": free("Per annotate stage, what it ships (diagnostic)."),
+        "orgs": free("The organisation fields' coverage (diagnostic).", nullable=True),
+        "configs": closed({"path": {"type": "string"}, "count": count}, "The configs file and its entry count."),
+        "annotations": free("Record counts per kind and status (diagnostic)."),
+        "overrides": free("The overrides chain applied and what it changed (diagnostic)."),
+        "remap": free("The status remap's counts (diagnostic)."),
+        "policy": free("The variant's policy and what it did (diagnostic)."),
+        "quality": free("The quality figures of the card (diagnostic)."),
+        "licence": strings | {"description": "The licence terms, in short."},
+        "contact": strings | {"description": "Where to write: corrections, takedowns."},
+        "stand_ins": free("Documents and records whose annotation is a stand-in (diagnostic)."),
+        "files": {"type": "array", "description": "Every other file of the release with its size and sha256.",
+                  "items": closed({"path": {"type": "string"}, "bytes": count, "sha256": sha, "rows": count},
+                                  "One file.", required=["path", "bytes", "sha256"]),
+                  "allOf": [{"contains": {"properties": {"path": {"const": c}}, "required": ["path"]}}
+                            for c in core]},
+    }
+    return {"$schema": SCHEMA_DRAFT, "$id": format_id(m, RELEASE_SCHEMA_FILE),
+            "title": "release.json: the manifest of one release", "type": "object", "additionalProperties": False,
+            "required": list(props), "properties": props}
+
+
+def configs_json_schema(m: Mapping_) -> dict[str, Any]:
+    """``config/configs.schema.json`` (D803): the envelope of ``config/configs.json``, an array of
+    :data:`CONFIGS_SCHEMA` objects (``parameters`` and ``components`` stay JSON text)."""
+    return {"$schema": SCHEMA_DRAFT, "$id": format_id(m, CONFIGS_SCHEMA_FILE),
+            "title": "config/configs.json: one entry per config_id", "type": "array",
+            "items": json_schema(pa.struct(list(CONFIGS_SCHEMA)), False, None, arrow=False)}
+
+
+def overrides_json_schema(m: Mapping_, kinds: Sequence[str]) -> dict[str, Any]:
+    """``config/overrides.schema.json`` (D803): one line of ``config/overrides.jsonl``: :data:`OVERRIDES_FIELDS`, the
+    closed list of public ``kinds``; ``value`` free (its shape per kind is FORMAT.md's)."""
+    cut = {"type": "object", "additionalProperties": False, "required": ["path", "chars"],
+           "properties": {"path": {"type": "string"}, "chars": {"type": "integer", "minimum": 0}}}
+    types: dict[str, dict[str, Any]] = {"kind": {"enum": list(kinds)}, "value": {},
+                                        "cuts": {"type": "array", "items": cut},
+                                        "created_at": {"type": "string", "format": "date-time"}}
+    props = {k: types.get(k, {"type": "string"}) | {"description": d} for k, d in OVERRIDES_FIELDS.items()}
+    return {"$schema": SCHEMA_DRAFT, "$id": format_id(m, OVERRIDES_SCHEMA_FILE),
+            "title": "config/overrides.jsonl: one line", "type": "object", "additionalProperties": False,
+            "required": list(props), "properties": props}
+
+
+def format_schemas(m: Mapping_, cfg: DatasetConfig) -> dict[str, dict[str, Any]]:
+    """The release's schema files by path (D803): what the export writes and ``tools/release_format.py`` archives."""
+    kinds = list(dict.fromkeys(str(k["kind"]) for k in OverridesPolicy(cfg.path(cfg.overrides_public)).raw["kinds"]))
+    return {RELEASE_SCHEMA_FILE: release_json_schema(m), ROW_SCHEMA_FILE: row_json_schema(m),
+            CONFIGS_SCHEMA_FILE: configs_json_schema(m), OVERRIDES_SCHEMA_FILE: overrides_json_schema(m, kinds)}
+
+
+def write_format_schemas(stage: Path, m: Mapping_, cfg: DatasetConfig) -> None:
+    for rel, js in format_schemas(m, cfg).items():
+        _write_text(stage / rel, json.dumps(js, indent=2, ensure_ascii=False) + "\n")
 
 
 def kind_schemas(row_schema: Mapping[str, Any], kind: str) -> tuple[dict[str, Any], dict[str, Any]]:
-    """A kind's record and payload subschemas of ``schema.json`` (each with the draft named, for a validator)."""
+    """A kind's record and payload subschemas of the row schema (each with the draft named, for a validator)."""
     rec = dict(row_schema["properties"]["annotations"]["properties"][kind])
     pay = dict(rec["properties"]["payload"])
     draft = {"$schema": row_schema["$schema"]}
@@ -2524,8 +2718,20 @@ def write_vocab(stage: Path, m: Mapping_, cfg: DatasetConfig) -> dict[str, set[s
     vocab = yamlio.load(cfg.path(cfg.vocab).read_text("utf-8"))
     paths = [*(vocab.get("fields") or {}), *(vocab.get("patterns") or {})]
     observed = observed_values(stage / "data" / "corpus.parquet", m.schema, list(m.kinds), paths)
-    _write_text(stage / VOCABULARY_FILE, render_vocab(shipped_vocab(vocab, observed)))
+    _write_text(stage / VOCABULARY_FILE, render_vocab(shipped_vocab(vocab, observed), list_marks(m)))
     return observed
+
+
+#: VOCABULARY.md's mark of a field's list (D803): how the format treats its values.
+LIST_MARKS = {"closed": "closed list: exactly these values; a change is a new major format version",
+              "open": "open list: a minor format version may add values; expect values you do not know",
+              "plain": "plain string: the values known now, described; others may appear in any release"}
+
+
+def list_marks(m: Mapping_) -> dict[str, str]:
+    """Per enumerated path of the mapping, ``closed``, ``open`` or ``plain`` (``in_schema: false``; D803)."""
+    return {p: "plain" if p in m.plain_enums else "open" if is_open else "closed"
+            for p, (_v, is_open) in m.enums.items()}
 
 
 # ---------------------------------------------------------------- FORMAT.md and the card
@@ -2679,7 +2885,8 @@ def format_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Pat
         "release_macros": RELEASE_MACROS, "release_macro_examples": RELEASE_MACRO_EXAMPLES,
         "doc_type_null": _fmt(dict(stats["doc_types"]).get("unknown", 0)),
         "standins": _fmt(stats["standins"]), **_orgs_vals(doc), **_taxonomy_files(doc),
-        "taxonomy_layouts": taxonomy_layouts(doc, stage),
+        "taxonomy_layouts": taxonomy_layouts(doc, stage), "format_version": doc["format_version"],
+        "format_major": doc["format_version"].split(".")[0], "hf_repo": doc["hf_repo"], "release_id": doc["release_id"],
         "quote_cap": (f"This release caps quotes and surfaces at {doc['policy']['quote_cap_chars']} characters "
                       "(`release.json` `policy.quote_cap_chars`): a longer one is cut at a word boundary and ends with "
                       "`…` (listed in `release.cuts`); `anchored` and `offset` describe the original excerpt."
@@ -2739,13 +2946,19 @@ def format_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Pat
     return "".join(s)
 
 
-def render_vocab(v: Mapping[str, Any]) -> str:
+def render_vocab(v: Mapping[str, Any], marks: Mapping[str, str] | None = None) -> str:
+    """VOCABULARY.md from the shipped vocab; ``marks`` (:func:`list_marks`): each enumerated field's list marked
+    closed, open or plain."""
     out = ["# The Safety Stack: vocabulary\n\nEvery value word of the release with a sentence. Values defined but not "
            "used in this release are listed as reserved. References such as \"rubric-v0.9-c §3\" point to the grading "
            "rubrics in the pipeline repository (public at https://github.com/thesafetystack/the-safety-stack-pipeline).\n"]
+    if marks is not None:
+        out.append("\nAn enumerated field says how the release format treats its values (FORMAT.md, \"Format "
+                   "versions\"): " + "; ".join(f"*{t}*" for t in LIST_MARKS.values()) + ".\n")
     for sect in ("fields", "patterns"):
         for path, e in (v.get(sect) or {}).items():
-            out.append(f"\n**`{path}`**: {_md(e.get('doc'))}\n\n")
+            mark = f" ({LIST_MARKS[marks[path]].split(':')[0]})" if marks and path in marks else ""
+            out.append(f"\n**`{path}`**{mark}: {_md(e.get('doc'))}\n\n")
             out += [f"- `{k}`: {_md(d)}\n" for k, d in (e.get("values") or {}).items()]
             if e.get("reserved"):
                 out.append(f"- reserved (not in this release): {', '.join(f'`{x}`' for x in e['reserved'])}\n")
@@ -2811,7 +3024,8 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
     front = yaml.safe_dump({"pretty_name": "The Safety Stack", "license": "cc0-1.0", "language": langs or ["en"],
                             "annotations_creators": ["machine-generated"],
                             "size_categories": [_size_category(stats["n_docs"])],
-                            "tags": ["ai-safety", "alignment", "annotations"], "configs": configs},
+                            "tags": ["ai-safety", "alignment", "annotations"], "configs": configs,
+                            "format_version": doc["format_version"]},
                            sort_keys=False, allow_unicode=True)
     table = TABLE_HEAD + "".join(r + "\n" for r in field_rows(pa.struct(list(m.schema)), "", m)
                                  if r.split("`")[1].count(".") < 1)
@@ -2855,7 +3069,7 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
             "early_blog": _fmt(stats["early"]["blog"]), "early_manual": _fmt(stats["early"]["manual"]),
             "early_other": _fmt(stats["early"]["other"]), "early_before": EARLY_BEFORE,
             "files_table": files_table(m, stage, counts), "release_record": record, "field_table": table,
-            "rows_in": _fmt(doc["rows"]["in"]),
+            "rows_in": _fmt(doc["rows"]["in"]), "format_version": doc["format_version"],
             "quality_section": jev.section.rstrip(), **org_vals,
             # the bundle: what is written so far, plus this card and release.json
             "n_files": sum(p.is_file() for p in stage.rglob("*")) + 2}
@@ -2864,8 +3078,50 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
 
 
 # ---------------------------------------------------------------- checks over the written stage
+@functools.cache
+def release_validator() -> Any:
+    """The data repository's release checker (``data-repo/tools/release-validator.py``, D803) as a module: the shared
+    core :func:`check_bundle` runs, and the file every release ships."""
+    import importlib.util
+    import sys
+
+    name = "release_validator"
+    spec = importlib.util.spec_from_file_location(name, DATA_REPO / VALIDATOR_FILE)
+    if spec is None or spec.loader is None:
+        raise DatasetError(f"cannot load {DATA_REPO / VALIDATOR_FILE}")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod  # its dataclasses resolve their module by name
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
-    """mapping ``generate.checks`` over the written bundle (module docstring); a list of problems."""
+    """The written bundle's problems (module docstring). First the release checker every release ships
+    (:func:`release_validator`, D803) over every row: the format version, the manifest, each file against its schema
+    (all rows), doc ids, config and override ids, taxonomy pins and ids, the schemas equal to the archived format
+    (``data-repo/formats/<major>.<minor>/``, required); then the pipeline's own policy checks: the arrow schema and
+    the file list are the mapping's, the shipped checker is the vendored file, every configs row is used, the kinds'
+    metadata, quote caps and cuts, abstracts, prose scrubs, inline texts, organisation fields, URLs, leaks, the
+    vocabulary's coverage."""
+    probs: list[str] = []
+    rep = release_validator().check_release(stage, rows="all", archive=DATA_REPO / "formats", require_archive=True)
+    if rep.status != "valid":
+        probs += [f"release-validator: {p}" for p in rep.problems] or [f"release-validator: {rep.status}"]
+    if not (stage / VALIDATOR_FILE).is_file() or \
+            _sha256_file(stage / VALIDATOR_FILE) != _sha256_file(DATA_REPO / VALIDATOR_FILE):
+        probs.append(f"{VALIDATOR_FILE}: not the vendored data repository's file")
+    try:
+        probs += _policy_problems(stage, m, cfg)
+    except Exception as exc:
+        if not probs:
+            raise  # the checker passed: a crash here is the pipeline's bug, not the bundle's
+        probs.append(f"the pipeline's checks stopped on what the checker found: {type(exc).__name__}: "
+                     f"{' '.join(str(exc).split())[:200]}")
+    return probs
+
+
+def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
+    """:func:`check_bundle`'s own policy checks (its docstring)."""
     probs: list[str] = []
     corpus = stage / "data" / "corpus.parquet"
     pf = pq.ParquetFile(corpus)
@@ -2882,58 +3138,24 @@ def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
     def q(sql: str) -> Any:
         return con.execute(sql).fetchall()
 
-    n = q("SELECT count(*), count(DISTINCT doc_id) FROM d")[0]
-    if n[0] != n[1]:
-        probs.append(f"doc_id not unique ({n[0]} rows, {n[1]} ids)")
-    # closed enums (top-level, metadata, payload scalar/list-of-scalar leaves one level deep)
-    for path, (vals, is_open) in m.enums.items():
-        if is_open:
-            continue
-        sel = _enum_sql(path)
-        if sel is None:
-            continue
-        got = {r[0] for r in q(sel)} - {None}
-        bad = got - set(vals)
-        if bad:
-            probs.append(f"{path}: values {sorted(bad)} not in the closed enum")
     # kind metadata consistent
     for k in m.kinds:
         bad = q(f"SELECT count(*) FROM d WHERE annotations.{k} IS NOT NULL AND (annotations.{k}.metadata.kind <> '{k}' "
                 f"OR annotations.{k}.payload IS NULL)")[0][0]
         if bad:
             probs.append(f"annotations.{k}: {bad} records with a wrong metadata.kind or a NULL payload")
-    # config ids resolve; every configs row used
-    cfg_rows = json.loads((stage / CONFIGS_FILE).read_text("utf-8"))
-    cfgs = {c["config_id"] for c in cfg_rows}
+    # every configs row used (that every config id resolves is the checker's); the overrides lines have the
+    # documented fields in the documented order
+    cfgs = {c["config_id"] for c in json.loads((stage / CONFIGS_FILE).read_text("utf-8"))}
     used: set[str] = set()
     for k in m.kinds:
         used |= {r[0] for r in q(f"SELECT DISTINCT annotations.{k}.metadata.config_id FROM d "
                                  f"WHERE annotations.{k} IS NOT NULL")}
-    if used - cfgs:
-        probs.append(f"config_ids {sorted(used - cfgs)[:3]} have no configs row")
     if cfgs - used:
         probs.append(f"configs rows {sorted(cfgs - used)[:3]} are not used")
-    # override ids resolve in config/overrides.jsonl (from the corpus and from the override configs); its lines have
-    # exactly the documented fields
     ov_lines = [json.loads(line) for line in (stage / OVERRIDES_FILE).read_text("utf-8").splitlines()]
-    ov_ids = {r["override_id"] for r in ov_lines}
-    if len(ov_ids) != len(ov_lines):
-        probs.append(f"{OVERRIDES_FILE}: override ids repeat")
     if any(list(r) != list(OVERRIDES_FIELDS) for r in ov_lines):
         probs.append(f"{OVERRIDES_FILE}: lines whose fields are not the documented ones")
-    for c in cfg_rows:
-        if c["config_id"].startswith("override:") and (
-                c["config_id"] != "override:" + "+".join(c["override_ids"]) or set(c["override_ids"]) - ov_ids):
-            probs.append(f"{CONFIGS_FILE} {c['config_id']}: override_ids do not resolve in {OVERRIDES_FILE}")
-    refs = set()
-    for k in m.kinds:
-        refs |= {r[0] for r in q(f"SELECT DISTINCT unnest(annotations.{k}.metadata.override_ids) FROM d "
-                                 f"WHERE annotations.{k} IS NOT NULL")}
-    refs |= {r[0] for r in q("SELECT DISTINCT unnest(identity.override_ids) FROM d")}
-    refs |= {r[0] for r in q("SELECT DISTINCT m.override_id FROM d, unnest(identity.members) AS u(m) "
-                             "WHERE m.override_id IS NOT NULL")}
-    if refs - ov_ids:
-        probs.append(f"override ids {sorted(refs - ov_ids)[:3]} are not in {OVERRIDES_FILE}")
     # caps, cuts, quote_chars
     table = pq.read_table(corpus, columns=["doc_id", "annotations", "release", "abstract"])
     rows = table.to_pylist()
@@ -2993,21 +3215,13 @@ def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
                 bad_body += 1
     if bad_body:
         probs.append(f"{bad_body} rows whose content.text.body breaks the variant's text policy ({variant['texts']})")
-    # manifest: every other file with its size and sha256
-    doc = json.loads((stage / "release.json").read_text("utf-8"))
-    listed = {f["path"] for f in doc["files"]}
-    if listed != on_disk - {"release.json"}:
-        probs.append(f"release.json files differ from the bundle: {sorted(listed ^ (on_disk - {'release.json'}))[:5]}")
-    for fe in doc["files"]:
-        fp = stage / fe["path"]
-        if not fp.is_file() or _sha256_file(fp) != fe["sha256"] or fp.stat().st_size != fe["bytes"]:
-            probs.append(f"release.json: size or sha256 of {fe['path']} does not match")
+    doc = json.loads((stage / "release.json").read_text("utf-8"))  # the manifest itself: the checker's
     # organisations: every org id is an entry of the bundled vocabulary, org_status a matcher status consistent with
     # its ids; the fields are NULL exactly where the document has no decided affiliation_orgs record; the records'
     # vocab_version is the bundled file's version
     if m.org_kind is not None:
         k, kf = m.org_kind, m.org_from
-        tes = (doc.get("taxonomies") or {}).get("orgs") or []
+        tes = [t_ for t_ in (doc.get("taxonomies") or {}).get("orgs") or [] if not t_.get("referenced_by")]
         if not tes or not all((stage / t_["path"]).is_file() for t_ in tes):
             probs.append(f"release.json taxonomies.orgs: no bundled organisation vocabulary for {k}")
         else:
@@ -3049,29 +3263,10 @@ def check_bundle(stage: Path, m: Mapping_, cfg: DatasetConfig) -> list[str]:
             continue
         rel = fp.relative_to(stage).as_posix()
         probs += leak_problems(rel, fp.read_text("utf-8", errors="replace"))
-    # schema.json: rows validate; a kind's payload validates against its payload subschema, its record against the
-    # record subschema, not crosswise
-    import jsonschema  # type: ignore[import-untyped]
-
-    row_js = json.loads((stage / ROW_SCHEMA_FILE).read_text("utf-8"))
-    if "$ref" in json.dumps(row_js):
-        probs.append(f"{ROW_SCHEMA_FILE}: not self-contained ($ref)")
-    rows_js = [json.loads(json.dumps(r, default=_json_default)) for r in  # one row group, not the whole file
-               pq.ParquetFile(corpus).read_row_group(0).slice(0, 200).to_pylist()]
-    whole = jsonschema.Draft202012Validator(row_js)
-    bad_rows = [r["doc_id"] for r in rows_js if not whole.is_valid(r)]
-    if bad_rows:
-        probs.append(f"{ROW_SCHEMA_FILE}: rows {bad_rows[:3]} do not validate")
-    for spec in m.kinds.values():
-        rs_js, ps_js = kind_schemas(row_js, spec.kind)
-        ps, rs = jsonschema.Draft202012Validator(ps_js), jsonschema.Draft202012Validator(rs_js)
-        for r in rows_js:
-            rec = r["annotations"].get(spec.kind)
-            if rec is None:
-                continue
-            if not ps.is_valid(rec["payload"]) or not rs.is_valid(rec) or ps.is_valid(rec):
-                probs.append(f"{r['doc_id']} {spec.kind}: payload/record schema validation fails")
-                break
+    # the schemas are self-contained (the rows validate against them: the checker, over every row)
+    for rel in FORMAT_SCHEMA_FILES:
+        if "$ref" in (stage / rel).read_text("utf-8"):
+            probs.append(f"{rel}: not self-contained ($ref)")
     # vocab coverage: every enum value of the mapping has a vocab entry
     vocab = yamlio.load(cfg.path(cfg.vocab).read_text("utf-8"))
     vf = vocab.get("fields") or {}
@@ -3117,42 +3312,6 @@ def bundle_files_problems(on_disk: Iterable[str], files: Mapping[str, Any]) -> l
         probs.append(f"files written that the mapping does not list: {sorted(extra)[:5]}")
     probs += [f"no file under {k}" for k in files if k.endswith("/") and not any(p.startswith(k) for p in have)]
     return probs
-
-
-def _enum_sql(path: str) -> str | None:
-    """A SELECT of the distinct values at enum ``path`` over view ``d`` (None: a path this check does not reach)."""
-    if path.startswith("annotations.*.metadata."):
-        f = path.rsplit(".", 1)[1]
-        return None if f == "kind" else " UNION ".join(
-            f"SELECT DISTINCT annotations.{k}.metadata.{f} FROM d" for k in PRODUCER_KIND)
-    m = re.fullmatch(r"annotations\.(\w+)\.payload\.(\w+)", path)
-    if m:
-        return _payload_enum_sql(*m.groups())
-    m = re.fullmatch(r"annotations\.(\w+)\.payload\.(\w+)\[\]\.(\w+)", path)
-    if m:
-        k, lst, f = m.groups()
-        return f"SELECT DISTINCT x.{f} FROM d, unnest(annotations.{k}.payload.{lst}) AS u(x)"
-    if "." not in path:
-        return f"SELECT DISTINCT {path} FROM d"
-    m = re.fullmatch(r"(\w+)\[\]\.(\w+)", path)
-    if m:
-        return f"SELECT DISTINCT x.{m.group(2)} FROM d, unnest({m.group(1)}) AS u(x)"
-    m = re.fullmatch(r"(\w+)\.(\w+)\[\]\.(\w+)", path)
-    if m:
-        return f"SELECT DISTINCT x.{m.group(3)} FROM d, unnest({m.group(1)}.{m.group(2)}) AS u(x)"
-    m = re.fullmatch(r"(\w+)\.(\w+)", path)
-    if m:
-        return f"SELECT DISTINCT {path} FROM d"
-    return None
-
-
-_LIST_FIELDS = {("screen", "buckets"), ("text_usability", "issues")}
-
-
-def _payload_enum_sql(k: str, f: str) -> str:
-    if (k, f) in _LIST_FIELDS:
-        return f"SELECT DISTINCT unnest(annotations.{k}.payload.{f}) FROM d"
-    return f"SELECT DISTINCT annotations.{k}.payload.{f} FROM d"
 
 
 __all__ = [
