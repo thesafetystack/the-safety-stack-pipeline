@@ -7,7 +7,7 @@
     python tools/scheduled_run.py report [--cycle ID]               # print the last (or one) cycle summary
     python tools/scheduled_run.py watchdog                          # mail ERROR when the last cycle is stale or ERROR
 
-``cycle`` is the sequence the production chains ran by hand (impl chain-r6): the OpenAlex re-sweep when due (weekly
+``cycle`` is the sequence the production chains once ran by hand: the OpenAlex re-sweep when due (weekly
 by default; a failed one is a WARN and the cycle goes on, D789), the standalone S2 collect and arXiv sweep, build 1 (collectors + gather), the standalone s2-lookup, then
 one-pass builds of the plan until one ends ``ok`` (at most ``STACK_SCHED_MAX_BUILDS``; a build short only on
 collectors or on acquire's retry tail is releasable, a WARN: :func:`classify_build`, the tail at most
