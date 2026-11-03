@@ -44,8 +44,8 @@ per document with label lists, or one row per document and kind) are one query a
 The annotations are made by language models (with a deterministic name matcher for models and, for some
 affiliations, rule-based parsing of publisher XML; a deterministic matcher resolves the affiliations to
 organisations) and are not systematically reviewed by people. {{overrides_summary}} `metadata.provenance` says
-which annotations an override touched. For {{standin_docs}} documents whose main-model request was refused, the
-technique and/or model annotation is a stand-in by a Claude model (`annotator`, `provenance = override`).
+which annotations an override touched. For {{standin_docs}} documents of this release whose main-model request was
+refused, the technique and/or model annotation is a stand-in by a Claude model (`annotator`, `provenance = override`).
 Annotations record what a document says, not whether it is true. The card (`README.md`) reports how well they agree
 with three language-model judges.
 
@@ -141,7 +141,7 @@ org_table = pl.DataFrame([{"org_id": o["id"], "name": o["name"], "type": o["type
 
 The recipes read a local copy and are run from the release directory (the card's download command puts it in
 `stack/`, so `cd stack` first); to query the hub directly, put the card's `hf://` URL in place of
-`data/corpus.parquet` (a token is needed while the repository is private).
+`data/corpus.parquet` (a private repository needs a token; see the card).
 
 DuckDB (the file is the view `d`; the macros below need it):
 

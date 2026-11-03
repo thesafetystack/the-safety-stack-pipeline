@@ -32,19 +32,19 @@ model-made and not systematically reviewed by people; they record what a documen
 {{overrides_summary}} Inclusion is not endorsement, and nothing here is a verdict on a lab or a technique.
 
 How well the annotations agree with three language-model judges: [Annotation quality](#annotation-quality) below.
-For {{standin_docs}} documents whose request the main model refused, the annotation is a stand-in by a Claude model
-(`annotator`, `provenance = override`); those were not evaluated.
+Where the main model refused a request, the annotation is a stand-in by a Claude model ({{standin_docs}} documents of
+this release; `annotator`, `provenance = override`); those were not evaluated.
 
 **Quick start.** The dataset is one parquet file, `data/corpus.parquet`: one row per document, with every annotation
-nested in it. DuckDB and polars read it straight from the hub. While the repository is private you need a Hugging Face
-access token with read access to it (<https://huggingface.co/settings/tokens>) in the environment variable `HF_TOKEN`.
+nested in it. DuckDB and polars read it straight from the hub. Reading a private repository needs a Hugging Face
+access token with read access to it in the environment variable `HF_TOKEN` (and, in DuckDB, the commented line below).
 
 DuckDB (SQL; `unnest` turns a document's list of techniques into one row per technique):
 
 ```python
 import duckdb
 con = duckdb.connect()
-con.execute("CREATE SECRET hf (TYPE huggingface, PROVIDER credential_chain)")  # reads HF_TOKEN; while private
+# con.execute("CREATE SECRET hf (TYPE huggingface, PROVIDER credential_chain)")  # private repositories: reads HF_TOKEN
 con.execute("CREATE VIEW d AS SELECT * FROM 'hf://datasets/{{hf_repo}}/data/corpus.parquet'")
 # documents whose own work uses RLHF (role strength 2 or more of 4: at least "minor but real")
 con.sql("""
@@ -55,7 +55,7 @@ con.sql("""
 """).show()
 ```
 
-polars (reads `HF_TOKEN` from the environment):
+polars:
 
 ```python
 import polars as pl
@@ -66,7 +66,7 @@ techniques = (d.select("doc_id", "title", t=pl.col("annotations").struct.field("
 rlhf = techniques.filter((pl.col("slug") == "rlhf") & (pl.col("roles").struct.field("used") >= 2)).collect()
 ```
 
-Hugging Face `datasets` (also uses `HF_TOKEN`; nested fields arrive as Python dicts and lists):
+Hugging Face `datasets` (nested fields arrive as Python dicts and lists):
 
 ```python
 from datasets import load_dataset
@@ -86,7 +86,8 @@ Every field is documented in [FORMAT.md](FORMAT.md), with more DuckDB, polars an
 word in [VOCABULARY.md](VOCABULARY.md).
 
 **Project, licence, corrections.** Site: <https://thesafetystack.ai>. Taxonomies:
-<https://github.com/thesafetystack/the-safety-stack>; the overrides applied to this release ship with it, in
+<https://github.com/thesafetystack/the-safety-stack>. The pipeline that builds the dataset, with its prompts and the
+judge evaluation: <https://github.com/thesafetystack/the-safety-stack-pipeline>. The overrides applied to this release ship with it, in
 `config/overrides.jsonl`. Corrections, missing works and takedowns: the
 [issue forms](https://github.com/thesafetystack/the-safety-stack/issues/new/choose), or privately info@thesafetystack.ai; we
 acknowledge every request. Licence: CC0 1.0 for what we made (the annotations, the identity and provenance
