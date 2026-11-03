@@ -74,8 +74,11 @@ the documents acquire covers.
    `release.json` `build_status` then says `incomplete` with the short stages), release id = the export's UTC date, a
    scan for the bucket name, both bundles staged under the ops prefix with a manifest (sha256 per file) written
    last.
-6. **Upload** of both variants to their Hugging Face repos (`hf_repo` of `configs/releases/dataset-*.yaml`). The
-   internal variant's repo must be private, before and after: if it is not, nothing (more) is uploaded, the cycle
+6. **Upload** of both variants to their Hugging Face repos (`hf_repo` of `configs/releases/dataset-*.yaml`). Both
+   variants are first fetched back from the staging prefix (sha256 against the manifest, the bucket-name scan) and
+   each is checked by the release checker it ships, as a consumer would run it (`tools/release-validator.py <dir>
+   --rows all`, every row; D804): a variant it refuses (an unsupported format version included) uploads nothing and
+   the cycle fails (ERROR). The internal variant's repo must be private, before and after: if it is not, nothing (more) is uploaded, the cycle
    fails (ERROR). The job never changes any repo's visibility; the public variant's repo is uploaded to whatever its
    visibility (it is private now; the maintainers make it public by hand). Each variant is **one commit** that makes the repo
    tree exactly the release (files a release no longer has are deleted in the same commit; `.gitattributes` stays),
@@ -119,7 +122,7 @@ error, then every warning, then the steps and, unless OK, the cycle's log tail. 
 
 | Severity | When |
 |---|---|
-| ERROR | the cycle exits non-zero: refused to start (preflight, `hold.json`, lock held, a live job), halted (a failed run or build, no progress), no releasable build after 5 builds or a cap/stop before one (a tail build over `STACK_SCHED_TAIL_MAX_PCT`, or of unknown size, is not releasable), the lock lost or unreadable before the export or the upload (nothing released), export or upload failed (incl. the private repo not private); or a balance at or below zero; or a run of the cycle stopped on its OpenAlex budget; or a crash |
+| ERROR | the cycle exits non-zero: refused to start (preflight, `hold.json`, lock held, a live job), halted (a failed run or build, no progress), no releasable build after 5 builds or a cap/stop before one (a tail build over `STACK_SCHED_TAIL_MAX_PCT`, or of unknown size, is not releasable), the lock lost or unreadable before the export or the upload (nothing released), export or upload failed (incl. the private repo not private, a staged variant its release checker refuses); or a balance at or below zero; or a run of the cycle stopped on its OpenAlex budget; or a crash |
 | WARN | the cycle published, but: a build short only on collector lines, or only on acquire's retry tail within `STACK_SCHED_TAIL_MAX_PCT` (also after a cap, `hold.json` or a signal before the catch-up build), was released; a build had an unexpected incomplete reason (retried); a build was retried after a transient failure; the OpenAlex re-sweep failed (D789); the S2 collect stayed short, or a run of it had `failed_permanent` windows or a broken year-span upper bound (D802); a balance below its threshold or a balance check that failed; a re-upload found the release tag already there; a preflight warning (an optional key absent, no mail channel) |
 | OK | none of these |
 

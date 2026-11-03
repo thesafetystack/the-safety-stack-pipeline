@@ -16,7 +16,8 @@ build runs, and a cap or stop before the catch-up build still releases the tail 
 releasable) build it exports
 both dataset variants (``stack export --config dataset-public|dataset-internal``), checks them, stages them under the
 ops prefix and uploads them to their Hugging Face repos (every successful weekly run publishes). The summary's ``release.quality`` (:func:`release_quality_summary`) carries the release's judge-eval
-coverage and triage's agreement with the screen from its ``release.json`` (D728). The upload refuses, and the cycle fails and alerts, when the internal variant's repo is not private; it
+coverage and triage's agreement with the screen from its ``release.json`` (D728). The upload refuses, and the cycle fails and alerts, when a staged variant fails its own
+release checker (``tools/release-validator.py --rows all``, the copy it ships, D803) or the internal variant's repo is not private; it
 never changes a repo's visibility (the public repo is uploaded to whatever its visibility). Every ``stack`` command
 is a child process of this one; nothing here writes the store itself.
 
@@ -1510,6 +1511,29 @@ class Cycle:
 
 
 # ---------------------------------------------------------------- the upload
+#: Seconds the release checker may take on one staged variant (about 30 s for the public variant of 41k rows, 40 s for
+#: the internal one; D803).
+CHECK_TIMEOUT_S = 1800
+
+
+def check_staged(d: Path) -> list[str]:
+    """Run the release's own checker, as a consumer would (``tools/release-validator.py <dir> --rows all``: the copy
+    the release ships, every row, D803), on the staged variant ``d`` fetched for upload; its output's last lines when
+    it does not pass (an unsupported format version, a release from before format 1.0.0, included), else []."""
+    tool = d / "tools" / "release-validator.py"
+    if not tool.is_file():
+        return [f"{tool.relative_to(d)}: missing (a release from before format 1.0.0?)"]
+    try:
+        r = subprocess.run([sys.executable, str(tool), str(d), "--rows", "all"], capture_output=True, text=True,
+                           timeout=CHECK_TIMEOUT_S, check=False)
+    except subprocess.TimeoutExpired:
+        return [f"the checker ran over {CHECK_TIMEOUT_S} s"]
+    if r.returncode == 0:
+        return []
+    lines = [x for x in (r.stdout + r.stderr).splitlines() if x.strip()]
+    return [f"exit {r.returncode}", *lines[-12:]]
+
+
 def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False, ns: str = "",
            findings: Any = None) -> int:
     """Upload a staged release's two variants to their Hugging Face dataset repos (every successful weekly
@@ -1519,7 +1543,9 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
     visibility (the maintainer makes it public by hand). Each variant goes up as ONE commit that makes the repo's tree exactly
     the release (every file added, every other file deleted except ``.gitattributes``: each release is clean and
     tagged), on the repo's head as read just before (``parent_commit``: a concurrent push fails the commit), and
-    the commit is tagged :func:`release_tag` (an existing tag is a WARN, never moved)."""
+    the commit is tagged :func:`release_tag` (an existing tag is a WARN, never moved). Before anything is uploaded,
+    both variants are fetched from the staging prefix, checked against the manifest's sha256 and for the bucket name,
+    and each goes through its own release checker (:func:`check_staged`, D803); any failure uploads nothing."""
     man = ops.get_json(f"{ns}releases/{rid}/manifest.json")
     if man is None:
         log(f"REFUSED: no staged release {rid} ({ns}releases/{rid}/manifest.json on the ops prefix)")
@@ -1556,21 +1582,31 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
         log("dry run: nothing uploaded")
         return EXIT_OK
     work = s.work / "upload" / rid
-    for v in ("internal", "public"):
-        repo = repos[v]
+    for v in ("internal", "public"):  # both variants fetched and checked before anything is uploaded
         d = work / v
-        d.mkdir(parents=True, exist_ok=True)
+        if d.exists():
+            shutil.rmtree(d)  # an earlier attempt's files would be files the release does not list
+        d.mkdir(parents=True)
         for f in man["variants"][v]["files"]:
             fp = d / f["path"]
             fp.parent.mkdir(parents=True, exist_ok=True)
             fp.write_bytes(ops.b.get(f"{man['prefix']}/{v}/{f['path']}"))
             if sha256_file(fp) != f["sha256"]:
-                log(f"HALT: {v}/{f['path']}: sha256 differs from the manifest; nothing more uploaded")
+                log(f"HALT: {v}/{f['path']}: sha256 differs from the manifest; nothing uploaded")
                 return EXIT_FAILED
         hits = scan_for(d, s.bucket.encode())
         if hits:
-            log(f"HALT: {v}: the bucket name occurs in {', '.join(hits[:5])}; nothing more uploaded")
+            log(f"HALT: {v}: the bucket name occurs in {', '.join(hits[:5])}; nothing uploaded")
             return EXIT_FAILED
+        problems = check_staged(d)
+        if problems:
+            log(f"ERROR: {v}: the release's own checker (tools/release-validator.py --rows all) refuses it; nothing "
+                "uploaded: " + " | ".join(problems[-8:]))
+            return EXIT_FAILED
+        log(f"release {rid} {v}: tools/release-validator.py --rows all: valid")
+    for v in ("internal", "public"):
+        repo = repos[v]
+        d = work / v
         if v == "internal" and not private_ok("just before its upload"):
             log(f"ERROR: {private_repo} turned public: nothing uploaded; its visibility is left as it is")
             return EXIT_FAILED
