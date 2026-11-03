@@ -3,7 +3,7 @@
 Status: **implemented as option B** (D755, decided 2026-10-30 after the proposal of D750): the stage
 `annotate.translation` (`workflows/annotate/translation/`), payload `translation` {from_lang, title_en, abstract_en,
 method}, role `translate` (gpt-6-luna; `model: openai/gpt-5.6-terra` documented as the stronger option), in plan
-batch-2026-10a revision 9 after the screen, and the release kind `translation` (abstract_en follows the abstract
+batch-2026-10a after the screen (revision 9 of the Chinese-coverage work, integrated by revision 11, D779), and the release kind `translation` (abstract_en follows the abstract
 policy). Affiliations are not translated: the organisation vocabulary has Chinese aliases instead (D756). Sections 2-5
 below are the proposal as written; where the implementation differs, it says so here: the payload is an annotation
 record (not a `metadata.translated` struct: the `metadata` block is unchanged), and its model and prompt are in
@@ -11,7 +11,7 @@ the record's metadata rather than in the payload.
 
 ## 1. What is known
 
-- **Full texts need no translation.** The Chinese-coverage review (its round 2) ran the screen and the
+- **Full texts need no translation.** The Chinese-coverage review ran the screen and the
   technique prompts on four Chinese documents in Chinese and in an Opus translation: screen verdicts identical on 4
   documents x 2 models; technique slugs zh~en Jaccard 0.60-0.83 against 0.57-0.80 between two models on the same
   text; 75 of 76 quotes from the Chinese runs anchor in the original (the miss was a converter space, fixed in

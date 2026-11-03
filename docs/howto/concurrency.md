@@ -9,7 +9,7 @@ option enters the line's config digest is the last column.
 |---|---|---|---|---|
 | `triage` | `workers` | 64, 1024 (D692, D716) | the LLM question calls | no (kept out by `digest_line`) |
 | `annotate.<wf>` (screen, affiliation, model_*, technique_roles, technique_staged, affiliation_orgs, translation) | `workers` | 64, 1024 (D692, D716) | the per-document asks (technique_staged: a document's own calls stay sequential within its ask) | no (an annotate digest is the prompt pin's; no option enters it) |
-| `acquire` (fetch) | `fetch_workers` | 1, 32 | lane calls grouped by host (http: the URL host; arxiv: `arxiv.org`; oa: `fetch_workers - 2` slots by DOI, T-R6); one call in flight per group, one request in flight per host | yes (an option of the line) |
+| `acquire` (fetch) | `fetch_workers` | 1, 32 | lane calls grouped by host (http: the URL host; arxiv: `arxiv.org`; oa: `fetch_workers - 2` slots by DOI); one call in flight per group, one request in flight per host | yes (an option of the line) |
 | `acquire` (convert) | `convert_workers` | 1, none | converter child processes (pymupdf4llm: 0.6-0.75 GB RSS each) | yes |
 | `stack eval …` | `--workers` | 64, 1024 | eval calls | n/a |
 
@@ -18,7 +18,7 @@ order in the calling thread (acquire: in its scope order, `options.order`, `doc_
 D391), every LLM call reserves in its run's ledger before it is sent, and outputs are
 assembled in row order. Per-host pacing, robots, 429 back-off and arXiv's 3 s rule are unchanged by `fetch_workers`.
 
-Measured on reflink copies of the dev store (2026-10-13, RUNLOG (RUN) B6; no 429 anywhere): triage 15.8 → 112 → 229
+Measured on copies of a development store (2026-10-13; no 429 anywhere): triage 15.8 → 112 → 229
 rows/min at 1/8/16 workers; screen-v12 6.4 → 38.5 → 69.9; affiliation 10.1 → 72.5 → 134; fetch +25 % at 4 workers
 (the dev mix is bound by one slow host); convert, 35 PDFs: 223 s / 108 s / 73 s at 1/4/8.
 
@@ -28,7 +28,7 @@ A stage's worker pool also stays within the container's task room less 128 threa
 The production plan `batch-2026-10a` sets `workers` 256 on triage, screen and affiliation, 1024 on technique_staged
 and model_roles, 64 on translation and 8 on affiliation_orgs; `fetch_workers: 8`, `convert_workers: 8`. The older
 plans set: triage, screen and affiliation `workers: 16`; `convert_workers: 4` (RAM headroom on a shared
-machine); `fetch_workers` 4 in `dev-v2-m4`, 8 in `std-v2` and `std-v3` (8 not measured). `dev-v2`, `ann-scratch` and
+machine); `fetch_workers` 4 in `dev-v2-m4`, 8 in `std-v2` and `std-v3`. `dev-v2`, `ann-scratch` and
 `links-scratch` set none.
 
 Between jobs there are no locks (D355, D356): a build runs its lines one after another, and the rule is one writer

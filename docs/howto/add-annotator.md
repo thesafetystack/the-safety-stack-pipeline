@@ -65,12 +65,14 @@ shows how a payload path follows the abstract policy, mapping.yaml `abstract_pat
    the basis, so a screen re-run that keeps a document in scope re-asks nothing. The loader orders lines so every
    read's producer runs first and refuses cycles. Add `<wf>` to `fold.build.annotations_folded` (a `chained`
    workflow's reads must be folded too). `configs/plans/ann-scratch.yaml` is the worked plan.
-6. **Release.** Payload text that must not ship goes in `column_drops` of `configs/releases/public-v1.yaml`
-   (as `annotations.screen.payload.reasoning`). A workflow whose struct no build populates yet is dropped there
-   whole (`annotations.<wf>`, D705); remove that entry once a build fills it.
+6. **Release.** The dataset release ships a kind only once `configs/releases/dataset/mapping.yaml` has it: a
+   `fields:` entry `annotations.<wf>` with `keep`/`docs`, and a `meta.kind` enum value; capped and withheld payload
+   paths are listed there too (`docs/howto/dataset-release.md`, "Changing the format"). The older release configs
+   (`public-v1`, the plans' `fold.release`) drop payload text in `column_drops` (as
+   `annotations.screen.payload.reasoning`) and a workflow they do not ship whole (`annotations.<wf>`, D705).
 7. **Tests** against the fake model (`tests/fakes/llm.py`, `tests/fakes/annotate.py`); see
    `tests/test_annotate_model_roles.py` and `tests/test_annotate_inputs.py`. Then a small real run on a store copy
-   with `max_rows` and a budget; the 2026-10 run log (not in this repository) recorded how the three ports were checked (D275).
+   with `max_rows` and a budget (D275).
 8. **Eval** (optional): `stack eval` has frozen sets (`evals/<task>/<set>/`) for triage, screen, affiliation,
    model_roles (set `2026-10-17a`), technique_roles (`2026-10-13a`) and technique_staged (`2026-10-18c`, 120 documents
    on the 234-entry v0.9 taxonomy, D630/D632; earlier sets `2026-10-17a`/`17b`/`18a`/`18b`; `--pin mode=<mode>`);
@@ -87,6 +89,6 @@ gleaning turn, prompt set `technique-staged-v5-a1.1`, doc_cap 900,000, max_token
 `model-roles-v3b` and doc_cap 900,000 on `configs/models.yaml` (models 1.0.0, D707; since revision 9 models 1.1.0); both folded by `fold.build` (with `model_regexp_matches`) and in `require_complete`. Revision 7
 started as a pilot (`max_rows: 1000` on both lines); the lines now set no `max_rows` (the full run, which carried the
 pilot's answers).
-public-v1 still drops both structs (D705) until a decision to ship them. `technique_roles` runs only in
+The dataset release ships both (`public-v1` still drops them, D705). `technique_roles` runs only in
 `ann-scratch.yaml` (D269). technique_staged's module defaults stay `technique-staged-v1` / `taxonomy-v0.9.yaml` (frozen eval
 sets read them), so the plan pin is the switch. `doc_class` is a record of `screen-v12`, not an annotator of its own (D257).

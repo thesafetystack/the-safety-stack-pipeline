@@ -7,11 +7,11 @@ There are two collectors for blogs; which one depends on whether the site has a 
 | Reads | one RSS/Atom feed per channel | the site's index pages, sitemap or feed, by a per-site spec |
 | Bodies | the item's `content:encoded` / Atom `content`, stored in-band as role `post` (no fetch); an item without a body is listing-only and `acquire` fetches the page | none; `acquire` fetches each post page |
 | Needs code | no | yes: a `SITE_SPECS` entry in `workflows/collect/blogs/main.py` |
-| In which plans | only `configs/plans/links-scratch.yaml` (round 4); no production plan runs `collect.feeds` today | `std-v2`, `std-v3`; `dev-v2`, `dev-v2-m4`, `ann-scratch` (5 channels each) |
+| In which plans | `batch-2026-10a` (production) and `links-scratch` | `batch-2026-10a`, `std-v2`, `std-v3`; `dev-v2`, `dev-v2-m4`, `ann-scratch` (5 channels each) |
 
 ## A feed (`collect.feeds`)
 
-1. A channel in `configs/channels.yaml` (next to `zvi_substack`, `import_ai`, `paradigm3_news`):
+1. A channel in `configs/channels.yaml` (next to `zvi_substack`, `import_ai`, `paradigm3_news`, `aisafetychina_substack`):
 
    ```yaml
    - id: example_newsletter
@@ -25,15 +25,15 @@ There are two collectors for blogs; which one depends on whether the site has a 
    ```
 
    Bump the file's `version` and run `uv run --no-sync python tools/check_configs.py`.
-2. In the plan: a `collect.feeds` stage line, if the plan has none yet (as in `links-scratch.yaml`):
-   `- {stage: collect.feeds, out: {kind: part}, prior: [sources, coverage], options: {since: "2026-09-12"}}`
+2. In the plan: a `collect.feeds` stage line, if the plan has none yet (as in `batch-2026-10a.yaml`):
+   `- {stage: collect.feeds, out: {kind: full}, prior: [sources, coverage], options: {since: "2025-10-01"}}`
    and the channel in `acquire.wants` (`example_newsletter: [post]` when the feed carries bodies, `[page]` when it
    does not).
 3. Triage: the new rows pass the gate only through some clause: the source rule `newsletter_posts` in
    `stack/rules.py` (add the channel to `NEWSLETTER_CHANNELS`) named as `{rule: newsletter_posts}` in the plan's
-   `gate:` (only `links-scratch.yaml` names it today), or the LLM question clause. `NEWSLETTER_CHANNELS` also makes
-   the channel's posts linking documents for `collect.links` (rule `newsletter_links`, in plans with a
-   `collect.links` line); list the newsletter's other publication hosts (a mirror) in `LINK_SELF_HOSTS` there (the
+   `gate:` (`batch-2026-10a` and `links-scratch` name it), or the LLM question clause. `NEWSLETTER_CHANNELS` also makes
+   the channel's posts linking documents for `collect.links` (rule `newsletter_links`, in plans whose `collect.links`
+   line runs it: `links-scratch`; `batch-2026-10a` runs only `flagged_links`); list the newsletter's other publication hosts (a mirror) in `LINK_SELF_HOSTS` there (the
    page's own host always counts as a self-link).
 4. Run on a store copy: `stack run collect.feeds` (with `--plan`), then `gather`, then a build.
 

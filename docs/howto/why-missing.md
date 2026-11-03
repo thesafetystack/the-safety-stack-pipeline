@@ -3,11 +3,11 @@
 A document can drop out at six points: it was never collected (collector window, coverage); gather merged or
 retired it; an operator masked it; triage did not decide `fetch`; acquire has no usable text yet; or the build or
 release filtered it. Work from the build's `files.corpus_everything` (every row; the plan needs `fold.diagnostic:
-true`, as `dev-v2-m4` has; std-v3 has it off, so set it or read the `documents` head) with the macros loaded
-(`docs/CONSUME.md`, "The helper macros"). Run from the store root.
+true`, as `batch-2026-10a` and the dev plans have; `std-v2` and `std-v3` have it off, so set it or read the
+`documents` head) with the macros loaded (`docs/CONSUME.md`, "The helper macros"). Run from the store root.
 
 ```sql
-SET VARIABLE b = (SELECT files FROM read_json('builds/*.dev-v2-m4/build.json.zst')
+SET VARIABLE b = (SELECT files FROM read_json('builds/*.batch-2026-10a/build.json.zst')
                   WHERE status = 'ok' ORDER BY finished_at DESC LIMIT 1);
 CREATE VIEW everything AS SELECT * FROM read_parquet(getvariable('b').corpus_everything.path);
 ```
@@ -51,9 +51,6 @@ plan at all. A row with `state = 'retired'` was merged into the document `identi
 | `state:triaged` | triage said `fetch`; **not skipped, waiting** for acquire (e.g. acquire's `max_rows` cap in dev plans) | the next build or pass |
 | `text:<status>` | acquired but no usable text: `no_raw` (nothing fetched), `convert_failed` (conversion or the quality gate failed), `convert_pending`, `withheld` | §4 |
 | `media:txt` | the current text is not markdown: an in-band abstract (`content.current_role = 'abstract'`) | §4: the full text was not fetched |
-
-On the dev store (build `wvcgj7me0kctw`, 1,806 rows): NULL 494, `state:triaged` 1,211, `media:txt` 82,
-`text:no_raw` 18, `text:convert_failed` 1.
 
 ## 3. Triage
 

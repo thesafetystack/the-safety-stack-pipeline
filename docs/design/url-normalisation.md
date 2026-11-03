@@ -1,6 +1,6 @@
-# URL normalisation: one module, its rules, and the re-key of the dev stores
+# URL normalisation: one module, its rules, and the re-key migration
 
-Status: implemented (track U, round 4, 2026-10-12). Public material. Terms are those of `docs/DESIGN.md`; the
+Status: implemented (2026-10-12; D214-D216, fixes in D233). Terms are those of `docs/DESIGN.md`; the
 proposal this implements is `docs/design/link-crawling.md` §3.4 (hazards), §4.5 (keys, fetch URL, re-key) and §4.6
 (kinds). Code: `stack/urls.py`; tests: `tests/test_urls.py` (table-driven, real URL shapes) and
 `tests/test_migrate.py::test_rekey_predicts_merges_and_splits_and_gather_agrees`.
@@ -60,9 +60,9 @@ its subdomains.
 
 | Rule | Detail |
 |---|---|
-| resolve | literal and encoded whitespace (`%20`, `%09`, `%0A`, `%0D`, `%C2%A0`) stripped from both ends (round 4 L4: paradigm3's hrefs end in `%20`, which kept 13 X statuses on `url` keys); `urljoin(base, raw)`; tabs/newlines removed, inner spaces `%20`; `//host` → https; http(s) only |
-| unwrap redirect wrappers (up to 4 deep) | `google.<tld>/url?q=|url=`, `l.facebook.com`/`lm.`/`m.facebook.com/l.php?u=`, `l.instagram.com?u=`, `out.reddit.com?url=`, `youtube.com/redirect?q=`, `slack-redir.net/link?url=`, `t.umblr.com/redirect?z=`, `linkedin.com/redir/redirect?url=`, `*.safelinks.protection.outlook.com?url=`, `duckduckgo.com/l/?uddg=`, `steamcommunity.com/linkfilter/?url=`; `web.archive.org/web/<ts>[flags]/<url>` → the archived URL; archive.today `archive.(is|ph|today|li|vn|md)/o/<id>/<url>` → `<url>` (round 4 L4; a bare snapshot `archive.ph/<id>` is the archived copy and stays a url target) |
-| Google Docs (round 4 L4) | `docs.google.com/document[/u/<n>]/d/<id>/…` → `https://docs.google.com/document/d/<id>/export?format=txt`: the http lane takes the `text/plain` body (stamped `application/octet-stream`, `stack/mediatype.py`) and convert passes it through as text; the editor page is UI chrome. Published docs (`/document/d/e/<id>/pub`, HTML) and Forms are left as they are |
+| resolve | literal and encoded whitespace (`%20`, `%09`, `%0A`, `%0D`, `%C2%A0`) stripped from both ends (paradigm3's hrefs end in `%20`, which kept 13 X statuses on `url` keys); `urljoin(base, raw)`; tabs/newlines removed, inner spaces `%20`; `//host` → https; http(s) only |
+| unwrap redirect wrappers (up to 4 deep) | `google.<tld>/url?q=|url=`, `l.facebook.com`/`lm.`/`m.facebook.com/l.php?u=`, `l.instagram.com?u=`, `out.reddit.com?url=`, `youtube.com/redirect?q=`, `slack-redir.net/link?url=`, `t.umblr.com/redirect?z=`, `linkedin.com/redir/redirect?url=`, `*.safelinks.protection.outlook.com?url=`, `duckduckgo.com/l/?uddg=`, `steamcommunity.com/linkfilter/?url=`; `web.archive.org/web/<ts>[flags]/<url>` → the archived URL; archive.today `archive.(is|ph|today|li|vn|md)/o/<id>/<url>` → `<url>` (a bare snapshot `archive.ph/<id>` is the archived copy and stays a url target) |
+| Google Docs | `docs.google.com/document[/u/<n>]/d/<id>/…` → `https://docs.google.com/document/d/<id>/export?format=txt`: the http lane takes the `text/plain` body (stamped `application/octet-stream`, `stack/mediatype.py`) and convert passes it through as text; the editor page is UI chrome. Published docs (`/document/d/e/<id>/pub`, HTML) and Forms are left as they are |
 | tracking dropped everywhere | `utm_*`, `pk_*`, `mtm_*`, `hsa_*`; `fbclid gclid gclsrc dclid gbraid wbraid msclkid yclid twclid ttclid li_fat_id igshid igsh mc_cid mc_eid _hsenc _hsmi __hstc __hssc __hsfp hsCtaTracking mkt_tok oly_anon_id oly_enc_id vero_id vero_conv rb_clickid s_cid ref ref_src ref_url triedRedirect isFreemail showWelcome cmpid wt.mc_id spm _ga _gl` |
 | tracking only on these hosts | X/Twitter `s t ref_src ref_url src`; YouTube `si feature pp ab_channel`; Spotify `si nd context`; Instagram; LinkedIn `trk trackingId lipi …`; Medium `source gi`; Reddit `share_id rdt context`; Facebook `mibextid rdid sfnsn`; TikTok; Substack `r s publication_id post_id sd token action` (also on any host's `/p/<slug>` path: custom-domain Substacks) |
 | kept | every other parameter, in its original encoding; the path as given (trailing slash, case); scheme and host lower-cased; default port and credentials dropped; fragment dropped |
@@ -84,7 +84,7 @@ its subdomains.
 | GitHub | owner/repo lower case, `.git` dropped, `/tree/<ref>` at the root → the repo; `/blob/<ref>/<path>` → `/blob/-/<path>` (one file path, one key); issues, pulls, discussions and deeper `/tree/` paths kept |
 | `raw.githubusercontent.com` | owner/repo lower case, the ref → `-` (as `norm_url` did) |
 | forum post URLs | `https://<forum host>/posts/<id>` |
-| Google Docs | `https://docs.google.com/document/d/<id>` (the export URL and every editor URL of a doc; round 4 L4) |
+| Google Docs | `https://docs.google.com/document/d/<id>` (the export URL and every editor URL of a doc) |
 
 **Link targets** (`link_keys`): arXiv (above, attribute `arxiv_version`) → `paper` with `arxiv` + `doi` (the bridge);
 `doi.org`/`dx.doi.org` and DOI-in-path publishers → `paper` with `doi` (validated by `normalize_doi`): the generic
@@ -94,7 +94,7 @@ Frontiers `articles/<doi>[/full]`, IOP, APS, bioRxiv/medRxiv (`vN` and `.full` d
 `?id=`, `nature.com/articles/<suffix>` → `10.1038/<suffix>`; PubMed (`pubmed.ncbi.nlm.nih.gov/<n>`,
 `ncbi.nlm.nih.gov/pubmed/<n>`) → `pmid`; LessWrong / AF / GreaterWrong / EA Forum `/posts/<id>[/slug]` and
 `/s/<seq>/p/<id>` (`?commentId=` and fragments point at the post) → `forum` + `fm_post`; X status forms → `social` +
-`x_post` (also behind a trailing `%20` and an archive.today `/o/` wrapper, round 4 L4); everything else → `url`
+`x_post` (also behind a trailing `%20` and an archive.today `/o/` wrapper); everything else → `url`
 with one `url` key. Kind hints for url targets, first match wins: `share` (intents
 of X, Facebook, LinkedIn, Reddit submit, HN submitlink, Telegram, Pinterest, Bluesky, WhatsApp, Threads; added beside
 §4.6's list because admission drops them), `social_profile`, `repo` (GitHub, GitLab, Bitbucket, Codeberg, Hugging
@@ -121,12 +121,12 @@ for `www.anthropic.com`, `raw.githubusercontent.com/qwenlm/`), which changes the
 A blog post whose fetch form differs from its stored record (a trailing slash, a kept query) writes one changed row on
 its next collect (`skip_unchanged` compares the record digest), once.
 
-**arXiv version.** `link_keys` returns it as `attributes["arxiv_version"]` for track L's rows to keep in their record.
+**arXiv version.** `link_keys` returns it as `attributes["arxiv_version"]` for `collect.links`' rows to keep in their record.
 No `sources` column holds a paper version and none was added: `metadata.provider_version` is the record shape
 version (`fetch.metadata` `PROVIDER_VERSION`, v3's workflow version), and `arxiv_sweep` leaves it null; the version
 already lives in the lookups' `arxiv_version` payload field and the arXiv lane's snapshot `revision`.
 
-## 3. The re-key migration and its result
+## 3. The re-key migration
 
 **Mechanics.** `stack migrate rekey [--apply] [--report FILE]` (`stack/migrate.py`), a sibling of `stack migrate
 upcast`. For every `sources` chain, the view's row per `source_id` gets new `keys` and `canonical_url`: url group from
@@ -143,25 +143,10 @@ views in memory, with the `documents` head read as its upcast, and diffs them wi
 doc ids now one document; titles and the keys that join them), splits (one live document now several; the head's keys
 and each part's keys). The same prediction over the unchanged views is the baseline and must reproduce the head.
 
-**Result (2026-10-12).** Both stores were backed up (`data/` + `runs/`) before applying.
-
-| | `v4/store-dev` | `v4/store-sr-scratch` |
-|---|---|---|
-| sources rows (view) | 2,013 | 5,231 |
-| rows re-keyed | 5: anthropic_cards 5 | 497: uk_aisi_blog 163, far_ai_blog 109, forethought_blog 78, goodfire_blog 61, cooperative_ai_blog 29, arc_blog 28, apollo_blog 24 (37 of its 61 already bare-host sitemap links), anthropic_cards 5 |
-| what changed | the `url` key loses `www.` (`www.anthropic.com/claude-…-system-card` → `anthropic.com/…`); no `canonical_url` changed | the same, every row; no `canonical_url` changed |
-| baseline prediction vs head | 1,806 = 1,806 documents, 0 merges, 0 splits | 4,898 = 4,898, 0, 0 |
-| re-keyed prediction vs head | 0 merges, 0 splits | 0 merges, 0 splits |
-| runs | rekey `r2vvrnanx1p7e`; gather `rhj8fc5z0xtrn` (dev-v2-m4): 5 changed, 1,801 carried | rekey `r6h16fnqwhd84`, `rrra41j0vwzqa`; `fold.compact` upcast of `documents` `rk8azxae7w4dt` (the head was at a pre-D207 schema; gather refused it); gather `rjxyw3dqjdr9k` (dev-v2): 497 changed, 4,401 carried |
-| after gather vs prediction | identical membership (1,806 live documents); no state changed | identical (4,898); no state changed |
-| unrecovered original URLs | 0 rows without a URL; all 1,411 url-group rows' only URL is the stored canonical_url in v3's collapsed form, none on a host whose key keeps query parameters | 0; 3,040 collapsed, none on such hosts |
-| `stack verify` before → after | 1 failed (X6 policy_pins, 321 affiliation evidence rows on a non-pinned template) → the same 1 failed | 2 failed (V11 documents schema, X6 policy_pins 62 screen-v8 evidence rows) → 1 failed (X6, the same 62) |
-
-A first `--apply` on store-sr-scratch wrote both chains' parts in one run and failed before publishing
-(`r6738et5dzmf9`, `failed[code_bug]`: two staged files of one family share a file name); nothing reached `data/`.
-That is why a run now writes one chain.
-
-No merges or splits on these stores: their url-group sources come from collectors that already deduplicate within a
-channel by slug, and no two channels list the same page. The new rules matter for the link targets of track L (§3.4's
-collisions, `www.` pairs, DOI-in-path papers) and for manual sources; the synthetic test shows a `www.`/bare merge and
-an OpenReview split end to end.
+Applied on 2026-10-12 to the development stores of the time: the prediction matched the gather that followed, and
+there were no merges or splits, only `url` keys losing `www.` (no `canonical_url` changed). Their url-group sources
+came from collectors that already deduplicate within a channel by slug, and no two channels listed the same page. The
+new rules matter for link targets (§3.4 of `docs/design/link-crawling.md`: collisions, `www.` pairs, DOI-in-path
+papers) and for manual sources; the synthetic test shows a `www.`/bare merge and an OpenReview split end to end. A
+migration run writes one chain: a first attempt that wrote two chains' parts in one run failed before publishing (two
+staged files of one family shared a file name).

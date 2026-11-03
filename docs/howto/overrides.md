@@ -1,7 +1,7 @@
 # Overrides: add, revoke, what wins
 
 Human corrections (and, later, generated ones) live in the store as the `overrides` family: one chain, `overrides`,
-parquet files under `data/` like any other family (design v4.1 §8; D336-D338; code `stack/overrides.py`). Nothing is
+parquet files under `data/` like any other family (D336-D338; code `stack/overrides.py`). Nothing is
 edited in place: every change is a new row added by one recorded run of the stage `overrides.add`.
 
 ## Add
