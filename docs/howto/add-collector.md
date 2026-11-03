@@ -29,8 +29,9 @@ the module docstring of `stack/collect/base.py` (the `Collector` harness); read 
    tools/check_configs.py` validates it.
    Bump the file's `version` and say why in its header comment.
 3. **Plan line.** In each plan that should run it:
-   `- {stage: collect.<suffix>, out: {kind: part}, prior: [sources, coverage], options: {...}}` (`out: {kind: part}`
-   as on every collector line of the plans: without it each run writes a full file). The `prior: [sources, coverage]` is
+   `- {stage: collect.<suffix>, out: {kind: full}, prior: [sources, coverage], options: {...}}` (`out: {kind: full}`,
+   the default, as on every line of `batch-2026-10a`: each run writes its directory's whole version, so a reader takes
+   one file; the older plans write parts, `out: {kind: part}`). The `prior: [sources, coverage]` is
    required: a run of a collector whose chains have files but are not pinned is refused (it would re-mint every
    `source_id`). Optional: `miss_cap`, `keys` (lookups), `budget`.
 4. **Fetching.** If documents of this channel need a body fetched, add the channel to the plan's

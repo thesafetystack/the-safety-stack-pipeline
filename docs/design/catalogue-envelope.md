@@ -1,8 +1,8 @@
 # Catalogue envelope: one structure for the taxonomy files
 
 Status: adopted by all three catalogues, 2026-10-29 (D738; the first adopter was orgs 0.2.0, the organisation-vocabulary work,
-D737): techniques 1.1.0, models 1.1.0 and orgs 0.2.0 are files of the data repository (`data-repo/taxonomies/`), in
-pinned by plan `batch-2026-10a` revision 9 (not deployed); since revision 11 (D778, D779) `annotate.affiliation_orgs`
+D737): techniques 1.1.0, models 1.1.0 and orgs 0.2.0 are files of the data repository (`data-repo/taxonomies/`),
+pinned by plan `batch-2026-10a` since revision 9; since revision 11 (D778, D779) `annotate.affiliation_orgs`
 reads orgs 0.2.2 (`data-repo/taxonomies/orgs/orgs-0.2.2.yaml`: 0.2.0 with the place names of 0.2.1, D760, and the
 Chinese-script aliases, D756); models 1.1.0 still refers to orgs 0.2.0. Terms: `Dnnn` are `docs/DECISIONS.md`; "pin" and "config digest" are
 the annotate stages' (`stack/annotate/stage.py`).
@@ -132,6 +132,8 @@ selected evidence row under the new config digest, pointing back to the original
 built and verified on a local store copy only (the store's checks pass, the next build carries every document);
 using it on the production store is a separate decision. Without it, deploying revision 9 re-asks: model_roles from
 the cache at $0, technique_staged's gleaning turns at about $63 (and 26 documents whose earlier calls failed).
+Production took neither way: from revision 10 (D758) both stage lines accept the decided answers of their 1.0.0
+configs (`accepted:`), which keep their 1.0.0 labels, and ask only documents without one.
 
 - **No loader-level adapter for the new files**: the files themselves are in the envelope; each loader still reads
   its catalogue's earlier shape (eval sets and stored runs name those files).

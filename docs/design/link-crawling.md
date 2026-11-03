@@ -1,15 +1,15 @@
-# Link crawling: outbound links of selected documents as candidate sources (WIP proposal)
+# Link crawling: outbound links of selected documents as candidate sources
 
-Status: design proposal, revision 2, 2026-10-12. Mostly implemented since (2026-10-13): `collect.feeds` and
+Status: design record (revision 2, 2026-10-12), implemented since: `collect.links` (D222-D225), `collect.feeds` and
 `collect.manual` (D218-D220), `collect.x-lookup` (D213, D243-D247), `stack/urls.py` and `stack migrate rekey`
-(D214-D216), `collect.links` (D222-D225), `stack build --passes` (D221, D226). Not implemented: page-probe, lw-lookup,
-`link_context` (`workflows/collect/links/README.md`). In production since plan `batch-2026-10a` revision 5 (D658,
-D664): `collect.feeds`, `collect.manual` and `collect.links`, the latter on the links of flagged manual sources only
+(D214-D216), `stack build --passes` (D221, D226). Not implemented: page-probe, lw-lookup, `link_context`
+(`workflows/collect/links/README.md`). In production since plan `batch-2026-10a` revision 5 (D658, D664):
+`collect.feeds`, `collect.manual` and `collect.links`, the latter on the links of flagged manual sources only
 (`rules: [flagged_links]`). Postponed: the newsletters' link harvest and X hydration (`docs/FUTURE.md`);
-`configs/plans/links-scratch.yaml` is the working template. Public material.
-Audience: the v4 pipeline's owners and implementers. Pipeline terms (`sources`, `documents`, gather, triage gate,
-acquire, lookups, in-band entries, the pointer rule) are those of `docs/DESIGN.md`; decision numbers `Dnnn` are
-`docs/DECISIONS.md`.
+`configs/plans/links-scratch.yaml` is the working template. The text below is the design as proposed, with the
+measurements it was based on; where it and the code differ, the code and the D-numbers win. Pipeline terms
+(`sources`, `documents`, gather, triage gate, acquire, lookups, in-band entries, the pointer rule) are those of
+`docs/DESIGN.md`; decision numbers `Dnnn` are `docs/DECISIONS.md`.
 
 **The ask.** Harvest the outbound links of selected documents as candidate sources: first Zvi Mowshowitz's posts,
 frontier-lab and safety-org blog posts and some LessWrong posts, later link newsletters (D198 item 1). SR 2025 got
@@ -19,7 +19,7 @@ acquisition, and what it costs, with numbers measured on the dev store.
 
 ## 0. Summary
 
-**Revision 2 (2026-10-12, after Tomáš's response).** Tweets are a valid source, hydrated through the X API; linked web
+**Revision 2 (2026-10-12, after the review of revision 1).** Tweets are a valid source, hydrated through the X API; linked web
 pages are in the first phase; and re-running most of the pipeline after links are harvested from fetched content is
 acceptable, in preference to adding copies of phases. The keyed-only first phase of revision 1 is withdrawn.
 
@@ -40,7 +40,7 @@ acceptable, in preference to adding copies of phases. The keyed-only first phase
 - **Web pages** get a **metadata probe** before triage: **`collect.page-probe`**, a lookup that makes one bounded GET
   per new url target and reads `<title>`, `og:*`, `article:*`, `citation_*` and the canonical link. A linked page
   then reaches triage with the kind of listing metadata a blog collector has, and follows the same triage → acquire
-  → screen path, with Tomáš's per-stage source rules on top (fetch by host for labs and safety orgs). Link targets
+  → screen path, with the per-stage source rules on top (fetch by host for labs and safety orgs). Link targets
   are never rechecked weekly (a per-channel recheck setting).
 - **Placement: two passes.** `stack build <plan> --passes 2` runs the build, then runs it again with the window
   collectors skipped. Pass 2's `collect.links` harvests what pass 1 acquired, and its lookups, gather, triage,
@@ -48,8 +48,8 @@ acceptable, in preference to adding copies of phases. The keyed-only first phase
   cross-build-only variant (`--passes 1`) remains, with one build of latency.
 
 **Measured** (section 3): admitted targets per linking document are 9.5 on lab pages, 13.9 on LessWrong AI-tag posts
-(20 for karma ≥ 50) and 16.7 on Zvi posts (n = 3); Zvi posts link about 84 distinct tweets each. In the T5.5 builds
-the carry stages took seconds on the dev store (gather 1.7 s, triage 2.3 s, folds 0.3 s, verify about 20 s); the
+(20 for karma ≥ 50) and 16.7 on Zvi posts (n = 3); Zvi posts link about 84 distinct tweets each. In two builds on the
+development store the carry stages took seconds on the dev store (gather 1.7 s, triage 2.3 s, folds 0.3 s, verify about 20 s); the
 4.7-minute build was LLM work on new rows.
 
 **Volume and cost** (section 6), per week: about 800-1,500 admitted links, 300-320 tweets, 200-750 probes and
@@ -68,18 +68,17 @@ Implementation is about 34-50 agent-hours.
 - **Lookups are the precedent** (D116, D112): `collect.openalex-lookup` and `collect.s2-lookup` are collectors that
   read the `documents` head instead of query windows, write `sources` rows on provider channels and one `coverage`
   row per batch, and never write `documents`. At collect time the `documents` head is the previous build's.
-- **Source rules** (round-3 decision): per-stage rules live in one module (`stack/rules.py`) as plain code with
+- **Source rules** (decided earlier): per-stage rules live in one module (`stack/rules.py`) as plain code with
   configurable lists (channels, source names, URL prefixes, keywords, document types), no general config language.
   Fetching about a thousand blog documents is cheap; the reason to gate fetching is the bulk of irrelevant papers.
 - **The triage gate** decides `fetch`/`skip` on the `fields` basis: title, authors, abstract and the anchor member's
   in-band excerpt (`workflows/triage/ask.py`); a row with neither abstract nor excerpt is `skipped[no_basis]` and is
   fetched once when `no_basis_fetches` is on (§3.1, D22).
-- **Tomáš's answers to revision 1** (2026-10-12): tweets are a valid source, to be fetched or hydrated through an
-  API; linked web pages need no separate phase (why would they be triaged and fetched differently from blog pages?);
-  re-running most of the pipeline after links are harvested from fetched content is fine, especially if the
+- **Decided on revision 1** (2026-10-12): tweets are a valid source, to be fetched or hydrated through an API;
+  linked web pages need no separate phase (they are triaged and fetched as blog pages are); re-running most of the pipeline after links are harvested from fetched content is fine, especially if the
   alternative is adding copies of existing phases.
-- **Known bug in the URL key:** `stack/collect/listing.py:norm_url` drops the whole query string, so every
-  `openreview.net/forum?id=…` collapses to one key (open-work item in the 2026-10-12 handoff). Link keys hit this
+- **Known bug in the URL key** (fixed since by `stack/urls.py`, D214-D216): `stack/collect/listing.py:norm_url`
+  dropped the whole query string, so every `openreview.net/forum?id=…` collapsed to one key. Link keys hit this
   more than listing keys do (section 3.4).
 
 ## 2. What SR 2025 did (from `docs/scope/sr-2025-repo-criteria.md`)
@@ -101,12 +100,11 @@ Implementation is about 34-50 agent-hours.
 
 ## 3. Measurements (read-only, 2026-10-12)
 
-**Material.** (a) The dev store `v4/store-dev/`, `documents` view at head
-`20261012T1728Z_rak61rhkmnxw4.triage.documents.part` (1,806 documents): 180 lab-blog documents with an acquired
+**Material.** (a) A development store, its `documents` head of 2026-10-12 (1,806 documents): 180 lab-blog documents with an acquired
 `text/html` raw snapshot (anthropic_alignment_blog 54, google_research 40, openai_blog 34, transformer_circuits 30,
 openai_alignment_blog 22); 52 LessWrong/AF documents, 51 of them with only the `collect.forums` search body; 4 Zvi
-posts; 839 text blobs. (b) Because the dev store has no LessWrong HTML bodies, the A2 scratch store
-`v4/store-sr-scratch/` (same lineage plus the SR collectors' windows): 97 `collect.lw_graphql` posts with the GraphQL
+posts; 839 text blobs. (b) Because the dev store has no LessWrong HTML bodies, a scratch store (same lineage plus
+the SR collectors' windows): 97 `collect.lw_graphql` posts with the GraphQL
 `htmlBody` (AI tag, 7 days; extension tags, 30 days), 3 of them by Zvi ("AI #189: New Math", "New Math from OpenAI",
 "The Curve Bends You"). Nothing was written to either store. Method in Appendix A.
 
@@ -121,7 +119,7 @@ posts; 839 text blobs. (b) Because the dev store has no LessWrong HTML bodies, t
 
 Conversion drops anchors (trafilatura's default, docling's HTML backend), and the forum search body is a plain-text
 copy. **Links must be read from raw HTML.** For LessWrong that means the GraphQL body (`collect.lw_graphql` or
-`collect.af_graphql`), which the dev and std plans do not yet run (open-work item 3 of the handoff).
+`collect.af_graphql`), which the plans of the time did not run.
 
 ### 3.2 Targets per linking document, by kind
 
@@ -231,10 +229,10 @@ triage, screen and affiliation carry every pass-1 answer and ask only about new 
 unchanged rows byte for byte (C6). In pass 1, `collect.links` recomputes over what the previous run already
 harvested and writes nothing new.
 
-**What pass 2 costs.** Measured on the dev store (1,806 documents, T5.5 builds, RUNLOG 17:20 and 17:27): compaction
+**What pass 2 costs.** Measured on the dev store (1,806 documents, two builds of 2026-10-12): compaction
 0.3 s, gather 1.7 s, triage 2.3 s (295 rows scoped, all carried), each fold 0.3 s, in-build verify about 20 s; the
 second build's 4 min 41 s were screen (172 s) and affiliation (77 s) asking 50 and 20 new items. So pass 2's fixed
-cost on the dev store is about 30 s plus `acquire`'s scope scan (not run in T5.5; seconds without lane calls). For a
+cost on the dev store is about 30 s plus `acquire`'s scope scan (not run in those builds; seconds without lane calls). For a
 store of about 50,000 documents (an assumption) a linear extrapolation gives a few minutes for the carry stages; how
 `verify` scales is not measured. A full `documents` file is about 650 bytes per document (1.18 MB for 1,806), so the
 extra gather file is about 33 MB at that size. Everything else in pass 2 is work on new rows that some build has to do
@@ -275,7 +273,7 @@ written. With no `documents` chain yet, the stage writes nothing and ends `ok`. 
 | Linking source | Rule (default, `stack/rules.py` `LINKS`) | Body read |
 |---|---|---|
 | Zvi | a `lesswrong`/`alignmentforum` member whose author is Zvi (LessWrong user id in the rules module) | the newest in-band `post` raw `text/html` entry (`collect.lw_graphql`/`collect.af_graphql`) |
-| Labs and safety orgs | a member on a channel in `LINK_SOURCE_CHANNELS` (the lab and org `collect.blogs` channels; cards later) | the pointer's current raw `text/html` snapshot (the round-3 source rule fetches every lab-blog post) |
+| Labs and safety orgs | a member on a channel in `LINK_SOURCE_CHANNELS` (the lab and org `collect.blogs` channels; cards later) | the pointer's current raw `text/html` snapshot (a source rule fetches every lab-blog post) |
 | LessWrong, selected | karma ≥ 50 or an AF crosspost (Q2) | the newest in-band `post` raw entry |
 | Tweets | a hydrated tweet relays its own URLs (4.9); it is not a linking document for `collect.links` | — |
 | Newsletters (later) | a feed channel per newsletter, items minted in-band at collect (Substack feeds carry the full HTML) | the in-band entry |
@@ -431,7 +429,7 @@ unwrap). It is meant for embedding; whether bulk extraction through it fits X's 
 | | Blog post found by `collect.blogs` | Page found as a link |
 |---|---|---|
 | Known before triage | URL, title (feed or index anchor; a slug for sitemap-only sites, D148), often the date (feed, URL path), and the site: a known lab or org blog | URL, anchor text, the sentence around it, the linking document; the host can be any site, the target a PDF, a product page, a paywall or a dead link |
-| Gate | source rule: fetch every lab-blog post (round 3) | to decide (below) |
+| Gate | source rule: fetch every lab-blog post | to decide (below) |
 | After `fetch` | http lane, conversion, screen | the same |
 | Recheck | weekly for group `url` (D22) | to decide (below) |
 
@@ -602,30 +600,30 @@ $15, an assumed 15-35k fetches and 25-60 GB of raw blobs. Recommended order: lab
 | dev run (two passes) and review | 3-4 |
 | **Total** | **34-50** |
 
-The live X call needs Tomáš's credentials in the environment; everything else runs on recorded fixtures and the dev
+The live X call needs the maintainers' X API credentials in the environment; everything else runs on recorded fixtures and the dev
 store.
 
 ## 7. Phasing
 
 1. **Phase 1, everything above:** papers, forum posts, tweets and web pages; `collect.links`, `collect.x-lookup`,
    `collect.page-probe`, `collect.lw-lookup`; the shared changes of 4.11; `--passes 2`; the URL normal form with the
-   re-key migration first. Preconditions: `collect.lw_graphql` in the plans (handoff open-work item 3); an X API
-   account with credits for the live part (without it, tweets stay link-only, 4.9). Then a two-pass dev run with its
-   RUNLOG entry, which also gives the first marginal-yield numbers (Q1), and the link-context eval.
+   re-key migration first. Preconditions: `collect.lw_graphql` in the plans; an X API
+   account with credits for the live part (without it, tweets stay link-only, 4.9). Then a two-pass dev run, which also
+   gives the first marginal-yield numbers (Q1), and the link-context eval.
 2. **Phase 2:** newsletter feeds with in-band HTML (and Zvi's Substack feed as a channel), PDF link annotations
    (system cards), thread hydration (Q5), LLM scoring for Zvi if link-context triage proves weak (alternative C), the
    repass-in-one-build upgrade if needed (alternative L).
 3. **Phase 3:** depth 2 under rules (from screen-relevant link-derived org pages); citation and backlink walks (D198
    item 5) reusing the occurrence record.
 
-## 8. Open questions for Tomáš
+## 8. Open questions (revision 2)
 
-Answered on 2026-10-12 and folded in: tweets as a source hydrated through the API; web pages in the first phase;
+Decided on 2026-10-12 and folded in: tweets as a source hydrated through the API; web pages in the first phase;
 re-running the pipeline instead of copying phases; with them the questions on Zvi's priority, the recheck policy
 (now per channel, `never` for link targets) and keyless paper pages (the probe's citation meta) are settled.
 
 - **Q1. Marginal yield:** measure it on the first two-pass dev run and, when one exists, against a production-sized
-  store (default), or before building? Only `store-dev` and `store-sr-scratch` exist today.
+  store (default), or before building?
 - **Q2. LessWrong selection:** karma ≥ 50 or AF crosspost (default; about 25 posts and 500 links a week), or every
   AI-tag post (86 posts, 1,100 links). Screen-relevant does not select; recorded karma is biased low.
 - **Q3. Kinds counted but not admitted:** news (the Stack's release-news bucket may want some), video and talks,
@@ -680,10 +678,10 @@ re-running the pipeline instead of copying phases; with them the questions on Zv
 
 ## Appendix B. Review record (2026-10-12)
 
-### Revision 1: Opus critic and Codex Sol
+### Revision 1: two model reviews
 
-One Opus critic (ran the scripts again and probed the code; every headline number reproduced except the storage
-line) and one Codex review (gpt-6-sol, on a packet of the proposal, design and decision excerpts, code excerpts and
+One critic (ran the scripts again and probed the code; every headline number reproduced except the storage
+line) and one review by a second model ("Sol", gpt-6-sol, on a packet of the proposal, design and decision excerpts, code excerpts and
 the measurement outputs). Both accept the placement: a lookup-like collector over the previous build's `documents`
 head, one row per target, relay provenance. What changed:
 
@@ -704,11 +702,11 @@ head, one row per target, relay provenance. What changed:
 | Cross-build input checks; first build; wayback snapshots | Sol, critic | X2 plus a corpus-lineage check; empty first run; wayback unwrap or skip (4.1, 4.2) |
 | Missing alternatives: keyed-only v1; in-band collectors emitting links | critic | I adopted as phase 1; F reframed (5) |
 
-### Revision 2 (Tomáš's response, 2026-10-12)
+### Revision 2 (decisions of 2026-10-12)
 
-| Point | Change |
+| Point decided | Change |
 |---|---|
-| "We need tweet as a valid source (to be fetched/hydrated via API)" | tweets admitted as keyed targets; `collect.x-lookup` on `GET /2/tweets` with documented limits and prices; relayed URLs; fallback (4.9) |
-| "How do these webpages differ from earlier html to be triaged and fetched?" | the difference is what is known before triage; `collect.page-probe` supplies it; source rules and per-channel recheck (4.10) |
-| "Where does it sit in the pipeline? … fine to re-run most of the pipeline" | two passes as two builds (`--passes 2`), cross-build and repass variants compared with measured carry costs (4.1) |
+| Tweets are a valid source, fetched or hydrated through an API | tweets admitted as keyed targets; `collect.x-lookup` on `GET /2/tweets` with documented limits and prices; relayed URLs; fallback (4.9) |
+| Linked web pages are triaged and fetched as the HTML pages collected already | the difference is what is known before triage; `collect.page-probe` supplies it; source rules and per-channel recheck (4.10) |
+| Re-running most of the pipeline is acceptable, in preference to copies of phases | two passes as two builds (`--passes 2`), cross-build and repass variants compared with measured carry costs (4.1) |
 | keyed-only first phase, phase 0 before building | withdrawn; phase 1 covers papers, forum posts, tweets and pages; marginal yield measured on the first two-pass run (Q1) |

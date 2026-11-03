@@ -1,8 +1,9 @@
 # Scope note: Shallow Review of Technical AI Safety (SR 2025, 2026, ...)
 
-Status: draft for the triage and screen rubrics, 2026-10-12. Public material only.
+Status: the scope reference for the triage and screen rubrics, written on 2026-10-12 from public material only;
+section (e) is the collection coverage of that date.
 
-**Scope decision (Tomáš Gavenčiak, 2026-10-12).** The Stack pipeline also collects what the yearly *Shallow Review
+**Scope decision (2026-10-12).** The Stack pipeline also collects what the yearly *Shallow Review
 of Technical AI Safety* (SR) needs. SR's scope mostly overlaps ours, but the pipeline must additionally keep research
 that is not directly about defence in depth: decision theory, pre-paradigmatic research, wider field critiques,
 anthropics, acausal trade and MIRI-style agent foundations, and prospective directions drawing on psychology,
@@ -345,7 +346,12 @@ and policy documents). The `*-lookup` stages only enrich documents already found
 | Critique discovery (LW backlinks, Google Scholar cited-by, Ahrefs) | no citation or backlink walk | gap |
 | SSRN, Google Docs, GitHub, YouTube talks | `manual` drop folder only | gap, low volume |
 
-The repository's `main-pipeline/data/2025-12-16-draft-post-review/papers.csv` (827 included items with agenda labels)
+The table is as of 2026-10-12. The production plan has added since: the arXiv keyword family with the SR groups
+(`collect.arxiv_sweep` `keyword_groups`), the LessWrong tag sweep (`collect.lw_graphql`), the safety-org blogs
+(`collect.blogs`), the newsletter feeds (`collect.feeds`) and manual sources with the links of flagged ones
+(`collect.manual`, `collect.links`); X is still not collected (`docs/FUTURE.md`).
+
+The SR repository's `main-pipeline/data/2025-12-16-draft-post-review/papers.csv` (827 included items with agenda labels)
 and `data-dump-classify.csv` (3,384 candidates with SR's LLM scores) can serve directly as an SR-scope recall set
 and source of hard negatives for the triage and screen evals.
 

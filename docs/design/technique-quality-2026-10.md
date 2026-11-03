@@ -2,7 +2,7 @@
 
 `annotate.technique_staged` (gpt-6-luna) reads one document and returns which of the 234 techniques of taxonomy
 1.0.0 the document involves, with roles and strengths. This note records the improvement round of 2026-10-27
-(gold v3 dev / validation, decision D730) and its held-out confirmation of 2026-10-28 (the judge-set test documents,
+(gold v3 dev / validation, decision D730; "the D730 round" below) and its held-out confirmation of 2026-10-28 (the judge-set test documents,
 decision D735): every arm, the eval sets and splits, how the reference was built, all results with intervals, cost
 and latency, the failure modes, the decision and what would reopen it.
 
@@ -21,7 +21,7 @@ with it stay. No plan, pin or config changes. The effort-high rollout is deferre
   replicates of one arm pooled by averaging per-document counts (never by uniting replicate predictions). Against a
   reference with `dont_care` units, such a slug is removed from both the prediction and the reference of its
   document. Intervals: 95 % percentile document bootstrap, 2,000 resamples within stratum, paired for differences.
-- Secondary views (114): (slug, role) cells at strength >= 2, recall by severity of the reference unit (core /
+- Secondary views (the D730 round): (slug, role) cells at strength >= 2, recall by severity of the reference unit (core /
   substantive / peripheral), cost per 1,000 documents (standalone: every call at its provider-reported cost), latency
   per document (both turns as made).
 
@@ -55,7 +55,7 @@ Labeller agreement is the measurement ceiling's first warning: on gold v3 the la
 
 ### 2.2 Test reference ref-t (the test-set confirmation)
 Built as ref-v3x with three judges in place of six runs, frozen in `evals/technique_staged/2026-10-28a/PROTOCOL.md`
-before any label was read, with one change prompted by the 114 critique (point 3 of section 6): arm extras go through
+before any label was read, with one change prompted by a critique of the D730 round (point 3 of section 6): arm extras go through
 the same adjudication and arbitration as judge-disputed units, in the same packets, with pointer quotes pooled from
 every source. Counts and agreement are in section 4.2.
 
@@ -109,7 +109,7 @@ All 100, against BASEbp: HALL +.040 [+.025, +.055] (P .911 vs .926, R .772 vs .6
 HSALL +.047 [+.030, +.064]; $/1k 10.62 / 11.87 / 15.86 vs 7.11; p50 168 / 108 / 194 s vs 65 s. Paired against HALL
 on validation: HSALL +.011 [-.006, +.029], S1 -.006 [-.024, +.014], H60 -.025 [-.051, -.000].
 
-Robustness of HALL (114, `robustness.py`): every `dont_care` unit labelled against HALL +.016 (validation) / +.025
+Robustness of HALL (the D730 round, `robustness.py`): every `dont_care` unit labelled against HALL +.016 (validation) / +.025
 (all 100); `dont_care` as `in` or as `out` moved arm differences by at most ~.015; single-adjudicator references
 +.031 to +.046; p95 latency 368 s vs 138 s; paired per-document cost ratio high / default 1.41-1.50. Recommendation
 of the round: effort high, a new role, prompt files unchanged; sectors and P1 kept on the branch as measured options.
@@ -131,17 +131,17 @@ each judge, the majority and the adversarial `dont_care` assignment.
 - Universe: 622 (item, slug) units on 84 of the 100 documents (16 documents have no unit from any source); judge
   support 0 / 1 / 2 / 3 = 53 / 215 / 104 / 250.
 - Adjudication: 433 candidates (support 0: 53, support 1: 215, support 2: 104, calibration support-3: 61) on 79
-  documents in 35 batches; Opus 5.5 subagents and Sol 6.1 via codex, 114's guide and prompts unchanged. Present-vs-not
-  kappa **.30** (agreement .66; 114: .47), 3-way kappa .28; confusion (Opus / Sol) present/present 186,
+  documents in 35 batches; Opus 5.5 subagents and Sol 6.1 via codex, the D730 round's guide and prompts unchanged. Present-vs-not
+  kappa **.30** (agreement .66; D730 round: .47), 3-way kappa .28; confusion (Opus / Sol) present/present 186,
   absent/absent 87, absent/present 85, present/absent 47, borderline/present 15, borderline/absent 13; calibration
   59/61 both present.
-- Arbitration: 160 split units on 66 documents in 23 batches; Sol 6.1 and Fable agreed on **56 of 160** (114: 86 of
+- Arbitration: 160 split units on 66 documents in 23 batches; Sol 6.1 and Fable agreed on **56 of 160** (D730 round: 86 of
   154); confusion (Sol / Fable) absent/absent 46, present/present 10, present/absent 52, absent/present 33,
   absent/borderline 12, present/borderline 7. Where they agreed they sided with Opus 26 times, with Sol 28, with
   neither 2.
 - Result (`results/reference-t.jsonl`): **385 `in`** (189 unsampled support-3, 186 both adjudicators present, 10 both
   arbiters present), **133 `out`** (87 both adjudicators absent, 46 both arbiters absent), **104 `dont_care`** (17 %
-  of units; 114: 10.5 %). By judge support: 0 -> 6 in / 39 out / 8 dc; 1 -> 67 / 80 / 68; 2 -> 64 / 14 / 26;
+  of units; D730 round: 10.5 %). By judge support: 0 -> 6 in / 39 out / 8 dc; 1 -> 67 / 80 / 68; 2 -> 64 / 14 / 26;
   3 -> 248 in / 2 dc. `dont_care` units by who predicts them more often: HALL 25, PROD 10, tie 69.
 
 ### 4.3 Results
@@ -198,7 +198,7 @@ sessions (~2.4M tokens), 59 codex Sol calls (2.55M tokens adjudicating, 1.63M ar
   ~$290 at $7.35 / 1k. Wall time per document roughly doubles (p50 147 s vs 60 s) on the same worker count.
 - What the measurement supports if the switch is made: presence F1 about +.03 to +.05 on the self-weighting
   corpus sample (recall +.06 to +.08, precision not measurably lower on the adjudicated reference, -.01 to -.02
-  against the most inclusive judge), consistent across the 114 validation split and this held-out test set, least
+  against the most inclusive judge), consistent across the D730 round's validation split and this held-out test set, least
   on documents over 100k characters (+.010 here).
 - **Reopen when** any of: (1) a corpus-wide re-ask is needed anyway (a prompt, rubric, taxonomy or model change that
   moves the technique_staged digest), most likely the next taxonomy update: then effort high costs only the
@@ -219,14 +219,14 @@ sessions (~2.4M tokens), 59 codex Sol calls (2.55M tokens adjudicating, 1.63M ar
 - **Per-judge numbers mislead without the reference.** Against Sonnet (the most inclusive Claude judge) effort high
   looks like +.012 with a precision cost; against Sol +.058 with a precision gain. Only the adjudicated reference
   and the majority agree on the size.
-- **Mixed baselines.** 114's four-replicate BASE mixed OpenRouter runs (2 transport failures on one document) with
-  OpenAI-direct ones; failure-free BASEbp is the clean comparison (Astra critique). Here BASEF (same harness, OpenAI
+- **Mixed baselines.** The D730 round's four-replicate BASE mixed OpenRouter runs (2 transport failures on one document) with
+  OpenAI-direct ones; failure-free BASEbp is the clean comparison (a review finding). Here BASEF (same harness, OpenAI
   direct) reproduced PROD within noise (-.009 [-.028, +.014]).
 - **Recall levers that did not work.** Lexical alias matching finds 16 % of reference units; the p1 prompt edits
   +.005 [-.017, +.029]; Haiku 5.5 at luna's list price -.078 at 6x cost (no cross-document prompt-cache hits under
   the shared rubric prefix; precision .77). Sector turns help (+.027 to +.031) but cost more than effort high for
   less; combined with effort high they add +.011 [-.006, +.029] over effort high at 1.7x its cost.
-- **Long documents.** 114's misses concentrate in long, dense documents (one system card holds ~1/6 of dev misses),
+- **Long documents.** The D730 round's misses concentrate in long, dense documents (one system card holds ~1/6 of dev misses),
   yet effort high gains least there (+.010 above 100k characters on the test set): the remaining misses there are
   not fixed by more reasoning on the same single pass.
 - **Operational.** Effort high doubles median latency and nearly triples p95 (410 s); a codex Sol call failed once

@@ -8,8 +8,8 @@ the store itself: `docs/howto/s3-store.md`.
 
 ```bash
 git clone <repo> stack && cd stack && git checkout <sha>
-uv sync --group convert-pdf          # acquire's converters; boto3 comes with the default dev group (s3)
-                                     # with --no-dev: uv sync --no-dev --group convert-pdf --group s3
+uv sync --frozen --group convert-pdf   # acquire's converters; boto3 comes with the default dev group (s3)
+                                       # with --no-dev: uv sync --frozen --no-dev --group convert-pdf --group s3
 ```
 
 `.env` (copy `.env.example`): the S3 settings (`STACK_S3_ENDPOINT_URL`, `STACK_S3_ACCESS_KEY_ID`,
@@ -27,7 +27,7 @@ Detached (tmux, or `systemd-run --user` below), from the checkout:
 
 ```bash
 export STACK_ENV_FILE=.env
-uv run --no-sync stack --store s3://<bucket>/<prefix> build std-v3 --passes 6
+uv run --no-sync stack --store s3://<bucket>/<prefix> build <plan> --passes 6
 ```
 
 A `systemd-run --user` unit starts in the home directory with the user manager's environment, not the shell's, so
@@ -36,12 +36,13 @@ its absolute path (this template follows systemd's documented defaults; it was n
 
 ```bash
 systemd-run --user --unit=stack-build --collect --working-directory="$PWD" -E STACK_ENV_FILE="$PWD/.env" \
-  -p TimeoutStopSec=30min "$(command -v uv)" run --no-sync stack --store s3://<bucket>/<prefix> build std-v3 --passes 6
+  -p TimeoutStopSec=30min "$(command -v uv)" run --no-sync stack --store s3://<bucket>/<prefix> build <plan> --passes 6
 journalctl --user -u stack-build -f     # its output; `systemctl --user stop stack-build` sends SIGTERM (a drain)
 ```
 
 (`build` takes a plan name under `configs/plans/` or a plan file path; it reads and writes the plan's `series:`, or
-`--series S`. `--dry-run` first prints each line's `--in` paths and outputs and writes nothing.) Upload is automatic: every job PUTs its record, log and marker at start and every 30 s, each finished run
+`--series S`. The production plan `batch-2026-10a` runs as a fixed sequence of builds and standalone runs:
+`docs/howto/full-run.md`. `--dry-run` first prints each line's `--in` paths and outputs and writes nothing.) Upload is automatic: every job PUTs its record, log and marker at start and every 30 s, each finished run
 PUTs its data files and final record, and every blob goes up before a row names it. `incomplete` builds and
 `--passes`: `docs/OPERATE.md`, "`incomplete` builds and resuming".
 

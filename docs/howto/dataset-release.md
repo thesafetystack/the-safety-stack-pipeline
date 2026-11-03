@@ -1,24 +1,38 @@
 # Make the dataset release (D719)
 
+Releases are made by the weekly cycle (`tools/scheduled_run.py cycle`, `docs/DEPLOY-railway.md`). On an `ok` or
+releasable build it exports both variants of that build's corpus (`stack export --config dataset-public` and
+`--config dataset-internal`), checks that neither names the store's bucket, stages both under the ops prefix with a
+manifest, and uploads each to its Hugging Face dataset repository (`hf_repo` in
+`configs/releases/dataset-{public,internal}.yaml`) as one commit tagged `release-<id>`; the internal variant only
+while its repository is private. The release id is the export's UTC date (`STACK_SCHED_RELEASE_ID` sets another).
+
+## By hand
+
 ```
-uv sync --frozen --group convert-pdf
-stack export --store <root> --in data/corpus.build/<series>/ --config dataset-public   --out <dir>/public
-stack export --store <root> --in data/corpus.build/<series>/ --config dataset-internal --out <dir>/internal [--blobs <dir of <sha256> files>]
+uv sync --frozen --group convert-pdf --group release
+stack export --store <store> --in data/corpus.build/<series>/ --config dataset-public   --out <dir>/public
+stack export --store <store> --in data/corpus.build/<series>/ --config dataset-internal --out <dir>/internal [--blobs <dir of <sha256> files>]
 ```
 
 Both read only local files: the corpus of an `ok` build (`--allow-incomplete` for an incomplete one), the build record,
 the run records of the build's annotate runs, the build's `<wf>` and `<producer>_evidence` files, every part of the
 overrides chain the build's runs read (one head), the repo's taxonomies, the judge eval set's scores, and for
 `dataset-internal` the text blobs (the store's `blobs/`, or `--blobs`). The output directory must be absent or empty and outside the store;
-nothing is recorded or pushed. The release id (and format id) is the export's UTC date unless `--release-id` names
-one. About 100 s and 4.5 GB peak RSS for 39k rows (the internal variant adds ~30 s for 2.4 GB
+nothing is recorded or uploaded. The release id (and format id) is the export's UTC date unless `--release-id`
+names one. About 100 s and 4.5 GB peak RSS for 39k rows (the internal variant adds ~30 s for 2.4 GB
 of text). Every check in `mapping.yaml` runs over the written stage; any problem keeps nothing and names the problem.
 
-The bundle (D725; D736 added the organisation vocabulary), the same 12 files in both variants: `README.md` (the card, with the quality table), `LICENSE`,
+`stack export` uploads nothing. To publish by hand, run a cycle by hand (`docs/DEPLOY-railway.md`): it exports,
+stages and uploads as above. `python tools/scheduled_run.py upload --release-id <id>` uploads a
+release staged on the ops prefix (one whose upload failed, or that a lost lock kept from uploading); nothing uploads
+a directory exported by hand.
+
+The bundle (D725; D736 added the organisation vocabulary), the same files in both variants: `README.md` (the card, with the quality table), `LICENSE`,
 `FORMAT.md`, `VOCABULARY.md`, `schema.json` (the row's JSON Schema; each kind's record and payload inline),
 `release.json` (every other file with size and sha256), `data/corpus.parquet`, `config/configs.json`,
-`config/overrides.jsonl` (the active overrides, each with its run id), `taxonomies/{techniques,models}-<version>.yaml` (the files the records' pins name: 1.1.0 since D738) and
-`taxonomies/orgs-0.2.2.yaml` (the organisation vocabulary the `annotate.affiliation_orgs` records pinned; the kind
+`config/overrides.jsonl` (the active overrides, each with its run id), `taxonomies/{techniques,models}-<version>.yaml` (one file per version the records' pins name: 1.1.0 since D738, and
+1.0.0 beside it for the answers accepted from the 1.0.0 configs, D758) and `taxonomies/orgs-0.2.2.yaml` (the organisation vocabulary the `annotate.affiliation_orgs` records pinned; the kind
 `affiliation_orgs` ships those records, and `mapping.yaml` `org_fields` copies each affiliation's `org_ids` and
 `org_status` and `org_candidates` from them into `affiliation`, NULL where a document has no record; `release.json` `orgs` counts the
 affiliations by status).
@@ -70,30 +84,24 @@ triage verdict (decision or D724 signal): P / R / F1 and the confusion table by 
   tables (`SCREEN_KEEP`, `SET_UNITS`) updated.
 - The one line on the internal variant in the public docs: `internal_variant_note` in the config (null drops it).
 
-## Implemented, and what is not
+## What is tested, and what is not
 
-- Implemented and run on builds `w0vt3g81xtaqj` and `ws1qpn8myzxah`: both variants, every file of the bundle, the
-  checks.
-- Stand-in overrides (whole payloads supplied by `ai:<model>` overrides, D717): implemented and unit-tested; the 21
-  stand-ins of the current chain are in `config/overrides.jsonl` once a build has applied them (they need an annotate
-  re-run and fold). A corpus folded before D717 with such a record is refused.
+- Stand-in overrides (whole payloads supplied by `ai:<model>` overrides, D717): unit-tested; the chain's stand-ins
+  ship in `config/overrides.jsonl` once a build has applied them (they need an annotate re-run and fold), and
+  `release.json` counts them. A corpus folded before D717 with such a record is refused.
 - Active overrides (D725): the effective rule of `stack.overrides` over the applied chain (revokes applied, one winner
   per group; revoke rows are not exported), minus a `<wf>` row the document's build record does not use; unit-tested
-  on a synthetic chain. On build `ws1qpn8myzxah`'s chain nothing was superseded, revoked or stale (all 269 rows ship).
-- Release-time re-scoring (D728): run on `ws1qpn8myzxah` (reproduces the committed scores; the public export there is
-  byte-identical to the 2026-10-27 candidate but for README.md and release.json, whose quality table is unchanged) and
-  on `w0vt3g81xtaqj`; drops, stratum re-assignment and the frame counts are unit-tested on synthetic builds
-  (`tests/test_release_quality.py`). Not recomputed at release: the screen and affiliation window splits and the
-  disagreement lists (they need the texts or describe the judged build). Triage vs screen: on `ws1qpn8myzxah` only
-  decisions exist (8,546 corpus documents), so its recall is 1.000 by construction; signals appear once a cycle has
-  run under D724.
+  on a synthetic chain.
+- Release-time re-scoring (D728): drops, stratum re-assignment and the frame counts are unit-tested on synthetic
+  builds (`tests/test_release_quality.py`). Not recomputed at release: the screen and affiliation window splits and
+  the disagreement lists (they need the texts or describe the judged build).
 - The title and doc_type fixes (D768) are `fields` overrides: the file is unit-tested (it loads through the add's
-  reader, each value follows its rule against the stored value its note records, gather applies an entry); not yet
-  added to a store or run through a build and an export.
+  reader, each value follows its rule against the stored value its note records, gather applies an entry); the
+  operator adds it to the store before the first build of plan revision 11 (the plan's header).
 - Not implemented: `annotations.other[]` payloads (refused while `json_kinds` is empty); a two-release stacking
   fixture; an end-to-end test on a synthetic store (the projection is unit-tested on synthetic rows; the whole export
-  runs only on a real build); an upload by `stack export` (the scheduled cycle uploads both variants to Hugging Face:
-  `tools/scheduled_run.py` `upload`, `docs/DEPLOY-railway.md`; nothing uploads to Zenodo or GitHub).
+  runs only on a real build); an upload by `stack export` (only the cycle's `upload` uploads); nothing uploads to
+  Zenodo or GitHub.
 - `config/configs.json` names `defined_in` as a path without a commit: run records carry a code digest, not a git
   commit; `release.json` names the release code's commit. The prompt files are not shipped (D725); their digests are
   in each config's `components`, and the export no longer checks that the repo's prompt files reproduce them.

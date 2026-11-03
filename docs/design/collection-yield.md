@@ -1,14 +1,15 @@
 # Collection yield: which queries, authors and feeds flood the pipeline
 
-Status: analysis, 2026-10-12 (round 4, track F), extended 2026-10-13 by §9.4-9.5 (T-RUN, T-ARX) and §10 (T-CUTS).
-Read only over store snapshots; no store writes, no network, no LLM calls. Public material. What became of the cuts
-(`docs/DECISIONS.md`; §6.1 and the §9.2 status column are as written before these decisions): adopted are C1 and the S2
-half of C2 (channels.yaml 1.9.0, D229), C5 (roster fixes, D229), the OpenAlex half of C2, C3, C6 and C9 (1.11.0, D270),
-§7.1 (`metadata.matched_by`, D228), §7.2 (arXiv categories in the record blob) and §10's backfill cuts (1.12.0,
-D304-D306). Not adopted: C7 (kept as is, D270), C8 (measured, D277), C10 (no feed floor, D270). C4's name filter was not
-built: std-v3 sweeps the roster's OpenAlex author ids instead and the arXiv name sweep is off (D277, D285).
-Audience: the v4 pipeline's owners. Terms (`sources`, `coverage`, `documents`, gather, triage gate, screen, concept
-groups, `needs_ai_context`) are those of `docs/DESIGN.md` and `configs/channels.yaml`; `Dnnn` are `docs/DECISIONS.md`.
+Status: design record. An analysis of 2026-10-12, extended on 2026-10-13 by §9.4-§9.5 and §10 and on 2026-10-30 by
+§10.5; read only over the store snapshots of the time (no store writes, no network, no LLM calls). Code and configs
+cite its sections and its cut labels C1-C10. What became of the cuts (`docs/DECISIONS.md`; §6.1 and the §9.2 status
+column are as written before these decisions): adopted are C1 and the S2 half of C2 (channels.yaml 1.9.0, D229), C5
+(roster fixes, D229), the OpenAlex half of C2, C3, C6 and C9 (1.11.0, D270), §7.1 (`metadata.matched_by`, D228), §7.2
+(arXiv categories in the record blob) and §10's backfill cuts (1.12.0, D304-D306). Not adopted: C7 (kept as is,
+D270), C8 (measured, D277), C10 (no feed floor, D270). C4's name filter was not built: the production plans sweep the
+roster's OpenAlex author ids instead and the arXiv name sweep is off (D277, D285). Terms (`sources`, `coverage`,
+`documents`, gather, triage gate, screen, concept groups, `needs_ai_context`) are those of `docs/DESIGN.md` and
+`configs/channels.yaml`; `Dnnn` are `docs/DECISIONS.md`.
 
 ## 0. Summary
 
@@ -33,7 +34,7 @@ OpenAlex `umbrella` and `jailbreak`, and the LessWrong AI tag (each 200-500 rele
 **Proposed cuts** (section 6, table 6.1): about −600 to −700 documents a month (−15 to −18 %) for an estimated loss of
 2-3 labelled-relevant documents in the samples behind them (refined in section 9), plus a one-time −700 in feed
 backlogs. The largest irrelevant volumes (OpenAlex `umbrella`, the author sweep) also carry the largest relevant
-volumes; they stay with the triage question ($0.15 per 1,000 asked, RUNLOG M4.T4.2) rather than being cut at
+volumes; they stay with the triage question ($0.15 per 1,000 asked) rather than being cut at
 collection.
 
 **Roster defects** (section 3.2): 47 roster entries written `Last, First` are queried but every hit is rejected by
@@ -42,7 +43,7 @@ collected; 57 roster entries collect nothing or nearly nothing.
 
 **Concrete changes and redundancy** (section 9, added 2026-10-13): the exact config and code change per cut, and for
 every relevant or plausible document a cut drops, whether another collector, query or newsletter link also reaches
-it. Track P adopted C1, the S2 half of C2 and C5 in `673c3ee`. Net loss after redundancy:
+it. C1, the S2 half of C2 and C5 were adopted at once (D229). Net loss after redundancy:
 
 - about 0 for C2, C3, C6 and C7;
 - for C1, 3 clearly relevant papers over the 10-month S2 backfill;
@@ -52,7 +53,7 @@ it. Track P adopted C1, the S2 half of C2 and C5 in `673c3ee`. Net loss after re
 - for C9, 1-3 a year;
 - for C10, a scope decision.
 
-**Authors by OpenAlex id** (section 9.5, T-ARX, 2026-10-13): against the arXiv name sweep's 21-day sample, the
+**Authors by OpenAlex id** (section 9.5, 2026-10-13): against the arXiv name sweep's 21-day sample, the
 author-id family (rosters 1.3.0 and 1.3.1, every roster id queried) also has 42 of 125 papers; about 70 % of the
 sweep's other papers are namesakes', but it misses an estimated 14 of our researchers' papers per 21 days in the
 sample (split OpenAlex profiles, unresolved names), about 5 of which no other collector reaches (inferred); general
@@ -65,32 +66,32 @@ OpenAlex stemming) and for arXiv categories. The numbers below are therefore est
 
 ## 1. Data and method
 
-**Snapshots** (copied 2026-10-12 21:05 UTC, before the round-4 URL re-key):
+**Snapshots** (copied 2026-10-12, before the URL re-key of D216-D217):
 
 | Store | Files read | Rows |
 |---|---|---|
-| `v4/store-dev/` | documents head `r911yh013kctc` (full, fold.compact) + `rkf01qpwpmkfx` (acquire part); screen `rf3dzbg89bbra.screen` (screen-v8, luna) | 1,806 documents; 131 screened `ok` |
-| `v4/store-sr-scratch/` (A2) | every `sources.*` and `coverage.*` file (the observation history); documents `r24enz7dn1yke` (gather, full) | 6,434 source rows; 4,898 documents = the dev store's 1,806 + 3,092 from the A2 windows |
+| the development store | its documents head (a full file of fold.compact and an acquire part); a screen file (screen-v8, luna) | 1,806 documents; 131 screened `ok` |
+| a scratch store with the SR collectors' windows ("A2" below) | every `sources.*` and `coverage.*` file (the observation history); a documents file (gather, full) | 6,434 source rows; 4,898 documents = the dev store's 1,806 + 3,092 from the A2 windows |
 | eval sets (repo) | `evals/triage/2026-10-12a/gold-v2.jsonl` (241), `evals/screen/2026-10-12a/gold-v2.jsonl` (100), `evals/triage/sr2025-recall/items.jsonl` (150) | 215 and 88 of the gold items are store documents |
 
 The scratch store is a reflink copy of the dev store taken at 16:10 plus the A2 windows, so it holds every collector
 window run so far; relevance labels come from the dev store and the eval sets, joined by `doc_id`.
 
-**Windows** (dev windows from M2, SR windows from A2; options as run, not as in std-v2):
+**Windows** (the dev store's windows, the SR windows from A2; options as run, not as in std-v2):
 
-| Family | Collector, run | Query set | Window | Scale to 30 days |
+| Family | Collector | Query set | Window | Scale to 30 days |
 |---|---|---|---|---|
-| arXiv author sweep | `collect.arxiv_sweep` `rm20bsqsa24ck` | 234 of 2,269 roster names (fraction 0.1) | 21 d, 09-21..10-12 | overlap-corrected ×10.6 (below) |
-| arXiv keyword family | `r41c9b34kpar7` | 21 groups (umbrella and the 20 SR groups) | 7 d | ×4.3 |
-| arXiv scoped categories | `rr6cmd3d0cd5f` | cs.GT, cs.LO, math.LO, econ.TH, q-bio.NC AND an AI clause | 30 d | ×1 |
-| OpenAlex dev | `rt9gy9wq4befh`, `r5qzaw56xjqhw` | `umbrella` (with `primary_topic.field.id:17`), `jailbreak` | publication dates 09-25..09-28 (4 d) | ×7.5 (lumpy) |
-| OpenAlex SR | `r1m37283adw16` | 20 SR groups | 09-05..10-05 | ×1 |
-| S2 dev | `r4y5da15b1cfk` | `superalignment` (`umbrella` failed) | since 2020, complete | backfill |
-| S2 SR | `rys3ds2d0b9qb` | 20 SR groups, one page each, key-less; 11 groups failed (429), 2 truncated | since 2025-12-01 | not normalisable |
-| LW/AF keyword sweep, dev | `collect.forums` `r3qmbwebvmj6c` | every term of the 42 groups, karma ≥ 25 | 7 d | ×4.3 |
-| LW/AF keyword sweep, SR | `rkdfv6k3xnggf` | terms of the 20 SR groups, karma ≥ 25 | 30 d | ×1 |
-| LessWrong AI tag | `collect.lw_graphql` `rnmc2ygtcn6na` | tag `ai`, no karma gate | 7 d | ×4.3 |
-| LessWrong SR tags | `rm8de3cppxs8v` | 12 tags | 30 d | ×1 |
+| arXiv author sweep | `collect.arxiv_sweep` | 234 of 2,269 roster names (fraction 0.1) | 21 d, 09-21..10-12 | overlap-corrected ×10.6 (below) |
+| arXiv keyword family | `collect.arxiv_sweep` | 21 groups (umbrella and the 20 SR groups) | 7 d | ×4.3 |
+| arXiv scoped categories | `collect.arxiv_sweep` | cs.GT, cs.LO, math.LO, econ.TH, q-bio.NC AND an AI clause | 30 d | ×1 |
+| OpenAlex dev | `collect.openalex`, two runs | `umbrella` (with `primary_topic.field.id:17`), `jailbreak` | publication dates 09-25..09-28 (4 d) | ×7.5 (lumpy) |
+| OpenAlex SR | `collect.openalex` | 20 SR groups | 09-05..10-05 | ×1 |
+| S2 dev | `collect.semantic_scholar` | `superalignment` (`umbrella` failed) | since 2020, complete | backfill |
+| S2 SR | `collect.semantic_scholar` | 20 SR groups, one page each, key-less; 11 groups failed (429), 2 truncated | since 2025-12-01 | not normalisable |
+| LW/AF keyword sweep, dev | `collect.forums` | every term of the 42 groups, karma ≥ 25 | 7 d | ×4.3 |
+| LW/AF keyword sweep, SR | `collect.forums` | terms of the 20 SR groups, karma ≥ 25 | 30 d | ×1 |
+| LessWrong AI tag | `collect.lw_graphql` | tag `ai`, no karma gate | 7 d | ×4.3 |
+| LessWrong SR tags | `collect.lw_graphql` | 12 tags | 30 d | ×1 |
 | Blogs and cards | `collect.blogs`, `collect.cards` | 21 feeds, 7 card channels (1 with rows) | whole feed backlog | posts dated in the last 12 months ÷ 12 |
 
 **Full-roster projection.** A sampled paper with k roster authors (over the whole roster) is caught by a 10.3 %
@@ -118,7 +119,7 @@ phrase occurs in 1 post of the whole 30-day sweep.
 
 **Relevance signals.** No `stack_relevance` or `sr_relevance` annotation records exist in either store yet: the S6
 migration added the slots as NULL and screen-v11 has not run on the dev store. Triage decisions carry little signal:
-1,705 of 1,806 dev documents were fetched by rule (the M2-M3 sql gate fetched every row with a basis; url rows
+1,705 of 1,806 dev documents were fetched by rule (the dev plans' sql gate of the time fetched every row with a basis; url rows
 without an abstract are fetched by the sql clause), and the question was asked for 82 documents (OpenAlex and S2).
 What is used, per document, in this priority:
 
@@ -308,7 +309,7 @@ Ranked by estimated irrelevant documents per run or per month, then by rate:
 
 | # | Change | Volume effect | Recall effect (evidence) | Confidence |
 |---|---|---|---|---|
-| C1 | Drop `steerability` on S2 (a per-channel term override like `openalex_terms: []`; the S2 fix track P has); keep it on the arXiv keyword family (phrase `ti:`/`abs:`) | −613 of 836 S2 SR rows on the backfill (−73 %) | SR 2025: 1 of 120 papers says "steerab", also reached by another group; read 5 + 2 of 25 stem hits relevant, most about activation steering, which the `steering` group covers (assumed, not measured) | high |
+| C1 | Drop `steerability` on S2 (a per-channel term override like `openalex_terms: []`); keep it on the arXiv keyword family (phrase `ti:`/`abs:`) | −613 of 836 S2 SR rows on the backfill (−73 %) | SR 2025: 1 of 120 papers says "steerab", also reached by another group; read 5 + 2 of 25 stem hits relevant, most about activation steering, which the `steering` group covers (assumed, not measured) | high |
 | C2 | Drop `heuristic-arguments` on S2 and OpenAlex, or flag it `needs_ai_context` | −19 to −46 S2 rows; −4 to −7 / 30 d on OpenAlex | 0 of 14 read; 0 of 120 SR 2025 papers match; ARC's own work arrives through arc_blog and arXiv | high |
 | C3 | Remove the term "non-agentic AI" from `scientist-ai` | −7 of 14 S2 hits | the 4 clear hits use "Scientist AI" | medium |
 | C4 | High-volume author names (≥ 4 hits per 21 days by the sweep's own coverage `seen`): keep a hit only with a second roster author or a safety stem in title/abstract; later, move these names to an OpenAlex author-id lookup (disambiguated) | −32 of 125 sample papers (−26 %), ≈ −340 / 30 d at the full roster | 1 of 25 labelled-relevant papers lost | medium (9 names; threshold chosen on the same sample) |
@@ -343,10 +344,9 @@ samples behind them (C4 1, C8 1, C9 1). C1 removes 613 rows per S2 backfill; its
 1. **Record the query on `sources` rows.** `metadata.query_digest` exists in the schema but every search collector
    leaves it NULL (only the lookups set it); a source hit by several queries in one run keeps only the first (counted
    in `sources_repeat`). Setting the first query's digest on observe, and counting or listing the other matching
-   digests, makes per-query yield exact and order-independent. *Done since:* `metadata.matched_by` (`f279822`,
-   `673c3ee`); no rows carry it yet (section 9.1).
+   digests, makes per-query yield exact and order-independent. *Done since:* `metadata.matched_by` (D228).
 2. **Store arXiv categories** on the arXiv source record (metadata or record blob), so the category family can be
-   judged per category. *Done since:* in the record blob (`673c3ee`).
+   judged per category. *Done since:* in the record blob.
 3. **Measure instead of estimating.** Run the triage question over the A2 windows' 3,092 new documents (≈ $0.50 at
    $0.15 per 1,000) and screen-v11 over a stratified 200 (≈ $0.20); this replaces the proxy and the title reads with
    per-query relevance rates, Stack and SR separately.
@@ -369,14 +369,14 @@ samples behind them (C4 1, C8 1, C9 1). C1 removes 613 rows per S2 backfill; its
   roster; S2 ran key-less. std-v2's real mix was not measured.
 - **Re-matching approximates provider semantics** (stemming, fuzzy search, OpenAlex full-text matching), so
   "unattributed" rows are partly real hits of a known query.
-- **Snapshot.** Store files as of 2026-10-12 21:05 UTC; document ids may change with the round-4 URL re-key (url and
+- **Snapshot.** Store files as of 2026-10-12; document ids may change with the URL re-key of D216-D217 (url and
   forum documents mainly); the analysis scripts are not committed (method as above).
 
 ## 9. Concrete cuts and redundancy
 
-Added 2026-10-13 after Tomáš asked what exactly would change and whether the relevant documents a cut drops are
-also reached some other way. Same rules as above: read only over copies of the stores (second snapshot 23:56 UTC),
-no network, no LLM calls. Track P has since adopted three of the cuts in `673c3ee`: C1, the S2 half of C2, and C5.
+Added 2026-10-13: what exactly each cut would change, and whether the relevant documents a cut drops are also
+reached some other way. Same rules as above: read only over copies of the stores (a second snapshot of the same
+day), no network, no LLM calls. Three of the cuts were adopted since: C1, the S2 half of C2, and C5 (D229).
 
 ### 9.1 How redundancy was checked
 
@@ -387,7 +387,7 @@ no network, no LLM calls. Track P has since adopted three of the cuts in `673c3e
 - **Routes observed in the stores.** (a) Other members of the same document: another channel, or another query of the
   same collector that the cut leaves in place. Gather merges equal keys across channels, so this covers a key that
   another collector found. Lookups (`openalex-lookup`, `s2-lookup`) only enrich documents that something else
-  discovered, so they are never an independent route. (b) The links scratch store (track L, `v4/store-links-scratch`):
+  discovered, so they are never an independent route. (b) The links scratch store of the link-crawling work (`docs/design/link-crawling.md`):
   the newsletter posts of 09-15..10-12 (Zvi 20, Import AI 4, paradigm3 8) and the 832 link targets the selector
   kept. A route counts when the arXiv id, DOI, LessWrong post id or normalised URL is the same, or when a newsletter
   post has the same title (Zvi's LessWrong crossposts).
@@ -399,19 +399,19 @@ no network, no LLM calls. Track P has since adopted three of the cuts in `673c3e
 
   Most simulated routes run through broad OpenAlex queries (`umbrella`, `steering`, `specs`, `safety-tuning`). If
   those are narrowed later, the losses below grow.
-- **`metadata.matched_by`** (`f279822`, `673c3ee`). The compacted source files of 23:18-23:20 carry the column, but
-  none of their 7,244 rows has a value: no collector has run since `673c3ee`. So it cannot help with these windows.
+- **`metadata.matched_by`** (D228). The compacted source files of the snapshot carry the column, but none of their
+  7,244 rows has a value: no collector had run since it was added. So it cannot help with these windows.
   It will make the next windows' per-query counts exact.
 
 ### 9.2 Summary
 
 | Cut | Status | Exact change (file) | Drops | Relevant or plausible dropped | Another route | Net loss after redundancy |
 |---|---|---|---|---|---|---|
-| C1 S2 steerability | adopted `673c3ee` | `steerability: s2_terms: []` (`configs/channels.yaml`) | 577 over the S2 backfill since 2025-12-01 (≈ 55 / month; more without the one-page cap) | 324 (`kw_high`) | 271 simulated, 0 observed | 53 without a route; read: 3 clear + 8 borderline over the backfill (≈ 0.3 clear / month) |
-| C2 heuristic arguments | S2 adopted `673c3ee`; OpenAlex proposed | `heuristic-arguments: s2_terms: []` (adopted) and `openalex_terms: []` (`configs/channels.yaml`) | 22 (S2 19 over the backfill, OpenAlex 4 / 30 d; 1 in both) | 1 (`kw_high`; not relevant by read) | — | 0 |
+| C1 S2 steerability | adopted (D229) | `steerability: s2_terms: []` (`configs/channels.yaml`) | 577 over the S2 backfill since 2025-12-01 (≈ 55 / month; more without the one-page cap) | 324 (`kw_high`) | 271 simulated, 0 observed | 53 without a route; read: 3 clear + 8 borderline over the backfill (≈ 0.3 clear / month) |
+| C2 heuristic arguments | S2 adopted (D229); OpenAlex proposed | `heuristic-arguments: s2_terms: []` (adopted) and `openalex_terms: []` (`configs/channels.yaml`) | 22 (S2 19 over the backfill, OpenAlex 4 / 30 d; 1 in both) | 1 (`kw_high`; not relevant by read) | — | 0 |
 | C3 Scientist AI | proposed | `scientist-ai: terms: ["Scientist AI"]`, `openalex_terms: ['"Scientist AI"']` (`configs/channels.yaml`) | 7 over the S2 backfill | 0; read: 1 borderline | none | 0 clear, 1 borderline |
 | C4 high-volume names | proposed | roster list `disambiguate:` (`configs/rosters/researchers.yaml`) + a filter in the author family (`workflows/collect/arxiv_sweep/main.py`); safety stems moved to `stack/rules.py` | 32 of the 125 sample papers (≈ 340 / month at the full roster) | 1 labelled + 2 read | 14 simulated, all irrelevant | 1 labelled + 2 borderline in the sample (≈ 10-30 / month at the full roster, of ≈ 500 relevant the sweep brings) |
-| C5 roster hygiene | adopted `673c3ee` | `Last, First` parsing, dead entries dropped, `Stuart Armstrong` (`configs/rosters/researchers.yaml`, `roster_name`) | 0 | — | — | 0 (adds recall) |
+| C5 roster hygiene | adopted (D229) | `Last, First` parsing, dead entries dropped, `Stuart Armstrong` (`configs/rosters/researchers.yaml`, `roster_name`) | 0 | — | — | 0 (adds recall) |
 | C6 arXiv categories | proposed | keep a category hit only with a safety stem or an umbrella/SR phrase in title or abstract (client-side filter, `workflows/collect/arxiv_sweep/main.py`) | 39 of 64 / 30 d | 0; read: 7 borderline | 4 of the 7 simulated | 0 clear, 3 borderline / month |
 | C7 game theory, social choice | proposed | new group field `context_terms` replacing `ai_context` (`configs/channels.yaml`, `stack/config.py`, channels schema, the OpenAlex, S2 and arXiv collectors) | 19 of 32 / 30 d (OpenAlex) | 2 (`kw_high`, not relevant by read); read: 2 borderline | both borderline simulated | 0 |
 | C8 LW keyword phrase check | proposed, with the tag sweep | option `phrase_check: true` (`workflows/collect/forums/main.py`; `collect.forums` lines of the plans) | 181 / 30 d | 80 (1 labelled, 79 `kw_high`) | 8 observed (newsletters); 13 more posts not counted as dropped because the tag sweeps found them (11 AI tag, 2 SR tags) | 1 observed + ≈ 7 estimated / month (71 unverifiable offline) |
@@ -420,7 +420,7 @@ no network, no LLM calls. Track P has since adopted three of the cuts in `673c3e
 
 ### 9.3 Per cut: the relevant documents dropped and their other routes
 
-Document ids are the A2 scratch store's before the round-4 re-key (`r24enz7dn1yke`). Paper and forum ids keep their
+Document ids are the A2 scratch store's before the URL re-key (D216-D217). Paper and forum ids keep their
 anchor source id; url documents may have been re-keyed.
 
 **C1, S2 `steerability` (adopted).** 577 documents had no producer other than the S2 steerability query. 324 are
@@ -525,17 +525,15 @@ keeps pre-2023 history is a scope decision, not a question of redundancy.
 
 ### 9.4 C8 measured: one 30-day run of the tag sweeps
 
-Added 2026-10-13 (round 5, T-RUN B7b) after Tomáš asked for "a 30-day LW tag sweep to measure redundancy" before
-deciding C8.
+Added 2026-10-13: one 30-day run of the LessWrong tag sweeps, to measure C8's redundancy before deciding it.
 
 **Run.** `collect.lw_graphql` (std-v2's tag list: `ai` and the 12 SR extension tags, `from: 2026-09-12`, `max_records:
-2000`) into `v4/store-run-c8`, a reflink copy of the A2 scratch store that holds the keyword sweeps. Run
-`rqv7crxsysczn`, 19 GraphQL pages, 0 errors: the AI tag's coverage gap 09-12..10-05 was listed as one bounded span (349
+2000`) into a copy of the A2 scratch store, which holds the keyword sweeps: one run, 19 GraphQL pages, 0 errors: the AI tag's coverage gap 09-12..10-05 was listed as one bounded span (349
 posts), then each tag's tail from 09-28 (the 14-day re-scan) to 10-13. The tag sweeps now cover 449 posts dated
 09-12..10-13 (97 before). No other LessWrong call.
 
-**Method.** As §9.1 and §9.3, over the same 248 keyword-sweep posts dated 09-12..10-12 (`rkdfv6k3xnggf`, 30 days, the
-20 SR groups; the 7-day 42-group sweep `r3qmbwebvmj6c` adds no post outside them). Phrase match: one of the posts'
+**Method.** As §9.1 and §9.3, over the same 248 keyword-sweep posts dated 09-12..10-12 (the 30-day sweep of the
+20 SR groups; the 7-day 42-group sweep adds no post outside them). Phrase match: one of the posts'
 swept terms (the SR terms; for a post the 42-group sweep also found, every group term and the two extra keywords) as a
 whole phrase, case-insensitive, in the title or the in-band search body. A post is dropped by C8 when it has no phrase
 match and no tag sweep found it (by LessWrong post id). Relevant or plausible: labelled relevant (§1's labels), or
@@ -543,7 +541,7 @@ unlabelled and `kw_high`. `kw_high` is computed over the title and the body's fi
 excerpt cap (`MAX_EXCERPT_CHARS`): with that cap the "before" column below reproduces §9.2-§9.3 exactly (181 dropped;
 1 labelled + 79 `kw_high`; 8 newsletter routes; 71 unverifiable) and §1's forum calibration (14 of 14 labelled
 `kw_high` relevant); over the whole body the proxy marks more posts (last column). Newsletter routes are §9.3's eight
-documents. Script: `<scratch>/trun/b7b/scripts/c8_measure.py` (read only).
+documents. The measuring script (read only) is not in this repository.
 
 | 248 keyword-sweep posts, 09-12..10-12 | Before (AI tag 10-05..10-12, SR tags 30 d) | After (all tags 30 d) | After, `kw_high` over the whole body |
 |---|---|---|---|
@@ -574,7 +572,7 @@ documents. Script: `<scratch>/trun/b7b/scripts/c8_measure.py` (read only).
 - **What C8 saves.** With the tag sweeps running, the keyword sweep adds 55 posts in 30 days that no tag sweep finds
   (14 relevant or plausible); C8 removes 45 of them. §6.1's −78 % (248 → 54) counts the keyword sweep's rows; in
   documents the corpus shrinks by 45 a month (≈ 1 % of the ≈ 4,000), because gather merges the other 148 with the
-  tag sweeps' rows. Triage and screen of 45 posts cost about $0.04 a month (D260, RUNLOG M4.T4.2 rates).
+  tag sweeps' rows. Triage and screen of 45 posts cost about $0.04 a month (D260).
 
 **Recommendation: do not adopt C8.** Measured, it removes 45 documents a month and with them 5-8 clearly relevant
 posts (1 labelled, 4 by read with the capped proxy, 3 more with the whole-body one) and 2 or more borderline ones:
@@ -584,18 +582,18 @@ of triage and screen. §9.3's estimate (1 observed + ≈ 7) was right; what chan
 its tag queries (`collect.forums` `tags`), which the GraphQL tag sweeps cover; not measured here. No C8 code was
 written (`phrase_check` does not exist).
 
-### 9.5 Authors by OpenAlex id against the arXiv name sweep (T-ARX)
+### 9.5 Authors by OpenAlex id against the arXiv name sweep
 
-Added 2026-10-13 (track T-ARX, builder M) after Tomáš asked whether the arXiv author (name) sweep is superseded by
-OpenAlex author search ("we want concrete people, never just accidental name matches"); std-v3 already turns the name
-family off and `collect.openalex`'s author-id family on (`e318fec`).
+Added 2026-10-13: is the arXiv author (name) sweep superseded by OpenAlex author search by id, which collects concrete
+people rather than accidental name matches? std-v3 turns the name family off and `collect.openalex`'s author-id
+family on (D277, D285).
 
-**Method.** The sweep side is the one stored author-sweep run, `rm20bsqsa24ck` (§3.2's sample): 226 `ok` coverage rows
+**Method.** The sweep side is the one stored author-sweep run (§3.2's sample): 226 `ok` coverage rows
 over submitted dates 2026-09-21..2026-10-12 and 125 papers. The 6 other rows (`Zeng_Jiali`, `Tang_Jie`, `Skinner_Joe`,
 `Treutlein_Johannes`, `Co-Reyes_John`, `Mellor_John`) are `failed_transient[rate_limit]` with zero-length windows:
 never queried. This run predates D228: its rows carry no `matched_by` and no `record_ref`, so the arXiv categories are
 not stored and the matched roster names are re-derived with the collector's `names_match` over the run-time roster
-(`03cba6b`) and that code's `au:` token. The 226 queries are 227 roster names, 225 of them in roster 1.2.0 (`Zhang`
+and that code's `au:` token. The 226 queries are 227 roster names, 225 of them in roster 1.2.0 (`Zhang`
 and the Meta junk entry were dropped by D229). Relevance labels are §1's (gold screen v2, screen-v8, gold triage v2,
 triage question), joined through the dev store's documents head; they reproduce §2's 65 labelled, 25 relevant. The
 OpenAlex side queries every id of the roster with `author_filter` (scholarly types, `from_publication_date:
@@ -606,9 +604,8 @@ the sample's names. Works map to arXiv ids through `work_keys` (the `10.48550/ar
 the 4 not found that way were found by `title.search` (an arXiv location on another record). Mechanical classes come
 from the found record: the matched name has no roster id (*unresolved*), the paper's author of that name carries
 another id (*id mismatch*), or carries ours outside the filter (*filter mismatch*); then reading decides whether the
-paper is our researcher's (*split profile* or *ours, unresolved*) or a namesake's (*wrong-person name match*). Scripts
-and cached answers: `<scratch>/arx/M/` (`run.sh <roster>` re-runs offline; with `live` it queries only ids and arXiv
-ids the cache lacks). The 12-month window below was queried the same way; a `raw_author_name.search` probe covered
+paper is our researcher's (*split profile* or *ours, unresolved*) or a namesake's (*wrong-person name match*). The scripts
+and their cached answers are not in this repository. The 12-month window below was queried the same way; a `raw_author_name.search` probe covered
 three names. Spend: 88 OpenAlex requests, $0.0151, no arXiv request.
 
 **Comparison** (sample: the 225 names; "core" = submitted, or for OpenAlex-only works published, on or before
@@ -704,8 +701,8 @@ on his roster id. By the random 20, about 70 % of the sweep-only papers are name
 %) and about 25 % ours (5 of 20; 11-47 %); with 1.3.0 or 1.3.1 and the rescue, 3 of the 18 still lost (17 %; 6-39 %).
 
 **Other routes** (the marginal loss to the corpus). For the 17 papers still lost with 1.3.0/1.3.1 that are ours by
-read or labelled relevant: *observed* = a row from an independent collector in `store-dev`, `store-sr-scratch` or
-`store-links-scratch` (lookups and compactions, which follow the sweep's own rows, excluded); *std-v3, inferred* = a
+read or labelled relevant: *observed* = a row from an independent collector in the dev store, the A2 scratch store or
+the links scratch store (lookups and compactions, which follow the sweep's own rows, excluded); *std-v3, inferred* = a
 std-v3 OpenAlex concept group whose phrases (and AI context) occur in the title or abstract, or an author institution
 among channels.yaml's OpenAlex institutions (whole-phrase match; OpenAlex stems, so a lower bound). The stores'
 windows are partial: OpenAlex `umbrella`/`jailbreak` 09-25..09-28, OpenAlex SR groups 09-05..10-05, S2 SR since
@@ -713,10 +710,10 @@ windows are partial: OpenAlex `umbrella`/`jailbreak` 09-25..09-28, OpenAlex SR g
 
 | arXiv | Read, label | Route |
 |---|---|---|
-| 2609.31121 Monitor Jailbreaking | ours (Schulz), relevant | observed: OpenAlex `r5qzaw56xjqhw`; std-v3 `cot-monitor`, `stego` |
-| 2609.39838 Steganographic reasoning | ours (Schulz), relevant | observed: LessWrong keyword sweep `rkdfv6k3xnggf`; std-v3 `cot-monitor`, `stego` |
-| 2609.34563 Latent visual reasoning | unclear, relevant | observed: OpenAlex `umbrella` `rt9gy9wq4befh` |
-| 2610.04245 Steering dimensionality of refusal | unclear, relevant | observed: OpenAlex SR `r1m37283adw16`, S2 SR `rys3ds2d0b9qb`; std-v3 `safety-tuning`, `steering` |
+| 2609.31121 Monitor Jailbreaking | ours (Schulz), relevant | observed: OpenAlex `jailbreak`; std-v3 `cot-monitor`, `stego` |
+| 2609.39838 Steganographic reasoning | ours (Schulz), relevant | observed: LessWrong keyword sweep (SR); std-v3 `cot-monitor`, `stego` |
+| 2609.34563 Latent visual reasoning | unclear, relevant | observed: OpenAlex `umbrella` |
+| 2610.04245 Steering dimensionality of refusal | unclear, relevant | observed: OpenAlex SR, S2 SR; std-v3 `safety-tuning`, `steering` |
 | 2609.28614 Reward hacking, research agents | ours (Galley, split), relevant | std-v3 `reward-hacking` |
 | 2609.29421 Rufus-Air | ours (Qingyu Yin, split), relevant | std-v3 `rlhf` |
 | 2609.35822 Sycophantic agreement | ours (Logan Smith), relevant | std-v3 `persona` |
@@ -786,10 +783,10 @@ name fallback for the unresolved names.
 
 ## 10. Backfill cuts (2026-10-13)
 
-Adopted 2026-10-13 (track T-CUTS) after Tomáš accepted the cuts the backfill analysis proposed ("Accept all 4-5
-proposed cuts; document well what we may be losing"). The analysis used one rehearsal week of std-v3
-(`v4/store-reh-7d`, window from 2026-10-06, 5,207 documents, screen-v12 relevance) scaled to the backfill from
-2025-10-01 by 75.6 week-equivalents. Decisions: `docs/DECISIONS.md` D304-D306 (CUTS).
+Adopted 2026-10-13: the cuts a backfill analysis proposed, with what each may lose documented below. The analysis
+used one rehearsal week of std-v3 (a store with the window from 2026-10-06, 5,207 documents, screen-v12 relevance) scaled to the backfill from
+2025-10-01 by 75.6 week-equivalents. Decisions: `docs/DECISIONS.md` D304-D306. The analysis
+itself is not in this repository; its figures below ("analysis §2.4", "§2.5") are as it reported them.
 
 ### 10.1 Mechanism (all cuts)
 
@@ -816,15 +813,14 @@ proposed cuts; document well what we may be losing"). The analysis used one rehe
 - **Coverage key.** The cut set of a group query is part of its coverage key (`"cuts"` beside `query` and
   `filter` / `s2_query`). So switching a cut off makes a new key, and that group re-sweeps from the floor rather
   than inheriting a watermark earned with the cut on. The price: on a store that already has OpenAlex or S2 coverage
-  (store-dev, store-reh-7d and their copies), the first run with channels 1.12.0 re-sweeps every concept group from
+  (the development and rehearsal stores of the time, and their copies), the first run with channels 1.12.0 re-sweeps every concept group from
   the floor once. On a fresh backfill store there is no cost.
 
 ### 10.2 Replay on the rehearsal week
 
-The stored OpenAlex (1,454) and S2 (299) source rows of `v4/store-reh-7d` (heads `rw4e1dw22b8kk`,
-`rv0fj82sb7pnb`), each route (`metadata.matched_by`) through `keyword_cut` with the plan entries of the current
-configuration, offline. A document is dropped when no member route survives; outcomes are the analysis's. Script:
-`replay.py` (a session scratch script, not in this repository). The analysis's simulation (`sim2.py`) classified by the
+The stored OpenAlex (1,454) and S2 (299) source rows of the rehearsal store, each route (`metadata.matched_by`) through `keyword_cut` with the plan entries of the current
+configuration, offline. A document is dropped when no member route survives; outcomes are the analysis's. The replay
+script is not in this repository. The analysis's simulation classified by the
 document's merged keys; the replay uses each record's own keys, as the collectors do.
 
 | Cut (alone) | Documents dropped, replay | Analysis | Relevant / borderline lost | Triage-relevant, no text, lost | Irrelevant / triage-skipped removed |
@@ -972,7 +968,7 @@ Concordia's newsletter feed; the hand-added `configs/overrides/china_coverage.ya
 in `stack/rules.py`. The benchmark is repeatable with `tools/recall_concordia.py` (`evals/recall/`).
 
 **Venue allowlist.** Acquire's oa lane on store documents without an arXiv key (store copy 2026-10-23; attempted =
-an oa-lane `full_text` role that ended ok or failed; `oa_lane_by_prefix.py` of the Chinese-coverage work) against the 2025 non-arXiv
+an oa-lane `full_text` role that ended ok or failed; measured by the Chinese-coverage work) against the 2025 non-arXiv
 concept-group hits of the publisher (OpenAlex `host_organization`, all groups summed, before the cuts):
 
 | DOI prefix | venue | oa lane ok / attempted | store documents with the prefix | 2025 hits | status |
