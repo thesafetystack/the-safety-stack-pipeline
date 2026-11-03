@@ -19,6 +19,8 @@ What happens next:
 - A taxonomy change goes into a new taxonomy version (see [taxonomies/README.md](taxonomies/README.md#versioning));
   released taxonomy files are never edited, so pull requests that edit them cannot be merged as they are. Pull
   requests to the documentation are welcome.
+- The code that builds the dataset (collection, screening, annotation, release) is in
+  [thesafetystack/the-safety-stack-pipeline](https://github.com/thesafetystack/the-safety-stack-pipeline).
 
 Code in `tools/` is MIT-licensed; everything else in this repository is CC0 1.0 (see the [README](README.md#licences)).
 By contributing you agree to your contribution being released under the same terms.
