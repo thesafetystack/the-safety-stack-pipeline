@@ -245,7 +245,9 @@ def plan_for(roster: Path, extra: Mapping[str, Mapping[str, Any]] | None = None)
                                 "keyword_groups": ["umbrella"], "scoped_categories": ["cs.GT"]},
         "collect.openalex": {"window_days": 3, "window_end_days_ago": 14, "max_records": 300,
                              "queries": ["group:umbrella", "group:superalignment"]},
-        "collect.semantic_scholar": {"max_pages": 1, "queries": ["group:umbrella"]},
+        # one span per query (D801's year spans have their own tests in test_collect_s2.py): the world's S2
+        # search answers one paper dated today whatever the date range, and these tests count one request a pass
+        "collect.semantic_scholar": {"max_pages": 1, "queries": ["group:umbrella"], "split_years": 0},
         "collect.forums": {"window_days": 7, "max_records": 200, "groups": ["specs"],
                            "tags": []},
         "collect.af_graphql": {"window_days": 7, "max_records": 200},

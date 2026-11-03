@@ -288,11 +288,32 @@ def test_only_queries_narrows_the_plan_and_refuses_unknown_labels() -> None:
         s2.only_queries(plan, ["group:steerability"])
 
 
-def test_search_params_sends_open_ended_lower_bound_only() -> None:
-    """A resumed pass sends `<from>:` — open-ended on the right. A first-ever pass sends NO date
-    filter, so papers with no publication date (which S2's own filter drops) are seen once."""
+def test_search_params_sends_the_date_range() -> None:
+    """The tail's last span sends `<from>:` — open-ended on the right; a bounded span sends
+    `<from>:<last day>`. The run always gives a lower bound (D801); without one no filter goes out."""
     assert "publicationDateOrYear" not in s2.search_params("q", None)
     assert s2.search_params("q", "2024-01-01")["publicationDateOrYear"] == "2024-01-01:"
+    assert s2.search_params("q", "2024-01-01", "2024-12-31")["publicationDateOrYear"] == "2024-01-01:2024-12-31"
+
+
+def test_year_spans_split_on_1_january_of_the_last_n_years() -> None:
+    """D801: split points are 1 January of each of the last `split_years` years, used only strictly
+    inside the range; the years before them are one span; a range inside one year (the weekly
+    tail) is one span; 0 = no split; calendar dates, so no leap-year drift."""
+    d = dt.date
+    assert s2.year_spans(d(2015, 1, 1), d(2026, 11, 3), 4, 2026) == [
+        (d(2015, 1, 1), d(2023, 1, 1)), (d(2023, 1, 1), d(2024, 1, 1)), (d(2024, 1, 1), d(2025, 1, 1)),
+        (d(2025, 1, 1), d(2026, 1, 1)), (d(2026, 1, 1), d(2026, 11, 3))]
+    assert s2.year_spans(d(2024, 3, 5), d(2026, 11, 3), 4, 2026) == [
+        (d(2024, 3, 5), d(2025, 1, 1)), (d(2025, 1, 1), d(2026, 1, 1)), (d(2026, 1, 1), d(2026, 11, 3))]
+    assert s2.year_spans(d(2026, 10, 27), d(2026, 11, 3), 4, 2026) == [(d(2026, 10, 27), d(2026, 11, 3))]
+    assert s2.year_spans(d(2026, 12, 28), d(2027, 1, 4), 4, 2027) == [  # the week that crosses 1 January
+        (d(2026, 12, 28), d(2027, 1, 1)), (d(2027, 1, 1), d(2027, 1, 4))]
+    assert s2.year_spans(d(2023, 1, 1), d(2024, 1, 1), 4, 2026) == [(d(2023, 1, 1), d(2024, 1, 1))]
+    assert s2.year_spans(d(2015, 1, 1), d(2026, 11, 3), 0, 2026) == [(d(2015, 1, 1), d(2026, 11, 3))]
+    assert s2.year_spans(d(2026, 11, 3), d(2026, 11, 3), 4, 2026) == [(d(2026, 11, 3), d(2026, 11, 3))]
+    with pytest.raises(ValueError):
+        s2.year_spans(d(2026, 11, 4), d(2026, 11, 3), 4, 2026)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -394,6 +415,16 @@ def test_ignored_date_filter_is_detected() -> None:
         is False
 
 
+def test_ignored_upper_bound_is_detected() -> None:
+    """D801's third backstop: a bounded span's paper dated after its last day beyond the one-day
+    slack proves the upper bound was ignored (the newest such date is returned); a year-only paper
+    of the span's year and undated papers do not trip it."""
+    span = [{"publicationDate": "2024-12-31"}, {"year": 2024}, {"paperId": "z"}]
+    assert s2._upper_ignored(span, "2024-12-31") is None
+    assert s2._upper_ignored([{"publicationDate": "2025-01-01"}], "2024-12-31") is None  # the slack day
+    assert s2._upper_ignored([{"publicationDate": "2025-01-02"}, {"year": 2026}], "2024-12-31") == "2026-01-01"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # (E) End to end: run_stage on a temp store over tests/fakes/http.py
 # ─────────────────────────────────────────────────────────────────────────────
@@ -455,9 +486,8 @@ def test_semantic_scholar_end_to_end(tmp_path: pathlib.Path, monkeypatch: Any) -
     today = dt.datetime.now(dt.UTC).date().isoformat()
     d = lambda s: dt.datetime.fromisoformat(s).replace(tzinfo=dt.UTC)
     fake = FakeHttp()
-    # run 1: g1 two pages; g2 fails past the retry ladder. FLOOR is past the channel's from_date,
-    # so the first pass already sends it as the lower bound (B7a; at the channel floor it sends
-    # none: test_page_budget_stops_the_run).
+    # run 1: g1 two pages; g2 fails past the retry ladder. The first pass sends FLOOR as the lower
+    # bound (B7a; at or below the channel floor too since D801: test_page_budget_stops_the_run).
     fake.add(s2.API_BASE, _params(g1["s2_query"], FLOOR), json={"data": [A, B, OLD], "token": "t1"})
     fake.add(s2.API_BASE, _params(g1["s2_query"], FLOOR, token="t1"), json={"data": [C]})
     fake.add(s2.API_BASE, _params(g2["s2_query"], FLOOR), json={"data": [A]})
@@ -465,7 +495,9 @@ def test_semantic_scholar_end_to_end(tmp_path: pathlib.Path, monkeypatch: Any) -
     monkeypatch.setattr("stack.collect.base.urllib_send", fake)
     slept: list[float] = []
     monkeypatch.setattr(time, "sleep", slept.append)
-    opts = {"max_queries": 2, "from": FLOOR}
+    # One span per pass (`split_years: 0`): this test pins the single-window properties on the real
+    # clock; the year spans have their own tests (test_s2_year_spans_*).
+    opts = {"max_queries": 2, "from": FLOOR, "split_years": 0}
 
     rec1 = run_line(store, _plan(**opts), "collect.semantic_scholar")
     assert rec1.status == "ok", rec1.error
@@ -479,7 +511,7 @@ def test_semantic_scholar_end_to_end(tmp_path: pathlib.Path, monkeypatch: Any) -
         "coverage": ("coverage.semantic_scholar", "full")}
     assert rec1.counts["minted_ids"] == 3 and rec1.counts["inband_minted"] == 1
     assert rec1.counts["below_floor"] == 1 and rec1.counts["arxiv_bridged"] == 1
-    assert f"publicationDateOrYear={FLOOR}%3A" in fake.calls[0].url and rec1.counts["windowed"] == 2
+    assert f"publicationDateOrYear={FLOOR}%3A" in fake.calls[0].url and rec1.counts["spans"] == 2
     assert rec1.counts["filter_ignored"] == 1  # OLD came back: still the floor range [FLOOR, today]
     ladder = [s for s in slept if s in s2.RETRY_DELAYS_S]
     assert ladder == list(s2.RETRY_DELAYS_S)  # v3's ladder on g2, once
@@ -564,13 +596,19 @@ def test_semantic_scholar_end_to_end(tmp_path: pathlib.Path, monkeypatch: Any) -
 def test_page_budget_stops_the_run(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
     """``max_pages: 1`` (the live smoke): one request; the query it cut is ``partial`` over
     ``[floor, floor]``; the next query gets no row; the run is a planned stop. The floor is the
-    channel's own ``from_date``: the first pass sends no date filter."""
+    channel's own ``from_date``: since D801 the first pass sends it as the lower bound of its first
+    year span (before, it sent no date filter and paged the whole index)."""
     for var in _ENV:
         monkeypatch.delenv(var, raising=False)
     g1, _ = _first_two_groups()
     store = tmp_path / "store"
+    today = dt.datetime.now(dt.UTC).date()
+    spans = s2.year_spans(dt.date(2020, 1, 1), today, s2.DEFAULT_SPLIT_YEARS, today.year)
+    first = s2.search_params(g1["s2_query"], "2020-01-01",
+                             (spans[0][1] - dt.timedelta(days=1)).isoformat() if len(spans) > 1 else None)
     fake = FakeHttp()
-    fake.add(s2.API_BASE, _params(g1["s2_query"]), json={"data": [A, B], "token": "t1"})
+    in_span = [{**p, "publicationDate": "2021-03-04", "year": 2021} for p in (A, B)]  # inside the first span
+    fake.add(s2.API_BASE, first, json={"data": in_span, "token": "t1"})
     monkeypatch.setattr("stack.collect.base.urllib_send", fake)
     monkeypatch.setattr(time, "sleep", lambda s: None)
 
@@ -585,44 +623,46 @@ def test_page_budget_stops_the_run(tmp_path: pathlib.Path, monkeypatch: Any) -> 
     assert (cov["status"], cov["is_exhausted"], cov["window_start_at"], cov["window_end_at"]) == (
         "partial", False, dt.datetime(2020, 1, 1, tzinfo=dt.UTC),
         dt.datetime(2020, 1, 1, tzinfo=dt.UTC))
-    assert "publicationDateOrYear" not in fake.calls[0].url
+    sent = urllib.parse.parse_qs(urllib.parse.urlsplit(fake.calls[0].url).query)["publicationDateOrYear"]
+    assert sent == [first["publicationDateOrYear"]] and sent[0].startswith("2020-01-01:")
     assert len(_view(store, "sources.semantic_scholar")) == 2
 
 
+@pytest.mark.usefixtures("no_keyword_cuts")  # the _paper fixtures are publisher works
 def test_floor_moved_back_pulls_only_the_gap(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
     """B7a: the key leaves the floor out, so after a first window from 2025-10-01 a run with
-    `from: 2024-11-30` the same day sends one bounded request for the hole
-    (publicationDateOrYear=2024-11-30:2025-09-30) and writes [2024-11-30, 2025-10-01]; the covered
-    tail is not pulled again; a third run sends nothing."""
+    `from: 2024-11-30` the same day asks only the hole [2024-11-30, 2025-10-01], in its two year
+    spans (D801: bounded 2024-11-30:2024-12-31 and 2025-01-01:2025-09-30), each written as its own
+    window; the covered tail is not pulled again; a third run sends nothing."""
     for var in _ENV:
         monkeypatch.delenv(var, raising=False)
     monkeypatch.delenv("SEMANTIC_SCHOLAR_API_KEY", raising=False)
     g1, _ = _first_two_groups()
     store = tmp_path / "store"
-    today = dt.datetime.now(dt.UTC).date().isoformat()
-    new = {**B, "publicationDate": "2025-11-04", "year": 2025}
-    old = {**A, "publicationDate": "2025-02-03", "year": 2025}
-    fake = FakeHttp()
-    fake.add(s2.API_BASE, _params(g1["s2_query"], "2025-10-01"), json={"data": [new]})
-    gap = {**s2.search_params(g1["s2_query"], "2024-11-30", "2025-09-30")}
-    assert gap["publicationDateOrYear"] == "2024-11-30:2025-09-30"
-    fake.add(s2.API_BASE, gap, json={"data": [old]})
-    monkeypatch.setattr("stack.collect.base.urllib_send", fake)
+    now = dt.datetime(2025, 12, 1, 12, tzinfo=dt.UTC)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: now)
+    corpus = [_paper("n", "2025-11-04"), _paper("o", "2025-02-03"), _paper("p", "2024-12-15"),
+              _paper("q", "2024-11-01")]
+    server = _s2_server(corpus)
+    monkeypatch.setattr("stack.collect.base.urllib_send", server)
     monkeypatch.setattr(time, "sleep", lambda s: None)
     opts = {"queries": [g1["query"]]}
+    sent = lambda: [urllib.parse.parse_qs(urllib.parse.urlsplit(u).query)["publicationDateOrYear"][0]
+                    for u in server.urls]
     rec1 = run_line(store, _plan(**opts, **{"from": "2025-10-01"}), "collect.semantic_scholar")
     assert rec1.status == "ok", rec1.error
-    assert len(fake.calls) == 1
+    assert sent() == ["2025-10-01:"]
     rec2 = run_line(store, _plan(**opts, **{"from": "2024-11-30"}), "collect.semantic_scholar")
     assert rec2.status == "ok", rec2.error
-    assert [c.url for c in fake.calls[1:]] == [fake.urls()[1]]  # the gap only
-    assert rec2.counts["holes"] == 1 and rec2.counts["minted_ids"] == 1
+    assert sent()[1:] == ["2024-11-30:2024-12-31", "2025-01-01:2025-09-30"]  # the gap only
+    assert rec2.counts["holes"] == 1 and rec2.counts["spans"] == 2 and rec2.counts["minted_ids"] == 2
     d = lambda s: dt.datetime.fromisoformat(s).replace(tzinfo=dt.UTC)
     cov = sorted((r["window_start_at"], r["window_end_at"], r["status"])
                  for r in _view(store, "coverage.semantic_scholar"))
-    assert cov == [(d("2024-11-30"), d("2025-10-01"), "ok"), (d("2025-10-01"), d(today), "ok")]
+    assert cov == [(d("2024-11-30"), d("2025-01-01"), "ok"), (d("2025-01-01"), d("2025-10-01"), "ok"),
+                   (d("2025-10-01"), d("2025-12-01"), "ok")]
     rec3 = run_line(store, _plan(**opts, **{"from": "2024-11-30"}), "collect.semantic_scholar")
-    assert rec3.status == "ok" and len(fake.calls) == 2 and rec3.counts["already_covered"] == 1
+    assert rec3.status == "ok" and len(server.urls) == 3 and rec3.counts["already_covered"] == 1
 
 
 def _s2_server(corpus: list[dict[str, Any]], *, page: int = 1000) -> Any:
@@ -736,3 +776,106 @@ def test_s2_lookback_capped_asks_again_from_the_watermark(tmp_path: pathlib.Path
     assert {"10.5555/n", "10.5555/p"} <= got  # the capped look-back's paperId-ordered two; n again from the mark
     cov = pq.read_table(store / rec2.outputs["coverage"]["path"]).to_pylist()
     assert [(r["status"], r["window_start_at"].date().isoformat()) for r in cov] == [("ok", iso(day1))]
+
+
+def _sent(server: Any) -> list[str]:
+    """The ``publicationDateOrYear`` of each request ``server`` answered."""
+    return [urllib.parse.parse_qs(urllib.parse.urlsplit(u).query)["publicationDateOrYear"][0] for u in server.urls]
+
+
+def _cov(rows: list[dict[str, Any]]) -> list[tuple[str, str, str]]:
+    return sorted((r["window_start_at"].date().isoformat(), r["window_end_at"].date().isoformat(), r["status"])
+                  for r in rows)
+
+
+@pytest.mark.usefixtures("no_keyword_cuts")
+def test_s2_year_spans_bank_and_resume_after_a_failed_span(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
+    """D801: a first pass from the floor runs as year spans, oldest first, each bounded and banked as
+    its own ok window; the span that fails (503 past the ladder) claims nothing and stops the
+    sequence (the later spans are not asked); the next run resumes from the last ok span (with the
+    D551 look-back below it) instead of paging from the floor again; a week later the incremental
+    tail is one open-ended request."""
+    for var in _ENV:
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    g1, _ = _first_two_groups()
+    store = tmp_path / "store"
+    corpus = [_paper(c, date) for c, date in (("a", "2021-07-01"), ("b", "2022-12-31"), ("c", "2023-05-05"),
+                                              ("d", "2024-02-02"), ("e", "2024-12-31"), ("f", "2025-06-06"),
+                                              ("g", "2026-02-02"))]
+    server = _s2_server(corpus)
+    failing = {"on": True}
+
+    def send(method: str, url: str, **kw: Any) -> Any:
+        from stack.http import HttpResponse
+
+        if failing["on"] and "publicationDateOrYear=2024-01-01%3A2024-12-31" in url:
+            server.urls.append(url)
+            return HttpResponse(503, {}, b"", url)
+        return server(method, url, **kw)
+
+    monkeypatch.setattr("stack.collect.base.urllib_send", send)
+    day1 = dt.datetime(2026, 3, 10, 12, tzinfo=dt.UTC)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: day1)
+    opts = {"queries": [g1["query"]], "from": "2021-06-01"}
+    rec1 = run_line(store, _plan(**opts), "collect.semantic_scholar")
+    assert rec1.status == "ok", rec1.error
+    assert _sent(server) == ["2021-06-01:2022-12-31", "2023-01-01:2023-12-31"] + ["2024-01-01:2024-12-31"] * 4
+    assert rec1.scope_complete is False and rec1.counts["spans"] == 3
+    assert _cov(_view(store, "coverage.semantic_scholar")) == [
+        ("2021-06-01", "2023-01-01", "ok"), ("2023-01-01", "2024-01-01", "ok"),
+        ("2024-01-01", "2024-01-01", "failed_transient")]
+    got = {r["identity"]["external_id"] for r in _view(store, "sources.semantic_scholar")}
+    assert got == {"10.5555/a", "10.5555/b", "10.5555/c"}
+
+    failing["on"] = False
+    n = len(server.urls)
+    day2 = day1 + dt.timedelta(hours=1)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: day2)
+    rec2 = run_line(store, _plan(**opts), "collect.semantic_scholar", kind="part")
+    assert rec2.status == "ok", rec2.error
+    assert _sent(server)[n:] == ["2023-12-02:2024-12-31", "2025-01-01:2025-12-31", "2026-01-01:"]
+    assert rec2.scope_complete is True and rec2.counts["minted_ids"] == 4
+    assert [w for w in _cov(_view(store, "coverage.semantic_scholar")) if w[2] == "ok"] == [
+        ("2021-06-01", "2023-01-01", "ok"), ("2023-01-01", "2024-01-01", "ok"), ("2024-01-01", "2025-01-01", "ok"),
+        ("2025-01-01", "2026-01-01", "ok"), ("2026-01-01", "2026-03-10", "ok")]
+
+    n = len(server.urls)
+    day3 = day1 + dt.timedelta(days=7)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: day3)
+    rec3 = run_line(store, _plan(**opts), "collect.semantic_scholar", kind="part")
+    assert rec3.status == "ok", rec3.error
+    assert _sent(server)[n:] == ["2026-02-08:"] and rec3.counts["spans"] == 1  # weekly: one request
+    cov3 = pq.read_table(store / rec3.outputs["coverage"]["path"]).to_pylist()
+    assert _cov(cov3) == [("2026-03-10", "2026-03-17", "ok")]
+
+
+@pytest.mark.usefixtures("no_keyword_cuts")
+def test_s2_ignored_upper_bound_claims_nothing(tmp_path: pathlib.Path, monkeypatch: Any) -> None:
+    """D801's third backstop: a server that drops the upper bound returns later papers in a bounded
+    span; that span claims nothing (failed_permanent[query_invalid], the dates in its error), its
+    sequence stops, and its papers are still observed."""
+    for var in _ENV:
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    g1, _ = _first_two_groups()
+    store = tmp_path / "store"
+    server = _s2_server([_paper("a", "2024-07-01"), _paper("b", "2025-03-03")])
+
+    def send(method: str, url: str, **kw: Any) -> Any:  # drops `<to>` from publicationDateOrYear
+        parts = urllib.parse.urlsplit(url)
+        q = [(k, v.partition(":")[0] + ":" if k == "publicationDateOrYear" else v)
+             for k, v in urllib.parse.parse_qsl(parts.query)]
+        return server(method, parts._replace(query=urllib.parse.urlencode(q)).geturl(), **kw)
+
+    monkeypatch.setattr("stack.collect.base.urllib_send", send)
+    monkeypatch.setattr("stack.collect.base.utcnow", lambda: dt.datetime(2026, 3, 10, 12, tzinfo=dt.UTC))
+    rec = run_line(store, _plan(queries=[g1["query"]], **{"from": "2024-06-01"}), "collect.semantic_scholar")
+    assert rec.status == "ok", rec.error
+    assert len(server.urls) == 1 and rec.counts["upper_bound_ignored"] == 1
+    (cov,) = _view(store, "coverage.semantic_scholar")
+    assert (cov["status"], cov["error_class"], cov["window_start_at"].date().isoformat(),
+            cov["window_end_at"].date().isoformat()) == ("failed_permanent", "query_invalid", "2024-06-01", "2024-06-01")
+    assert "2024-12-31" in cov["error"] and "2025-03-03" in cov["error"]
+    assert rec.counts["windows_failed_permanent.query_invalid"] == 1
+    assert len(_view(store, "sources.semantic_scholar")) == 2

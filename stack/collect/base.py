@@ -93,9 +93,11 @@ The skeleton (names are this module's)::
   query's sequence at the first span that is not ``ok``: a later ``ok`` span would carry the
   watermark (the newest ``ok`` end) over the hole. Since the watermark is the end of the last
   ``ok`` span, the next run or pass resumes at the next span. Used by ``collect.lw_graphql``
-  (option ``subwindow_days``); providers that page past the per-query cap (OpenAlex cursor, S2
-  bulk token) raise the cap instead (option ``max_records``), and arXiv's ascending pull banks its
-  own prefix.
+  (option ``subwindow_days``) and ``collect.af_graphql`` (holes); ``collect.semantic_scholar``
+  splits the same way on 1 January of recent years (option ``split_years``, D801), so a failed page
+  costs one span, not the whole pass (its bulk token is not persisted). OpenAlex (cursor) raises
+  the per-query cap instead (option ``max_records``), and arXiv's ascending pull banks its own
+  prefix.
 * Floor moved back (round 5 (RUN) B7a): :meth:`Collector.holes` lists the spans of ``[floor,
   watermark]`` no ``ok`` window of the query covers (the union of the own chain's ``ok`` windows).
   When a plan's ``from`` moves earlier than the first window (2025-10-01 → 2024-11-30), the hole

@@ -45,16 +45,34 @@ the waits fails its query's window (``rate_limit``) and the sweep goes on. A ``R
 
 **Incrementality mirrors collect.forums (D-SWEEP1).** S2 exposes no "indexed at" axis: the only
 date field is publication date. Each query resumes from its watermark (the end of the newest
-``ok`` coverage row, :meth:`Collector.watermark`) and when that is past the floor sends
-``publicationDateOrYear=<eff_from>:`` (an open-ended lower bound). A ``from`` later than the
-channel's ``from_date`` is sent from the first pass on (round 5 (RUN) B7a, as ``collect.forums``):
-unfiltered, a first pass from 2025-10-01 would page through every year of the phrase's history and
-keep only the floor's year; papers without a publication date are then not seen. A complete windowed pass covers
-``[eff_from, today]``, contiguous with prior ``ok`` windows. Two honesty backstops (a server-side
-date filter is a silent no-op if the API changes): (1) a client-side floor gate — a paper
-published before the floor's year is never observed whatever the server returned; (2)
-honor-detection — any returned paper dated before ``eff_from`` beyond a one-day slack proves the
-filter was ignored, so the query claims the whole floor range instead.
+``ok`` coverage row, :meth:`Collector.watermark`), else from the floor, and every request sends the
+floor or watermark as ``publicationDateOrYear=<eff_from>:`` (an open-ended lower bound), a first
+pass included (D801; before it, a first pass whose floor was at or below the channel's ``from_date``
+was sent no filter and paged every year of the phrase's history, keeping only the floor's). A
+complete pass covers ``[eff_from, today]``, contiguous with prior ``ok`` windows. Two honesty
+backstops (a server-side date filter is a silent no-op if the API changes): (1) a client-side floor
+gate — a paper published before the floor's year is never observed whatever the server returned;
+(2) honor-detection — any returned paper dated before the sent lower bound beyond a one-day slack
+proves the filter was ignored, so the span claims from the floor instead (the response held
+everything older too).
+
+**Year spans (D801).** A tail that crosses 1 January of a recent year (a first pass from the
+2015 floor, or a tail resumed after a span that failed) is asked as consecutive date spans, oldest
+first, split on 1 January of each of the last ``split_years`` calendar years (option, default
+:data:`DEFAULT_SPLIT_YEARS`: in 2026 ``[floor, 2023-01-01]``, 2023, 2024, 2025, ``[2026-01-01,
+today]``; :func:`year_spans`). Only a split point strictly inside the range cuts it, so the weekly
+tail stays one span (two in the week that crosses 1 January). A span ``[s, e]``
+other than the last sends the bounded ``publicationDateOrYear=<s>:<e − 1 day>`` and is written as
+its own coverage window ``[s, e]``; the last stays open above, and the look-back below (D551)
+applies to the tail's first span only. A query's sequence stops at the first span that is not
+``ok``: a later ``ok`` span would carry the watermark over it (:func:`stack.collect.base.
+date_windows`), and since the watermark is the end of the last ``ok`` span the next run resumes
+there rather than from page 1 (the bulk token is not persisted). The split points fall on 1
+January because S2 does not document where a year-only paper falls in a range that starts
+mid-year. A hole (below) is split the same way. A third backstop: a paper dated after a bounded
+span's last day beyond the one-day slack proves the upper bound was ignored, so that span claims
+nothing (``failed_permanent[query_invalid]``, counted ``upper_bound_ignored``) and its sequence
+stops. One span's papers are held at a time.
 
 **Index lag (D551).** S2 adds a paper to its index days or weeks after its publication date (journal
 papers often appear well after they are dated), and the only axis is that date: a paper dated
@@ -72,9 +90,8 @@ order, so a capped pull (``max_records``, or the run's ``max_pages`` budget) cov
 subset: it is written ``partial`` over ``[from, from]`` (SHOULD-14), as is a failed one
 (``failed_*``); neither moves the watermark, and their ``attempts`` accumulate on one key. Two
 known recall caveats: a paper with NO publication date is dropped by S2's own
-``publicationDateOrYear`` filter on windowed passes (a first-ever pass at the channel floor sends
-no filter and sees it), and S2
-withholds abstracts for a licence-dependent slice of its index (those rows carry no in-band entry;
+``publicationDateOrYear`` filter, which every request carries since D801 (D272 accepted the loss
+for holes), and S2 withholds abstracts for a licence-dependent slice of its index (those rows carry no in-band entry;
 counted ``abstract_absent``).
 
 **The coverage query** is the JCS of ``{"query": "group:<id>", "s2_query": <the query text>}``:
@@ -82,7 +99,8 @@ the watermark is per ``query_digest``, so a changed term list starts a new key i
 inheriting a watermark the old query earned (as ``collect.openalex``). The floor is not in the key
 (round 5 (RUN) B7a): a floor moved back (2025-10-01 → 2024-11-30) leaves a hole below the covered
 range (:meth:`stack.collect.base.Collector.holes`), asked first as the bounded
-``publicationDateOrYear=<start>:<end − 1 day>`` and written ``[start, end]``; then the usual tail.
+``publicationDateOrYear=<start>:<end − 1 day>`` (in year spans) and written ``[start, end]``; then
+the usual tail.
 Only the gap is pulled again.
 
 **Backfill cuts** (channels.yaml ``keyword_cuts`` on the channel; Tomáš 2026-10-13, docs/design/collection-yield.md
@@ -119,10 +137,13 @@ Options (plan stage line ``options:``, D72; the v3 env var wins when set):
                                                       sampling (as ``collect.openalex``)
   * ``fraction``    / ``STACK_COLLECT_FRACTION``    — stable hash-selected fraction of the groups
   * ``from``        / ``STACK_S2_FROM``             — floor from-date (default channel ``from_date``;
-                                                      a later one is sent from the first pass on)
+                                                      sent as the first pass's lower bound, D801)
   * ``full``        / ``STACK_S2_FULL``             — '1' ignores watermarks, re-sweeps from the floor
   * ``lookback_days``                               — days below the watermark the tail re-asks
                                                       (index lag, D551; default 30, 0 = none)
+  * ``split_years``                                 — a tail or hole is split on 1 January of each
+                                                      of the last N calendar years (D801; default
+                                                      4, 0 = one span)
   * ``relist_after_h``                              — passes (D226, :meth:`stack.collect.base.
                                                       Collector.due`): a query covered through today
                                                       is skipped; a ``partial`` one is not asked
@@ -167,7 +188,8 @@ from stack.scholarly_records import (
 from stack.stage_runner import StageContext, StageResult
 
 #: The ``options`` keys this stage's code reads; any other is refused (D434)
-OPTIONS: frozenset[str] = frozenset({"from", "full", "lookback_days", "max_pages", "max_records", "queries"}) | SAMPLING_OPTIONS | RELIST_OPTIONS
+OPTIONS: frozenset[str] = frozenset({"from", "full", "lookback_days", "max_pages", "max_records", "queries",
+                                     "split_years"}) | SAMPLING_OPTIONS | RELIST_OPTIONS
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants
@@ -213,12 +235,16 @@ _ENV_FULL = "STACK_S2_FULL"
 _DEFAULT_LIMIT = 1000
 #: Default ``lookback_days`` (D551): S2 indexes journal papers weeks after their publication date.
 DEFAULT_LOOKBACK_DAYS = 30
+#: Default ``split_years`` (D801): a tail or hole is split on 1 January of each of the last this many
+#: calendar years (module docstring, "Year spans"); the years before them are one span.
+DEFAULT_SPLIT_YEARS = 4
 
 _ISO_DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 
-# One day of slack for honor-detection: a paper dated within a day of `eff_from` is treated as
-# on-window (date-granularity/timezone edges), so only a genuinely older hit — proof the server
-# returned unfiltered results — trips the fallback. Same rule as collect.forums.
+# One day of slack for honor-detection: a paper dated within a day of a sent bound is treated as
+# on-window (date-granularity/timezone edges), so only a genuinely older (or, for a bounded span,
+# newer) hit — proof the server returned unfiltered results — trips the backstop. Same rule as
+# collect.forums.
 _FILTER_SLACK_DAYS = 1
 
 # S2 publicationTypes -> the doc_type vocabulary. Anything unlisted stays `other` for
@@ -332,10 +358,10 @@ def group_query(terms: list[str], ai_context: list[str], misuse: bool) -> str:
 
 
 def search_params(query: str, eff_from: str | None, to: str | None = None) -> dict[str, Any]:
-    """The bulk-search query string params. ``eff_from``, when given, is sent as an OPEN-ENDED
-    ``publicationDateOrYear=<eff_from>:`` lower bound (S2 accepts either end of the range as
-    empty). A first-ever pass sends no date filter at all, so papers carrying no publication date
-    — which the filter would drop — are still seen at least once."""
+    """The bulk-search query string params. ``eff_from``, when given, is sent as the
+    ``publicationDateOrYear=<eff_from>:<to>`` range (inclusive; S2 accepts either end as empty):
+    open-ended above for the tail's last span, ``to`` the last day of a bounded span. The run
+    always gives ``eff_from`` (D801); ``None`` sends no date filter."""
     params: dict[str, Any] = {"query": query, "fields": FIELDS}
     if eff_from:
         params["publicationDateOrYear"] = f"{eff_from}:{to or ''}"  # `to`: a hole's last day
@@ -546,11 +572,36 @@ def paper_year(paper: dict[str, Any]) -> int | None:
 # ─────────────────────────────────────────────────────────────────────────────
 # Coverage window helpers
 # ─────────────────────────────────────────────────────────────────────────────
+def year_spans(start: dt.date, end: dt.date, split_years: int, this_year: int
+               ) -> list[tuple[dt.date, dt.date]]:
+    """``[start, end]`` as consecutive ascending spans split on 1 January of each of the last
+    ``split_years`` calendar years up to ``this_year`` (module docstring, "Year spans"). Only a
+    split point strictly inside the range cuts it, so a range inside one year is the one span
+    ``[(start, end)]``, as is any range with ``split_years <= 0``. Fixed calendar dates, not a day
+    count, so the boundaries do not drift with leap years."""
+    if start > end:
+        raise ValueError(f"date range {start}..{end}: start after end")
+    cuts = [dt.date(y, 1, 1) for y in range(this_year - split_years + 1, this_year + 1)
+            if start < dt.date(y, 1, 1) < end]
+    bounds = [start, *cuts, end]
+    return list(zip(bounds, bounds[1:]))
+
+
+def _upper_ignored(papers: list[dict[str, Any]], to: str) -> str | None:
+    """The newest publication date among ``papers`` that lies after a bounded span's last day
+    ``to`` beyond ``_FILTER_SLACK_DAYS`` (proof the server ignored the upper bound; module
+    docstring, "Year spans"), else ``None``. Undated papers prove nothing."""
+    threshold = dt.date.fromisoformat(to).toordinal() + _FILTER_SLACK_DAYS
+    late = [d for d in (paper_pub_date(p) for p in papers)
+            if d and dt.date.fromisoformat(d).toordinal() > threshold]
+    return max(late) if late else None
+
+
 def _filter_ignored(papers: list[dict[str, Any]], eff_from: str) -> bool:
     """True if the server ignored the ``publicationDateOrYear`` lower bound (the honesty backstop):
     any returned paper dated before ``eff_from`` beyond ``_FILTER_SLACK_DAYS`` means unfiltered
-    results came back, so the caller must fall back to whole-floor-range window semantics rather
-    than falsely claim ``[eff_from, today]``.
+    results came back (everything older included), so the caller claims the span from the floor
+    rather than from ``eff_from``.
 
     Papers with no date at all are ignored here — an absent date is not evidence either way.
     """
@@ -672,14 +723,12 @@ def run(ctx: StageContext) -> StageResult:
     c = Collector(ctx, channels={ch.id: ch for ch in config.channels.channels})
     chan = c.channel(CHANNEL)
     today = c.now.date().isoformat()
+    this_year = c.now.year
 
     floor_from = dt.date.fromisoformat(
         str(c.option("from", chan.from_date or DEFAULT_FROM, env=_ENV_FROM, cast=str)).strip()[:10]
     ).isoformat()
     floor_year = int(floor_from[:4])
-    # A floor later than the channel's own is sent from the first pass on (module docstring).
-    unfiltered_from = min(floor_from, dt.date.fromisoformat(
-        str(chan.from_date or DEFAULT_FROM).strip()[:10]).isoformat())
     configured = config.channels.max_results_per_query(CHANNEL, _DEFAULT_LIMIT)
     limit = max(1, c.option("max_records", configured, env=_ENV_LIMIT, cast=int))
     page_budget = max(0, c.option("max_pages", 0, cast=int)) or None
@@ -687,6 +736,9 @@ def run(ctx: StageContext) -> StageResult:
     lookback = c.option("lookback_days", DEFAULT_LOOKBACK_DAYS, cast=int)
     if lookback < 0:
         raise ValueError(f"option lookback_days: {lookback} < 0")
+    split_years = c.option("split_years", DEFAULT_SPLIT_YEARS, cast=int)
+    if split_years < 0:
+        raise ValueError(f"option split_years: {split_years} < 0")
 
     full_plan = only_queries(plan_groups(config), c.option("queries", None))
     planned = len(full_plan)
@@ -707,8 +759,8 @@ def run(ctx: StageContext) -> StageResult:
     c.counts["s2_keyed"] = int(bool(key))
     api_stats: dict[str, Any] = {"retries": 0, "http_429": 0, "http_5xx": 0, "timeouts": 0,
                                  "pages_fetched": 0}
-    tally = {"queries_complete": 0, "queries_truncated": 0, "queries_error": 0, "windowed": 0,
-             "filter_ignored": 0, "papers_fetched": 0, "papers_new": 0, "below_floor": 0,
+    tally = {"queries_complete": 0, "queries_truncated": 0, "queries_error": 0, "spans": 0,
+             "filter_ignored": 0, "upper_bound_ignored": 0, "papers_fetched": 0, "papers_new": 0, "below_floor": 0,
              "unkeyable": 0, "arxiv_bridged": 0, "pmid_keyed": 0, "s2_id_keyed": 0,
              "abstract_absent": 0, "lookback_capped": 0}
     for name in rules.KEYWORD_CUTS:
@@ -787,6 +839,59 @@ def run(ctx: StageContext) -> StageResult:
             error_class, permanent = error_class_of(int(api_stats.get("last_status", 0)))
             w.fail(error_class, permanent=permanent)
 
+    def pages_left() -> int | None:
+        """The run's page budget left (``max_pages``), ``None`` without one."""
+        return None if page_budget is None else max(0, page_budget - int(api_stats["pages_fetched"]))
+
+    def sweep_span(item: dict[str, Any], qkey: dict[str, Any], start: str, end: str, ask_from: str, *,
+                   bounded: bool) -> str:
+        """One span ``[start, end]`` of a query (module docstring, "Year spans"): asked from
+        ``ask_from`` (``start``, or the tail's look-back below it) to ``end − 1 day`` when
+        ``bounded``, else open above; its papers through :func:`take`; its coverage window written.
+        A complete span whose bounds held is ``ok`` ``[start, end]`` (from the floor when the lower
+        bound was ignored); anything else claims nothing (``[start, start]``). Returns the receipt
+        (``complete`` / ``truncated`` / ``error``)."""
+        to = (dt.date.fromisoformat(end) - dt.timedelta(days=1)).isoformat() if bounded else None
+        tally["spans"] += 1
+        api_stats.pop("last_status", None)
+        papers, exhausted = fetch_group(item["s2_query"], ask_from, limit, headers, api_stats,
+                                        max_pages=pages_left(), to=to)
+        seen, kept = take(item, qkey, papers)
+        fetched = len(papers)
+        if ask_from < start and exhausted == "truncated" and len(papers) >= limit:
+            # The cap filled inside the look-back: keep those hits, then ask from the watermark
+            # (else the query would come back capped every run).
+            tally["lookback_capped"] += 1
+            if pages_left() != 0:
+                ask_from = start
+                api_stats.pop("last_status", None)
+                papers, exhausted = fetch_group(item["s2_query"], start, limit, headers, api_stats,
+                                                max_pages=pages_left(), to=to)
+                more_seen, more_kept = take(item, qkey, papers)
+                seen, kept, fetched = seen + more_seen, kept + more_kept, fetched + len(papers)
+        # Honor-detection backstops (2) and (3): a date bound is a SILENT no-op if the API changes.
+        filter_ignored = _filter_ignored(papers, ask_from)
+        tally["filter_ignored"] += filter_ignored
+        late = _upper_ignored(papers, to) if to is not None else None
+        tally["upper_bound_ignored"] += late is not None
+        # Only a COMPLETE span whose upper bound held banks [start, end]; anything else banks NOTHING
+        # ([start, start]): bulk results are paperId-ordered, so a capped pass covered an unknown
+        # subset (SHOULD-14).
+        ok = exhausted == "complete" and late is None
+        covered_from = floor_from if (ok and filter_ignored) else start
+        with c.window(CHANNEL, qkey, covered_from, end if ok else start) as w:
+            w.seen, w.kept = seen, kept
+            if late is not None:
+                w.fail("query_invalid", permanent=True)
+                w.error = f"publicationDateOrYear upper bound {to} ignored: a paper dated {late} came back"
+                exhausted = "error"
+            else:
+                close(w, exhausted)
+        tally[f"queries_{exhausted}"] += 1
+        tally["papers_fetched"] += fetched
+        tally["papers_new"] += kept
+        return exhausted
+
     # A 429 asking more than 60 s halts the run (D550): the query it hit and those not reached get
     # no row and stay due; the run ends scope_complete = false (Collector.finish).
     with c.halts():
@@ -799,78 +904,41 @@ def run(ctx: StageContext) -> StageResult:
             if not full_resweep and not c.due(CHANNEL, qkey, until=today, relist_after=relist,
                                               partial_due=False, floor=floor_from):
                 continue
-            # Floor moved back (module docstring): each hole [s, e] first, as the bounded range
-            # publicationDateOrYear=s:(e - 1 day), written [s, e] (not ok: claims nothing).
+            # Floor moved back (module docstring): each hole [s, e] first, in year spans, each asked as
+            # the bounded range publicationDateOrYear=s:(e - 1 day) and written [s, e]; a hole's
+            # sequence stops at its first span that is not ok (the rest stays a hole).
             for hs, he in ([] if full_resweep else c.holes(CHANNEL, qkey, floor_from)):
-                remaining = None if page_budget is None else page_budget - int(api_stats["pages_fetched"])
-                if remaining is not None and remaining <= 0:
+                if pages_left() == 0:
                     break
                 tally["holes"] += 1
-                h_from, h_to = hs.date().isoformat(), he.date().isoformat()
-                api_stats.pop("last_status", None)
-                papers, exhausted = fetch_group(
-                    item["s2_query"], h_from, limit, headers, api_stats, max_pages=remaining,
-                    to=(he.date() - dt.timedelta(days=1)).isoformat())
-                seen, kept = take(item, qkey, papers)
-                with c.window(CHANNEL, qkey, h_from, h_to) as w:
-                    w.seen, w.kept = seen, kept
-                    close(w, exhausted)
-                tally[f"queries_{exhausted}"] += 1
-                tally["papers_fetched"] += len(papers)
-                tally["papers_new"] += kept
-            remaining = None if page_budget is None else page_budget - int(api_stats["pages_fetched"])
-            if remaining is not None and remaining <= 0:
-                budget_stopped = True  # the queries not reached get no row; the next run picks them up
+                for ss, se in year_spans(hs.date(), he.date(), split_years, this_year):
+                    if pages_left() == 0 or sweep_span(item, qkey, ss.isoformat(), se.isoformat(),
+                                                       ss.isoformat(), bounded=True) != "complete":
+                        break
+            if pages_left() == 0:
+                budget_stopped = True  # the spans and queries not reached get no row; the next run picks them up
                 break
-            # Incremental window: resume from the query's watermark, and only send the date filter when
-            # that watermark (or the plan's floor) is past the channel floor. A first-ever pass at the
-            # channel floor sends none — so papers with no publication date (which S2's own filter
-            # drops) are seen at least once.
+            # The tail: resume from the query's watermark, else the floor, always date-filtered (D801),
+            # in year spans (module docstring); the sequence stops at the first span that is not ok.
             mark = None if full_resweep else c.watermark(CHANNEL, qkey)
             if mark is not None and mark.date().isoformat() >= today:
                 continue  # only a hole was due; the tail is covered through today
             eff_from = max(floor_from, mark.date().isoformat()) if mark is not None else floor_from
-            windowed = eff_from > unfiltered_from
-            # Index lag (D551): re-ask `lookback` days below the watermark; the window is still
-            # written from the watermark (module docstring).
+            # Index lag (D551): the first span re-asks `lookback` days below the watermark; its window
+            # is still written from the watermark (module docstring).
             ask_from = eff_from
-            if mark is not None and windowed and lookback:
+            if mark is not None and lookback:
                 ask_from = max(floor_from, (mark.date() - dt.timedelta(days=lookback)).isoformat())
-            api_stats.pop("last_status", None)
-            papers, exhausted = fetch_group(item["s2_query"], ask_from if windowed else None, limit,
-                                            headers, api_stats, max_pages=remaining)
-            tally["windowed"] += windowed
-            seen, kept = take(item, qkey, papers)
-            fetched = len(papers)
-            if ask_from < eff_from and exhausted == "truncated" and len(papers) >= limit:
-                # The cap filled inside the look-back: keep those hits, then ask from the watermark
-                # (else the query would come back capped every run).
-                tally["lookback_capped"] += 1
-                remaining = None if page_budget is None else page_budget - int(api_stats["pages_fetched"])
-                if remaining is None or remaining > 0:
-                    ask_from = eff_from
-                    api_stats.pop("last_status", None)
-                    papers, exhausted = fetch_group(item["s2_query"], eff_from, limit, headers,
-                                                    api_stats, max_pages=remaining)
-                    more_seen, more_kept = take(item, qkey, papers)
-                    seen, kept, fetched = seen + more_seen, kept + more_kept, fetched + len(papers)
-
-            # Honor-detection backstop (2): a lower-bound date filter is a SILENT no-op if the API
-            # changes. If any returned paper predates the sent bound beyond the slack, the server
-            # ignored it, so this query claims the whole floor range rather than [eff_from, today].
-            filter_ignored = windowed and _filter_ignored(papers, ask_from)
-            tally["filter_ignored"] += filter_ignored
-            # A COMPLETE honored windowed pass covers [eff_from, today]; anything else banks NOTHING
-            # ([from, from]): bulk results are paperId-ordered, so a capped pass covered an unknown
-            # subset (SHOULD-14).
-            covered_from = eff_from if (windowed and not filter_ignored) else floor_from
-            with c.window(CHANNEL, qkey, covered_from,
-                          today if exhausted == "complete" else covered_from) as w:
-                w.seen, w.kept = seen, kept
-                close(w, exhausted)
-            tally[f"queries_{exhausted}"] += 1
-            tally["papers_fetched"] += fetched
-            tally["papers_new"] += kept
+            spans = year_spans(dt.date.fromisoformat(eff_from), c.now.date(), split_years, this_year)
+            for j, (ss, se) in enumerate(spans):
+                if j and pages_left() == 0:
+                    budget_stopped = True
+                    break
+                if sweep_span(item, qkey, ss.isoformat(), se.isoformat(), ask_from if j == 0 else ss.isoformat(),
+                              bounded=j < len(spans) - 1) != "complete":
+                    break  # a later ok span would carry the watermark over this one (module docstring)
+            if budget_stopped:
+                break
         else:
             c.progress(len(plan), len(plan))
 
@@ -879,5 +947,5 @@ def run(ctx: StageContext) -> StageResult:
                     page_budget=page_budget or 0, budget_stopped=int(budget_stopped),
                     page_retries=int(api_stats["retries"]),
                     pages_fetched=int(api_stats["pages_fetched"]),
-                    full_resweep=int(full_resweep), lookback_days=lookback)
+                    full_resweep=int(full_resweep), lookback_days=lookback, split_years=split_years)
     return c.finish(scope_complete=not budget_stopped)
