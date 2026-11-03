@@ -19,9 +19,9 @@ Both read only local files: the corpus of an `ok` build (`--allow-incomplete` fo
 the run records of the build's annotate runs, the build's `<wf>` and `<producer>_evidence` files, every part of the
 overrides chain the build's runs read (one head), the repo's taxonomies, the judge eval set's scores, and for
 `dataset-internal` the text blobs (the store's `blobs/`, or `--blobs`). The output directory must be absent or empty and outside the store;
-nothing is recorded or uploaded. The release id (and format id) is the export's UTC date unless `--release-id`
-names one. About 100 s and 4.5 GB peak RSS for 39k rows (the internal variant adds ~30 s for 2.4 GB
-of text). Every check in `mapping.yaml` runs over the written stage; any problem keeps nothing and names the problem.
+nothing is recorded or uploaded. The release id is the export's UTC date unless `--release-id` names one; the
+release format has its own version (`format_version`, D803, below). About 100 s and 4.5 GB peak RSS for 39k rows
+(the internal variant adds ~30 s for 2.4 GB of text; the release checker, D803, adds ~30 s and ~40 s). Every check in `mapping.yaml` runs over the written stage; any problem keeps nothing and names the problem.
 
 `stack export` uploads nothing. To publish by hand, run a cycle by hand (`docs/DEPLOY-railway.md`): it exports,
 stages and uploads as above. `python tools/scheduled_run.py upload --release-id <id>` uploads a
@@ -29,19 +29,52 @@ release staged on the ops prefix (one whose upload failed, or that a lost lock k
 a directory exported by hand.
 
 The bundle (D725; D736 added the organisation vocabulary), the same files in both variants: `README.md` (the card, with the quality table), `LICENSE`,
-`FORMAT.md`, `VOCABULARY.md`, `schema.json` (the row's JSON Schema; each kind's record and payload inline),
-`release.json` (every other file with size and sha256), `data/corpus.parquet`, `config/configs.json`,
+`FORMAT.md`, `VOCABULARY.md`, `release.json` (every other file with size and sha256) and its schema
+`release.schema.json`, `data/corpus.parquet` and `data/corpus.schema.json` (the row's JSON Schema; each kind's record
+and payload inline; until D803 `schema.json`), `config/configs.json`, `config/configs.schema.json`,
+`config/overrides.schema.json` (one line), `tools/release-validator.py` (the release checker, copied from
+`data-repo/tools/`),
 `config/overrides.jsonl` (the active overrides, each with its run id), `taxonomies/{techniques,models}-<version>.yaml` (one file per version the records' pins name: 1.1.0 since D738, and
 1.0.0 beside it for the answers accepted from the 1.0.0 configs, D758) and `taxonomies/orgs-0.2.2.yaml` (the organisation vocabulary the `annotate.affiliation_orgs` records pinned; the kind
 `affiliation_orgs` ships those records, and `mapping.yaml` `org_fields` copies each affiliation's `org_ids` and
 `org_status` and `org_candidates` from them into `affiliation`, NULL where a document has no record; `release.json` `orgs` counts the
-affiliations by status).
-The export refuses a bundle that is not exactly the mapping's `files:`.
+affiliations by status), and every version a shipped taxonomy file's `meta.references` names (`orgs-0.2.0.yaml`, which
+models 1.1.0 refers to; its pin has `referenced_by`, D803).
+The export refuses a bundle that is not exactly the mapping's `files:`, and runs the release checker
+(`data-repo/tools/release-validator.py`, the file it ships) over every row before keeping anything (D803; about 30 s
+for the 41k rows of release 2026-11-02, 40 s for its internal variant).
+
+## The release format (D803)
+
+The release format has a semantic version, `format_version` in `configs/releases/dataset/mapping.yaml`; the export
+writes it into `release.json`, the parquet key-value metadata and the card. The rules (what is a major, minor or
+patch change; what a reader may rely on) are in `data-repo/formats/README.md`. The schemas the export writes must
+equal the archive of the declared version, `data-repo/formats/<major>.<minor>/`, compared structurally after
+stripping the prose (`tests/test_release_format.py`; the export's own check refuses otherwise). Whether a field's
+list is closed or open is set once per field in `mapping.yaml` (`enum`, `open: true`; `in_schema: false` keeps an open
+list's values out of the schemas).
+
+To change the format:
+
+1. Change the export (the mapping, `stack/fold/dataset.py`). `uv run --no-sync python tools/release_format.py check`
+   compares the generated schemas with the archive: equal is done (a prose change is a patch at most and needs no
+   archive change). Otherwise it classifies the change against the highest archived version below the declared one
+   and says the bump needed; set `format_version` to at least that (a change of meaning the classifier cannot see is
+   a major version, declared by hand).
+2. In a checkout of the data repository, `tools/release_format.py archive --data-repo <checkout>` writes
+   `formats/<major>.<minor>/`; add the version's `formats/CHANGELOG.md` entry (undated) in the same commit, with a
+   new `SUPPORTED_MAJORS` and checks in `tools/release-validator.py` for a new major. Run its checks
+   (`data-repo/AGENTS.md`).
+3. The maintainer reviews, pushes and tags `format-<version>` there; then pull the subtree here
+   (`taxonomy/README.md`). `tools/release_format.py check` and the tests pass again.
+4. The first release of the version is published; the maintainer dates the changelog entry. From then on that
+   directory is never edited.
 
 Where things are: `stack/fold/dataset.py` (module docstring: inputs, row, variants, bundle), `configs/releases/
 dataset-{public,internal}.yaml`, `configs/releases/dataset/` (`mapping.yaml`: the schema and its descriptions;
 `overrides-public.yaml`: public author/method/note of the overrides; `vocab.yaml`, rendered as VOCABULARY.md; the card and FORMAT templates, LICENSE).
-Tests: `tests/test_dataset_release.py`.
+Tests: `tests/test_dataset_release.py`, `tests/test_release_format.py` (the archive, the classifier, the export end
+to end on synthetic rows with the checker over it).
 
 The card's quality table is computed at export time from the judge eval set the config names (`judge_eval`, a repo
 directory such as `evals/judge-2026-10-25j`) and the release's own build (D728, `stack/evals/release_quality.py`): the

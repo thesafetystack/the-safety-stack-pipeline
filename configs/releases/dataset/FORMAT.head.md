@@ -15,6 +15,52 @@ read.
 **Which file to open.** `data/corpus.parquet` for everything: labels, roles, quotes, provenance. Flat tables (one row
 per document with label lists, or one row per document and kind) are one query away; see "Recipes".
 
+## Format versions
+
+This release has format version `{{format_version}}`: `release.json` `format_version`, the parquet file's key-value
+metadata `format_version` (beside `release_id`) and the card's front matter carry it. Many dated releases share one
+format; the version changes only when the files change shape. The rules, from the reader's side (every version's
+schemas, the changelog and the full table: `formats/` in the
+[taxonomies repository](https://github.com/thesafetystack/the-safety-stack/tree/main/formats)):
+
+- **Within major version {{format_major}}** every field and file of this format stays, with its JSON type and its
+  Arrow type; a field that is not nullable stays so; a closed list keeps exactly its values.
+- **A minor version may add** fields and files, values of an open list, a taxonomy key in `release.json`, and may
+  make a nullable field non-nullable. So select fields by name, and tolerate fields, files and open-list values you
+  do not know.
+- **A patch version** changes prose only (descriptions, these documents). Anything else (a field removed, renamed or
+  retyped, a field made nullable, a closed list changed, a change of meaning) is a new major version.
+
+Each file's JSON Schema (2020-12) sits beside it: `release.schema.json`, `data/corpus.schema.json` (one row; every
+node's exact Arrow type as `x-arrow`), `config/configs.schema.json` and `config/overrides.schema.json` (one line).
+A closed list is an `enum` there. An open list has `x-open: true` and its known values in `x-values`; the open lists
+are marked in [VOCABULARY.md](VOCABULARY.md). The providers' `doc_type` and the channel names are plain strings
+whose values VOCABULARY.md describes; new ones can appear in any release.
+
+To read the version, and to read a release pinned by its tag (`release-<release_id>`) so code keeps reading the
+format it was written for:
+
+```python
+import json, pyarrow.parquet as pq
+json.load(open("release.json"))["format_version"]                    # a downloaded release
+pq.read_schema("data/corpus.parquet").metadata[b"format_version"]    # b"{{format_version}}"
+
+REL = "hf://datasets/{{hf_repo}}@release-{{release_id}}/data/corpus.parquet"   # this release, pinned
+import pandas as pd
+df = pd.read_parquet(REL)                       # pandas reads hf:// through huggingface_hub
+import polars as pl
+d = pl.scan_parquet(REL)
+import duckdb
+duckdb.sql(f"SELECT decode(key) AS key, decode(value) AS value FROM parquet_kv_metadata('{REL}') "
+           "WHERE decode(key) IN ('format_version', 'release_id')").show()
+duckdb.sql(f"SELECT count(*) FROM '{REL}'").show()
+```
+
+**Checking a download.** `uv run tools/release-validator.py <release directory> --rows all` (the checker ships in
+`tools/`) checks the format version, every file against `release.json` (sha256, nothing missing or extra) and
+against its schema (every row as JSON), the ids (`doc_id`, `config_id`, the overrides) and the taxonomy ids against
+the pinned files. Exit code 0 = valid, 1 = invalid, 3 = a format version the checker does not know.
+
 ## The row in one screen
 
 - **Bibliographic columns**: `doc_id`, `title`, `abstract` (`release.abstract` says whether it is shipped, withheld
@@ -129,7 +175,7 @@ org_table = pl.DataFrame([{"org_id": o["id"], "name": o["name"], "type": o["type
 |---|---|---|
 | `annotations.<kind>.metadata.config_id` | `config/configs.json` | the producing call: stage, prompt name and the digests of its files, model and parameters, taxonomy pin, the pipeline's config digest |
 | `...metadata.override_ids`, `identity.override_ids`, `identity.members[].override_id` | `config/overrides.jsonl` | kind, run, author, method, note, value, created_at of each override |
-| `annotations.<kind>.metadata.kind`, `version` | `schema.json`, the generated reference below | the kind's record and payload schema, its internal name, capped paths |
+| `annotations.<kind>.metadata.kind`, `version` | `data/corpus.schema.json`, the generated reference below | the kind's record and payload schema, its internal name, capped paths |
 | `safety_techniques.payload.techniques[].slug`, `model_roles.payload.models[].node_id` | `taxonomies/` | the techniques taxonomy and the models catalogue |
 | `affiliation.payload.items[].affiliations[].org_ids` and `org_candidates`, `affiliation_orgs.payload.org_ids` | `{{orgs_file}}` (`entries[].id`; `affiliation_orgs.payload.vocab_version` names the version) | the organisation: name, type, country, parent |
 | a hand-added document (`identity.members[].channel` = `manual_url`, `manual_paper`) | `config/overrides.jsonl`, the `manual_source` row whose `key` is the member's `<key_kind>=<key_value>` | who added it and how the list was prepared |

@@ -82,6 +82,11 @@ name matcher found, rejected candidates with every role 0 included: count a mode
 (FORMAT.md has the recipe). The snippets were tested with DuckDB 2.0, polars 2.1 and `datasets` 5.1 (`pip install duckdb polars
 datasets`; the `hf` command comes with `huggingface_hub`).
 
+**Checking a download.** The release ships its checker: `uv run stack/tools/release-validator.py stack --rows all`
+checks the format version (`{{format_version}}`), every file against `release.json` and against its schema (every
+row), the ids and the taxonomy pins; exit code 0 = valid. FORMAT.md's "Format versions" says what a format version
+guarantees.
+
 Every field is documented in [FORMAT.md](FORMAT.md), with more DuckDB, polars and pandas recipes, and every value
 word in [VOCABULARY.md](VOCABULARY.md).
 

@@ -78,6 +78,11 @@ spend is in its run record. Full list: `.env.example`; details: `docs/SETUP.md`.
   checks (`STACK_SCHED_EXPECT_PLAN_DIGEST`, `docs/DEPLOY-railway.md`).
 - Test on the synthetic world (`tests/synth/world.py`, `STACK_WORKFLOWS_ROOT=tests/synth/stages`) and the fakes in
   `tests/fakes/`; no test touches the network. Experiment on a copy of a store, never on one a cycle or a build uses.
+- The dataset release has a format version (`format_version` in `configs/releases/dataset/mapping.yaml`, D803). A
+  change to what the export writes (a field, a type, a list value, a file) is a format change: run
+  `uv run --no-sync python tools/release_format.py check`, which says the bump it needs; the new version's schemas
+  are archived in the data repository (`data-repo/formats/`, written there by `tools/release_format.py archive`, never
+  here) and pulled back by subtree (`docs/howto/dataset-release.md`, "The release format").
 - A decision that changes behaviour gets a row in `docs/DECISIONS.md` (the next free `D<n>`, appended; a later row
   amends an earlier one, decided rows are not edited); code comments and docs cite it as `D<n>`. D0-D800 are in
   `docs/repo-history/decisions-D1-D800.md`.

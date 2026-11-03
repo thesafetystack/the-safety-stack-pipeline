@@ -291,7 +291,14 @@ slow = []
 [[map]]
 # the release's quality numbers from its own build (D728): the re-scoring module, the judge eval set it reads, the card
 paths = ["stack/evals/release_quality.py", "evals/judge-2026-10-25j/*", "stack/fold/dataset.py"]
-tests = ["release_quality", "dataset_release"]
+tests = ["release_quality", "dataset_release", "release_format"]
+slow = []
+
+[[map]]
+# the release format (D803): its schemas, the archive in the vendored data repository, the classifier
+paths = ["tools/release_format.py", "configs/releases/dataset/*", "data-repo/formats/*",
+         "data-repo/tools/release-validator.py"]
+tests = ["release_format", "dataset_release"]
 slow = []
 
 # ---------------------------------------------------------------- tools and the dev tier itself
