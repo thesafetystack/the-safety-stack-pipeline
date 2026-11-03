@@ -11,6 +11,7 @@ import datetime as dt
 import hashlib
 import importlib.util
 import json
+import re
 import shutil
 import sys
 import time
@@ -374,8 +375,8 @@ def export(tmp: Path, variant: str = "public", n: int = 12, data_repo: Path | No
         mp.setattr(ds, "release_gate", lambda root, fid, allow_incomplete=False: ("b1", "ok"))
         mp.setattr(ds, "load_inputs", lambda root, bid, status, h: inp)
         mp.setattr(ds, "release_quality", lambda root, build, t, je: ({}, {"synthetic": True}))
-        mp.setattr(ds, "judge_eval", lambda rel, bid, rescored: ds.JudgeEval("(synthetic: no judge evaluation)",
-                                                                             {"synthetic": True}))
+        mp.setattr(ds, "judge_eval", lambda rel, bid, rescored: ds.JudgeEval(
+            "(synthetic: no judge evaluation)", {"synthetic": True, "missed_relevant": {"not_relevant_records": 4321}}))
         if data_repo is not None:
             mp.setattr(ds, "DATA_REPO", data_repo)
         t0 = time.perf_counter()
@@ -420,6 +421,21 @@ def test_the_export_ships_the_referenced_organisation_vocabulary(public: Path) -
     assert [(o["version"], o.get("referenced_by")) for o in orgs] == [
         ("0.2.0", ["taxonomies/models-1.1.0.yaml"]), ("0.2.2", None)]
     assert ds.newest_taxonomy({"taxonomies": {"orgs": orgs}}, "orgs")["version"] == "0.2.2"
+
+
+@pytest.mark.slow
+def test_the_card_numbers_list_is_filled_from_the_export(public: Path) -> None:
+    """The card's "This release in numbers" placeholders (channels, triage, screened out, organisations) come from the
+    export: the anchor channels, the judge eval record, release.json ``rows`` and the shipped orgs vocabulary."""
+    card = (public / "README.md").read_text()
+    doc = json.loads((public / "release.json").read_text())
+    assert "{{" not in card and "TODO" not in card
+    orgs = ds.newest_taxonomy(doc, "orgs")["path"]
+    n_orgs = len(ds.yamlio.load((public / orgs).read_text("utf-8"))["entries"])
+    assert "Selection: 4,321 records marked not relevant by triage" in card
+    assert f"{doc['rows']['filtered_out']:,} were not." in card
+    assert f"and {n_orgs:,} organisations." in card
+    assert re.search(r"Collected from \d+ source channels", card)
 
 
 @pytest.mark.slow
