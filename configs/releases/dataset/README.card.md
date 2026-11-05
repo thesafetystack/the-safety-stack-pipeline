@@ -152,7 +152,7 @@ repository tagged `release-<date>`.
 {{variant_note}}
 
 Team: Tomáš Gavenčiak (lead; Alignment of Complex Systems group, Charles University, Prague), Jacob
-Livingston Slosser (Pioneer Centre for AI, University of Copenhagen; CheatSheet; Juriscription), Dan Elton
+Livingston Slosser (Sapien Institute; Pioneer Centre for AI, University of Copenhagen), Dan Elton
 (Metascience Observatory), Gavin Leech (advisor).
 Cite as: The Safety Stack dataset, release {{release_id}}, https://huggingface.co/datasets/{{hf_repo}}.
 
