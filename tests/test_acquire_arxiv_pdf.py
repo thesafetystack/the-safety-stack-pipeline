@@ -563,6 +563,28 @@ def test_never_then_always_through_the_arxiv_lane(tmp_path: Path) -> None:
     checks_ok(root)
 
 
+@pytest.mark.slow
+@needs_fetchpdf
+def test_an_html_only_paper_is_listed_and_still_learns_a_new_version(tmp_path: Path) -> None:
+    """D807: the history lists an HTML-only paper's Atom answer in ``content.revisions`` (as the PDF's), and a
+    listed paper's due ``html`` role still joins the sweep: past the recheck, v2 is learnt, listed and fetched."""
+    from tests.fakes.http import FakeHttp
+
+    fake = FakeHttp()
+    world(fake, {1: (LATEXML, 200, pdf_v(1))})
+    root = store(tmp_path, [arxiv_row(1)])
+    go(root, fake, NOW, plan=run_plan("never"))
+    assert [r["revision"] for r in view(root)[sid(1)]["content"]["revisions"]] == ["v1"]
+    atom(fake, {1: 2})
+    fake.add(HTML_URL.format(aid=aid_of(1), v=2), body=LATEXML + b"<!-- v2 -->", headers={"Content-Type": "text/html; charset=utf-8"})
+    n = len(fake.urls())
+    go(root, fake, NOW + 8 * 24 * H, plan=run_plan("never"))
+    assert asked(fake, n, "html") == [HTML_URL.format(aid=aid_of(1), v=2)] and asked(fake, n, "pdf") == []
+    row = view(root)[sid(1)]
+    assert [r["revision"] for r in row["content"]["revisions"]] == ["v1", "v2"]
+    assert [s["revision"] for s in snaps_of(row, "html")] == ["v1", "v2"]
+
+
 def unstamped(r: Row) -> Row:
     """A role without ``retry_after`` (the history's re-check stamp, which changes without a request)."""
     return {k: v for k, v in r.items() if k != "retry_after"}
