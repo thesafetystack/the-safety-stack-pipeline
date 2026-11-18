@@ -31,6 +31,11 @@ The evidence file of a run is cumulative: every prior evidence row, byte for byt
 this run's rows (D-row "evidence carry"), so a chain of one still holds the history ``select``
 and X8 read.
 
+**Same basis, another supplier** (D807, :func:`same_basis_row`): when the supplying member of a document's
+text changes but the text does not (same ``basis_digest`` and ``config_digest``), a decided answer asked for the
+earlier member stands for the new key, if the new member's licence class is no stricter than the earlier one's;
+``select`` and the ask loop consult it after the accepted configs. The evidence keeps its own work key.
+
 **The selected row of a work key** (:func:`selected`; ``select``, the prior carry and X8 all use
 it): rows of one key form a chain through ``supersedes``; order is the chain position, then
 ``decided_at``, then ``evidence_id``. The newest **decided** row (``ok``/``empty``) is selected
@@ -55,6 +60,7 @@ from stack.core import ids
 from stack.schemas.families.evidence import TRIAGE_QUESTION, USAGE_WORKFLOWS
 from stack.schemas.payloads.registry import PayloadSpec, records_of
 from stack.schemas.payloads.registry import payload as registry_entry
+from stack.schemas.vocab import license_rank
 
 Row = dict[str, Any]
 
@@ -273,6 +279,35 @@ def accepted_row(latest: Mapping[str, Mapping[str, Any]], source_id: str, basis_
     return None
 
 
+#: ``(doc_id, basis_digest, config_digest)`` → the decided selected rows of that document, basis and config (D807).
+SameBasis = dict[tuple[str, str, str], list[Mapping[str, Any]]]
+
+
+def by_basis(latest: Mapping[str, Mapping[str, Any]]) -> SameBasis:
+    """The decided (``ok``/``empty``) rows of ``latest`` (:func:`by_work`) by document, basis and config, for
+    :func:`same_basis_row`."""
+    out: SameBasis = {}
+    for e in latest.values():
+        if e["status"] in OK_LIKE:
+            out.setdefault((e["doc_id"], e["basis_digest"], e["config_digest"]), []).append(e)
+    return out
+
+
+def same_basis_row(index: SameBasis, doc_id: str, source_id: str, basis_digest: str, config_digest: str,
+                   licenses: Mapping[str, str | None]) -> Mapping[str, Any] | None:
+    """A decided answer of the same document, basis and config asked for another supplying member (D807): the
+    newest (``decided_at``, ``evidence_id``) whose member is still one of the document's (``licenses``: member
+    ``source_id`` → ``license_class``) and whose class is no looser than ``source_id``'s
+    (:func:`stack.schemas.vocab.license_rank`; NULL reads ``restricted``, as the ask does), so the answer was asked
+    under an egress rule at least as strict as the new supplier's. ``None`` when there is none. The work key keeps
+    its supplier: this row is selected under its own key, never re-keyed, and a failure is never reused."""
+    new = license_rank(licenses.get(source_id))
+    fits = [e for e in index.get((doc_id, basis_digest, config_digest), ())
+            if e["source_id"] != source_id and e["source_id"] in licenses
+            and license_rank(licenses[e["source_id"]]) >= new]
+    return max(fits, key=lambda e: (e["decided_at"], e["evidence_id"]), default=None)
+
+
 def prior_decision(prev: Mapping[str, Any] | None, now: dt.datetime) -> str:
     """The prior-evidence table for one work key: ``ask`` (no evidence; or a due
     ``failed_transient`` under the cap), else ``carry`` (``ok``/``empty``, a transient not yet
@@ -295,8 +330,10 @@ __all__ = [
     "LLM_COLUMNS",
     "USAGE_COLUMNS",
     "OK_LIKE",
+    "SameBasis",
     "accepted_row",
     "backoff",
+    "by_basis",
     "by_work",
     "complete_payload",
     "evidence_payload",
@@ -308,6 +345,7 @@ __all__ = [
     "prior_decision",
     "record_payload",
     "result_digest",
+    "same_basis_row",
     "selected",
     "usage_columns",
     "with_digests",

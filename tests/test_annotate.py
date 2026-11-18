@@ -8,6 +8,7 @@ them).
 
 from __future__ import annotations
 
+import copy
 import datetime as dt
 from pathlib import Path
 from typing import Any
@@ -37,7 +38,8 @@ from tests.fakes.annotate import (
 from tests.fakes.llm import FakeLlm, malformed, ok
 from tests.fakes.overrides import OVERRIDES_DIR, add_overrides
 from tests.synth.records import SERIES
-from tests.synth.rows import sid
+from tests.synth.rows import rid, sid, with_digests
+from tests.synth.world import write_on_head
 
 pytestmark = pytest.mark.slow  # runner-driven scenario stores (D90; `docs/SETUP.md` §7)
 
@@ -630,7 +632,8 @@ def test_accepted_rows_are_selected_with_their_own_labels_and_not_asked(two_conf
     store, fake, ra = t["store"], t["fake"], t["ra"]
     cfg_a, cfg_b = ra.config_digest, _digest(t["pb"])
     assert cfg_a != cfg_b and cfg_a == _digest(t["pa"])
-    assert ra.selection == {"digest": selection_digest(cfg_a, []), "target": cfg_a, "accepted": []}
+    assert ra.selection == {"digest": selection_digest(cfg_a, []), "target": cfg_a, "accepted": [],
+                            "same_basis": True}  # D807: recorded beside the digest
     pb = _accepting(t["pb"], cfg_b, [cfg_a])
     rb = annotate(store, pb, "screen", t["corpus"], prior=ra)
     assert fake.count() == 3 and "asked" not in rb.counts and "cache_hits" not in rb.counts
@@ -639,7 +642,8 @@ def test_accepted_rows_are_selected_with_their_own_labels_and_not_asked(two_conf
     assert _by_doc(store, rb) == _by_doc(store, ra)
     assert {r["config_digest"] for r in rows_of(store, rb, "screen")} == {cfg_a}
     entry = {"config": cfg_a, "name": "screen-v7", "decision": "D1"}
-    assert rb.selection == {"digest": selection_digest(cfg_b, [entry]), "target": cfg_b, "accepted": [entry]}
+    assert rb.selection == {"digest": selection_digest(cfg_b, [entry]), "target": cfg_b, "accepted": [entry],
+                            "same_basis": True}
     assert rb.prompt_pin is not None and rb.prompt_pin["role_params"]["name"] == "screen"  # the default role
     accepted_green(store)  # X6 judges A's rows by A's pin, X8 replays the run's selection
 
@@ -745,3 +749,105 @@ def test_config_name_tags_the_vendored_vocabularies() -> None:
     assert config_name({"prompt_name": "technique-staged-v5-a1.1", "template_digests": ["t" * 64, tech]}) == \
         "technique-staged-v5-a1.1@techniques-1.0.0"
     assert config_name({"prompt_name": None, "plan_pin": {"name": "orgs-0.2.0"}, "template_digests": []}) == "orgs-0.2.0"
+
+
+# ---------------------------------------------------------------- same basis, another supplier (D807)
+def _two_suppliers(store: Path, i: int, lic_a: str, lic_b: str) -> dict[str, Any]:
+    """Document ``i`` with its text from member A (its anchor, class ``lic_a``) and a second member B (an
+    OpenAlex record of the same paper, class ``lic_b``) that supplies nothing yet."""
+    row = doc_with_text(store, i, f"Body of paper {i}.")
+    a = row["identity"]["members"][0]
+    a["license_class"] = lic_a
+    b = {**copy.deepcopy(a), "source_id": sid(100 + i), "channel": "openalex", "key_kind": "doi",
+         "key_value": f"10.48550/arxiv.2610.{i:05d}", "license_class": lic_b, "edge_kind": "key:doi",
+         "edge_to_source_id": row["doc_id"]}
+    row["identity"]["members"].append(b)
+    row["identity"]["member_ids"].append(b["source_id"])
+    return with_digests(row)
+
+
+def _supplied_by_b(store: Path, rows: list[dict[str, Any]], run: int) -> None:
+    """An ``acquire`` part: each row's same text now comes from B's newer snapshot, which the pointer names."""
+    out = []
+    for row in rows:
+        row = copy.deepcopy(row)
+        c = row["content"]
+        s0 = c["snapshots"][0]
+        b = row["identity"]["members"][1]["source_id"]
+        s1 = {**copy.deepcopy(s0), "snapshot_id": f"{rid(run)}.{row['doc_id'][-4:]}", "source_id": b,
+              "captured_at": s0["captured_at"] + dt.timedelta(hours=1)}
+        c["snapshots"].append(s1)
+        c["current_snapshot_id"], c["current_source_id"] = s1["snapshot_id"], b
+        row["run_id"] = c["run_id"] = rid(run)
+        out.append(row)
+    write_on_head(store, "documents", "documents", out, stage="acquire", run=run, blocks_written=["content"],
+                  kind="part")
+
+
+def test_an_unchanged_text_from_another_supplier_keeps_its_answer(env: dict[str, Any],
+                                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+    """D807 (B): the text's supplier moves from A to B with the same text. Doc 0 (open → open) keeps its answer
+    (``carried.same_basis``, no call; the row keeps A's evidence and provenance); doc 1 (open → restricted, a
+    stricter egress) is asked again; doc 2, whose answer under A failed, is asked again (failures are never
+    reused). The store checks stay green (X8 replays the run's recorded ``same_basis``); without the flag in
+    the run record X8 no longer reproduces the file."""
+    from stack.llm import ContextTooLarge
+    from stack.runs import find_run_record
+    from tests.synth.records import rewrite_record
+
+    store, fake = env["store"], env["fake"]
+    verdicts(fake, 3)
+    docs = [_two_suppliers(store, 0, "open", "open"), _two_suppliers(store, 1, "open", "restricted"),
+            _two_suppliers(store, 2, "open", "open")]
+    write_documents(store, docs, run=1)
+    p = plan()
+    monkeypatch.setitem(FAIL, sid(2), ContextTooLarge("fake: too large"))
+    r1 = annotate(store, p, "screen", fold_corpus(store, p))
+    s1 = {r["doc_id"]: r for r in rows_of(store, r1, "screen")}
+    assert fake.count() == 2 and s1[sid(2)]["status"] == "failed_permanent"
+    del FAIL[sid(2)]
+
+    _supplied_by_b(store, docs, run=2)
+    r2 = annotate(store, p, "screen", fold_corpus(store, p), prior=r1)
+    s2 = {r["doc_id"]: r for r in rows_of(store, r2, "screen")}
+    asked = {e["doc_id"] for e in rows_of(store, r2, "screen_evidence") if e["run_id"] == r2.run_id}
+    assert r2.counts["carried.same_basis"] == 1 and asked == {sid(1), sid(2)}  # doc 1 may come from the cache
+    assert fake.count(contains="Title: Paper 0\n") == 1
+    kept = s2[sid(0)]
+    assert {k: kept[k] for k in ("evidence_id", "source_id", "run_id", "status")} == {
+        k: s1[sid(0)][k] for k in ("evidence_id", "source_id", "run_id", "status")}
+    assert kept["source_id"] == sid(0) and kept["is_basis_current"]
+    for i in (1, 2):
+        assert s2[sid(i)]["source_id"] == sid(100 + i) and s2[sid(i)]["run_id"] == r2.run_id
+        assert s2[sid(i)]["status"] == "ok"
+    assert r2.selection is not None and r2.selection["same_basis"] is True
+    all_green(store)
+
+    # a run recorded before D807 selects without the rule: X8 replays it so, and here that does not reproduce
+    rec = find_run_record(store, r2.run_id)
+    assert rec is not None and rec.selection is not None
+    rec.selection = {k: v for k, v in rec.selection.items() if k != "same_basis"}
+    rewrite_record(store, rec)
+    by = {r.check: r for r in run_checks(store)}
+    assert by["selection_recompute"].status == "failed" and sid(0) in " ".join(by["selection_recompute"].items)
+
+
+def test_same_basis_row_reuses_only_decided_answers_for_a_no_stricter_supplier() -> None:
+    """D807 (B), the lookup: same document, basis and config, another member still in the document, its class no
+    looser than the new supplier's; the newest such decided row; a failure is never reused."""
+    from stack.annotate.evidence import by_basis, same_basis_row
+
+    def ev(n: int, source: str, status: str = "ok", at: int = 0) -> dict[str, Any]:
+        return {"evidence_id": f"a{n}", "work_digest": f"w{n}", "doc_id": "d", "source_id": source,
+                "basis_digest": "t", "config_digest": "c", "status": status, "supersedes": None,
+                "decided_at": AT_RUN + dt.timedelta(hours=at)}
+
+    lic = {"A": "restricted", "B": "open", "C": "api_tos", "N": "open"}
+    idx = by_basis({e["work_digest"]: e for e in (ev(1, "A"), ev(2, "B", at=1), ev(3, "C", "failed_permanent", 2),
+                                                  ev(4, "Z", at=3))})
+    assert same_basis_row(idx, "d", "N", "t", "c", lic)["evidence_id"] == "a2"  # newest fitting; Z left the doc
+    assert same_basis_row(idx, "d", "A", "t", "c", lic) is None  # B (open) is looser than restricted A
+    assert same_basis_row(idx, "d", "C", "t", "c", lic)["evidence_id"] == "a1"  # tied with restricted; C failed
+    assert same_basis_row(idx, "d", "N", "t", "other config", lic) is None
+    assert same_basis_row(idx, "other doc", "N", "t", "c", lic) is None
+    assert same_basis_row(idx, "d", "N", "t", "c", {**lic, "N": None})["evidence_id"] == "a1"  # NULL: restricted

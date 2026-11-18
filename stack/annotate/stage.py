@@ -35,11 +35,15 @@
    ``prompt_pin`` hashes to it) with the same ``workflow``, ``registry_version`` and ``produced`` as the current
    pin and the ``name`` :func:`config_name` gives it; else the run is refused (:class:`StageError`), so an
    accepted row never lacks a record or carries another payload version. The run record's ``selection`` is the
-   line's (:meth:`stack.plan.StageLine.selection`: target, accepted list, selection digest);
+   line's (:meth:`stack.plan.StageLine.selection`: target, accepted list, selection digest), plus
+   ``same_basis: true`` (D807, below; outside the digest, so a release's ``stages`` do not move);
 3. ``ask``: per row with a basis, the work key's selected prior evidence decides
    (:func:`stack.annotate.evidence.prior_decision`): carry (no call) or ask; a row without
    evidence under the current key is carried when it has an accepted row
-   (:func:`stack.annotate.evidence.accepted_row`: counts ``carried`` and ``carried.accepted``), else asked; within
+   (:func:`stack.annotate.evidence.accepted_row`: counts ``carried`` and ``carried.accepted``), or when another
+   supplying member's decided answer on the same basis and config stands for it (D807,
+   :func:`stack.annotate.evidence.same_basis_row`: the pointer moved to a member with the same text whose licence
+   class is no stricter; counts ``carried`` and ``carried.same_basis``), else asked; within
    ``options.max_rows`` (rest ``not_attempted[limit]``); a :class:`~stack.llm.BudgetExceeded`
    (the run's budget) trips :class:`~stack.llm.BudgetScope`: that row and every later one
    ``not_attempted[budget]``, nothing sent; an ``ask`` returning None (the workflow's own allowance,
@@ -62,7 +66,7 @@
    :class:`Answer` with ``followups`` (a second tier) writes one evidence row per tier, each
    ``supersedes`` the one before; ``select`` keeps the newest decided one;
 4. ``select`` (:mod:`stack.annotate.select`; with the applied ``from``, so an accepted row is selected
-   when the current key has no decided row) over the scope, all evidence and the ``<wf>``
+   when the current key has no decided row, then a same-basis row of another supplier, D807) over the scope, all evidence and the ``<wf>``
    rows of the pinned ``overrides`` input (``--in data/overrides/<series>/``; required when the
    store has an ``overrides`` chain, :func:`stack.overrides.input_rows`), revokes applied;
 5. emit ``<wf>`` (full) and, for ``evidence: true`` workflows, ``<wf>_evidence`` (full: every
@@ -111,10 +115,10 @@ from typing import TYPE_CHECKING, Any
 
 import pyarrow as pa
 
-from stack.annotate.basis import basis_of, work_digest
+from stack.annotate.basis import basis_of, licenses_of, work_digest
 from stack.annotate import batchmode
 from stack.annotate.batchmode import llm_mode, replay_counts, run_batches
-from stack.annotate.evidence import accepted_row, by_work, evidence_row, prior_decision
+from stack.annotate.evidence import accepted_row, by_basis, by_work, evidence_row, prior_decision, same_basis_row
 from stack.annotate.inputs import join_reads
 from stack.annotate.scope import Limit, in_scope
 from stack.annotate.select import RecordMissing, select
@@ -473,7 +477,8 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
     ctx.prompt_pin = pin_record(spec, plan_pin, pin, produced, role_params(wf, plan_pin, config().llm))
     check_accepted(ctx.store_root, ctx.plan_stage, cfg, ctx.prompt_pin)
     accepted = ctx.plan_stage.accepted_configs()
-    ctx.selection = ctx.plan_stage.selection(cfg)
+    # D807: the run selects another supplier's same-basis answers; recorded beside (not in) the selection digest
+    ctx.selection = ctx.plan_stage.selection(cfg) | {"same_basis": True}
 
     corpus = join_reads(ctx.view("corpus"), {n: ctx.view(n) for n in reads})
     docs = in_scope(corpus, ctx.filter, counts)
@@ -481,6 +486,7 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
     prior_ev = ctx.view(ev_family).to_pylist() if ev_family in ctx.prior else []
     counts["prior_evidence"] = len(prior_ev)
     latest = by_work(prior_ev)
+    same = by_basis(latest)
     line = ctx.plan_stage
     budget = line.budget.max_usd if line.budget is not None else None
     actx = AskContext(run_id=ctx.run_id, stage=ctx.stage, store_root=ctx.store_root, pin=pin,
@@ -503,6 +509,11 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
             if prev is None and accepted_row(latest, b.source_id, b.digest, accepted) is not None:
                 counts["carried"] = counts.get("carried", 0) + 1  # D758: an accepted row stands for the current key
                 counts["carried.accepted"] = counts.get("carried.accepted", 0) + 1
+                continue
+            if prev is None and same_basis_row(same, d["doc_id"], b.source_id, b.digest, cfg,
+                                               licenses_of(d)) is not None:
+                counts["carried"] = counts.get("carried", 0) + 1  # D807: the supplier moved, the text did not
+                counts["carried.same_basis"] = counts.get("carried.same_basis", 0) + 1
                 continue
             if prior_decision(prev, now) == "carry":
                 counts["carried"] = counts.get("carried", 0) + 1
@@ -662,7 +673,7 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
     with ctx.substage("select"):
         entries, warned = active_overrides(override_rows, wf)
         rows = select(spec, docs, evidence, entries, config_digest=cfg, run_id=ctx.run_id, now=now,
-                      unreached=unreached, accepted=accepted)
+                      unreached=unreached, accepted=accepted, same_basis=True)
         if warned:
             counts["overrides.warnings"] = len(warned)
         record_rows: dict[str, list[dict[str, Any]]] = {}
@@ -670,7 +681,8 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
             rec_entries, _ = active_overrides(override_rows, rec)
             try:
                 record_rows[rec] = select(REGISTRY[rec], docs, evidence, rec_entries, config_digest=cfg,
-                                          run_id=ctx.run_id, now=now, unreached=unreached, accepted=accepted)
+                                          run_id=ctx.run_id, now=now, unreached=unreached, accepted=accepted,
+                                          same_basis=True)
             except RecordMissing as exc:
                 raise StageError(f"{ctx.stage}: code bug: {exc}") from exc
     counts["rows"] = len(rows)
