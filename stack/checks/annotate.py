@@ -76,7 +76,8 @@ annotation, :func:`stack.annotate.inputs.header_reads`) through
 **X8**: :func:`stack.annotate.select.select` over the corpus rows of the file's documents, the
 same-run evidence, the ``overrides`` view at the head the header ``inputs`` pinned (none pinned: no
 overrides; target ``<wf>``, revokes applied), the header ``config_digest`` and the accepted configs the run
-applied (its run record's ``selection``, checked as in X6; none recorded: none) reproduces the file: same ``(doc_id, item_key)`` set, every column equal except
+applied (its run record's ``selection``, checked as in X6; none recorded: none) and, when that ``selection`` says
+``same_basis: true`` (D807), another supplier's same-basis answers, reproduces the file: same ``(doc_id, item_key)`` set, every column equal except
 ``is_basis_current`` (X7's) and, on rows without evidence, the run stamps ``decided_at`` and
 ``run_id``. Rows the ask substage did not reach (no evidence, ``not_attempted``) keep their
 recorded ``error_class``. An override added after the run does not move X8 (the pinned head
@@ -363,6 +364,15 @@ def _applied_from(view: StoreView, run_id: str | None, stage: str, cfg: str | No
     return tuple(str(a["config"]) for a in acc), problems
 
 
+def _same_basis_from(view: StoreView, run_id: str | None) -> bool:
+    """Whether the run ``run_id`` selected same-basis answers of another supplier (its record's ``selection``
+    says ``same_basis: true``, D807); a run recorded before D807 did not."""
+    from stack.runs import find_run_record
+
+    rec = find_run_record(view.root, run_id) if run_id else None
+    return bool(rec is not None and rec.selection and rec.selection.get("same_basis") is True)
+
+
 def _own_pins(view: StoreView, fname: str, spec: PayloadSpec, rows: list[dict[str, Any]]) -> list[str]:
     """X6 for accepted ``ai_check`` rows: each judged against the pin its own run recorded (module docstring)."""
     bad: list[str] = []
@@ -582,7 +592,8 @@ def selection_recompute(view: StoreView) -> list[Finding]:
             got = select(run.spec, [run.corpus[d] for d in docs_ids], run.evidence, entries,
                          config_digest=run.wf.header.get("config_digest", ""),
                          run_id=run.wf.header.get("run_id", ""), now=dt.datetime.now(dt.UTC),
-                         unreached=unreached, accepted=accepted)
+                         unreached=unreached, accepted=accepted,
+                         same_basis=_same_basis_from(view, run.wf.header.get("run_id")))
         except RecordMissing as exc:
             bad.append(f"{name}: {exc}")
             continue

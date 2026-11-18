@@ -94,6 +94,11 @@ def basis_of(row: Row, kind: str, reads: tuple[str, ...] = ()) -> Basis:
     return Basis(kind, digest, src, m["license_class"] if m is not None else None, no_text)
 
 
+def licenses_of(row: Row) -> dict[str, str | None]:
+    """Member ``source_id`` → ``license_class`` of every member of ``row`` (live or not; D807)."""
+    return {m["source_id"]: m.get("license_class") for m in row["identity"]["members"] or []}
+
+
 def live_members(row: Row) -> list[str]:
     """Sorted ``source_id`` of the row's live members (an override's ``scope.members``)."""
     return sorted(m["source_id"] for m in row["identity"]["members"] or [] if m["is_live"])
@@ -112,5 +117,5 @@ def is_basis_current(basis_kind: str, basis_digest: str | None, row: Row, workfl
                           "workflow": workflow}, text, fields, row.get("annotations"))
 
 
-__all__ = ["NO_BASIS", "Basis", "basis_of", "current_digests", "is_basis_current", "live_members",
+__all__ = ["NO_BASIS", "Basis", "basis_of", "current_digests", "is_basis_current", "licenses_of", "live_members",
            "work_digest"]

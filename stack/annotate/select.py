@@ -16,7 +16,11 @@ ranked by origin, version, recency; here the work key does what version did):
    decided row for the same source and basis (:func:`stack.annotate.evidence.accepted_row`) is selected, its
    provenance kept (``evidence_id``, ``config_digest``, ``decided_at``, ``run_id``: the row stays labelled with the
    config that judged it); a failure is never accepted, and the current key's own failure or retry state gives
-   way to an accepted decided row. No basis → ``skipped[no_text|no_basis]``; a
+   way to an accepted decided row. Then, with ``same_basis`` (D807; the stage sets it and records it in the run's
+   ``selection``, so X8 replays an older run without it), a decided row of the same document, basis and config
+   asked for **another supplying member** whose licence class is no looser than the current supplier's
+   (:func:`stack.annotate.evidence.same_basis_row`): the supplier changed, the text did not. Its provenance is
+   kept as for an accepted row, ``source_id`` included. No basis → ``skipped[no_text|no_basis]``; a
    basis but no evidence → the status
    the ask substage recorded for the row (``unreached``: ``not_attempted[limit|budget|halted|unanswered]``),
    default ``not_attempted[limit]``.
@@ -73,8 +77,8 @@ from typing import Any
 
 import pyarrow as pa
 
-from stack.annotate.basis import basis_of, is_basis_current, live_members, work_digest
-from stack.annotate.evidence import OK_LIKE, accepted_row, by_work, record_payload, result_digest
+from stack.annotate.basis import basis_of, is_basis_current, licenses_of, live_members, work_digest
+from stack.annotate.evidence import OK_LIKE, accepted_row, by_basis, by_work, record_payload, result_digest, same_basis_row
 from stack.overrides import TIERS, Override, rows_digest, winners
 from stack.schemas.payloads.registry import PayloadSpec
 
@@ -164,13 +168,15 @@ def select(spec: PayloadSpec, docs: Sequence[Mapping[str, Any]],
            evidence: Sequence[Mapping[str, Any]], overrides: Sequence[Override], *,
            config_digest: str, run_id: str, now: dt.datetime,
            unreached: Mapping[str, tuple[str, str]] | None = None,
-           accepted: Sequence[str] = ()) -> list[Row]:
+           accepted: Sequence[str] = (), same_basis: bool = False) -> list[Row]:
     """The ``<wf>`` rows of ``docs`` (the ``corpus`` rows in scope), sorted by ``(doc_id,
     item_key)`` (module docstring). ``overrides`` are the ``overrides`` rows of target
     ``spec.workflow`` with the revokes applied (:func:`stack.overrides.active`); ``accepted`` the
-    line's accepted configs in preference order (empty: none)."""
+    line's accepted configs in preference order (empty: none); ``same_basis``: another supplier's
+    decided answer on the same basis stands too (D807)."""
     unreached = unreached or {}
     latest = by_work(evidence)
+    index = by_basis(latest) if same_basis else {}
     mine_by_doc: dict[str, list[Override]] = {}
     for o in overrides:
         if o.target != spec.workflow or o.kind == "revoke":
@@ -184,6 +190,8 @@ def select(spec: PayloadSpec, docs: Sequence[Mapping[str, Any]],
                if b.digest is not None else None)
         if accepted and b.digest is not None and (sel is None or sel["status"] not in OK_LIKE):
             sel = accepted_row(latest, b.source_id, b.digest, accepted) or sel
+        if same_basis and b.digest is not None and (sel is None or sel["status"] not in OK_LIKE):
+            sel = same_basis_row(index, doc, b.source_id, b.digest, config_digest, licenses_of(d)) or sel
         mine = mine_by_doc.get(doc, [])
         unscoped = sorted(o.override_id for o in mine if not o.is_scoped)
         scoped = [o for o in mine if o.is_scoped]
