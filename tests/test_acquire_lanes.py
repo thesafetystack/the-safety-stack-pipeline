@@ -972,6 +972,38 @@ def test_a_listed_html_role_stays_due_when_atom_and_the_probe_fail(tmp_path: Pat
     assert r["retry_after"] is None or r["retry_after"] < later + 7 * DAY
 
 
+@pytest.mark.parametrize("outage", [False, True])
+def test_an_older_listed_version_does_not_requeue_a_newer_held_one(tmp_path: Path, outage: bool) -> None:
+    """D807: v1 held and listed; Atom lists v2, whose HTML download fails; during an Atom outage the bare probe
+    (D585) mints v3, so the listing [v1, v2] is older than what the role holds. The following runs (Atom healthy,
+    or out again) ask nothing within the recheck period: the listed v2 is not a missing version."""
+    root = store(tmp_path, [arxiv_row(1)])
+    fake = FakeHttp()
+    q = {"id_list": aid_of(1), "max_results": 1}
+    atom(fake, {1: 1})
+    fake.add(f"https://arxiv.org/html/{aid_of(1)}v1", body=latexml())
+    go_fetch(root, fake, NOW, html_only_plan())
+    atom(fake, {1: 2})
+    fake.add(f"https://arxiv.org/html/{aid_of(1)}v2", status=404, body=b"gone")
+    go_fetch(root, fake, NOW + 8 * DAY, html_only_plan())
+    fake.inject(ATOM_API, q, status=429, times=SENDS_429 * LIMIT_GIVE_UP)
+    fake.add(f"https://arxiv.org/html/{aid_of(1)}", body=latexml(aid_of(1), 3))
+    later = NOW + 16 * DAY
+    go_fetch(root, fake, later, html_only_plan())
+    row = view(root)[sid(1)]
+    assert [s["revision"] for s in raws(row) if s["content_role"] == "html"] == ["v1", "v3"]
+    assert [r["revision"] for r in row["content"]["revisions"]] == ["v1", "v2"]
+    due = html_role(row)["retry_after"]
+    assert html_role(row)["status"] == "ok" and due > later + DAY
+    atom(fake, {1: 3})
+    for run in range(1, 4):
+        if outage:
+            fake.inject(ATOM_API, q, status=429, times=SENDS_429 * LIMIT_GIVE_UP)
+        n = len(fake.urls())
+        go_fetch(root, fake, later + run * DAY / 24, html_only_plan())
+        assert fake.urls()[n:] == [] and html_role(view(root)[sid(1)])["retry_after"] == due, run
+
+
 def test_arxiv_history_is_one_atom_request_per_100_ids(tmp_path: Path) -> None:
     """250 new arXiv papers: the history asks exactly three Atom ``id_list`` pages (100 + 100 + 50
     ids) and nothing per paper (no OAI-PMH); each row's ``content.revisions`` lists its current
