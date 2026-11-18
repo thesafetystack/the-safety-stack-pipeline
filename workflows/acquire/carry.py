@@ -88,7 +88,18 @@ members before anything else runs.
   the identifier** (T3.x-f4: another member's role in the same lane would repeat the same
   retrieval; T3.6's continuation re-opened five such OA roles for 207 requests, and a dead arXiv
   id was retried once per member, D165b's residue; ``carry.same_key_lane_terminal``) is the
-  group's fetch role; when there is none, the group fetches nothing; every other
+  group's fetch role, **unless the identifier is already held** (D807): in an ``arxiv:<id>`` group, an
+  ``ok`` role on lane ``arxiv`` whose source holds a raw snapshot of that role at the newest revision in
+  ``content.revisions`` (what the lane would fetch; :func:`held_lead`) is the fetch role, the first such
+  in the order above (``carry.same_key_held`` when that is not the role the order picks). So a member a
+  merge adds that sorts first (the ``arxiv`` channel's beside an OpenAlex member's) no longer fetches the
+  same version again, minting a second snapshot of the same text. The fetch key carries no version (``vN``
+  is stripped) and neither does the member's key reliably; the lane fetches the newest version whichever
+  member asks, so "the same version" is the newest listed one. Nothing listed yet, a newer version listed
+  but not held (the history's answer), or the held role's member no longer live: the order decides, as
+  before. The held role's own recheck is unchanged: the history asks Atom for it (it is due or checked as
+  any ``ok`` role), and a new version makes it due, so it fetches the new version once. When there is
+  no fetch role, the group fetches nothing; every other
   ``not_attempted`` role of the group becomes ``skipped[not_needed]`` ("same <key> as
   <source_id> (<channel>)"; never due, never charged; ``carry.same_key_skipped``). A
   ``skipped[not_needed]`` role that is no longer covered by another role (it is now its group's
@@ -112,6 +123,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from stack.schemas.vocab import RECORD_ROLES
+from workflows.acquire.history import revision_number
 from workflows.acquire.lanes import FETCH_LANES, INBAND, arxiv_key, keys_arxiv_ids, lane_for
 from workflows.acquire.point import structured_of, text_of
 from workflows.acquire.scope import FETCH, is_stale
@@ -192,15 +204,35 @@ def fetch_key(member: Mapping[str, Any]) -> str | None:
     return None
 
 
+def held_lead(keys: list[RoleKey], roles: Mapping[RoleKey, Row], snapshots: list[Row],
+              revisions: list[Row] | None) -> RoleKey | None:
+    """The first of ``keys`` (one ``arxiv:<id>`` group, in fetch order) that already holds what the arXiv
+    lane would fetch (module docstring, One fetch per paper identifier, D807): ``ok`` on lane ``arxiv``,
+    its source holding a raw snapshot of its role at the newest revision of ``revisions``."""
+    listed = [str(r["revision"]) for r in revisions or [] if r.get("revision")]
+    if not listed:
+        return None
+    newest = max(listed, key=lambda v: (revision_number(v), v))
+    for k in keys:
+        r = roles[k]
+        if r["status"] == "ok" and r.get("lane") == "arxiv" and any(
+                s["kind"] == "raw" and s["source_id"] == k[0] and s["content_role"] == r["content_role"]
+                and s.get("revision") == newest for s in snapshots):
+            return k
+    return None
+
+
 def _not_needed(r: Row, error: str) -> Row:
     return {**r, "status": "skipped", "error_class": "not_needed", "error": error, "retry_after": None}
 
 
 def _one_fetch_per_key(roles: dict[RoleKey, Row], live: Mapping[str, Row],
-                       counts: dict[str, int] | None, key_ids: Mapping[str, str] | None = None) -> None:
+                       counts: dict[str, int] | None, key_ids: Mapping[str, str] | None = None,
+                       snapshots: list[Row] | None = None, revisions: list[Row] | None = None) -> None:
     """The same-identifier rule (module docstring), in place on ``roles``. ``key_ids``
     (:func:`~workflows.acquire.lanes.keys_arxiv_ids`): an ``html`` role on lane ``arxiv`` whose
-    member's key names no arXiv id groups under the id ``identity.keys`` gives its source."""
+    member's key names no arXiv id groups under the id ``identity.keys`` gives its source.
+    ``snapshots`` and ``revisions`` (the block's): an arXiv id already held keeps its fetch role (D807)."""
     def bump(name: str) -> None:
         if counts is not None:
             counts[name] = counts.get(name, 0) + 1
@@ -233,6 +265,10 @@ def _one_fetch_per_key(roles: dict[RoleKey, Row], live: Mapping[str, Row],
         # A lane that already ended terminal on this identifier would only repeat itself (T3.x-f4).
         dead = {roles[k]["lane"]: k for k in reversed(keys) if roles[k]["status"] in TERMINAL}
         lead = next((k for k in keys if roles[k]["status"] not in TERMINAL and roles[k]["lane"] not in dead), None)
+        held = held_lead(keys, roles, snapshots or [], revisions) if fk.startswith("arxiv:") else None
+        if held is not None and held != lead:  # D807: the held version is not fetched again
+            lead = held
+            bump("carry.same_key_held")
         if lead is None and not dead:
             continue
         for k in keys:
@@ -462,7 +498,7 @@ def carry(row: Row, by_id: Mapping[str, Row], *, wants: Mapping[str, list[str]],
     if permit == FETCH:
         _arxiv_pdf(roles, live, list(snaps.values()), mode=arxiv_pdf, pin=pin,
                    key_ids=key_ids or keys_arxiv_ids(ident), counts=counts)
-        _one_fetch_per_key(roles, live, counts, key_ids)
+        _one_fetch_per_key(roles, live, counts, key_ids, list(snaps.values()), content.get("revisions"))
 
     content["snapshots"] = list(snaps.values())
     content["roles"] = list(roles.values())
@@ -471,4 +507,4 @@ def carry(row: Row, by_id: Mapping[str, Row], *, wants: Mapping[str, list[str]],
 
 
 __all__ = ["ARXIV_PDF_ERROR", "ARXIV_PDF_MODES", "ARXIV_PDF_RULE", "ARXIV_XML_ERROR", "TERMINAL", "arxiv_pdf_of", "carry", "fetch_key",
-           "html_verdict", "merge_roles", "new_content", "new_role", "role_key"]
+           "held_lead", "html_verdict", "merge_roles", "new_content", "new_role", "role_key"]

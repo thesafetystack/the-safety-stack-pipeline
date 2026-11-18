@@ -507,7 +507,10 @@ withdrawn members stay candidates. Order: role rank, `via <> 'wayback'` first, `
 
 Never consulted: older occurrences' text, other configs, masked members, never-text roles. Role before currency: an
 abstract never displaces a full text (v3 guards it at mint time, `stack/collect/inband.py:144-151`). A newer raw
-occurrence whose conversion failed gives `convert_failed`, never an older text.
+occurrence whose conversion failed gives `convert_failed`, never an older text. [now, D807: the previous current
+snapshot stays current when the first in the order differs only in its supplier (same text digest, role, revision,
+media and wayback flag) and that supplier's licence class is not strictly looser; `workflows/acquire/point.py`,
+"Stable supplier".]
 
 ### 5.6 Channel walk-through
 

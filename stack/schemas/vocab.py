@@ -137,6 +137,20 @@ LICENSE_CLASSES: tuple[str, ...] = (
     "api_abstract",
     "shadow",
 )
+#: How strict each licence class is, loosest first (D807): the acquire pointer keeps a same-text supplier
+#: unless the new one is strictly looser, and an annotation answer is reused for a new supplier of the same
+#: text only when that supplier is no stricter than the one it was asked for. Tied ranks have the same LLM
+#: egress (``configs/llm.yaml``; ``tests/test_config.py`` checks that a looser rank never permits
+#: fewer providers). A missing class reads as ``restricted``, as the annotate ask and the release read it.
+LICENSE_STRICTNESS: dict[str, int] = {"open": 0, "public_web": 1, "api_abstract": 2, "restricted": 3,
+                                      "api_tos": 3, "shadow": 4}
+
+
+def license_rank(license_class: str | None) -> int:
+    """:data:`LICENSE_STRICTNESS` of a class (NULL: ``restricted``); an unknown class is the strictest."""
+    return LICENSE_STRICTNESS.get(license_class or "restricted", max(LICENSE_STRICTNESS.values()))
+
+
 MISS_MEANS: tuple[str, ...] = ("withdrawn", "unknown")
 MASK_REASONS: tuple[str, ...] = ("operator", "review_required")
 TRIAGE_DECISIONS: tuple[str, ...] = ("fetch", "skip", "pending")

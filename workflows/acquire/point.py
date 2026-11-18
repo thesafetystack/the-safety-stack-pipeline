@@ -30,6 +30,18 @@ valid at any pin (D10), unless the quality gate failed it (round 3, Q: ``text_st
 'failed_permanent'`` with a ``quality_*`` class; the ``text`` stays on the snapshot, the pointer
 does not use it and does not fall back to another candidate, as for a failed conversion).
 
+**Stable supplier** (D807). The document's previous current snapshot (``content.current_snapshot_id``
+as the block holds it before this run's pointer) stays current when the order now puts another
+candidate first that changes nothing but the supplier: both texts ``ok`` at the pin with the same
+digest, the same role, revision, media and wayback flag (so V6's "no wayback over a live candidate"
+and the release's ``current_revision`` read as before), and the new one's member no looser in licence
+(:func:`stack.schemas.vocab.license_rank`; a strictly looser one, e.g. ``restricted`` → ``open``, still
+wins). The previous snapshot must itself be a candidate here (its member live; in the structured order,
+its text ``ok``). Without it the order decides, as above: a genuinely different text, another arXiv
+version or role, a failed or pending text on either side. It exists because a merged member's newer
+copy of the same text moved ``current_source_id``, and with it every annotation's work key, for nothing
+(1,989 documents in one weekly cycle). Pure all the same: the previous pointer is part of ``content``.
+
 ``current_text_media``: ``txt`` for an in-band ``text/plain`` body (an abstract), ``md`` for every
 other text (converted output and the forum collectors' markdown); NULL unless ``ok``.
 ``current_revision`` is the current snapshot's ``revision``.
@@ -74,7 +86,7 @@ from __future__ import annotations
 from collections.abc import Callable, Collection, Mapping, Sequence
 from typing import Any, NamedTuple
 
-from stack.schemas.vocab import POINTER_RANK, STRUCTURED_ROLES
+from stack.schemas.vocab import POINTER_RANK, STRUCTURED_ROLES, license_rank
 
 _RANK = {role: i for i, role in enumerate(POINTER_RANK)}
 _FAILED = frozenset({"failed_transient", "failed_permanent", "quarantined"})
@@ -215,15 +227,38 @@ def media_of(snapshot: Mapping[str, Any]) -> str:
     return "md"
 
 
+def _same_text_elsewhere(top: Mapping[str, Any], prev: Mapping[str, Any], pin: str | None) -> bool:
+    """``top`` changes nothing but the supplier against ``prev`` (module docstring, Stable supplier)."""
+    digest, status = text_of(top, pin)
+    return (status == "ok" and text_of(prev, pin) == (digest, "ok")
+            and top["content_role"] == prev["content_role"] and top.get("revision") == prev.get("revision")
+            and media_of(top) == media_of(prev) and (top["via"] == "wayback") == (prev["via"] == "wayback"))
+
+
+def stable(cands: Sequence[Mapping[str, Any]], content: Mapping[str, Any], members: Sequence[Mapping[str, Any]],
+           pin: str | None) -> Mapping[str, Any] | None:
+    """The current entry of ranked ``cands`` (first = the order's choice): the previous current snapshot
+    instead when only the supplier would change (module docstring, Stable supplier, D807)."""
+    if not cands:
+        return None
+    top, prev_id = cands[0], content.get("current_snapshot_id")
+    if prev_id is None or top["snapshot_id"] == prev_id:
+        return top
+    prev = next((s for s in cands if s["snapshot_id"] == prev_id), None)
+    if prev is None or not _same_text_elsewhere(top, prev, pin):
+        return top
+    lic = {m["source_id"]: m.get("license_class") for m in members}
+    return top if license_rank(lic.get(top["source_id"])) < license_rank(lic.get(prev["source_id"])) else prev
+
+
 def point(content: Mapping[str, Any], members: Sequence[Mapping[str, Any]],
           pin: str | None, structured: Collection[str] = ()) -> dict[str, Any]:
     """The ``current_*`` fields (:data:`POINTER_FIELDS`) of ``content`` over ``members`` at the
-    convert ``pin``, with the enabled ``structured`` roles (module docstring). Pure: reads nothing
-    else, changes nothing."""
-    cands = ranked(content, members, structured, lambda s: text_of(s, pin)[1] == "ok")
-    if not cands:
+    convert ``pin``, with the enabled ``structured`` roles (module docstring; the previous pointer is
+    ``content.current_snapshot_id``, kept by :func:`stable`). Pure: reads nothing else, changes nothing."""
+    cur = stable(ranked(content, members, structured, lambda s: text_of(s, pin)[1] == "ok"), content, members, pin)
+    if cur is None:
         return dict.fromkeys(POINTER_FIELDS) | {"current_text_status": "no_raw"}
-    cur = cands[0]
     digest, status = text_of(cur, pin)
     return {"current_snapshot_id": cur["snapshot_id"], "current_source_id": cur["source_id"],
             "current_role": cur["content_role"], "current_text_sha256": digest,
@@ -233,4 +268,4 @@ def point(content: Mapping[str, Any], members: Sequence[Mapping[str, Any]],
 
 
 __all__ = ["POINTER_FIELDS", "STRUCTURED_MIN_RATIO", "Structured", "candidates", "media_of", "needed", "point",
-           "ranked", "structured_of", "text_of", "too_short"]
+           "ranked", "stable", "structured_of", "text_of", "too_short"]
