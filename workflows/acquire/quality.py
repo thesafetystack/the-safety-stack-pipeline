@@ -48,6 +48,12 @@ mint nothing and only the next due time is written; other bytes become a new raw
 so the flag no longer describes the current text and the refresh stops. A row that is not due is
 not in scope and makes no request.
 
+**Stable supplier** (D807, :mod:`workflows.acquire.point`). The pointer keeps the previous current
+snapshot over a new candidate with the same text; so that snapshot is judged too (:func:`judged_snapshots`)
+when it is still ranked and holds the same text as a judged one, and ``content.current_text_quality``
+reads a verdict of this gate whichever of the two the pointer keeps. A gate that fails the text fails
+both, and the pointer then reads the order's first as before.
+
 **Structured text** (round 5, T-RUN B8; the acquire line's ``options.structured``,
 :mod:`workflows.acquire.point`). The scope becomes :func:`judged_snapshots`: every text in
 :func:`workflows.acquire.point.needed` (the enabled structured snapshots ranked ahead of the current
@@ -85,7 +91,7 @@ from stack.schemas.vocab import STRUCTURED_ROLES
 from stack.stage_runner import StageError
 from stack.store.blobs import BlobNotFound
 from workflows.acquire.lanes import FETCH_LANES, LaneEnv
-from workflows.acquire.point import candidates, needed, point, structured_of, too_short
+from workflows.acquire.point import candidates, needed, point, ranked, structured_of, too_short
 
 Row = dict[str, Any]
 
@@ -140,15 +146,32 @@ def current_text_snapshot(row: Mapping[str, Any], pin: str | None) -> Row | None
 def judged_snapshots(row: Mapping[str, Any], pin: str | None, structured: frozenset[str] = frozenset()) -> list[Row]:
     """The texts of ``row`` this substage judges at ``pin``: the current candidate's
     (:func:`current_text_snapshot`), or with enabled ``structured`` roles every text of
-    :func:`workflows.acquire.point.needed` (module docstring, Structured text)."""
+    :func:`workflows.acquire.point.needed` (module docstring, Structured text); then the previous
+    current snapshot when it holds the same text as one of those (module docstring, Stable supplier)."""
     if not structured:
         snap = current_text_snapshot(row, pin)
-        return [] if snap is None else [snap]
+        return [] if snap is None else _with_previous(row, [snap], pin, structured)
     c = row.get("content")
     if c is None:
         return []
-    return [s for s in needed(c, row["identity"]["members"], structured, lambda s: _judged_text(s, pin))
-            if _judged_text(s, pin)]
+    return _with_previous(row, [s for s in needed(c, row["identity"]["members"], structured,
+                                                  lambda s: _judged_text(s, pin)) if _judged_text(s, pin)],
+                          pin, structured)
+
+
+def _with_previous(row: Mapping[str, Any], snaps: list[Row], pin: str | None, structured: frozenset[str]) -> list[Row]:
+    """``snaps`` plus the block's previous current snapshot when it is still ranked, holds a text judged
+    here and that text is one of ``snaps``' (D807: the pointer may keep it, so it carries this gate's verdict)."""
+    c = row["content"]
+    prev_id = c.get("current_snapshot_id")
+    texts = {(s.get("text") or {}).get("sha256") for s in snaps}
+    if prev_id is None or not snaps or prev_id in {s["snapshot_id"] for s in snaps}:
+        return snaps
+    prev = next((s for s in ranked(c, row["identity"]["members"], structured, lambda s: _judged_text(s, pin))
+                 if s["snapshot_id"] == prev_id), None)
+    if prev is None or not _judged_text(prev, pin) or (prev.get("text") or {}).get("sha256") not in texts:
+        return snaps
+    return [*snaps, prev]
 
 
 def judge_role(content_role: str) -> str:
@@ -204,12 +227,13 @@ def run_quality(rows: Sequence[Row], env: LaneEnv, gate: q.Gate,
     roles = structured_of(env.options).roles
     for row in rows:
         if not roles:
-            snap = current_text_snapshot(row, env.convert_pin)
-            if snap is None:
+            judged = judged_snapshots(row, env.convert_pin)
+            if not judged:
                 continue
-            _judge(row, snap, env, gate, digest, converted.get((row["doc_id"], snap["snapshot_id"])))
+            for snap in judged:  # the current candidate, then a same-text previous current (D807)
+                _judge(row, snap, env, gate, digest, converted.get((row["doc_id"], snap["snapshot_id"])))
             if interval is not None:
-                arm_refresh(row, snap, env, interval)
+                arm_refresh(row, judged[0], env, interval)
             continue
         snaps = judged_snapshots(row, env.convert_pin, roles)
         if not snaps:

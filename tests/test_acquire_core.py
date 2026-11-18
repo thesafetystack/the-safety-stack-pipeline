@@ -133,6 +133,92 @@ def test_pointer_rule_table(snaps: list[Row], mems: list[Row], want: tuple[Any, 
     assert (got["current_text_media"] is None) == (want[2] != "ok")
 
 
+# ---------------------------------------------------------------- stable supplier (D807)
+def licensed(*pairs: tuple[str, str], dead: tuple[str, ...] = ()) -> list[Row]:
+    """Members ``(source_id, license_class)``, live unless in ``dead``."""
+    return [{"source_id": s, "is_live": s not in dead, "license_class": lic} for s, lic in pairs]
+
+
+def repoint(snaps: list[Row], mems: list[Row], prev: str | None, structured: tuple[str, ...] = ()) -> str | None:
+    return point({"snapshots": snaps, "current_snapshot_id": prev}, mems, PIN, structured)["current_snapshot_id"]
+
+
+OLD, NEW = f"{rid(20)}.1", f"{rid(20)}.2"
+STABLE_TABLE = [
+    # (label, A's class, B's class, B's snapshot overrides, A live, expected current)
+    ("identical text: the previous supplier stays", "open", "open", {}, True, OLD),
+    ("different text: the newer one wins", "open", "open", {"text": dg("t2")}, True, NEW),
+    ("licence gain restricted -> open: the looser one wins", "restricted", "open", {}, True, NEW),
+    ("a stricter newcomer does not displace", "open", "restricted", {}, True, OLD),
+    ("tied classes (restricted, api_tos) keep", "restricted", "api_tos", {}, True, OLD),
+    ("the previous member is no longer live", "open", "open", {}, False, NEW),
+    ("another arXiv version with the same text moves", "open", "open", {"revision": "v2"}, True, NEW),
+]
+
+
+@pytest.mark.parametrize("lic_a,lic_b,over,a_live,want", [t[1:] for t in STABLE_TABLE],
+                         ids=[t[0] for t in STABLE_TABLE])
+def test_pointer_keeps_the_supplier_of_an_unchanged_text(lic_a: str, lic_b: str, over: dict[str, Any],
+                                                         a_live: bool, want: str) -> None:
+    """D807: B's newer snapshot sorts first; A's, the previous current, stays current when B changes nothing but
+    the supplier (same digest, role, revision, media, wayback flag) and is not strictly looser in licence."""
+    text_b = over.pop("text", dg("t1"))
+    a, b = snap(1, A, at=AT - H, text=dg("t1"), status="ok"), snap(2, B, text=text_b, status="ok")
+    a["revision"] = "v1"
+    b["revision"] = over.get("revision", "v1")
+    mems = licensed((A, lic_a), (B, lic_b), dead=() if a_live else (A,))
+    assert repoint([a, b], mems, None) == NEW  # no previous pointer: the order decides, as before
+    assert repoint([a, b], mems, OLD) == want
+    assert repoint([a, b], mems, want) == want  # idempotent: pointing again keeps what it chose
+
+
+def test_pointer_stability_needs_both_texts_ok_and_no_wayback_over_live() -> None:
+    """D807 leaves the order alone when either text is not ``ok`` at the pin (a failed or pending newcomer is
+    current as before; a failed previous text is no reason to stay), and never keeps a wayback capture over a
+    live one (V6's rule)."""
+    mems = licensed((A, "open"), (B, "open"))
+    ok_a = snap(1, A, at=AT - H, text=dg("t1"), status="ok")
+    assert repoint([ok_a, snap(2, B, status="quarantined")], mems, OLD) == NEW
+    assert repoint([ok_a, snap(2, B)], mems, OLD) == NEW  # B not converted yet: convert_pending, as before
+    failed_a = snap(1, A, at=AT - H, text=dg("t1"), status="failed_permanent")
+    assert repoint([failed_a, snap(2, B, text=dg("t1"), status="ok")], mems, OLD) == NEW
+    way_a = snap(1, A, role="page", via="wayback", text=dg("t1"), status="ok")
+    live_b = snap(2, B, role="page", at=AT - H, text=dg("t1"), status="ok")
+    assert repoint([way_a, live_b], mems, OLD) == NEW
+    other_pin = snap(1, A, at=AT - H, text=dg("t1"), status="ok", cfg=dg("old pin"))
+    assert repoint([other_pin, snap(2, B, text=dg("t1"), status="ok")], mems, OLD) == NEW
+
+
+def test_pointer_stability_in_the_structured_order() -> None:
+    """With ``structured`` on: A's arXiv HTML stays current over B's same-text HTML of the same revision, while
+    the too-short rule (B9) still hands over to the PDF partner (another text, so D807 does not apply)."""
+    mems = licensed((A, "open"), (B, "open"))
+    html_a = snap(1, A, role="html", at=AT - H, text=dg("h1"), status="ok", media="text/html")
+    html_b = snap(2, B, role="html", text=dg("h1"), status="ok", media="text/html")
+    for s_, rev in ((html_a, "v1"), (html_b, "v1")):
+        s_["revision"] = rev
+    assert repoint([html_a, html_b], mems, NEW, ("html",)) == NEW
+    assert repoint([html_a, html_b], mems, OLD, ("html",)) == OLD
+    short = snap(1, A, role="html", text=dg("h1"), status="ok", media="text/html")
+    pdf = snap(2, A, at=AT - H, text=dg("p1"), status="ok")
+    short["revision"] = pdf["revision"] = "v1"
+    short["quality"], pdf["quality"] = {"metrics": {"chars": 10}}, {"metrics": {"chars": 100}}
+    assert repoint([short, pdf], licensed((A, "open")), OLD, ("html",)) == NEW
+
+
+def test_quality_judges_the_same_text_previous_current_too() -> None:
+    """D807: the quality substage judges the kept previous snapshot as well as the order's first when both hold
+    the same text, so ``current_text_quality`` reads this gate's verdict; an older, different text is not judged."""
+    from workflows.acquire.quality import judged_snapshots
+
+    a, b = snap(1, A, at=AT - H, text=dg("t1"), status="ok"), snap(2, B, text=dg("t1"), status="ok")
+    row = {"content": {"snapshots": [a, b], "current_snapshot_id": OLD},
+           "identity": {"members": licensed((A, "open"), (B, "open"))}}
+    assert [x["snapshot_id"] for x in judged_snapshots(row, PIN)] == [NEW, OLD]
+    row["content"]["snapshots"][1] = snap(2, B, text=dg("t2"), status="ok")
+    assert [x["snapshot_id"] for x in judged_snapshots(row, PIN)] == [NEW]
+
+
 # ---------------------------------------------------------------- carry (X21, §6)
 def _with_member(row: Row, i: int) -> None:
     m = copy.deepcopy(row["identity"]["members"][0])
@@ -436,6 +522,67 @@ def test_one_fetch_per_paper_identifier(tmp_path: Path) -> None:
     rows = merge(rows, res)
     res, e = go(rows, tmp_path, {"arxiv": arxiv, "oa": oa}, wants=PAPER_WANTS, now=NOW + 2 * H, run=52)
     assert arxiv.keys() == [(a, "full_text")] and e.counts.get("lane_calls", 0) == 0
+
+
+def held_paper(revs: tuple[str, ...] = ("v1", "v2"), held: str = "v2", *, oa_live: bool = True,
+               retry_after: dt.datetime | None = NOW + 72 * H) -> Row:
+    """An OpenAlex member (source 1) whose arXiv PDF role is ``ok`` holding ``held``, and an arXiv member
+    (source 2, sorts first) that a merge just added, with no role yet; ``content.revisions`` lists ``revs``."""
+    row = paper(1, (1, "openalex", "doi", ARXIV_DOI), (2, "arxiv", "arxiv", "2609.36750"))
+    row["identity"]["members"][0]["is_live"] = oa_live
+    c = new_content(row["identity"]["members_digest"], PIN)
+    s_ = snap(1, sid(1), text=dg("t1"), status="ok")
+    s_["revision"] = held
+    c["snapshots"] = [s_]
+    c["roles"] = [{**new_role("full_text", sid(1), status="ok", error_class=None, lane="arxiv"),
+                   "attempts": 1, "last_attempt_at": AT, "retry_after": retry_after, "snapshot_id": s_["snapshot_id"]}]
+    c["revisions"] = [{"revision": r, "published_at": AT, "title": None} for r in revs]
+    row["content"] = c
+    return row
+
+
+def carried_states(row: Row) -> tuple[dict[tuple[str, str], tuple[str, str | None, str]], dict[str, int]]:
+    counts: dict[str, int] = {}
+    c = carry(row, {row["doc_id"]: row}, wants=PAPER_WANTS, channel_group=GROUPS.get, permit=FETCH, pin=PIN,
+              counts=counts)
+    return states({"content": c}), counts
+
+
+def test_a_held_arxiv_version_keeps_its_fetch_role() -> None:
+    """D807: the ``ok`` role that holds the newest listed version is the group's fetch role, so the arXiv member
+    a merge adds (first in the order) is ``skipped[not_needed]`` instead of fetching the same version again; also
+    while the held role is due for its recheck (the history asks Atom for it, not for the newcomer)."""
+    for due in (NOW + 72 * H, NOW - H):
+        st, counts = carried_states(held_paper(retry_after=due))
+        assert st[(sid(1), "full_text")] == ("ok", None, "arxiv")
+        assert st[(sid(2), "full_text")] == ("skipped", "not_needed", "arxiv")
+        assert counts["carry.same_key_held"] == 1 and counts["carry.same_key_skipped"] == 1
+
+
+@pytest.mark.parametrize("label,kw", [
+    ("a newer version is listed but not held", {"revs": ("v1", "v2", "v3")}),
+    ("only an older version is held", {"held": "v1"}),
+    ("nothing is listed yet", {"revs": ()}),
+    ("the held role's member is no longer live", {"oa_live": False}),
+])
+def test_without_the_held_version_the_order_decides(label: str, kw: dict[str, Any]) -> None:
+    """D807 applies only to the version the lane would fetch, held by a live member; otherwise the arXiv member
+    leads and is fetched, as before."""
+    st, counts = carried_states(held_paper(**kw))
+    assert st[(sid(2), "full_text")] == ("not_attempted", "limit", "arxiv"), label
+    assert "carry.same_key_held" not in counts
+
+
+def test_a_held_arxiv_version_makes_no_lane_call(tmp_path: Path) -> None:
+    """Through ``acquire_rows``: the newcomer is not fetched and the pointer stays on the held snapshot."""
+    row = held_paper()
+    row["content"]["current_snapshot_id"] = row["content"]["snapshots"][0]["snapshot_id"]
+    arxiv = FakeLane.answering("arxiv", {}, default=b"%PDF-1.7 again")
+    res, e = go([row], tmp_path, {"arxiv": arxiv}, wants=PAPER_WANTS)
+    assert arxiv.keys() == [] and e.counts.get("lane_calls", 0) == 0 and e.counts["carry.same_key_held"] == 1
+    (out,) = res.rows
+    assert states(out)[(sid(2), "full_text")] == ("skipped", "not_needed", "arxiv")
+    assert out["content"]["current_source_id"] == sid(1)
 
 
 def test_a_skipped_same_key_role_reopens_when_its_group_loses_the_leader(tmp_path: Path) -> None:

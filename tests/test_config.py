@@ -336,3 +336,26 @@ def test_the_strict_loaders_read_the_shipped_yaml_as_safe_load_does(loader: str)
         yaml.load("a: {x: 1, x: 2}", Loader=cls)
     merged = "base: &b {x: 1, y: 2}\nc:\n  <<: *b\n  x: 3\n"  # an override of a merged key is no duplicate
     assert yaml.load(merged, Loader=cls)["c"] == {"x": 3, "y": 2}
+
+
+def test_license_strictness_never_loosens_egress(config: Any) -> None:
+    """D807: :data:`stack.schemas.vocab.LICENSE_STRICTNESS` orders every licence class, and a class ranked no
+    stricter than another permits at least what the other's egress rule permits (every provider it sanctions,
+    data collection and fallbacks no tighter), so an answer reused for a looser-or-equal supplier was asked under
+    an egress rule at least as strict as the new supplier's (a class with no rule of its own takes the default)."""
+    from stack.schemas.vocab import LICENSE_CLASSES, LICENSE_STRICTNESS
+
+    assert set(LICENSE_STRICTNESS) == set(LICENSE_CLASSES)
+    egress = config.llm.egress
+
+    def rule(cls: str) -> Any:
+        return egress.by_license_class.get(cls, egress.default)
+
+    for strict in LICENSE_CLASSES:
+        for loose in LICENSE_CLASSES:
+            if LICENSE_STRICTNESS[loose] > LICENSE_STRICTNESS[strict]:
+                continue
+            s, l_ = rule(strict), rule(loose)
+            assert set(s.providers) <= set(l_.providers), (strict, loose)
+            assert s.data_collection == "deny" or l_.data_collection == s.data_collection, (strict, loose)
+            assert l_.allow_fallbacks or not s.allow_fallbacks, (strict, loose)
