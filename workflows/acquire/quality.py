@@ -226,22 +226,15 @@ def run_quality(rows: Sequence[Row], env: LaneEnv, gate: q.Gate,
     interval = refresh_interval(env)
     roles = structured_of(env.options).roles
     for row in rows:
-        if not roles:
-            judged = judged_snapshots(row, env.convert_pin)
-            if not judged:
-                continue
-            for snap in judged:  # the current candidate, then a same-text previous current (D807)
-                _judge(row, snap, env, gate, digest, converted.get((row["doc_id"], snap["snapshot_id"])))
-            if interval is not None:
-                arm_refresh(row, judged[0], env, interval)
-            continue
         snaps = judged_snapshots(row, env.convert_pin, roles)
         if not snaps:
             continue
         made = {s["snapshot_id"] for s in snaps
                 if _judge(row, s, env, gate, digest, converted.get((row["doc_id"], s["snapshot_id"])))}
+        # the snapshot the pointer keeps (D807: perhaps a same-text previous current) is the one refreshed
         cur_id = point(row["content"], row["identity"]["members"], env.convert_pin, roles)["current_snapshot_id"]
-        compare(row, snaps, made, cur_id, env)
+        if roles:
+            compare(row, snaps, made, cur_id, env)
         cur = next((s for s in snaps if s["snapshot_id"] == cur_id), None)
         if interval is not None and cur is not None:
             arm_refresh(row, cur, env, interval)
