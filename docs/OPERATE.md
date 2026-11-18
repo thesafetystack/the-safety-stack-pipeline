@@ -789,7 +789,13 @@ Structured text (JATS XML, arXiv LaTeXML HTML, the PDF as fallback) is the acqui
 arxiv_html}` (D276; on in batch-2026-10a). Turning it on changes the pin and so re-converts once; a plan that turns it on
 must widen `content.current_role = 'full_text'` filters to `IN ('full_text', 'xml', 'html')`. With `arxiv_html` on,
 every member whose key carries an arXiv id (an `arxiv` key or a `10.48550/arxiv.<id>` DOI) wants `html`, whichever
-channel found it (OpenAlex and S2 papers too, not only the `wants` channels), one fetch per arXiv id.
+channel found it (OpenAlex and S2 papers too, not only the `wants` channels), one fetch per arXiv id; a role that
+already holds the newest listed version stays that fetch (D807, `carry.same_key_held`).
+
+A document whose text does not change keeps its supplier and its answers (D807): the pointer keeps the current
+snapshot over a newer same-text copy from another member (unless that member's licence class is strictly looser), and
+`annotate.<wf>` reuses a decided answer asked for another member of the document on the same text and config when the
+new supplier's class is no stricter (`carried.same_basis`; the evidence keeps its own work key).
 
 Which arXiv PDFs are fetched is the acquire option `arxiv_pdf` (D480-D482; `workflows/acquire/carry.py`, "arXiv
 PDF"). It covers every `full_text` role on lane `arxiv`, so OpenAlex and S2 papers keyed by an arXiv id or DOI too;
