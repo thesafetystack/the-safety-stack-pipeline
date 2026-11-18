@@ -43,7 +43,7 @@ Row = dict[str, Any]
 def revision_number(revision: str | None) -> int:
     """``'v12'`` → 12; anything else sorts first (0)."""
     s = str(revision or '')
-    return int(s[1:]) if s[:1] == 'v' and s[1:].isdigit() else 0
+    return int(s[1:]) if s[:1] == 'v' and s[1:].isascii() and s[1:].isdigit() else 0
 
 
 def merge_revisions(prior: Iterable[Mapping[str, Any]] | None,
