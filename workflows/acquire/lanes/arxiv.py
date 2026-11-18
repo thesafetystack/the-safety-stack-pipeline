@@ -78,11 +78,10 @@ asks nothing twice; under ``--only fetch`` (no history) the lane sweeps its own 
 **LaTeXML HTML** (role ``html``; only with the acquire line's ``options.structured.arxiv_html``,
 else ``skipped[not_requested]`` as before; the plan's ``acquire.wants`` lists ``html`` beside
 ``full_text``). The episode resolves the current version ``vN`` like the PDF's (the history's
-sweep, else the newest listed revision, else its own Atom request) and asks
+sweep, else its own Atom request; a listing is never taken for an answer, D807) and asks
 ``arxiv.org/html/<id>vN`` once, as a bare probe (no Wayback: an archived "No HTML for …" page must
 never become the paper) under the same politeness, group and 3 s rule as the PDF.
-**Without Atom** (D585: Atom gave up for the run, or its page for the id was unusable, and no
-revision is listed) the episode asks the unversioned ``arxiv.org/html/<id>`` (arXiv serves the
+**Without Atom** (D585: Atom gave up for the run, or its page for the id was unusable) the episode asks the unversioned ``arxiv.org/html/<id>`` (arXiv serves the
 current version there) and reads the version from the answer (:func:`html_version`: a redirect's
 final URL, else the one version the page names as ``/html/<id>vN`` or ``arXiv:<id>vN``). Found:
 as below, with ``revision = 'vN'``, the snapshot's ``url`` the unversioned URL asked, and
@@ -117,7 +116,7 @@ renders HTML from late 2023 on, keyed on the latest version's submission, so an 
 HTML when revised, and a paper without HTML is asked about twice a year. The history step over
 ``html`` roles (:meth:`ArxivLane._html_history`; a due role joins the Atom sweep, whose answer is listed in
 ``content.revisions`` as for the PDF, step 2): ``vN`` held and the role ``ok`` and due → checked
-(``retry_after = now + recheck``); remembered absent → ``retry_after = last_attempt_at + 180 d``; a
+(``retry_after = now + recheck``), only on this run's Atom answer (a due role without one keeps its state); remembered absent → ``retry_after = last_attempt_at + 180 d``; a
 withdrawn paper or an ``ok``/``empty`` role without ``vN`` → due now. Counts ``arxiv.html.requests``,
 ``arxiv.html.downloads``, ``arxiv.html.held``, ``arxiv.html.missing``,
 ``arxiv.html.unacceptable.<why>``, ``arxiv.html.remembered``, ``arxiv.html.requeued``,
@@ -284,7 +283,6 @@ class ArxivState:
     unresolved: set[str] = field(default_factory=set)   # ids whose Atom batch never yielded a feed
     withdrawn: set[str] = field(default_factory=set)    # arXiv's withdrawal page seen this run (step 5)
     halted: str | None = None                            # why arXiv told us to stop, once it has
-    observed: dict[str, int] = field(default_factory=dict)  # id -> newest listed version (history, html roles)
     atom_limited: str | None = None                      # why Atom said slow down: no more sweeps this run (D411)
     atom_hint: dt.datetime | None = None                 # its Retry-After, as the limited roles' hint
     ahead: dict[str, int] = field(default_factory=dict)  # the run's due ids in fetch order (prepare, D410)
@@ -700,11 +698,10 @@ class ArxivLane:
                 atom = st.versions.get(aid)
                 if atom is not None:
                     _list(c, atom)
-                version = atom.version if atom is not None else newest_listed(c)
-                if version is None:
-                    continue  # unknown: the role keeps its state; if due, the lane sweeps its own id
-                st.observed.setdefault(aid, version)
                 role = c["roles"][i]
+                version = atom.version if atom is not None else newest_listed(c)
+                if version is None or (atom is None and _due(role, env.now)):
+                    continue  # no fresh answer: the role keeps its state; if due, the lane asks (or probes, D585)
                 url = arxiv_html_url(aid, version)
                 until = html_remembered_until(role, url)
                 if aid in st.withdrawn:
@@ -742,13 +739,12 @@ class ArxivLane:
             return FetchOutcome("failed_permanent", "no_fetchable_url",
                                 f"member {request.source_id} carries no arXiv id")
         st = ArxivState.of(env)
-        observed = st.observed.get(aid) if html else None
-        if aid not in st.versions and aid not in st.withdrawn and observed is None:
+        if aid not in st.versions and aid not in st.withdrawn:
             _sweep(env, st, _lookahead(st, aid))
         if st.halted is not None:
             return FetchOutcome("failed_transient", "rate_limit", st.halted, halt_run=True)
         if (st.atom_limited is not None and aid not in st.versions and aid not in st.unresolved
-                and aid not in st.withdrawn and observed is None):
+                and aid not in st.withdrawn):
             if html and st.unversioned_off is None:
                 return self._html(request, env, st, aid, None)  # D585: the bare URL names its version
             env.count("arxiv.limited_roles")
@@ -756,8 +752,6 @@ class ArxivLane:
                                 retry_after_hint=st.atom_hint)  # D411: not counted (D484), no halt
         held = held_revisions(request.snapshots, request.source_id, request.content_role)
         atom = st.versions.get(aid)
-        if atom is None and observed is not None:
-            atom = AtomVersion(aid, observed, "", "")  # the newest listed version (history)
         gate, version = version_gate(atom, held, withdrawn=aid in st.withdrawn,
                                      atom_failed=atom is None and aid in st.unresolved)
         if gate == "withdrawn":

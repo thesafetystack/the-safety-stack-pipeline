@@ -928,6 +928,50 @@ def test_arxiv_html_without_atom_probes_the_unversioned_url(tmp_path: Path) -> N
     checks_ok(root)
 
 
+def listed_v1_then_atom_fails(tmp_path: Path, fails: str) -> tuple[Path, FakeHttp]:
+    """An HTML-only paper whose v1 was listed and fetched; a week later Atom fails for it (``rate_limit``: it
+    gives up; ``malformed``: a page that is no feed, twice)."""
+    root = store(tmp_path, [arxiv_row(1)])
+    fake = FakeHttp()
+    atom(fake, {1: 1})
+    fake.add(f"https://arxiv.org/html/{aid_of(1)}v1", body=latexml())
+    go_fetch(root, fake, NOW, html_only_plan())
+    assert [r["revision"] for r in view(root)[sid(1)]["content"]["revisions"]] == ["v1"]
+    q = {"id_list": aid_of(1), "max_results": 1}
+    if fails == "rate_limit":
+        fake.inject(ATOM_API, q, status=429, times=SENDS_429 * LIMIT_GIVE_UP)
+    else:
+        fake.add(ATOM_API, q, body="<html>Please slow down</html>")
+    return root, fake
+
+
+@pytest.mark.parametrize("fails", ["rate_limit", "malformed"])
+def test_a_listed_html_role_without_atom_probes_and_learns_v2(tmp_path: Path, fails: str) -> None:
+    """D807: a listing is no version check. With Atom failing at the recheck, the held listed v1 does not
+    stamp the due ``html`` role checked; the episode probes the bare URL (D585), which serves v2: minted."""
+    root, fake = listed_v1_then_atom_fails(tmp_path, fails)
+    fake.add(f"https://arxiv.org/html/{aid_of(1)}", body=latexml(aid_of(1), 2))
+    rec = go_fetch(root, fake, NOW + 8 * DAY, html_only_plan())
+    assert "arxiv.html.checked" not in rec.counts and rec.counts["arxiv.html.unversioned"] == 1
+    row = view(root)[sid(1)]
+    assert [s["revision"] for s in raws(row) if s["content_role"] == "html"] == ["v1", "v2"]
+    assert html_role(row)["status"] == "ok"
+
+
+@pytest.mark.parametrize("fails", ["rate_limit", "malformed"])
+def test_a_listed_html_role_stays_due_when_atom_and_the_probe_fail(tmp_path: Path, fails: str) -> None:
+    """D807: Atom fails and the bare URL names no version: nothing minted, the role is not stamped checked for a
+    week but answered ``failed_transient[rate_limit]`` (due again by its backoff)."""
+    root, fake = listed_v1_then_atom_fails(tmp_path, fails)
+    fake.add(f"https://arxiv.org/html/{aid_of(1)}", body=latexml())
+    later = NOW + 8 * DAY
+    rec = go_fetch(root, fake, later, html_only_plan())
+    assert "arxiv.html.checked" not in rec.counts
+    r = html_role(view(root)[sid(1)])
+    assert (r["status"], r["error_class"]) == ("failed_transient", "rate_limit")
+    assert r["retry_after"] is None or r["retry_after"] < later + 7 * DAY
+
+
 def test_arxiv_history_is_one_atom_request_per_100_ids(tmp_path: Path) -> None:
     """250 new arXiv papers: the history asks exactly three Atom ``id_list`` pages (100 + 100 + 50
     ids) and nothing per paper (no OAI-PMH); each row's ``content.revisions`` lists its current
