@@ -247,24 +247,6 @@ def _with_member(row: Row, i: int) -> None:
     row["identity"]["members_digest"] = dg(("members", "merged", row["doc_id"]))
 
 
-def test_a_merge_keeps_the_absorbed_rows_arxiv_listing() -> None:
-    """D807: the survivor of a merge takes the absorbed row's ``content.revisions`` (merged with its own) when the
-    document names one arXiv id, so a held version stays recognised; with two ids the listings are not mixed."""
-    surv, gone = doc(1, state="acquired"), doc(2, state="acquired")
-    gone["state"], gone["identity"]["merged_into"] = "retired", surv["doc_id"]
-    gone["content"]["revisions"] = [{"revision": v, "published_at": AT, "title": None} for v in ("v1", "v2")]
-    _with_member(surv, 2)  # member 2 names 2610.00002: another arXiv id
-    surv["identity"]["former_doc_ids"] = [gone["doc_id"]]
-
-    def listed() -> list[str]:
-        c = carry(surv, {gone["doc_id"]: gone}, wants=PAPER_WANTS, channel_group=GROUPS.get, permit=FETCH, pin=PIN)
-        return [r["revision"] for r in c["revisions"]]
-
-    assert listed() == ["v1"]
-    surv["identity"]["members"][1]["key_value"] = "2610.00001"  # the same paper's record
-    assert listed() == ["v1", "v2"]
-
-
 def test_regroup_after_merge_and_split(tmp_path: Path) -> None:
     """A merge: the survivor (members 1, 2; content stale) takes the absorbed row's entries
     through ``former_doc_ids``; the role both rows hold for member 2 is unioned, not summed. A

@@ -10,8 +10,6 @@ members before anything else runs.
   Snapshots union by ``snapshot_id``; roles union keyed ``(source_id, content_role)`` without
   summing attempts (:func:`merge_roles`: ``ok`` wins, else most attempts; earliest
   ``first_attempt_at``, latest ``last_attempt_at``, ``tried_urls`` unioned — the v4e mock's R13).
-  Their ``content.revisions`` merge (:func:`~workflows.acquire.history.merge_revisions`) when the row
-  names one arXiv id, so a held version stays listed (D807); else the first source's listing stands.
 * **Wanted roles.** For each live member, every role of ``acquire.wants[<channel>]`` (D11)
   without an entry and without an in-band entry gets one: ``skipped[gated]`` when triage does not
   let the row fetch, ``skipped[withdrawn]`` for a withdrawn member, else
@@ -126,7 +124,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from stack.schemas.vocab import RECORD_ROLES
-from workflows.acquire.history import merge_revisions, revision_number
+from workflows.acquire.history import revision_number
 from workflows.acquire.lanes import FETCH_LANES, INBAND, arxiv_key, keys_arxiv_ids, lane_for
 from workflows.acquire.point import structured_of, text_of
 from workflows.acquire.scope import FETCH, is_stale
@@ -431,10 +429,6 @@ def carry(row: Row, by_id: Mapping[str, Row], *, wants: Mapping[str, list[str]],
             if old is not None and old["state"] == "retired" and old.get("content") is not None:
                 sources.append(old["content"])
     content = copy.deepcopy(sources[0]) if sources else new_content(ident["members_digest"], pin)
-    aids = {arxiv_key(m.get("key_kind"), m.get("key_value")) for m in ident["members"]}
-    if len((aids | set(keys_arxiv_ids(ident).values())) - {""}) == 1:  # one arXiv id: every listing is of it (D807)
-        for c in sources[1:]:
-            content["revisions"] = merge_revisions(content["revisions"], c["revisions"] or [])
 
     snaps: dict[str, Row] = {}
     for c in sources:
