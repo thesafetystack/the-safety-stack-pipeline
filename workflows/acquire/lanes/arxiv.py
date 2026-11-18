@@ -115,7 +115,7 @@ Every answer records ``validator_url`` = the versioned URL asked (no validators 
 renders HTML from late 2023 on, keyed on the latest version's submission, so an old paper can gain
 HTML when revised, and a paper without HTML is asked about twice a year. The history step over
 ``html`` roles (:meth:`ArxivLane._html_history`; a due role joins the Atom sweep, whose answer is listed in
-``content.revisions`` as for the PDF, step 2): ``vN`` held and the role ``ok`` and due → checked
+``content.revisions`` as for the PDF, step 2): ``vN`` (or a newer one, D807) held and the role ``ok`` and due → checked
 (``retry_after = now + recheck``), only on this run's Atom answer (a due role without one keeps its state); remembered absent → ``retry_after = last_attempt_at + 180 d``; a
 withdrawn paper or an ``ok``/``empty`` role without ``vN`` → due now. Counts ``arxiv.html.requests``,
 ``arxiv.html.downloads``, ``arxiv.html.held``, ``arxiv.html.missing``,
@@ -707,7 +707,8 @@ class ArxivLane:
                 if aid in st.withdrawn:
                     if role["status"] in ("ok", "empty") and not _due(role, env.now):
                         c["roles"][i] = {**role, "retry_after": env.now}  # the lane answers skipped[withdrawn]
-                elif f"v{version}" in held_revisions(c["snapshots"], role["source_id"], HTML_ROLE):
+                elif version <= max(map(revision_number, held_revisions(c["snapshots"], role["source_id"],
+                                                                         HTML_ROLE)), default=0):  # or newer, D807
                     if role["status"] == "ok" and _due(role, env.now):
                         c["roles"][i] = {**role, "retry_after": env.now + recheck}
                         env.count("arxiv.html.checked")
