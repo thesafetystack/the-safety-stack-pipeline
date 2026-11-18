@@ -38,10 +38,9 @@
    line's (:meth:`stack.plan.StageLine.selection`: target, accepted list, selection digest), plus
    ``same_basis: true`` (D807, below; outside the digest, so a release's ``stages`` do not move);
 3. ``ask``: per row with a basis, the work key's selected prior evidence decides
-   (:func:`stack.annotate.evidence.prior_decision`): carry (no call) or ask; a row without
-   evidence under the current key is carried when it has an accepted row
-   (:func:`stack.annotate.evidence.accepted_row`: counts ``carried`` and ``carried.accepted``); a row whose current
-   key has no decided answer (none, or a failure, as in ``select``) is carried when another
+   (:func:`stack.annotate.evidence.prior_decision`): carry (no call) or ask; a row whose current key has no
+   decided answer (none, or a failure, as in ``select``) is carried when it has an accepted row
+   (:func:`stack.annotate.evidence.accepted_row`: counts ``carried`` and ``carried.accepted``), or when another
    supplying member's decided answer on the same basis and config stands for it (D807,
    :func:`stack.annotate.evidence.same_basis_row`: the pointer moved to a member with the same text whose licence
    class is no stricter; counts ``carried`` and ``carried.same_basis``), else asked; within
@@ -507,12 +506,13 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
                 counts[f"skipped.{b.missing}"] = counts.get(f"skipped.{b.missing}", 0) + 1
                 continue
             prev = latest.get(work_digest(b.source_id, b.digest, cfg, ""))
-            if prev is None and accepted_row(latest, b.source_id, b.digest, accepted) is not None:
+            undecided = prev is None or prev["status"] not in OK_LIKE  # as in select()
+            if undecided and accepted_row(latest, b.source_id, b.digest, accepted) is not None:
                 counts["carried"] = counts.get("carried", 0) + 1  # D758: an accepted row stands for the current key
                 counts["carried.accepted"] = counts.get("carried.accepted", 0) + 1
                 continue
-            if (prev is None or prev["status"] not in OK_LIKE) and same_basis_row(
-                    same, d["doc_id"], b.source_id, b.digest, cfg, licenses_of(d)) is not None:
+            if undecided and same_basis_row(same, d["doc_id"], b.source_id, b.digest, cfg,
+                                            licenses_of(d)) is not None:
                 counts["carried"] = counts.get("carried", 0) + 1  # D807: the supplier moved, the text did not
                 counts["carried.same_basis"] = counts.get("carried.same_basis", 0) + 1
                 continue

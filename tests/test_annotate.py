@@ -656,7 +656,7 @@ def test_without_an_accepted_list_a_config_change_asks_as_before(two_configs: di
     assert {r["config_digest"] for r in rows_of(store, rb, "screen")} == {_digest(t["pb"])}
 
 
-def test_a_permanent_failure_keeps_the_accepted_answer_a_due_transient_is_retried(
+def test_a_failure_under_the_target_keeps_the_accepted_answer(
         two_configs: dict[str, Any], monkeypatch: pytest.MonkeyPatch) -> None:
     from stack.llm import ContextTooLarge
 
@@ -669,10 +669,12 @@ def test_a_permanent_failure_keeps_the_accepted_answer_a_due_transient_is_retrie
     pb = _accepting(t["pb"], plain.config_digest, [ra.config_digest])
     del FAIL[sid(1)]
     rb = annotate(store, pb, "screen", t["corpus"], prior=plain)
-    assert rb.counts["asked"] == 1  # sid(1): the due transient, retried
+    # the current key's failures, permanent or a due transient, give way to the accepted answer as select() takes
+    # it: nothing is asked (before, the due transient was retried and its answer replaced the accepted one)
+    assert "asked" not in rb.counts and rb.counts["carried.accepted"] == 2
+    assert not [e for e in rows_of(store, rb, "screen_evidence") if e["run_id"] == rb.run_id]
     old, new = _by_doc(store, ra), _by_doc(store, rb)
-    assert new[sid(0)] == old[sid(0)]  # the current key's permanent failure gives way to the accepted answer
-    assert new[sid(1)]["config_digest"] == plain.config_digest and new[sid(1)]["attempts"] == 2
+    assert new[sid(0)] == old[sid(0)] and new[sid(1)] == old[sid(1)]
     assert new[sid(2)]["run_id"] == plain.run_id  # decided under B already: B's answer wins
     accepted_green(store)
 
