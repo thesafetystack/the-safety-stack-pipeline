@@ -790,8 +790,7 @@ arxiv_html}` (D276; on in batch-2026-10a). Turning it on changes the pin and so 
 must widen `content.current_role = 'full_text'` filters to `IN ('full_text', 'xml', 'html')`. With `arxiv_html` on,
 every member whose key carries an arXiv id (an `arxiv` key or a `10.48550/arxiv.<id>` DOI) wants `html`, whichever
 channel found it (OpenAlex and S2 papers too, not only the `wants` channels), one fetch per arXiv id; a role that
-already holds the current version (the newest listed one, or with nothing listed the one it holds) stays that fetch
-(D807, `carry.same_key_held`).
+already holds the newest listed version stays that fetch (D807, `carry.same_key_held`).
 
 A document whose text does not change keeps its supplier and its answers (D807): the pointer keeps the current
 snapshot over a newer same-text copy from another member (unless that member's licence class is strictly looser), and
