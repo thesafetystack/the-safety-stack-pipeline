@@ -766,7 +766,7 @@ def _two_suppliers(store: Path, i: int, lic_a: str, lic_b: str) -> dict[str, Any
     return with_digests(row)
 
 
-def _supplied_by_b(store: Path, rows: list[dict[str, Any]], run: int) -> None:
+def _supplied_by_b(store: Path, rows: list[dict[str, Any]], run: int) -> list[dict[str, Any]]:
     """An ``acquire`` part: each row's same text now comes from B's newer snapshot, which the pointer names."""
     out = []
     for row in rows:
@@ -782,6 +782,7 @@ def _supplied_by_b(store: Path, rows: list[dict[str, Any]], run: int) -> None:
         out.append(row)
     write_on_head(store, "documents", "documents", out, stage="acquire", run=run, blocks_written=["content"],
                   kind="part")
+    return out
 
 
 def test_an_unchanged_text_from_another_supplier_keeps_its_answer(env: dict[str, Any],
@@ -830,6 +831,42 @@ def test_an_unchanged_text_from_another_supplier_keeps_its_answer(env: dict[str,
     rewrite_record(store, rec)
     by = {r.check: r for r in run_checks(store)}
     assert by["selection_recompute"].status == "failed" and sid(0) in " ".join(by["selection_recompute"].items)
+
+
+def test_a_failure_of_the_new_supplier_gives_way_to_a_same_basis_answer(env: dict[str, Any],
+                                                                         monkeypatch: pytest.MonkeyPatch) -> None:
+    """D807 (B): B, now the supplier again, has a due ``failed_transient`` answer on the same text and config (from
+    an earlier spell as supplier); A's ``ok`` answer stands for it as ``select`` takes it, so nothing is asked."""
+    store, fake = env["store"], env["fake"]
+    verdicts(fake, 3)
+    docs = [_two_suppliers(store, 0, "open", "open")]
+    write_documents(store, docs, run=1)
+    at_b = _supplied_by_b(store, docs, run=2)
+    p = plan()
+    monkeypatch.setitem(FAIL, sid(0), TransportError("fake: upstream timed out"))
+    r1 = annotate(store, p, "screen", fold_corpus(store, p))
+    assert [r["status"] for r in rows_of(store, r1, "screen")] == ["failed_transient"]
+    del FAIL[sid(0)]
+
+    def point_at(n: int, run: int) -> None:
+        out = copy.deepcopy(at_b)
+        for row in out:
+            c, s_ = row["content"], row["content"]["snapshots"][n]
+            c["current_snapshot_id"], c["current_source_id"] = s_["snapshot_id"], s_["source_id"]
+            row["run_id"] = c["run_id"] = rid(run)
+        write_on_head(store, "documents", "documents", out, stage="acquire", run=run, blocks_written=["content"],
+                      kind="part")
+
+    point_at(0, run=3)  # back to A: asked (B's failure is no answer to reuse)
+    r2 = annotate(store, p, "screen", fold_corpus(store, p), prior=r1)
+    (a_row,) = rows_of(store, r2, "screen")
+    assert (a_row["source_id"], a_row["status"], fake.count()) == (sid(0), "ok", 1)
+    point_at(1, run=4)  # B again, its failure due
+    r3 = annotate(store, p, "screen", fold_corpus(store, p), prior=r2)
+    assert r3.counts["carried.same_basis"] == 1
+    assert not [e for e in rows_of(store, r3, "screen_evidence") if e["run_id"] == r3.run_id]  # nothing asked
+    assert [r["evidence_id"] for r in rows_of(store, r3, "screen")] == [a_row["evidence_id"]]
+    all_green(store)
 
 
 def test_same_basis_row_reuses_only_decided_answers_for_a_no_stricter_supplier() -> None:

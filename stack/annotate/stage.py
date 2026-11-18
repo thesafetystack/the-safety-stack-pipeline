@@ -40,7 +40,8 @@
 3. ``ask``: per row with a basis, the work key's selected prior evidence decides
    (:func:`stack.annotate.evidence.prior_decision`): carry (no call) or ask; a row without
    evidence under the current key is carried when it has an accepted row
-   (:func:`stack.annotate.evidence.accepted_row`: counts ``carried`` and ``carried.accepted``), or when another
+   (:func:`stack.annotate.evidence.accepted_row`: counts ``carried`` and ``carried.accepted``); a row whose current
+   key has no decided answer (none, or a failure, as in ``select``) is carried when another
    supplying member's decided answer on the same basis and config stands for it (D807,
    :func:`stack.annotate.evidence.same_basis_row`: the pointer moved to a member with the same text whose licence
    class is no stricter; counts ``carried`` and ``carried.same_basis``), else asked; within
@@ -118,7 +119,7 @@ import pyarrow as pa
 from stack.annotate.basis import basis_of, licenses_of, work_digest
 from stack.annotate import batchmode
 from stack.annotate.batchmode import llm_mode, replay_counts, run_batches
-from stack.annotate.evidence import accepted_row, by_basis, by_work, evidence_row, prior_decision, same_basis_row
+from stack.annotate.evidence import OK_LIKE, accepted_row, by_basis, by_work, evidence_row, prior_decision, same_basis_row
 from stack.annotate.inputs import join_reads
 from stack.annotate.scope import Limit, in_scope
 from stack.annotate.select import RecordMissing, select
@@ -510,8 +511,8 @@ def run_annotate(ctx: StageContext, workflow: Workflow) -> StageResult:
                 counts["carried"] = counts.get("carried", 0) + 1  # D758: an accepted row stands for the current key
                 counts["carried.accepted"] = counts.get("carried.accepted", 0) + 1
                 continue
-            if prev is None and same_basis_row(same, d["doc_id"], b.source_id, b.digest, cfg,
-                                               licenses_of(d)) is not None:
+            if (prev is None or prev["status"] not in OK_LIKE) and same_basis_row(
+                    same, d["doc_id"], b.source_id, b.digest, cfg, licenses_of(d)) is not None:
                 counts["carried"] = counts.get("carried", 0) + 1  # D807: the supplier moved, the text did not
                 counts["carried.same_basis"] = counts.get("carried.same_basis", 0) + 1
                 continue
