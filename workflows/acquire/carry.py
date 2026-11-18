@@ -89,17 +89,21 @@ members before anything else runs.
   retrieval; T3.6's continuation re-opened five such OA roles for 207 requests, and a dead arXiv
   id was retried once per member, D165b's residue; ``carry.same_key_lane_terminal``) is the
   group's fetch role, **unless the identifier is already held** (D807): in an ``arxiv:<id>`` group, an
-  ``ok`` role on lane ``arxiv`` whose source holds a raw snapshot of that role at the newest revision in
-  ``content.revisions`` (what the lane would fetch; :func:`held_lead`) is the fetch role, the first such
-  in the order above (``carry.same_key_held`` when that is not the role the order picks). So a member a
-  merge adds that sorts first (the ``arxiv`` channel's beside an OpenAlex member's) no longer fetches the
-  same version again, minting a second snapshot of the same text. The fetch key carries no version (``vN``
-  is stripped) and neither does the member's key reliably; the lane fetches the newest version whichever
-  member asks, so "the same version" is the newest listed one. Nothing listed yet, a newer version listed
-  but not held (the history's answer), or the held role's member no longer live: the order decides, as
-  before. The held role's own recheck is unchanged: the history asks Atom for it (it is due or checked as
-  any ``ok`` role), and a new version makes it due, so it fetches the new version once. When there is
-  no fetch role, the group fetches nothing; every other
+  ``ok`` role on lane ``arxiv`` whose source holds a raw snapshot of that role at the version the lane
+  would fetch (:func:`held_lead`) is the fetch role, the first such in the order above
+  (``carry.same_key_held`` when that is not the role the order picks). So a member a merge adds that sorts
+  first (the ``arxiv`` channel's beside an OpenAlex member's) no longer fetches the same version again,
+  minting a second snapshot of the same text. The fetch key carries no version (``vN`` is stripped) and
+  neither does the member's key reliably; the lane fetches the current version whichever member asks.
+  That version is the newest revision in ``content.revisions`` when the history listed one; a newer one
+  listed but not held (the history's answer) leaves the order to decide, as before. With nothing listed
+  (an arXiv paper read through its HTML only, ``arxiv_pdf: on_miss``, never gets a listing) the held
+  revision stands for it: the held role's own recheck (the weekly ``retry_after`` of an ``ok`` arXiv
+  role, D22; due at most cycles) asks arXiv for the current version and fetches a newer one once, so the
+  newcomer's fetch would only repeat it; a newer version then waits for that recheck, at most one recheck
+  period. The recheck itself is not changed, and a due held role is still the lead (it is called anyway).
+  The held role's member no longer live: as before. When there is no fetch role, the group fetches
+  nothing; every other
   ``not_attempted`` role of the group becomes ``skipped[not_needed]`` ("same <key> as
   <source_id> (<channel>)"; never due, never charged; ``carry.same_key_skipped``). A
   ``skipped[not_needed]`` role that is no longer covered by another role (it is now its group's
@@ -208,16 +212,15 @@ def held_lead(keys: list[RoleKey], roles: Mapping[RoleKey, Row], snapshots: list
               revisions: list[Row] | None) -> RoleKey | None:
     """The first of ``keys`` (one ``arxiv:<id>`` group, in fetch order) that already holds what the arXiv
     lane would fetch (module docstring, One fetch per paper identifier, D807): ``ok`` on lane ``arxiv``,
-    its source holding a raw snapshot of its role at the newest revision of ``revisions``."""
+    its source holding a raw snapshot of its role at the newest revision of ``revisions``, or at any
+    revision when nothing is listed."""
     listed = [str(r["revision"]) for r in revisions or [] if r.get("revision")]
-    if not listed:
-        return None
-    newest = max(listed, key=lambda v: (revision_number(v), v))
+    newest = max(listed, key=lambda v: (revision_number(v), v)) if listed else None
     for k in keys:
         r = roles[k]
         if r["status"] == "ok" and r.get("lane") == "arxiv" and any(
                 s["kind"] == "raw" and s["source_id"] == k[0] and s["content_role"] == r["content_role"]
-                and s.get("revision") == newest for s in snapshots):
+                and s.get("revision") and (newest is None or s["revision"] == newest) for s in snapshots):
             return k
     return None
 

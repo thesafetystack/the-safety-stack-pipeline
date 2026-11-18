@@ -549,11 +549,12 @@ def carried_states(row: Row) -> tuple[dict[tuple[str, str], tuple[str, str | Non
 
 
 def test_a_held_arxiv_version_keeps_its_fetch_role() -> None:
-    """D807: the ``ok`` role that holds the newest listed version is the group's fetch role, so the arXiv member
-    a merge adds (first in the order) is ``skipped[not_needed]`` instead of fetching the same version again; also
-    while the held role is due for its recheck (the history asks Atom for it, not for the newcomer)."""
-    for due in (NOW + 72 * H, NOW - H):
-        st, counts = carried_states(held_paper(retry_after=due))
+    """D807: the ``ok`` role that holds the newest listed version (any held version when nothing is listed) is the
+    group's fetch role, so the arXiv member a merge adds (first in the order) is ``skipped[not_needed]`` instead
+    of fetching the same version again; also while the held role is due for its recheck (its own call asks arXiv
+    for the current version, not the newcomer's)."""
+    for due, revs in ((NOW + 72 * H, ("v1", "v2")), (NOW - H, ("v1", "v2")), (NOW - H, ())):
+        st, counts = carried_states(held_paper(revs, retry_after=due))  # nothing listed: the held version
         assert st[(sid(1), "full_text")] == ("ok", None, "arxiv")
         assert st[(sid(2), "full_text")] == ("skipped", "not_needed", "arxiv")
         assert counts["carry.same_key_held"] == 1 and counts["carry.same_key_skipped"] == 1
@@ -562,7 +563,6 @@ def test_a_held_arxiv_version_keeps_its_fetch_role() -> None:
 @pytest.mark.parametrize("label,kw", [
     ("a newer version is listed but not held", {"revs": ("v1", "v2", "v3")}),
     ("only an older version is held", {"held": "v1"}),
-    ("nothing is listed yet", {"revs": ()}),
     ("the held role's member is no longer live", {"oa_live": False}),
 ])
 def test_without_the_held_version_the_order_decides(label: str, kw: dict[str, Any]) -> None:
