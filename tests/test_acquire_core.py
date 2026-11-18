@@ -219,6 +219,25 @@ def test_quality_judges_the_same_text_previous_current_too() -> None:
     assert [x["snapshot_id"] for x in judged_snapshots(row, PIN)] == [NEW]
 
 
+def test_quality_arms_the_refresh_of_the_snapshot_the_pointer_keeps(tmp_path: Path) -> None:
+    """D807: the pointer keeps A over B's newer same text; A's Article-in-Press flag (from its URL; B has none)
+    keeps A's role due for the refresh, not B's."""
+    from stack.conversion import quality as q
+    from workflows.acquire.quality import gate_of, run_quality
+
+    gate = gate_of({})
+    a, b = snap(1, A, at=AT - H, text=dg("t1"), status="ok"), snap(2, B, text=dg("t1"), status="ok")
+    for s_, flags in ((a, [q.ARTICLE_IN_PRESS]), (b, [])):
+        s_["quality"] = {"version": q.CHECKS_VERSION, "bucket": "flagged" if flags else "ok", "flags": flags,
+                         "fails": [], "gate_digest": gate.digest(), "converter": None, "tier": None, "metrics": {}}
+    roles = [{**new_role("full_text", s_["source_id"], status="ok", error_class=None, lane="oa"),
+              "snapshot_id": s_["snapshot_id"]} for s_ in (a, b)]
+    row = {"doc_id": rid(1), "content": {"snapshots": [a, b], "roles": roles, "current_snapshot_id": OLD},
+           "identity": {"members": licensed((A, "open"), (B, "open"))}}
+    run_quality([row], env(tmp_path), gate)
+    assert {r["source_id"]: r["retry_after"] for r in roles} == {A: NOW + 14 * 24 * H, B: None}
+
+
 # ---------------------------------------------------------------- carry (X21, §6)
 def _with_member(row: Row, i: int) -> None:
     m = copy.deepcopy(row["identity"]["members"][0])
