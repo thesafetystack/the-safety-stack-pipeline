@@ -26,7 +26,7 @@ import pytest
 import stack.http as stack_http
 from stack.arxiv import parse_atom_versions
 from stack.schemas.vocab import ERROR_CLASSES
-from workflows.acquire.history import atom_revisions, merge_revisions
+from workflows.acquire.history import atom_revisions, merge_revisions, revision_number
 from workflows.acquire.lanes import arxiv as arx
 from workflows.acquire.lanes.http import HttpSession
 
@@ -395,3 +395,7 @@ def test_merge_revisions_never_forgets_a_version() -> None:
                                                                   "title": None}]
     assert [r["revision"] for r in merge_revisions(prior, new)] == ["v1", "v2", "v10"]
     assert merge_revisions(prior, new)[0] == {"revision": "v1", "published_at": t, "title": "old"}
+
+
+def test_revision_number_of_odd_strings_sorts_first() -> None:
+    assert [revision_number(r) for r in ("v12", "v1", None, "", "12", "v", "vx", "v\u00b2")] == [12, 1, 0, 0, 0, 0, 0, 0]
