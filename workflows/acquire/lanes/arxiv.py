@@ -115,7 +115,8 @@ Every answer records ``validator_url`` = the versioned URL asked (no validators 
 (the history step sets ``retry_after`` to that); a new version (another URL) is asked at once. arXiv
 renders HTML from late 2023 on, keyed on the latest version's submission, so an old paper can gain
 HTML when revised, and a paper without HTML is asked about twice a year. The history step over
-``html`` roles (:meth:`ArxivLane._html_history`): ``vN`` held and the role ``ok`` and due → checked
+``html`` roles (:meth:`ArxivLane._html_history`; a due role joins the Atom sweep, whose answer is listed in
+``content.revisions`` as for the PDF, step 2): ``vN`` held and the role ``ok`` and due → checked
 (``retry_after = now + recheck``); remembered absent → ``retry_after = last_attempt_at + 180 d``; a
 withdrawn paper or an ``ok``/``empty`` role without ``vN`` → due now. Counts ``arxiv.html.requests``,
 ``arxiv.html.downloads``, ``arxiv.html.held``, ``arxiv.html.missing``,
@@ -583,6 +584,14 @@ def _sweep(env: LaneEnv, st: ArxivState, ids: Sequence[str]) -> None:
         env.count("arxiv.atom_limited")
 
 
+def _list(content: Row, atom: AtomVersion) -> None:
+    """An Atom answer into ``content.revisions``, only where it adds something (module docstring, History 2)."""
+    dated = {r["revision"] for r in content["revisions"] or [] if r.get("published_at") is not None}
+    adds = [r for r in atom_revisions(atom) if r["revision"] not in dated]
+    if adds:
+        content["revisions"] = merge_revisions(content["revisions"], adds)
+
+
 def _lookahead(st: ArxivState, aid: str) -> list[str]:
     """``aid`` and the next due ids of the run in fetch order not known yet (one Atom batch), so an
     episode that must sweep its own id asks for its successors too (D410)."""
@@ -634,27 +643,23 @@ class ArxivLane:
                 aid = arxiv_id_of(member)
                 if aid:
                     targets.setdefault(aid, []).append((row, i))
-        # An html role that is due and whose version nothing lists joins the batched sweep.
+        # An html role that is due joins the batched sweep (its answer is listed as the PDF's is).
         # targets is in row order, i.e. the run's order (D410: the sweep asks the newest first under newest_first).
-        unlisted = [aid for aid, items in html.items() if aid not in targets and any(
-            newest_listed(row["content"]) is None and _due(row["content"]["roles"][i], env.now) for row, i in items)]
-        if not targets and not unlisted:
+        due_html = [aid for aid, items in html.items() if aid not in targets and any(
+            _due(row["content"]["roles"][i], env.now) for row, i in items)]
+        if not targets and not due_html:
             self._html_history(html, env, st)
             return rows
-        _sweep(env, st, [*targets, *unlisted])
+        _sweep(env, st, [*targets, *due_html])
         recheck = recheck_of(env)
         for aid in sorted(targets):
             atom = st.versions.get(aid)
             if atom is None:
                 continue
             current = f"v{atom.version}"
-            answer = atom_revisions(atom)
             for row, i in targets[aid]:
                 c = row["content"]
-                dated = {r["revision"] for r in c["revisions"] or [] if r.get("published_at") is not None}
-                adds = [r for r in answer if r["revision"] not in dated]
-                if adds:
-                    c["revisions"] = merge_revisions(c["revisions"], adds)
+                _list(c, atom)
                 role = c["roles"][i]
                 if role["status"] in ("ok", "empty") and (
                         aid in st.withdrawn or current not in held_revisions(c["snapshots"], role["source_id"])):
@@ -693,6 +698,8 @@ class ArxivLane:
             for row, i in html[aid]:
                 c = row["content"]
                 atom = st.versions.get(aid)
+                if atom is not None:
+                    _list(c, atom)
                 version = atom.version if atom is not None else newest_listed(c)
                 if version is None:
                     continue  # unknown: the role keeps its state; if due, the lane sweeps its own id
