@@ -43,6 +43,19 @@ variants:
     abstract: withhold           # abstract := NULL; release.abstract = withheld_pending_rights_review (or none)
     texts: not_distributed       # release.text = not_distributed; no texts table
     quote_cap_chars: 300         # every text class
+    # D808 (stack/fold/disclosure.py): a per-document quotation budget over quote_paths. L = the converted text's
+    # length in characters (quality.metrics.chars; none: no quotes). Pass 1: one quote per annotation cut to
+    # floor_cut under min(ceiling.chars, ceiling.share*L); pass 2: the rest at the cap under min(budget.chars,
+    # budget.share*L). A withheld abstract may be covered at most abstract_share (word shingle_words-grams).
+    # release.json policy.quote_policy records it; the upload refuses a public release without a supported version.
+    quote_policy:
+      version: 2
+      floor_cut: 150
+      budget: {chars: 2000, share: 0.15}
+      ceiling: {chars: 6000, share: 0.25}
+      abstract_share: 0.30
+      shingle_words: 4
+    emails: redact               # D808: every address in a shipped string becomes [email]; a URL with one is dropped
   internal:                      # the maintainers' variant (abstracts, full quotes and texts); not distributed
     abstract: keep               # release.abstract = shipped | none
     texts: inline                # release.text = inline; content.text.body holds the converted text
@@ -58,6 +71,11 @@ quote_paths:
   - annotations.safety_techniques.payload.techniques[].quotes[].text
   - annotations.safety_techniques.payload.extra_techniques[].quotes[].text
   - annotations.model_roles.payload.models[].evidence[].quote
+  - annotations.model_roles.payload.variant_models[].quote
+  - annotations.model_roles.payload.extra_models[].quote
+# Quote paths whose quote is a required field of its annotation (D808): a quote the budget omits ships as "" there;
+# elsewhere it leaves its list.
+scalar_quotes:
   - annotations.model_roles.payload.variant_models[].quote
   - annotations.model_roles.payload.extra_models[].quote
 surface_paths:
@@ -355,12 +373,12 @@ fields:
     transform: release.quote_chars
     type: int32
     nullable: false
-    doc: "Characters (code points) of quoted document text shipped in this row's annotations, as serialised: repeats counted, ellipses included, surfaces excluded. For the rights statement; not a coverage ratio (content.text.bytes counts UTF-8 bytes)."
+    doc: "Characters (code points) of quoted document text shipped in this row's annotations, as serialised: repeats counted, ellipses included, surfaces excluded; in the public variant, after the per-document quotation limit (FORMAT.md, Quotes). For the rights statement; not a coverage ratio (content.text.bytes counts UTF-8 bytes)."
   - public: release.cuts[]
     transform: release.cuts
     type: list<struct<path string, chars int32>>
     nullable: false
-    doc: "Every quote or surface this release cut, with its original length; [] = nothing cut. A cut string ends with '…'. Producers already stop technique and model quotes at 300 characters at annotation time; those are not cuts and are not marked."
+    doc: "Every quote or surface this release cut and kept, with its original length; [] = nothing cut. A cut string ends with '…'; the paths index the shipped lists. A quote the public variant's per-document limit left out is not listed: it is gone from its list, or an empty string where the field is required (FORMAT.md, Quotes). Producers already stop technique and model quotes at 300 characters at annotation time; those are not cuts and are not marked."
   - public: release.cuts[].path
     doc: Path of the cut string with list indices, e.g. annotations.safety_techniques.payload.techniques[2].quotes[0].text.
   - public: release.cuts[].chars

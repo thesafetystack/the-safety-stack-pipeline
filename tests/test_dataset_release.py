@@ -151,6 +151,10 @@ ROLES = {r: 0 for r in ("mentioned", "cited_work", "discussed", "used", "evaluat
                         "attested_use", "suspected_use", "considered", "critiqued")}
 
 
+#: The converted text's length the synthetic rows record (quality.metrics.chars): budget 2,000, ceiling 6,000 (D808).
+TEXT_CHARS = 100_000
+
+
 MODEL_ROLES = {r: 0 for r in ("mentioned", "cited_work", "discussed", "usage_experience", "built_on", "instrument",
                               "modified", "evaluated_behavioral", "analyzed_internals", "introduced")}
 
@@ -168,8 +172,9 @@ def _row(doc: str = "sdoc000000001", **over: dict[str, Any]) -> dict[str, Any]:
          "note": "graded on the menu node gpt-4", }]
     ann["other"] = []
     ann.update(over)
-    return {"doc_id": doc, "state": "acquired", "annotations": ann,
-            "content": {"current_text_sha256": TEXT}}
+    return {"doc_id": doc, "state": "acquired", "annotations": ann, "metadata": {"abstract": None},
+            "content": {"current_text_sha256": TEXT, "current_snapshot_id": "snap1",
+                        "snapshots": [{"snapshot_id": "snap1", "quality": {"metrics": {"chars": TEXT_CHARS}}}]}}
 
 
 def _pin(wf: str, name: str, models: list[str], plan_pin: dict[str, Any]) -> dict[str, Any]:
@@ -332,19 +337,22 @@ def test_unknown_other_kind_is_refused(m: Mapping_) -> None:
 
 @pytest.mark.slow
 def test_cap_cuts_and_counts(m: Mapping_) -> None:
+    """The public variant's only quote is its annotation's floor quote (D808: cut to 150, not to the 300 cap);
+    the internal variant keeps it whole."""
     for variant, cut in (("public", True), ("internal", False)):
         p = _proj(m, _inputs([]), variant)
-        ann = p.annotations(_row())
-        ctx: dict[str, Any] = {"cuts": [], "quote_chars": 0}
+        row = _row()
+        ann = p.annotations(row)
+        ctx: dict[str, Any] = {"row": row, "cuts": [], "quote_chars": 0}
         p.cap_and_scrub(ann, ctx)
         q = ann["safety_techniques"]["payload"]["techniques"][0]["quotes"][0]["text"]
         note = ann["model_roles"]["payload"]["models"][0]["note"]
         assert note == "graded on the catalogue entry gpt-4"  # scrubbed in both variants
         if cut:
-            assert len(q) <= 300 and q.endswith("…")
+            assert len(q) <= 150 and q.endswith("…")
             assert ctx["cuts"] == [{"path": "annotations.safety_techniques.payload.techniques[0].quotes[0].text",
                                     "chars": 400}]
-            assert ctx["quote_chars"] == len(q)
+            assert ctx["quote_chars"] == len(q) and p.quote_counts["kept"] == 1
         else:
             assert q == "word " * 80 and ctx["cuts"] == [] and ctx["quote_chars"] == 400
 
@@ -448,10 +456,13 @@ def test_stand_in_value_projected_and_cut(m: Mapping_) -> None:
                           "flags": [], "note": None}]
     pay["repairs"] = ["internal"]
     o = _ov("impl-ts-s", "technique_staged", "row", value=pay, tier="ai_check", author="ai:claude-opus-5-5")
+    value, cuts = ds.overrides_value(_proj(m, _inputs([o]), "internal"), o)
+    assert "repairs" not in value and value["techniques"][0]["quotes"][0] == {"text": "q " * 200, "anchored": True}
+    assert cuts == []
+    # the public variant ships no quote in an override's value (D808): the corpus row carries what ships
     value, cuts = ds.overrides_value(_proj(m, _inputs([o])), o)
-    assert "repairs" not in value and value["techniques"][0]["quotes"][0]["anchored"] is True
-    assert len(value["techniques"][0]["quotes"][0]["text"]) <= 300
-    assert cuts == [{"path": "value.techniques[0].quotes[0].text", "chars": 400}]
+    assert "repairs" not in value and value["techniques"][0]["quotes"] == [] and cuts == []
+    assert value["techniques"][0]["slug"] == "rlhf"
 
 
 # ---------------------------------------------------------------- organisations of the affiliations
@@ -1251,6 +1262,103 @@ def test_translation_ships_marked_as_machine_translation(m: Mapping_) -> None:
         assert (tr["payload"]["abstract_en"] is None) == (variant == "public"), variant
         assert tr["payload"]["title_en"] is not None
     ds.withhold_abstract_paths({"annotations": {"translation": None}}, m.abstract_paths)  # no record: unchanged
+
+
+# ---------------------------------------------------------------- the public disclosure rules (D808)
+def _quoted_row(quotes: list[str], *, chars: int | None = TEXT_CHARS, abstract: str | None = None) -> dict[str, Any]:
+    row = _row()
+    row["annotations"]["technique_staged"]["payload"]["techniques"][0]["quotes"] = [
+        {"text": q, "verified": True} for q in quotes]
+    row["content"]["snapshots"][0]["quality"] = {"metrics": {"chars": chars}} if chars is not None else None
+    row["metadata"]["abstract"] = abstract
+    return row
+
+
+def _budgeted(m: Mapping_, row: dict[str, Any], variant: str = "public") -> tuple[Projection, dict[str, Any], dict]:
+    p = _proj(m, _inputs([]), variant)
+    ann = p.annotations(row)
+    ctx: dict[str, Any] = {"row": row, "cuts": [], "quote_chars": 0}
+    p.cap_and_scrub(ann, ctx)
+    return p, ann, ctx
+
+
+def test_budget_cuts_index_the_shipped_list(m: Mapping_) -> None:
+    """A quote the withheld abstract's rule refuses leaves its list; the next one is the floor quote, cut to 150, and
+    its cut's path is its index in the shipped list."""
+    abstract = " ".join(f"a{i}" for i in range(80))
+    kept = " ".join(f"k{i}" for i in range(80))
+    p, ann, ctx = _budgeted(m, _quoted_row([abstract, kept], abstract=abstract))
+    qs = ann["safety_techniques"]["payload"]["techniques"][0]["quotes"]
+    assert [q["text"] for q in qs] == [ds.cut_string(kept, 150)]
+    assert ctx["cuts"] == [{"path": "annotations.safety_techniques.payload.techniques[0].quotes[0].text",
+                            "chars": len(kept)}]
+    assert ctx["quote_chars"] == len(qs[0]["text"]) and not p.problems
+    assert p.quote_counts["quotes"] == 2 and p.quote_counts["kept"] == 1 and p.abstract_shares == [0.0]
+    rec = ds.quote_policy_record(p)
+    assert rec["quote_policy"]["version"] == 2 and rec["quote_policy"]["quotes"] == {"in": 2, "kept": 1, "cut": 1,
+                                                                                    "omitted": 1}
+    assert rec["emails"]["redacted"] == 0
+    # the abstract shipped (the internal variant): no rule, no budget, nothing cut
+    p, ann, ctx = _budgeted(m, _quoted_row([abstract, kept], abstract=abstract), "internal")
+    assert len(ann["safety_techniques"]["payload"]["techniques"][0]["quotes"]) == 2 and ctx["cuts"] == []
+    assert ds.quote_policy_record(p) == {}
+
+
+def test_a_row_without_its_text_length_ships_no_quotes(m: Mapping_) -> None:
+    p, ann, ctx = _budgeted(m, _quoted_row(["short quote"], chars=None))
+    assert ann["safety_techniques"]["payload"]["techniques"][0]["quotes"] == [] and ctx["quote_chars"] == 0
+    assert p.quote_counts["rows_without_length"] == 1
+    assert p.quotes_lost == {"safety_techniques.techniques": 1}
+
+
+def test_the_budget_invariants_are_checked_on_the_output(m: Mapping_, monkeypatch: pytest.MonkeyPatch) -> None:
+    """An allocation that leaves too much is a row problem (the check reads the row, not the allocator's sums)."""
+    row = _quoted_row(["word " * 80], chars=1000, abstract="word " * 80)
+    monkeypatch.setattr(ds.disclosure, "allocate", lambda *a, **k: ds.disclosure.Allocation(150, 250))
+    p, _ann, _ctx = _budgeted(m, row)
+    assert any("over the ceiling 250" in x for x in p.problems), p.problems
+    assert any("of the withheld abstract" in x for x in p.problems), p.problems
+
+
+def test_row_redacts_emails_before_cutting_and_drops_urls_with_one(m: Mapping_) -> None:
+    p = _proj(m, _inputs([]))
+    projected = {"title": "Reply to alice@example.org", "canonical_url": "mailto:bob@example.org",
+                 "content": {"source": {"url": "https://example.org/people/carol@example.org"}},
+                 "identity": {"members": [{"canonical_url": "https://example.org/p", "key_kind": "doi",
+                                           "key_value": "10.1/x"}]}}
+    p._project = lambda n, obj, ctx: copy.deepcopy(projected)  # type: ignore[method-assign]
+    long = "word " * 28 + "dan.o'brien+x@uni.example.ac.uk " + "word " * 40  # the address straddles the 150 cut
+    out = p.row(_quoted_row([long]))
+    assert out["title"] == "Reply to [email]" and out["canonical_url"] is None
+    assert out["content"]["source"]["url"] is None and out["identity"]["members"][0]["canonical_url"]
+    q = out["annotations"]["safety_techniques"]["payload"]["techniques"][0]["quotes"][0]["text"]
+    assert "[email]" in q and "@" not in q
+    assert p.emails_redacted == 2 and p.urls_dropped == 2
+    projected["identity"]["members"][0]["key_value"] = "eve@example.org"
+    with pytest.raises(DatasetError, match="identity.members\\[\\].key_value: an identifier holds an email"):
+        p.row(_quoted_row([long]))
+    q_internal = _proj(m, _inputs([]), "internal")
+    q_internal._project = lambda n, obj, ctx: copy.deepcopy(projected)  # type: ignore[method-assign]
+    assert q_internal.row(_quoted_row([long]))["title"] == "Reply to alice@example.org"  # internal: as stored
+
+
+def test_public_overrides_ship_no_quote_or_abstract(m: Mapping_, policy: ds.OverridesPolicy) -> None:
+    tr = _ov("ov-tr", "translation", "row", tier="ai_check", author="ai:claude-opus-5-5",
+             value={"from_lang": "zh", "title_en": "T", "abstract_en": "The abstract.", "method": "llm"})
+    ab = _ov("ov-ab", "fields", "field", field="abstract", value="An abstract by hand.")
+    qf = _ov("ov-q", "sr_relevance", "field", field="quotes", value=[{"text": "q", "offset": 0}])
+    vf = _ov("ov-v", "sr_relevance", "field", field="verdict", value="relevant",
+             note="Kept after a request from x@example.org.")
+    pub, intern = _proj(m, _inputs([tr, ab, qf, vf])), _proj(m, _inputs([tr, ab, qf, vf]), "internal")
+    assert ds.overrides_value(pub, tr)[0]["abstract_en"] is None
+    assert ds.overrides_value(intern, tr)[0]["abstract_en"] == "The abstract."
+    assert ds.overrides_value(pub, ab) == (None, []) and ds.overrides_value(intern, ab)[0] == "An abstract by hand."
+    assert ds.overrides_value(pub, qf) == ([], []) and ds.overrides_value(intern, qf)[0] == qf.value
+    assert ds.overrides_value(pub, vf) == ("relevant", [])
+    act = ds.ActiveOverrides([(vf, "r1")], 1, 0, [], [], [])
+    line = ds.export_overrides(pub, policy, act)[0]
+    assert line["note"] == "Kept after a request from [email]." and pub.emails_redacted == 1
+    assert ds.export_overrides(intern, policy, act)[0]["note"] == "Kept after a request from x@example.org."
 
 
 def test_quote_unverified_sentence() -> None:
