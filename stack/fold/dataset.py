@@ -3121,10 +3121,11 @@ def quote_policy_sentence(pol: Mapping[str, Any]) -> str:
     if qp:
         b, c = qp["budget"], qp["ceiling"]
         out += (f" Quotes are also limited per document (`policy.quote_policy`, version {qp['version']}), so that each "
-                "document's quoted text stays a small share of it: each annotation keeps its first quote that fits, "
-                f"cut to {qp['floor_cut']} characters, while the document's distinct quoted text stays within "
-                f"{_fmt(c['chars'])} characters and {c['share']:.0%} of its converted text; further quotes, at the "
-                f"cap, fit within {_fmt(b['chars'])} characters and {b['share']:.0%}. Where the abstract is withheld, the "
+                "document's quoted text stays a small share of it: each annotation keeps its shortest quote that "
+                f"fits, cut to {qp['floor_cut']} characters, while the document's distinct quoted text stays within "
+                f"{_fmt(c['chars'])} characters and {c['share']:.0%} of its converted text; then, within "
+                f"{_fmt(b['chars'])} characters and {b['share']:.0%}, those quotes are restored to the cap and further "
+                "quotes added at the cap, one per annotation in turn. Where the abstract is withheld, the "
                 f"quotes cover at most {qp['abstract_share']:.0%} of it (runs of {qp['shingle_words']} words). The "
                 "screen and relevance records come first, then techniques and models by their strongest role. A "
                 "repeated quote ships as the same string. An omitted quote leaves its list, or is an empty string "

@@ -53,16 +53,43 @@ def test_limits_and_the_policy_record() -> None:
         dz.QuotePolicy.parse({**rec})  # length, normalisation are the record's, not the mapping's
 
 
-def test_floor_is_cut_to_150_and_the_rest_fill_the_budget_round_robin() -> None:
-    long1, long2 = words("a", 60), words("b", 60)  # ~ 300 + characters each
+def test_floor_is_cut_to_150_then_upgraded_and_the_rest_fill_the_budget_round_robin() -> None:
+    long1, long2 = words("a", 60), words("b", 60)  # ~ 230 characters each
     a = ann(screen=[long1, words("c", 10)], techniques=[(2, [long2, words("d", 10)])])
     al = alloc(a)
     sc, (tq,), _v = texts(a)
-    assert sc[0] == cut_string(long1, 150) and tq[0] == cut_string(long2, 150)  # floor quotes, cut to 150
-    assert sc[1] == words("c", 10) and tq[1] == words("d", 10)  # pass 2, whole
-    # a cut quote costs its normalised length: NFKC spells the cut's "…" as "...", two characters more
-    assert al.floor_cost == len(sc[0]) + len(tq[0]) + 4 and al.cost == al.floor_cost + len(sc[1]) + len(tq[1])
-    assert al.kept == al.quotes == 4 and al.cut == 2 and not al.lost
+    # pass 1 took each annotation's shortest quote, cut to 150 (here whole); pass 2 added the long ones at the cap
+    assert sc == [long1, words("c", 10)] and tq == [long2, words("d", 10)]
+    assert al.floor_cost == 2 * len(words("c", 10)) and al.cost == sum(map(len, sc + tq))
+    assert al.kept == al.quotes == 4 and al.cut == 0 and not al.lost
+
+
+def test_a_floor_quote_is_upgraded_for_its_extra_cost_only_when_the_budget_allows() -> None:
+    long = words("a", 60)
+    floor, whole = cut_string(long, 150), long
+    for budget, want in ((len(whole), whole), (len(whole) - 1, floor)):
+        # budget = the whole quote's length: the upgrade fits only when charged the difference
+        a = ann(techniques=[(2, [long])])
+        al = alloc(a, length=10_000, pol=dz.QuotePolicy(2, 150, budget, 1.0, 6000, 1.0, 0.3, 4))
+        assert texts(a)[1] == [[want]] and al.cost == len(dz.norm(want)) and al.floor_cost == len(dz.norm(floor))
+
+
+def test_no_upgrade_when_another_text_ships_the_same_floor_string() -> None:
+    """Two texts whose 150-cuts coincide share one floor string: upgrading one would leave the other's uncharged."""
+    head = words("h", 40)
+    a1, a2 = head + " " + words("x", 20), head + " " + words("y", 20)
+    floor = cut_string(a1, 150)
+    assert cut_string(a2, 150) == floor
+    a = ann(screen=[a1], techniques=[(2, [a2])])
+    al = alloc(a)
+    assert texts(a)[0] == [floor] and texts(a)[1] == [[floor]] and al.cost == len(dz.norm(floor))
+
+
+def test_pass_1_takes_the_shortest_quote_ties_in_order() -> None:
+    pol = dz.QuotePolicy(2, 150, 10, 1.0, 6000, 1.0, 0.3, 4)  # a budget too small for anything after pass 1
+    a = ann(techniques=[(2, [words("l", 60), words("s", 5), words("t", 5)])])
+    alloc(a, length=10_000, pol=pol)
+    assert texts(a)[1] == [[words("s", 5)]]
 
 
 def test_budget_ceiling_and_no_length() -> None:
@@ -92,20 +119,21 @@ def test_order_records_first_then_strength_then_row_order() -> None:
 
 def test_floor_continues_past_a_rejected_quote_and_cuts_index_the_output() -> None:
     abstract = words("x", 50)
-    a = ann(techniques=[(2, [abstract, words("k", 60)])])
-    alloc(a, abstract=abstract)  # the first quote is the whole abstract: refused; the second is the floor
+    a = ann(techniques=[(2, [words("k", 60), abstract])])
+    # L = 1,200: ceiling 300, budget 180, too small for the upgrade; the shorter quote is the abstract: refused
+    alloc(a, length=1200, abstract=abstract)
     _s, (tq,), _v = texts(a)
-    assert tq == [cut_string(words("k", 60), 150)]  # pass 1's cut (pass 2's would be whole); moved to index 0
+    assert tq == [cut_string(words("k", 60), 150)]  # pass 1's cut; the kept quote is at index 0
 
 
-def test_a_duplicate_costs_nothing_and_ships_the_retained_string() -> None:
+def test_a_duplicate_costs_nothing_and_ships_the_final_retained_string() -> None:
     long = words("a", 60)
-    a = ann(screen=[long], techniques=[(2, [words("t", 5), long + "  "]), (2, [" " + long])])
-    al = alloc(a)
-    sc, tq, _v = texts(a)
-    floor = cut_string(long, 150)
-    assert sc == [floor] and tq == [[words("t", 5), floor], [floor]]  # the 150-cut form, not a 300-cut one
-    assert al.cost == len(dz.norm(floor)) + len(words("t", 5))
+    for length, ship in ((100_000, long), (1100, cut_string(long, 150))):  # upgraded, or the budget binds
+        a = ann(screen=[long], techniques=[(2, [words("t", 5), long + "  "]), (2, [" " + long])])
+        al = alloc(a, length=length)
+        sc, tq, _v = texts(a)
+        assert sc == [ship] and tq[1] == [ship] and ship in tq[0], (length, tq)
+        assert al.cost == len(dz.norm(ship)) + (len(words("t", 5)) if words("t", 5) in tq[0] else 0)
 
 
 def test_scalar_quote_is_emptied_not_removed() -> None:

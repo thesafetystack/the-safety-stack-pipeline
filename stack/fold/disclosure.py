@@ -9,10 +9,12 @@ costs the length of the string actually emitted, normalised (:func:`norm`); a qu
 was already emitted in the row costs nothing and ships as exactly that retained string. The quotes are grouped by
 annotation: the element that holds a quote list or a scalar quote (a technique, a model) or, for the screen and
 relevance records, the kind's payload. The annotations are taken records first, then by descending maximum role
-strength (``roles``), ties in row order; an annotation's quotes in their order. Pass 1 gives each annotation its first
-quote that fits, cut to ``floor_cut``, under the ceiling min(``ceiling.chars``, ``ceiling.share`` × L); pass 2 offers
-the remaining quotes round-robin over the annotations, at the variant's cap, under the budget min(``budget.chars``,
-``budget.share`` × L), pass 1's cost included. A quote that does not fit is skipped; the next one is still offered.
+strength (``roles``), ties in row order. Pass 1 gives each annotation its shortest quote that fits (ties in order),
+cut to ``floor_cut``, under the ceiling min(``ceiling.chars``, ``ceiling.share`` × L). Pass 2 goes round-robin over
+the annotations under the budget min(``budget.chars``, ``budget.share`` × L), pass 1's cost included: first each
+annotation's floor quote again at the variant's cap (charged the difference; not when another text ships the same
+floor string), then its other quotes in their order, at the cap. A quote that does not fit is skipped; the next one is
+still offered. Duplicates follow the final retained string.
 Where the abstract is withheld, a quote is also refused when it would raise the abstract's covered share above
 ``abstract_share`` (:class:`AbstractCover`). An omitted quote leaves its list, or becomes ``""`` where it is a required
 field of its annotation (the mapping's ``scalar_quotes``). These are controls on how much of a work is quoted, not a
@@ -226,51 +228,78 @@ def allocate(ann: Mapping[str, Any], quote_paths: Sequence[str], scalar_paths: S
     by_unit: dict[int, list[_Quote]] = {i: [] for i in order}
     for q in quotes:
         by_unit[q.unit].append(q)
-    retained: dict[str, str] = {}  # norm(original text) -> the string emitted for it
-    shipped: set[str] = set()  # norm of every emitted string
+    retained: dict[str, str] = {}  # norm(original text) -> the string it ships as (final after an upgrade)
+    users: dict[str, set[str]] = {}  # norm(emitted string) -> the norm(original)s that ship it
+    kept: set[int] = set()  # id of each kept _Quote
+
+    def ship(q: _Quote, out: str) -> None:
+        retained[norm(q.text)] = out
+        users.setdefault(norm(out), set()).add(norm(q.text))
+        kept.add(id(q))
 
     def free(q: _Quote, out: str) -> bool:
-        if norm(q.text) in retained:
-            q.emitted = retained[norm(q.text)]
+        if norm(q.text) in retained:  # the same text: it follows the retained string
+            kept.add(id(q))
             return True
-        if norm(out) in shipped:
-            q.emitted = out
-            retained.setdefault(norm(q.text), out)
+        if norm(out) in users:
+            ship(q, out)
             return True
         return False
 
-    def offer(q: _Quote, width: int, limit: float) -> bool:
-        out = cut(q.text, width)
-        if free(q, out):
-            return True
-        cost = len(norm(out))
-        if al.cost + cost > limit:
+    def fits(extra: int, limit: float, out: str) -> bool:
+        if al.cost + extra > limit:
             return False
         if cover is not None:
             cov = cover.adding(out)
             if cover.share(cov) > policy.abstract_share:
                 return False
             cover.covered = cov
-        q.emitted = out
-        retained[norm(q.text)] = out
-        shipped.add(norm(out))
-        al.cost += cost
+        al.cost += extra
         return True
 
+    def offer(q: _Quote, width: int, limit: float) -> bool:
+        out = cut(q.text, width)
+        if free(q, out):
+            return True
+        if not fits(len(norm(out)), limit, out):
+            return False
+        ship(q, out)
+        return True
+
+    def upgrade(q: _Quote) -> None:
+        """A floor quote again at the cap, charged the difference; not when another text ships its floor string."""
+        old, new = retained[norm(q.text)], cut(q.text, cap)
+        if norm(new) == norm(old) or users[norm(old)] != {norm(q.text)}:
+            return
+        if fits((0 if norm(new) in users else len(norm(new))) - len(norm(old)), budget, new):
+            del users[norm(old)]
+            ship(q, new)
+
+    floors: dict[int, _Quote] = {}
     if length:
-        for ui in order:  # pass 1: one floor quote per annotation
-            for q in by_unit[ui]:
+        for ui in order:  # pass 1: per annotation its shortest quote that fits, cut to floor_cut
+            for q in sorted(by_unit[ui], key=lambda q: len(q.text)):
                 if offer(q, policy.floor_cut, ceiling):
+                    floors[ui] = q
                     break
         al.floor_cost = al.cost
-        rest = [[q for q in by_unit[ui] if q.emitted is None] for ui in order]
-        for r in range(max(map(len, rest), default=0)):  # pass 2: round-robin under the budget
-            for qs in rest:
-                if r < len(qs) and qs[r].emitted is None:
-                    offer(qs[r], cap, budget)
+        # pass 2, round-robin under the budget: each annotation's floor quote again at the cap, then its other quotes
+        turns = [([(True, floors[ui])] if ui in floors else []) + [(False, q) for q in by_unit[ui] if id(q) not in kept]
+                 for ui in order]
+        for r in range(max(map(len, turns), default=0)):
+            for t in turns:
+                if r < len(t):
+                    is_up, q = t[r]
+                    if is_up:
+                        upgrade(q)
+                    elif id(q) not in kept:
+                        offer(q, cap, budget)
         for q in quotes:  # a later duplicate of a quote kept in pass 2
-            if q.emitted is None:
+            if id(q) not in kept:
                 free(q, cut(q.text, cap))
+    for q in quotes:
+        if id(q) in kept:
+            q.emitted = retained[norm(q.text)]
     dropped: set[int] = set()
     al.quotes = len(quotes)
     for q in quotes:
