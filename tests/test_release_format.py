@@ -411,6 +411,11 @@ def test_the_checker_passes_on_the_synthetic_export(public: Path, m: ds.Mapping_
     assert (public / ds.VALIDATOR_FILE).read_bytes() == (ds.DATA_REPO / ds.VALIDATOR_FILE).read_bytes()
     card = (public / "README.md").read_text()
     assert f"\nformat_version: {m.format_version}\n" in card.split("---")[1] and "**Checking a download.**" in card
+    # D808: the hub's licence declaration points at LICENSE; the card, LICENSE and release.json say the same
+    front = card.split("---")[1]
+    assert "\nlicense: other\nlicense_name: cc0-1.0-annotations-third-party-content\nlicense_link: LICENSE\n" in front
+    assert "**Personal data.**" in card and "to the extent we hold copyright or database rights" in card
+    assert "not licensed by us" in (public / "LICENSE").read_text() and "MIT" in doc["licence"]["checker"]
     fmt = (public / "FORMAT.md").read_text()
     assert "## Format versions" in fmt and "@release-2026-11-03/data/corpus.parquet" in fmt
     assert "`taxonomies/orgs-0.2.0.yaml` because `taxonomies/models-1.1.0.yaml` refers to it" in fmt

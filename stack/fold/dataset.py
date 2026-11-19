@@ -112,11 +112,15 @@ BATCH_ROWS = 4096
 ELLIPSIS = "…"
 CONTACT = {"email": "info@thesafetystack.ai", "takedown": "mailto:info@thesafetystack.ai",
            "public_reports": "https://github.com/thesafetystack/the-safety-stack/issues/new/choose"}
-LICENCE = {"ours": "CC0-1.0: what we made (the annotations, the identity and provenance structure, the release "
-                   "metadata, the taxonomies, prompts and documentation)",
-           "not_covered": "bibliographic records (titles, authors, dates, identifiers, abstracts) as their providers "
-                          "supply them, under those providers' terms; quoted and full document text, its owners'; "
-                          "see LICENSE"}
+#: ``release.json`` ``licence`` (D808: as the card's front matter, ``license: other`` with the name below, and LICENSE).
+LICENCE = {"ours": "CC0-1.0, to the extent we hold copyright or database rights in it: what we made (the annotations, "
+                   "the identity and provenance structure, the release metadata, the taxonomies and the documentation)",
+           "not_covered": "third-party material wherever it occurs (titles and bibliographic records as their "
+                          "providers publish them, abstracts, quoted excerpts, verbatim surfaces and other copied "
+                          "document text) is not licensed by us and remains its owners'; the quotes are short "
+                          "excerpts, limited per document (FORMAT.md, Quotes); see LICENSE",
+           "checker": "tools/release-validator.py: MIT, as in the data repository",
+           "hf_license_name": "cc0-1.0-annotations-third-party-content"}
 #: The internal workflow of a public kind whose payload is a record of another call: the producer's public kind.
 PRODUCER_KIND = {"screen": "screen", "doc_class": "screen", "stack_relevance": "screen",
                  "shallow_review_relevance": "screen", "text_usability": "screen", "affiliation": "affiliation",
@@ -3222,7 +3226,9 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
 
     configs = [dict(c) for c in HF_CONFIGS]
     langs = [lang for lang, _n in stats["languages"]]
-    front = yaml.safe_dump({"pretty_name": "The Safety Stack", "license": "cc0-1.0", "language": langs or ["en"],
+    front = yaml.safe_dump({"pretty_name": "The Safety Stack", "license": "other",
+                            "license_name": LICENCE["hf_license_name"], "license_link": "LICENSE",
+                            "language": langs or ["en"],
                             "annotations_creators": ["machine-generated"],
                             "size_categories": [_size_category(stats["n_docs"])],
                             "tags": ["ai-safety", "alignment", "annotations"], "configs": configs,
