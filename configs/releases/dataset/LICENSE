@@ -1,13 +1,16 @@
 The Safety Stack dataset: licence
 
-What we made is dedicated to the public domain under CC0 1.0 Universal (the legal code follows): the annotations,
-the identity and provenance structure, the release metadata, the taxonomies, the prompts and the documentation.
+What we made is dedicated to the public domain under CC0 1.0 Universal (the legal code follows), to the extent we
+hold copyright or database rights in it: the annotations, the identity and provenance structure, the release
+metadata, the taxonomies and the documentation.
 
-Not covered by this dedication:
-- bibliographic records (titles, authors, dates, identifiers, abstracts) as their providers supply them (OpenAlex,
-  arXiv, Semantic Scholar, the forums, the publishers' pages): they remain under those providers' terms;
-- third-party text quoted as evidence (quotes and verbatim surfaces in the annotations) and any document text: it
-  remains its owners'.
+Not covered by this dedication, and not licensed by us:
+- third-party material, wherever it occurs in the release: titles and bibliographic records as their providers
+  publish them (OpenAlex, arXiv, Semantic Scholar, the forums, the publishers' pages), abstracts, the quoted excerpts
+  and verbatim surfaces in the annotations, and any other copied document text. It remains its owners', under their
+  terms. The quotes are short excerpts, each in the row of the document it comes from, and limited per document
+  (FORMAT.md, "Quotes");
+- the release checker, tools/release-validator.py, which is MIT-licensed, as in the data repository.
 
 --------------------------------------------------------------------------------
 
