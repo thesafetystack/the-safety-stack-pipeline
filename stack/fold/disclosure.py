@@ -44,11 +44,14 @@ EMAIL = re.compile(rf"(?<![\w@])(?:\{{{_LOCAL}(?:\s*,\s*{_LOCAL})*\}}|{_LOCAL})@
 #: version pin (``@`` and a whole version, ``tool@0.1.0+tierlatexml``), an ``hf://`` URI and, in our own files only,
 #: the contact address as a whole token and a prompt pinned to a taxonomy version (``prompt@models-1.1.0``, the
 #: stage names release.json and FORMAT.md print).
-EMAIL_DETECT = re.compile(r"(?:\{[^{}@\s]+\}|[\w.+'-]+)@[\w-]+(?:\.[\w-]+)+")
+EMAIL_DETECT = re.compile(r"(?:\{[^{}@\s,]+(?:,\s*[^{}@\s,]+)*\}|[\w.+'-]+)@[\w-]+(?:\.[\w-]+)+")
 CONTACT_ADDRESS = "info@thesafetystack.ai"
 _CONTACT = re.compile(r"(?<![\w.+'-])info@thesafetystack\.ai(?![\w-]|\.\w)")
-_PIN = re.compile(r"@\d+(?:\.\d+)*(?:[+-][\w.]+)?(?!\w|\.\w)")
-_TAXONOMY_PIN = re.compile(r"@(?:techniques|models|orgs)-\d+(?:\.\d+)*(?!\w|\.\w)")
+#: A version pin is the whole token after ``@`` (``0.1.0+tierlatexml``), never one whose last label is alphabetic.
+_TOKEN = re.compile(r"[\w.+-]*[\w+-]")
+_PIN = re.compile(r"\d+(?:\.\d+)*(?:[+-][\w.-]+)?")
+_TAXONOMY_PIN = re.compile(r"(?:techniques|models|orgs)-\d+(?:\.\d+)*")
+_DECODE_ROUNDS = 5
 _HF_URI = re.compile(r"hf://\S+")
 #: Priority of an annotation that is a kind's whole payload (screen and relevance records): above every role strength.
 RECORD_PRIORITY = 5
@@ -347,22 +350,36 @@ def url_has_email(url: str) -> bool:
     try:
         sp = urllib.parse.urlsplit(url)
     except ValueError:
-        return bool(EMAIL.search(urllib.parse.unquote(url)))
+        return bool(EMAIL.search(unquote_all(url)))
     user = sp.netloc.rpartition("@")[0]
-    parts = " ".join(urllib.parse.unquote_plus(x) for x in (user, sp.path, sp.query, sp.fragment))
+    parts = " ".join(unquote_all(x, plus=True) for x in (user, sp.path, sp.query, sp.fragment))
     return bool(EMAIL.search(re.sub(r"[/?#&=:;]", " ", parts)))
 
 
+def unquote_all(s: str, *, plus: bool = False) -> str:
+    """``s`` percent-decoded until it stops changing (nested encodings: ``%2540``), at most :data:`_DECODE_ROUNDS`
+    rounds; ``plus``: ``+`` is a space (a query)."""
+    for _ in range(_DECODE_ROUNDS):
+        t = urllib.parse.unquote_plus(s) if plus else urllib.parse.unquote(s)
+        if t == s:
+            break
+        s = t
+    return s
+
+
 def email_hits(text: str, *, ours: bool) -> list[str]:
-    """The independent check (D808): what :data:`EMAIL_DETECT` finds in ``text``, less a version pin, an ``hf://``
-    URI and, in ``ours`` (our own files, not the corpus), :data:`CONTACT_ADDRESS` and a taxonomy pin."""
-    text = _HF_URI.sub(" ", text)
+    """The independent check (D808): what :data:`EMAIL_DETECT` finds in ``text``, percent-decoded, less a version
+    pin, an ``hf://`` URI and, in ``ours`` (our own files, not the corpus), :data:`CONTACT_ADDRESS` and a taxonomy
+    pin (``prompt@models-1.1.0``); a pin is the whole token after ``@``."""
+    text = _HF_URI.sub(" ", unquote_all(text))
     if ours:
         text = _CONTACT.sub(" ", text)
     out = []
     for m in EMAIL_DETECT.finditer(text):
-        at = m.start() + m.group(0).index("@")
-        if not (_PIN.match(text, at) or ours and _TAXONOMY_PIN.match(text, at)):
+        tok = _TOKEN.match(text, m.start() + m.group(0).index("@") + 1)
+        t = tok.group(0) if tok else ""
+        pin = not t.rsplit(".", 1)[-1].isalpha() and bool(_PIN.fullmatch(t) or ours and _TAXONOMY_PIN.fullmatch(t))
+        if not pin:
             out.append(m.group(0))
     return out
 

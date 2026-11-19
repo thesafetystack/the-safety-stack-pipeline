@@ -1339,6 +1339,32 @@ def test_copied_text_counts_in_the_withheld_abstract_union(m: Mapping_) -> None:
     assert not p.quote_counts
 
 
+def test_the_abstract_guard_reads_the_final_strings(m: Mapping_) -> None:
+    """The guard measures what ships (D808): a note the prose scrub turns into the abstract is emptied; a surface
+    whose abstract-copying tail lies beyond the cap is kept, cut."""
+    abstract = "Catalogue entries are safe."
+    row = _quoted_row([], abstract=abstract)
+    row["annotations"]["model_roles"]["payload"]["models"][0]["note"] = "Menu nodes are safe."  # scrubbed first
+    filler = " ".join(f"f{i:03d}" for i in range(70))  # 349 characters of other words
+    row["annotations"]["model_regexp_matches"]["payload"]["ambiguous"] = [
+        {"text": filler + " " + abstract, "candidates": [], "strength": "weak"}]
+    p, ann, ctx = _budgeted(m, row)
+    assert ann["model_roles"]["payload"]["models"][0]["note"] == "" and p.quote_counts["copied_emptied"] == 1
+    amb = ann["model_name_matches"]["payload"]["ambiguous"][0]["text"]
+    assert amb.endswith("…") and "Catalogue" not in amb
+    assert [c["path"] for c in ctx["cuts"]] == ["annotations.model_name_matches.payload.ambiguous[0].text"]
+
+
+def test_flags_are_surfaces_in_the_corpus(m: Mapping_) -> None:
+    """A flag's suffix is document wording (menu_gap:<surface>): capped like a surface, its cut listed (D808)."""
+    row = _quoted_row(["a quote"])
+    row["annotations"]["technique_staged"]["payload"]["flags"] = ["no_techniques_found", "menu_gap:" + "w " * 200]
+    p, ann, ctx = _budgeted(m, row)
+    flags = ann["safety_techniques"]["payload"]["flags"]
+    assert flags[0] == "no_techniques_found" and flags[1].startswith("menu_gap:w") and len(flags[1]) <= 300
+    assert {"path": "annotations.safety_techniques.payload.flags[1]", "chars": 409} in ctx["cuts"]
+
+
 def test_the_card_states_limits_and_emails_by_variant() -> None:
     pub = {"quote_policy": {"version": 2, "floor_cut": 150, "budget": {"chars": 2000, "share": 0.15},
                             "ceiling": {"chars": 6000, "share": 0.25}, "abstract_share": 0.3, "shingle_words": 4},
@@ -1386,7 +1412,8 @@ def test_row_redacts_emails_before_cutting_and_drops_urls_with_one(m: Mapping_) 
     q = out["annotations"]["safety_techniques"]["payload"]["techniques"][0]["quotes"][0]["text"]
     assert "[email]" in q and "@" not in q
     assert p.emails_redacted == 2 and p.urls_dropped == 2
-    for key in ("eve@example.org", "https://example.org/people/eve%40example.org"):  # also percent-encoded
+    nested = "https://r.example.org/?u=https%3A%2F%2Fexample.org%2Feve%2540example.org"  # encoded twice
+    for key in ("eve@example.org", "https://example.org/people/eve%40example.org", nested):
         projected["identity"]["members"][0]["key_value"] = key
         with pytest.raises(DatasetError, match="identity.members\\[\\].key_value: an identifier holds an email"):
             p.row(_quoted_row([long]))
@@ -1405,14 +1432,16 @@ def test_public_overrides_ship_no_quote_or_abstract(m: Mapping_, policy: ds.Over
     long = "copied text " * 1200
     rf = _ov("ov-r", "screen", "field", field="reasoning", value=long)
     mm = _ov("ov-m", "model_regexp_matches", "field", field="matches",
-             value=[{"node_id": "gpt-4", "surfaces": [long, "GPT-4"], "match_class": "exact"}])
+             value=[{"node_id": "gpt-4", "surfaces": [long, "GPT-4"], "strength": "strong"}])  # the internal key
     tf = _ov("ov-t", "technique_staged", "field", field="techniques",  # a whole list: labels stay, quotes go
-             value=[{"slug": "rlhf", "roles": ROLES, "quotes": [{"text": long, "verified": True}], "note": long}])
+             value=[{"slug": "rlhf", "roles": ROLES, "quotes": [{"text": long, "verified": True}], "note": long,
+                     "flags": ["quote_unverified", "variant:" + long]}])
+    ff = _ov("ov-f", "technique_staged", "field", field="flags", value=["no_techniques_found", "menu_gap:" + long])
     gone = _ov("ov-x", "sr_relevance", "field", field="quotes", value=[{"text": long}], key="sgone0000000x")
     ms = _ov("ov-s", "manual_sources", "row", key="url=https://example.org/p")
     ms = dataclasses_replace(ms, payload={"url": "https://example.org/p", "title": "A Title", "authors": ["A. B"],
                                           "published_at": "2019-01-01", "flags": ["accept"], "note": "n"})
-    ovs = [tr, ab, qf, vf, rf, mm, tf, gone, ms]
+    ovs = [tr, ab, qf, vf, rf, mm, tf, ff, gone, ms]
     pub, intern = _proj(m, _inputs(ovs)), _proj(m, _inputs(ovs), "internal")
     assert ds.overrides_value(pub, tr)[0] == {"from_lang": "zh", "title_en": "T", "abstract_en": "", "method": "llm"}
     assert ds.overrides_value(intern, tr)[0]["abstract_en"] == "The abstract."
@@ -1420,9 +1449,12 @@ def test_public_overrides_ship_no_quote_or_abstract(m: Mapping_, policy: ds.Over
     assert ds.overrides_value(pub, qf) == ([{"text": "", "offset": 0}], [])
     assert ds.overrides_value(intern, qf)[0] == qf.value
     assert ds.overrides_value(pub, vf) == ("relevant", []) and ds.overrides_value(pub, rf) == ("", [])
-    assert ds.overrides_value(pub, mm)[0] == [{"node_id": "gpt-4", "surfaces": [], "match_class": "exact"}]
+    assert ds.overrides_value(pub, mm)[0] == [{"node_id": "gpt-4", "surfaces": [], "strength": "strong"}]
     assert ds.overrides_value(pub, tf)[0] == [
-        {"slug": "rlhf", "roles": ROLES, "quotes": [{"text": "", "verified": True}], "note": ""}]
+        {"slug": "rlhf", "roles": ROLES, "quotes": [{"text": "", "verified": True}], "note": "",
+         "flags": ["quote_unverified", "variant"]}]  # a flag ships its bare name
+    assert ds.overrides_value(pub, ff)[0] == ["no_techniques_found", "menu_gap"]
+    assert ds.overrides_value(intern, ff)[0] == ff.value
     assert ds.overrides_value(pub, gone)[0] == [{"text": ""}]  # a document not in the release: the same
     assert ds.overrides_value(pub, ms)[0] == {"url": "https://example.org/p", "title": "A Title", "authors": [],
                                               "published_at": "2019-01-01", "flags": ["accept"]}
