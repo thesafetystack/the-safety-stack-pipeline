@@ -176,13 +176,28 @@ SHARED_LINKS = (r"docs\.google\.com/(?:document|spreadsheets|presentation|forms|
 #: parameter is refused instead.
 URL_FIELDS = ("canonical_url", "content.source.url", "identity.members[].canonical_url")
 URL_CHECKED = (*URL_FIELDS, "identity.members[].key_value")
-#: The row's identifiers (public paths): an email address in one refuses the export instead of being redacted (D808);
-#: so does one in a kind's metadata.
+#: The row's identifiers (public paths): not measured against a withheld abstract (:meth:`Projection.guard`); an email
+#: address in one is redacted like anywhere else (D809), which the real data never needed.
 IDENTIFIER_FIELDS = ("release_id", "doc_id", "field_sources[].source_id", "identity.anchor_source_id",
                      "identity.former_doc_ids[]", "identity.override_ids[]", "identity.members[].source_id",
                      "identity.members[].key_value", "identity.members[].edge_to_source_id",
                      "identity.members[].override_id", "identity.keys[].value", "identity.keys[].source_id",
                      "content.source_id", "content.source.sha256", "content.text.sha256", "release.cuts[].path")
+#: Keys whose strings are our own vocabulary wherever they occur in a row or an override value: ids, slugs, enumerated
+#: labels, versions and provenance words (D808). The withheld abstract's guard skips them (:meth:`Projection.guard`);
+#: a public override value keeps a string under one when it is one short token (:func:`public_value`).
+OWN_KEYS = frozenset({
+    "slug", "node_id", "matched_node_id", "base_node_id", "hint_technique", "candidates", "org_ids", "org_slugs",
+    "org_candidates", "verdict", "tier1_verdict", "basis_role", "buckets", "category", "agenda", "doc_type",
+    "primary_lang", "issues", "doc_kind", "taxonomy_version", "vocab_version", "roles", "resolution", "org_status",
+    "match_class", "strength", "from_lang", "method", "published_at", "kind", "field", "origin", "channels",
+    "channel", "channel_class", "edge_kind", "key_kind", "quality", "role", "media_type", "revision", "converter",
+    "published_precision"})
+_OWN_TOKEN = re.compile(r"[\w.:+-]{1,100}")
+#: A flag of our own words: lower-case tokens, ``:``-separated (``recommended``, ``subsumed:gpt-4:gpt-4o``); a suffix in
+#: the document's words (``menu_gap:knowledge editing``, ``subsumed:claude:Claude 3``) is not one (:func:`flag_label`).
+_OWN_FLAG = re.compile(r"[a-z0-9][a-z0-9._+-]{0,79}(?::[a-z0-9][a-z0-9._+-]{0,79})*")
+
 #: Query parameter names :func:`scrub_url` drops (compared lower-cased, percent-decoded). Contact parameters, always:
 #: a fetch's polite-pool address (Europe PMC, NCBI E-utilities, Unpaywall ``email``; Crossref, OpenAlex ``mailto``).
 URL_CONTACT_PARAMS = frozenset({"email", "mailto"})
@@ -412,6 +427,9 @@ class Mapping_:
             if "[]" in _ann_path(ap)[1]:
                 raise DatasetError(f"mapping: abstract_paths {ap!r}: a list path is not supported")
         self.prose_scrub: list[dict[str, Any]] = list(r.get("prose_scrub") or [])
+        #: Bibliographic text (public paths) a row ships as published: counted first in a withheld abstract's cover,
+        #: never emptied by its guard (D808).
+        self.bibliographic_paths: list[str] = list(r.get("bibliographic_paths") or [])
         self.dropped: set[str] = set(r.get("dropped_workflows") or [])
         self.json_kinds: dict[str, Any] = dict(r.get("json_kinds") or {})
         self.remap_rules: list[dict[str, Any]] = list(r.get("status_remap") or [])
@@ -428,6 +446,9 @@ class Mapping_:
             if p in self.entries:
                 raise DatasetError(f"mapping: {p} listed twice")
             self.entries[p] = e
+        for bp in self.bibliographic_paths:
+            if "internal" not in self.entries.get(bp, {}):
+                raise DatasetError(f"mapping: bibliographic_paths {bp!r} is not a field with an internal path")
         self.meta_entries: list[dict[str, Any]] = list(r["meta"])
         self.kinds: dict[str, KindSpec] = {}
         self._build_kinds()
@@ -1072,6 +1093,8 @@ class Projection:
     #: D808 (:meth:`redact`): addresses replaced, URL values dropped for an address in them
     emails_redacted: int = 0
     urls_dropped: int = 0
+    #: D808 (:meth:`guard`): strings emptied (a flag: its bare name) by public path
+    copied_emptied: Counter[str] = field(default_factory=Counter)
     #: D808 (:meth:`allocate`): quote counts (and copied strings emptied), annotations left without a quote by kind
     quote_counts: Counter[str] = field(default_factory=Counter)
     quotes_lost: Counter[str] = field(default_factory=Counter)
@@ -1201,22 +1224,30 @@ class Projection:
 
     # -- one row
     def row(self, r: dict[str, Any]) -> dict[str, Any]:
-        ctx: dict[str, Any] = {"row": r, "cuts": [], "quote_chars": 0}
+        """The release row of corpus row ``r``; in a variant that withholds abstracts they are NULL before anything is
+        redacted or measured (D808)."""
+        ctx: dict[str, Any] = {"row": r, "cuts": [], "quote_chars": 0, "cut_at": {}}
+        withhold = self.m.variants[self.variant]["abstract"] != "keep"
         ann = self.annotations(r)
+        if withhold:
+            withhold_abstract_paths({"annotations": ann}, self.m.abstract_paths)
         self.redact(ann, "annotations")  # before any quote is cut (D808)
         self.cap_and_scrub(ann, ctx)
         out: dict[str, Any] = self._project(self.m.root, r, ctx)
+        if withhold:
+            out["abstract"] = None
         self.scrub_urls(out)
         self.redact(out)
         out["annotations"] = ann
+        if self.variant in self.m.quote_policies:
+            self.guard(out, ctx)
         return out
 
-    def redact(self, obj: Any, prefix: str = "", ids: Sequence[str] | None = None) -> None:
+    def redact(self, obj: Any, prefix: str = "") -> None:
         """D808, where the variant has ``emails: redact``: every address in a string of ``obj`` (a release row, or
         its ``annotations`` under ``prefix``) becomes ``[email]`` (:func:`disclosure.redact_emails`), counted in
-        :attr:`emails_redacted`, except in the URL fields (:data:`URL_FIELDS`: a URL with an address in it is dropped,
-        :attr:`urls_dropped`) and the identifiers (``ids``, default :data:`IDENTIFIER_FIELDS` and every kind's
-        metadata), where an address refuses the export."""
+        :attr:`emails_redacted`, identifiers included (D809: never a refusal); in the URL fields
+        (:data:`URL_FIELDS`) a URL with an address in it is dropped instead (:attr:`urls_dropped`)."""
         if self.m.variants[self.variant].get("emails") != "redact":
             return
         for path, holder, key, s in list(disclosure.string_leaves(obj, prefix)):
@@ -1224,9 +1255,6 @@ class Projection:
                 if disclosure.url_has_email(s):
                     holder[key] = None
                     self.urls_dropped += 1
-            elif path in (IDENTIFIER_FIELDS if ids is None else ids) or re.match(r"annotations\.\w+\.metadata\.", path):
-                if disclosure.EMAIL.search(s) or disclosure.url_has_email(s):  # also percent-encoded
-                    raise DatasetError(f"{path}: an identifier holds an email address; it cannot be redacted")
             else:
                 new, n = disclosure.redact_emails(s)
                 if n:
@@ -1387,6 +1415,7 @@ class Projection:
         the quotes are the budget's (:meth:`allocate`, for ``ctx["row"]``)."""
         cap = self.cap
         budgeted = self.allocate(ann, ctx["row"]) if self.variant in self.m.quote_policies else {}
+        cut_at = ctx.setdefault("cut_at", {})
         for p in self.m.quote_paths + self.m.surface_paths:
             kind, rest = _ann_path(p)
             v = ann.get(kind)
@@ -1395,16 +1424,19 @@ class Projection:
             is_quote = p in self.m.quote_paths
             for ip, holder, key, s in list(walk_strings(v["payload"], rest, f"annotations.{kind}.payload")):
                 was = budgeted.get((id(holder), key))
+                entry = None
                 if was is not None:  # emitted by the budget, already cut
                     if was > len(s) and s.endswith(ELLIPSIS):
-                        ctx["cuts"].append({"path": ip, "chars": was})
-                        self.cuts_total += 1
+                        entry = {"path": ip, "chars": was}
                 elif cap is not None and len(s) > cap:
                     new = cut_string(s, cap)
                     holder[key] = new
-                    ctx["cuts"].append({"path": ip, "chars": len(s)})
-                    self.cuts_total += 1
+                    entry = {"path": ip, "chars": len(s)}
                     s = new
+                if entry is not None:
+                    ctx["cuts"].append(entry)
+                    cut_at[(id(holder), key)] = entry
+                    self.cuts_total += 1
                 if is_quote:
                     ctx["quote_chars"] += len(s)
         for sc in self.m.prose_scrub:
@@ -1417,52 +1449,63 @@ class Projection:
                 if new != s:
                     holder[key] = new
                     self.prose_scrubbed += 1
-        if self.variant in self.m.quote_policies:
-            self.guard_copied(ann, ctx)
 
-    def guard_copied(self, ann: dict[str, Any], ctx: dict[str, Any]) -> None:
-        """D808: where the abstract is withheld, the final surfaces and model-written prose (redacted, cut, scrubbed)
-        join the emitted quotes' 4-gram union of the abstract in mapping order; one that would push it over the
-        policy's share ships as ``""`` (its cut entry dropped), counted in ``quote_counts["copied_emptied"]``."""
-        r = ctx["row"]
-        abstract = (r.get("metadata") or {}).get("abstract")
+    def bibliographic(self, row: Mapping[str, Any], internal: bool) -> list[str]:
+        """The strings of :attr:`Mapping_.bibliographic_paths` in ``row`` (a corpus row by the internal paths, or a
+        release row)."""
+        return [s for bp in self.m.bibliographic_paths
+                for _ip, _h, _k, s in walk_strings(row, self.m.entries[bp]["internal"] if internal else bp) if s]
+
+    def guard(self, out: dict[str, Any], ctx: dict[str, Any]) -> None:
+        """D808: where the abstract is withheld, every document-derived string of the release row ``out`` as it ships
+        (redacted, cut, scrubbed) joins the abstract's 4-gram cover, after the bibliographic text (never emptied) and
+        the quotes (the budget's), in row order; one that would push the cover over the policy's share ships as
+        ``""``, a flag as its bare name (:func:`flag_label`), its cut entry dropped, counted by path in
+        :attr:`copied_emptied`. Not document-derived: our own vocabulary (:data:`OWN_KEYS`), the identifiers and URLs,
+        the annotations' metadata and the ``release`` block."""
+        abstract = (ctx["row"].get("metadata") or {}).get("abstract")
         if not abstract or self.m.variants[self.variant]["abstract"] == "keep":
             return
         pol = self.m.quote_policies[self.variant]
         cover = disclosure.AbstractCover(abstract, pol.shingle_words)
-        for p in self.m.quote_paths:
-            kind, rest = _ann_path(p)
-            for _ip, _h, _k, s in walk_strings((ann.get(kind) or {}).get("payload"), rest):
+        for s in self.bibliographic(out, internal=False):
+            cover.covered = cover.adding(s)
+        leaves = [x for x in disclosure.string_leaves(out) if x[3]]
+        quotes = set(self.m.quote_paths)
+        for path, _h, _k, s in leaves:
+            if path in quotes:
                 cover.covered = cover.adding(s)
-        for p in self.m.surface_paths + self.m.prose_paths:
-            if p in self.m.abstract_paths:
-                continue  # withheld whole
-            kind, rest = _ann_path(p)
-            for ip, holder, key, s in list(walk_strings((ann.get(kind) or {}).get("payload"), rest,
-                                                        f"annotations.{kind}.payload")):
-                cov = cover.adding(s)
-                if cover.share(cov) > pol.abstract_share:
-                    holder[key] = ""
-                    self.quote_counts["copied_emptied"] += 1
-                    kept = [c for c in ctx["cuts"] if c["path"] != ip]
-                    self.cuts_total -= len(ctx["cuts"]) - len(kept)
-                    ctx["cuts"][:] = kept
-                else:
-                    cover.covered = cov
+        skip = quotes | set(self.m.bibliographic_paths) | set(IDENTIFIER_FIELDS) | set(URL_CHECKED)
+        for path, holder, key, s in leaves:
+            if path in skip or path.startswith("release.") or re.match(r"annotations\.\w+\.metadata\.", path) \
+                    or path.split(".")[-1].replace("[]", "") in OWN_KEYS:
+                continue
+            cov = cover.adding(s)
+            if not cover.breaches(cov, pol.abstract_share):
+                cover.covered = cov
+                continue
+            holder[key] = flag_label(s.split(":", 1)[0]) if path.endswith("flags[]") else ""
+            self.copied_emptied[path] += 1
+            entry = ctx["cut_at"].pop((id(holder), key), None)
+            if entry is not None and entry in ctx["cuts"]:
+                ctx["cuts"].remove(entry)
+                self.cuts_total -= 1
 
     def allocate(self, ann: dict[str, Any], r: Mapping[str, Any]) -> dict[tuple[int, str], int]:
         """The variant's quotation budget (D808, :func:`disclosure.allocate`) over ``ann`` in place, for corpus row
-        ``r``, with its invariants checked again on what it left: the distinct emitted quotes within the ceiling (and
-        the budget, once pass 2 added any) and the withheld abstract's covered share within its limit; a breach is a
-        row problem (the surfaces and prose follow, :meth:`guard_copied`). Returns each emitted quote's original
+        ``r`` (its bibliographic text counted first in a withheld abstract's cover), with its invariants checked again
+        on what it left: the distinct emitted quotes within the ceiling (and the budget, once pass 2 added any) and the
+        withheld abstract's covered share within its limit (or the bibliographic text's own, where that is more); a
+        breach is a row problem (the other strings follow, :meth:`guard`). Returns each emitted quote's original
         length by ``(id(holder), key)``."""
         pol = self.m.quote_policies[self.variant]
         length = ((_current_snapshot(r).get("quality") or {}).get("metrics") or {}).get("chars")
         abstract = (r.get("metadata") or {}).get("abstract") if self.m.variants[self.variant]["abstract"] != "keep" \
             else None
+        seed = self.bibliographic(r, internal=True) if abstract else []
         assert self.cap is not None  # Mapping_: a quote policy needs a cap
         al = disclosure.allocate(ann, self.m.quote_paths, self.m.scalar_quotes, pol, self.cap, length, abstract or None,
-                                 cut_string)
+                                 cut_string, seed)
         doc = r["doc_id"]
         shipped = {disclosure.norm(s) for p in self.m.quote_paths for _ip, _h, _k, s in
                    walk_strings((ann.get(_ann_path(p)[0]) or {}).get("payload"), _ann_path(p)[1]) if s}
@@ -1473,9 +1516,12 @@ class Projection:
                                  f"{al.budget:.0f}")
         if abstract:
             cover = disclosure.AbstractCover(abstract, pol.shingle_words)
+            for b in seed:
+                cover.covered = cover.adding(b)
+            base = cover.share()
             for q in shipped:
                 cover.covered = cover.adding(q)
-            if cover.share() > pol.abstract_share:
+            if cover.share() > max(base, pol.abstract_share):
                 self.problems.append(f"{doc}: quotes cover {cover.share():.3f} of the withheld abstract")
         if not length:
             self.quote_counts["rows_without_length"] += 1
@@ -1701,29 +1747,29 @@ def _split_top(s: str, *, sentence: bool) -> list[str]:
     return [x for x in out if x.strip()]
 
 
-#: The keys of an override value whose strings the public variant ships (D808, :func:`public_value`): ids and slugs,
-#: labels, roles, statuses and titles (``strength`` is ``match_class`` by its internal name). Every other string (quotes,
-#: abstracts, surfaces, names as written, authors, model prose) ships empty, and a flag as its bare name
-#: (``menu_gap:<surface>`` -> ``menu_gap``); the line's own note, author and method are not in its value.
-PUBLIC_VALUE_KEYS = frozenset({
-    "slug", "node_id", "matched_node_id", "base_node_id", "hint_technique", "candidates", "org_ids", "org_slugs",
-    "org_candidates", "orcid", "url", "verdict", "tier1_verdict", "basis_role", "buckets", "category", "agenda",
-    "doc_type", "primary_lang", "issues", "doc_kind", "taxonomy_version", "vocab_version", "flags", "roles",
-    "resolution", "org_status", "match_class", "strength", "from_lang", "method", "published_at", "title", "title_en"})
+def flag_label(s: str) -> str:
+    """A flag as the public variant ships it where the document's words may not (D809): whole when it is our own words
+    (:data:`_OWN_FLAG`), else its name when that is, else ``""``."""
+    return s if _OWN_FLAG.fullmatch(s) else (s.split(":", 1)[0] if _OWN_FLAG.fullmatch(s.split(":", 1)[0]) else "")
 
 
 def public_value(v: Any, key: str | None = None) -> Any:
     """An override's value (or the part of it under ``key``) as the public variant ships it (D808): structure,
-    numbers, booleans and the strings under :data:`PUBLIC_VALUE_KEYS` kept; any other string ``""``, and a list of
-    such strings ``[]``."""
+    numbers and booleans kept; a string under :data:`OWN_KEYS` kept when it is one short token, an ``orcid`` or a
+    ``url`` kept (redacted later like the row's), a flag as :func:`flag_label`; any other string
+    ``""`` (titles too: the corpus row carries the document's title), and a list of such strings ``[]``."""
     if isinstance(v, dict):
         return {k: public_value(x, k) for k, x in v.items()}
     if isinstance(v, list):
-        if key not in PUBLIC_VALUE_KEYS and v and all(isinstance(x, str) for x in v):
+        if key not in OWN_KEYS | {"flags"} and v and all(isinstance(x, str) for x in v):
             return []
         return [public_value(x, key) for x in v]
     if isinstance(v, str):
-        return (v.split(":", 1)[0] if key == "flags" else v) if key in PUBLIC_VALUE_KEYS else ""
+        if key == "flags":
+            return flag_label(v)
+        if key in ("orcid", "url"):
+            return v
+        return v if key in OWN_KEYS and _OWN_TOKEN.fullmatch(v) else ""
     return v
 
 
@@ -1808,13 +1854,9 @@ def export_overrides(p: Projection, policy: OverridesPolicy, act: ActiveOverride
                "key": o.key, "item_key": o.item_key, "field": o.field, "value": value, "cuts": cuts, "note": note,
                "author": author, "method": method,
                "created_at": o.created_at.astimezone(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")}
-        p.redact(rec, ids=OVERRIDES_IDS)  # D808: the kept strings (notes, titles); an address in an id refuses
+        p.redact(rec)  # D808: the kept strings (notes, ids); never a refusal (D809)
         recs.append(rec)
     return recs
-
-
-#: The identifiers of a line of ``config/overrides.jsonl`` (an email address in one refuses the export, D808).
-OVERRIDES_IDS = ("override_id", "run_id", "key", "item_key", "value.url")
 
 
 #: The fields of a line of ``config/overrides.jsonl`` (FORMAT's table; every line has exactly these).
@@ -2023,6 +2065,7 @@ class DatasetResult:
     path: Path
     release_json: dict[str, Any]
     problems: list[str]
+    warnings: list[str] = field(default_factory=list)
 
 
 def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Path, out: str | Path, *,
@@ -2078,10 +2121,7 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
                     if why:
                         dropped[why] += 1
                         continue
-                    out_row = proj.row(r)
-                    if variant["abstract"] != "keep":
-                        out_row["abstract"] = None
-                        withhold_abstract_paths(out_row, m.abstract_paths)
+                    out_row = proj.row(r)  # abstracts withheld there (variant["abstract"])
                     body = out_row["content"]["text"]["body"]
                     buf.append(out_row)
                     buf_bytes += len(body.encode("utf-8")) if body else 0
@@ -2161,6 +2201,13 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
                     e["rows"] = counts[rel]
                 files.append(e)
         doc["files"] = files
+        warnings: list[str] = []
+        if "emails" in doc["policy"]:  # D809: counted and reported, release.json itself not scanned
+            found = email_findings(stage)
+            doc["policy"]["emails"]["detector_hits"] = found.total()
+            if found:
+                warnings.append(f"{found.total()} possible email address(es) the redaction left in the shipped files "
+                                "(D809): " + ", ".join(f"{w} ({n})" for w, n in found.most_common(5)))
         _write_text(stage / "release.json", json.dumps(doc, indent=2, ensure_ascii=False, default=_json_default) + "\n")
         problems = check_bundle(stage, m, cfg, observed)
         if problems:
@@ -2172,7 +2219,7 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
     except BaseException:
         shutil.rmtree(stage, ignore_errors=True)
         raise
-    return DatasetResult(dest, doc, [])
+    return DatasetResult(dest, doc, [], warnings)
 
 
 def quote_policy_record(proj: Projection) -> dict[str, Any]:
@@ -2187,10 +2234,12 @@ def quote_policy_record(proj: Projection) -> dict[str, Any]:
             "quotes": {"in": c["quotes"], "kept": c["kept"], "cut": c["cut"], "omitted": c["quotes"] - c["kept"]},
             "chars": {"in": c["chars_in"], "out": c["chars_out"]}, "rows_without_length": c["rows_without_length"],
             "annotations_without_quotes": dict(sorted(proj.quotes_lost.items())),
-            "copied_text_emptied": c["copied_emptied"]}
+            "copied_text_emptied": proj.copied_emptied.total(),
+            "copied_text_emptied_by_path": dict(sorted(proj.copied_emptied.items()))}
     if proj.m.variants[proj.variant].get("emails") == "redact":
         out["emails"] = {"redacted": proj.emails_redacted, "urls_dropped": proj.urls_dropped,
-                         "check": "no address in any shipped file but the contact address (D808)"}
+                         "check": "detector_hits: what a broader detector still finds in the shipped files, "
+                                  "release.json aside (D809)"}
     return out
 
 
@@ -3161,17 +3210,21 @@ def quote_policy_sentence(pol: Mapping[str, Any]) -> str:
                 "then techniques and models by their strongest role. A repeated quote ships as the same string. An "
                 "omitted quote leaves its list, or is an empty string where the field is required ("
                 + ", ".join(f"`{p.split('payload.', 1)[1]}`" for p in qp["scalar_quotes"]) + "); a document whose "
-                "converted text has no recorded length ships no quotes. Where the abstract is withheld, the quotes, "
-                "the surfaces and the model-written text together repeat at most "
-                f"{qp['abstract_share']:.0%} of it, counted in runs of {qp['shingle_words']} consecutive words (a "
-                "surface or text that would pass that ships empty, `copied_text_emptied`); shorter runs are not "
-                "counted. Not limited per document: titles, authors and affiliations as published, the surfaces "
-                "(each cut at the cap) and the model-written text (uncut), and what several releases ship together. "
-                "Overrides in `config/overrides.jsonl` carry only ids, labels and titles in their value in this "
-                "variant.")
+                "converted text has no recorded length ships no quotes. Where the abstract is withheld, the titles, "
+                "authors and affiliations (which always ship) and every other string of the row taken from the "
+                "document or written about it (quotes, surfaces, names as written, flags, model-written text, identity "
+                f"text) together repeat at most {qp['abstract_share']:.0%} of it (more only where the bibliographic "
+                "text alone does), counted in runs of "
+                f"{qp['shingle_words']} consecutive words: a string that would pass that ships empty, a flag as its "
+                "bare name (`copied_text_emptied`); shorter runs, and unspaced CJK text, are not counted. Not limited "
+                "per document: titles, authors and affiliations as published, the surfaces (each cut at the cap) and "
+                "the model-written text (uncut), and what several releases ship together. Overrides in "
+                "`config/overrides.jsonl` carry only ids, labels, flags (without document wording) and URLs in their "
+                "value in this variant; titles are the corpus row's.")
     if pol.get("emails"):
-        out += (" Every email address in a shipped string is replaced by `[email]` before anything is cut, and a URL "
-                "that carries one is NULL (`policy.emails`); `offset`, `anchored` and the organisation matches "
+        out += (" Every email address we detect in a shipped string is replaced by `[email]` before anything is cut, "
+                "and a URL that carries one is NULL (`policy.emails`); `offset`, `anchored` and the "
+                "organisation matches "
                 "(`org_ids`) were made on the unredacted text.")
     return out
 
@@ -3184,16 +3237,16 @@ def card_disclosure(pol: Mapping[str, Any]) -> dict[str, str]:
         limits = (f"Quotes are short excerpts, each in the row of the document it comes from, and limited per "
                   f"document: its distinct quoted text stays within {_fmt(c['chars'])} characters and "
                   f"{c['share']:.0%} of its converted text, and quotes beyond one short one per annotation within "
-                  f"{_fmt(b['chars'])} characters and {b['share']:.0%}; where the abstract is withheld, quotes, "
-                  f"surfaces and model-written text together repeat at most {qp['abstract_share']:.0%} of it (runs "
-                  f"of {qp['shingle_words']} words). Titles, authors, affiliations and surfaces are not counted in "
-                  "the per-document limit (FORMAT.md, \"Quotes\"). The limits are our own controls on how much of a "
-                  "work the release quotes, not a legal assessment.")
+                  f"{_fmt(b['chars'])} characters and {b['share']:.0%}; where the abstract is withheld, everything "
+                  f"the row takes from the document, its title included, repeats at most {qp['abstract_share']:.0%} "
+                  f"of it (runs of {qp['shingle_words']} words). Titles, authors, affiliations and surfaces are not "
+                  "counted in the per-document limit (FORMAT.md, \"Quotes\"). The limits are our own controls on how "
+                  "much of a work the release quotes, not a legal assessment.")
     else:
         limits = "This variant ships quotes whole; it is the maintainers' and is not distributed."
-    email = ("Email addresses are removed from everything this release ships (each becomes `[email]`; a link that "
-             "carries one is left out)." if pol.get("emails") else
-             "This variant keeps email addresses as the documents have them.")
+    email = ("We remove the email addresses we detect in what this release ships (each becomes `[email]`; a link that "
+             "carries one is left out); detection is automatic and may miss some."
+             if pol.get("emails") else "This variant keeps email addresses as the documents have them.")
     return {"quote_limits": limits, "email_note": email}
 
 
@@ -3322,7 +3375,8 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
               f"- Policy: abstracts `{pol['abstract']}`; texts `{pol['text']}`; quote cap "
               f"{pol['quote_cap_chars'] or 'none'}"
               + (f"; quotes limited per document (policy version {pol['quote_policy']['version']})"
-                 if pol.get("quote_policy") else "") + ("; email addresses removed" if pol.get("emails") else "")
+                 if pol.get("quote_policy") else "")
+              + ("; detected email addresses removed" if pol.get("emails") else "")
               + ".\n"
               f"- Overrides: {_fmt(doc['overrides']['rows'])} active rows in `{OVERRIDES_FILE}`.\n"
               "- `release.json` is the full record (every other file with size and sha256).\n")
@@ -3502,21 +3556,6 @@ def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
                 bad_body += 1
     if bad_body:
         probs.append(f"{bad_body} rows whose content.text.body breaks the variant's text policy ({variant['texts']})")
-    # emails (D808): the broader detector over every string of the corpus and every other file; the places, never
-    # the addresses, are reported
-    if variant.get("emails") == "redact":
-        where: Counter[str] = Counter()
-        for rg in range(pfc.num_row_groups):
-            for row in pfc.read_row_group(rg).to_pylist():
-                for path, _h, _k, s in disclosure.string_leaves(row):
-                    where[f"data/corpus.parquet {path}"] += len(disclosure.email_hits(s, ours=False))
-        for fp in sorted(stage.rglob("*")):
-            if fp.is_file() and fp.suffix != ".parquet":
-                where[fp.relative_to(stage).as_posix()] += len(disclosure.email_hits(
-                    fp.read_text("utf-8", errors="replace"), ours=True))
-        if +where:
-            probs.append(f"{sum(where.values())} email address(es) in the shipped files (D808): "
-                         + ", ".join(f"{w} ({n})" for w, n in (+where).most_common(5)))
     doc = json.loads((stage / "release.json").read_text("utf-8"))  # the manifest itself: the checker's
     # organisations: every org id is an entry of the bundled vocabulary, org_status a matcher status consistent with
     # its ids; the fields are NULL exactly where the document has no decided affiliation_orgs record; the records'
@@ -3583,6 +3622,23 @@ def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
         if missing:
             probs.append(f"vocab.yaml {path}: no sentence for {missing}")
     return probs
+
+
+def email_findings(stage: Path) -> Counter[str]:
+    """The independent email check (D808): what :func:`disclosure.email_hits`, the broader detector, finds in every
+    string of the corpus and in every other file of ``stage``, by place (never the address). A finding is reported in
+    ``release.json`` ``policy.emails`` and as a warning; it does not stop the release (D809)."""
+    where: Counter[str] = Counter()
+    pfc = pq.ParquetFile(stage / "data" / "corpus.parquet")
+    for rg in range(pfc.num_row_groups):
+        for row in pfc.read_row_group(rg).to_pylist():
+            for path, _h, _k, s in disclosure.string_leaves(row):
+                where[f"data/corpus.parquet {path}"] += len(disclosure.email_hits(s, ours=False))
+    for fp in sorted(stage.rglob("*")):
+        if fp.is_file() and fp.suffix != ".parquet":
+            where[fp.relative_to(stage).as_posix()] += len(disclosure.email_hits(
+                fp.read_text("utf-8", errors="replace"), ours=True))
+    return +where
 
 
 def leak_problems(rel: str, text: str) -> list[str]:

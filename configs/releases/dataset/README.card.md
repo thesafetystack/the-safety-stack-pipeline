@@ -150,10 +150,12 @@ excerpts, verbatim surfaces), is not licensed by us and remains its owners'. {{q
 `tools/` is MIT-licensed, as in the data repository.
 See `LICENSE`. Releases are dated and planned weekly; each is a revision of this repository tagged `release-<date>`.
 
-**Personal data.** The rows carry authors' names and affiliations as the works and their indexes publish them, for
-one purpose: a research index of technical AI-safety literature, in which each work is found and attributed by its
-authors. {{email_note}} To have a record corrected, or to object to or ask for the removal of personal data about you,
-write to info@thesafetystack.ai or use the issue forms above.
+**Personal data.** The rows carry authors' names, ORCID iDs and affiliations as the works and their indexes publish
+them, the identifiers and links of each work's records in those indexes and forums (which can lead to an author's
+profile there), and affiliations and organisations our models and matchers inferred from the text, for one purpose: a
+research index of technical AI-safety literature, in which each work is found and attributed by its authors.
+{{email_note}} To have a record corrected, or to object to or ask for the removal of personal data about you, write to
+info@thesafetystack.ai or use the issue forms above.
 
 {{variant_note}}
 

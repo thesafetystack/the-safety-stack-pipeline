@@ -16,14 +16,23 @@ annotation's floor quote again at the variant's cap (charged the difference; not
 floor string), then its other quotes in their order, at the cap. A quote that does not fit is skipped; the next one is
 still offered. Duplicates follow the final retained string.
 Where the abstract is withheld, a quote is also refused when it would raise the abstract's covered share above
-``abstract_share`` (:class:`AbstractCover`). An omitted quote leaves its list, or becomes ``""`` where it is a required
-field of its annotation (the mapping's ``scalar_quotes``). These are controls on how much of a work is quoted, not a
-legal threshold.
+``abstract_share`` (:class:`AbstractCover`), the bibliographic text the row ships anyway (``seed``: titles, authors,
+affiliations) counted first; a quote that covers nothing new is never refused for it. An omitted quote leaves its list,
+or becomes ``""`` where it is a required field of its annotation (the mapping's ``scalar_quotes``). These are controls
+on how much of a work is quoted, not a legal threshold.
 
 **Emails** (:func:`redact_emails`): a conventional address (Unicode word characters, ``.+'-`` in the local part, a
 dotted domain with an alphabetic top-level label, and the grouped ``{a,b}@domain``) becomes :data:`EMAIL_MARK`. Not an
 address: a version pin (``tool@0.1.0``), a URL path's ``@handle``, ``@`` directly after ``/``. A URL with an address in
-it (:func:`url_has_email`) is dropped instead. :func:`email_hits` is the independent check over the written files.
+it (:func:`url_has_email`) is dropped instead. :func:`email_hits` is the independent check over the written files;
+what it finds is counted and reported, it does not stop a release (D809).
+
+**Residual limits** (measured on the 2026-11-02 build's export, 41,435 rows; D809): the abstract measure counts
+4-grams of words (runs of word characters), so a quote of fewer than four words, a punctuation run and unspaced CJK
+text cover nothing (of 26,900 abstracts, 15 have under 8 words and 2 carry 20 or more CJK characters, none mostly
+CJK), and it weighs word characters, not all characters. Model-written prose is uncapped (the longest string has 361
+characters). Each weekly release is limited on its own: what several releases quote of one document is not added up.
+The redaction takes conventional addresses only (no quoted local parts, IP literals or percent-encoded ``@``).
 """
 
 from __future__ import annotations
@@ -124,17 +133,24 @@ class AbstractCover:
         self.covered: set[int] = set()
 
     def adding(self, quote: str) -> set[int]:
-        """The covered word positions once ``quote`` is emitted too."""
-        out = set(self.covered)
+        """The covered word positions once ``quote`` is emitted too (:attr:`covered` itself when it adds no n-gram;
+        read it, do not change it)."""
+        out: set[int] | None = None
         w = _words(quote)
         for j in range(len(w) - self.n + 1):
             for i in self.index.get(tuple(w[j:j + self.n]), ()):
+                if out is None:
+                    out = set(self.covered)
                 out.update(range(i, i + self.n))
-        return out
+        return self.covered if out is None else out
 
     def share(self, covered: set[int] | None = None) -> float:
         cov = self.covered if covered is None else covered
         return sum(self.lens[i] for i in cov) / self.total if self.total else 0.0
+
+    def breaches(self, cov: set[int], limit: float) -> bool:
+        """Whether ``cov`` (from :meth:`adding`) covers something new and takes the share above ``limit``."""
+        return len(cov) > len(self.covered) and self.share(cov) > limit
 
 
 # ---------------------------------------------------------------- allocation
@@ -191,16 +207,18 @@ def _priority(unit: Mapping[str, Any], is_record: bool) -> int:
 
 def allocate(ann: Mapping[str, Any], quote_paths: Sequence[str], scalar_paths: Sequence[str], policy: QuotePolicy,
              cap: int, length: int | None, abstract: str | None,
-             cut: Callable[[str, int], str]) -> Allocation:
+             cut: Callable[[str, int], str], seed: Sequence[str] = ()) -> Allocation:
     """Apply the budget (module docstring) to the quotes of the release annotations ``ann`` (public payloads, in
     place): ``length`` = L (None: no quotes), ``abstract`` the internal abstract when the public one is withheld
-    (None: no abstract rule), ``cap`` pass 2's cut, ``cut`` the release's cut
-    (:func:`stack.fold.dataset.cut_string`)."""
+    (None: no abstract rule), ``seed`` the strings that ship anyway and count first in its cover, ``cap`` pass 2's
+    cut, ``cut`` the release's cut (:func:`stack.fold.dataset.cut_string`)."""
     budget, ceiling = policy.limits(length or 0)
     al = Allocation(budget, ceiling)
     cover = AbstractCover(abstract, policy.shingle_words) if abstract else None
     if cover is not None and not cover.total:
         cover = None
+    for s in seed if cover is not None else ():
+        cover.covered = cover.adding(s)
     units: list[tuple[int, int, str]] = []  # (priority, row order, lost label)
     quotes: list[_Quote] = []
     lists: list[tuple[dict[str, Any], str]] = []  # (annotation, quote list key)
@@ -260,7 +278,7 @@ def allocate(ann: Mapping[str, Any], quote_paths: Sequence[str], scalar_paths: S
             return False
         if cover is not None:
             cov = cover.adding(out)
-            if cover.share(cov) > policy.abstract_share:
+            if cover.breaches(cov, policy.abstract_share):
                 return False
             cover.covered = cov
         al.cost += extra
