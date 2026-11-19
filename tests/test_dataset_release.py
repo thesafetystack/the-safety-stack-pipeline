@@ -1304,6 +1304,26 @@ def test_budget_cuts_index_the_shipped_list(m: Mapping_) -> None:
     assert ds.quote_policy_record(p) == {}
 
 
+def test_relevance_records_come_before_the_screen_whose_quotes_ride_free(m: Mapping_) -> None:
+    """The mapping orders the records stack_relevance, shallow_review_relevance, screen (D808): under a ceiling that
+    holds one floor quote, the screen's copy of a relevance quote still ships, as a free duplicate."""
+    assert [_ann_kind(p) for p in m.quote_paths[:3]] == ["stack_relevance", "shallow_review_relevance", "screen"]
+    q = " ".join(f"w{i}" for i in range(20))
+    row = _quoted_row([], chars=500)  # ceiling 125, budget 75: room for one 99-character floor quote
+    a = row["annotations"]
+    a["stack_relevance"]["payload"]["quotes"] = [{"text": q, "offset": 0}]
+    a["sr_relevance"]["payload"]["quotes"] = [{"text": "other " * 20, "offset": 0}]
+    a["screen"]["payload"]["quotes"] = [{"text": q, "offset": 0}]
+    p, ann, _ctx = _budgeted(m, row)
+    assert [x["text"] for x in ann["stack_relevance"]["payload"]["quotes"]] == [q]
+    assert [x["text"] for x in ann["screen"]["payload"]["quotes"]] == [q]
+    assert p.quotes_lost == {"shallow_review_relevance": 1}
+
+
+def _ann_kind(p: str) -> str:
+    return p.split(".")[1]
+
+
 def test_a_row_without_its_text_length_ships_no_quotes(m: Mapping_) -> None:
     p, ann, ctx = _budgeted(m, _quoted_row(["short quote"], chars=None))
     assert ann["safety_techniques"]["payload"]["techniques"][0]["quotes"] == [] and ctx["quote_chars"] == 0

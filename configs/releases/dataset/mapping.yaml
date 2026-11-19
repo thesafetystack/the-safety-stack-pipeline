@@ -64,11 +64,13 @@ variants:
 
 quote_cut: "a string longer than the cap is cut at the last word boundary at or before cap-1 code points and U+2026 '…' appended, so the shipped string is <= cap; a string of exactly the cap is kept whole; with no word boundary in reach it is cut at cap-1"
 
-# Capped paths (public names; document-derived strings). Model-written prose is never capped.
+# Capped paths (public names; document-derived strings). Model-written prose is never capped. Their order is the
+# quotation budget's row order among annotations of one priority (D808): the relevance records before the screen
+# record, whose quotes repeat theirs and so ship as free duplicates.
 quote_paths:
-  - annotations.screen.payload.quotes[].text
   - annotations.stack_relevance.payload.quotes[].text
   - annotations.shallow_review_relevance.payload.quotes[].text
+  - annotations.screen.payload.quotes[].text
   - annotations.safety_techniques.payload.techniques[].quotes[].text
   - annotations.safety_techniques.payload.extra_techniques[].quotes[].text
   - annotations.model_roles.payload.models[].evidence[].quote
