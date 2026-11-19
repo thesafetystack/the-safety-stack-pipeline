@@ -1417,14 +1417,43 @@ class Projection:
                 if new != s:
                     holder[key] = new
                     self.prose_scrubbed += 1
+        if self.variant in self.m.quote_policies:
+            self.guard_copied(ann, ctx)
+
+    def guard_copied(self, ann: dict[str, Any], ctx: dict[str, Any]) -> None:
+        """D808: where the abstract is withheld, the final surfaces and model-written prose (redacted, cut, scrubbed)
+        join the emitted quotes' 4-gram union of the abstract in mapping order; one that would push it over the
+        policy's share ships as ``""`` (its cut entry dropped), counted in ``quote_counts["copied_emptied"]``."""
+        r = ctx["row"]
+        abstract = (r.get("metadata") or {}).get("abstract")
+        if not abstract or self.m.variants[self.variant]["abstract"] == "keep":
+            return
+        pol = self.m.quote_policies[self.variant]
+        cover = disclosure.AbstractCover(abstract, pol.shingle_words)
+        for p in self.m.quote_paths:
+            kind, rest = _ann_path(p)
+            for _ip, _h, _k, s in walk_strings((ann.get(kind) or {}).get("payload"), rest):
+                cover.covered = cover.adding(s)
+        for p in self.m.surface_paths + self.m.prose_paths:
+            if p in self.m.abstract_paths:
+                continue  # withheld whole
+            kind, rest = _ann_path(p)
+            for ip, holder, key, s in list(walk_strings((ann.get(kind) or {}).get("payload"), rest,
+                                                        f"annotations.{kind}.payload")):
+                cov = cover.adding(s)
+                if cover.share(cov) > pol.abstract_share:
+                    holder[key] = ""
+                    self.quote_counts["copied_emptied"] += 1
+                    ctx["cuts"][:] = [c for c in ctx["cuts"] if c["path"] != ip]
+                else:
+                    cover.covered = cov
 
     def allocate(self, ann: dict[str, Any], r: Mapping[str, Any]) -> dict[tuple[int, str], int]:
         """The variant's quotation budget (D808, :func:`disclosure.allocate`) over ``ann`` in place, for corpus row
         ``r``, with its invariants checked again on what it left: the distinct emitted quotes within the ceiling (and
         the budget, once pass 2 added any) and the withheld abstract's covered share within its limit; a breach is a
-        row problem. The surfaces and the model-written prose join that abstract's union in mapping order, and one
-        that would push it over the limit ships as ``""`` (counted). Returns each emitted quote's original length by
-        ``(id(holder), key)``."""
+        row problem (the surfaces and prose follow, :meth:`guard_copied`). Returns each emitted quote's original
+        length by ``(id(holder), key)``."""
         pol = self.m.quote_policies[self.variant]
         length = ((_current_snapshot(r).get("quality") or {}).get("metrics") or {}).get("chars")
         abstract = (r.get("metadata") or {}).get("abstract") if self.m.variants[self.variant]["abstract"] != "keep" \
@@ -1446,17 +1475,6 @@ class Projection:
                 cover.covered = cover.adding(q)
             if cover.share() > pol.abstract_share:
                 self.problems.append(f"{doc}: quotes cover {cover.share():.3f} of the withheld abstract")
-            for p in self.m.surface_paths + self.m.prose_paths:
-                if p in self.m.abstract_paths:
-                    continue  # withheld whole
-                kind, rest = _ann_path(p)
-                for _ip, holder, key, s in list(walk_strings((ann.get(kind) or {}).get("payload"), rest)):
-                    cov = cover.adding(s)
-                    if cover.share(cov) > pol.abstract_share:
-                        holder[key] = ""
-                        self.quote_counts["copied_emptied"] += 1
-                    else:
-                        cover.covered = cov
         if not length:
             self.quote_counts["rows_without_length"] += 1
         self.quote_counts.update(quotes=al.quotes, kept=al.kept, cut=al.cut, chars_in=al.chars_in,
@@ -1682,13 +1700,14 @@ def _split_top(s: str, *, sentence: bool) -> list[str]:
 
 
 #: The keys of an override value whose strings the public variant ships (D808, :func:`public_value`): ids and slugs,
-#: labels, roles, statuses and titles. Every other string (quotes, abstracts, surfaces, names as written, authors,
-#: model prose) ships empty; the line's own note, author and method are not in its value.
+#: labels, roles, statuses and titles (``strength`` is ``match_class`` by its internal name). Every other string (quotes,
+#: abstracts, surfaces, names as written, authors, model prose) ships empty, and a flag as its bare name
+#: (``menu_gap:<surface>`` -> ``menu_gap``); the line's own note, author and method are not in its value.
 PUBLIC_VALUE_KEYS = frozenset({
     "slug", "node_id", "matched_node_id", "base_node_id", "hint_technique", "candidates", "org_ids", "org_slugs",
     "org_candidates", "orcid", "url", "verdict", "tier1_verdict", "basis_role", "buckets", "category", "agenda",
     "doc_type", "primary_lang", "issues", "doc_kind", "taxonomy_version", "vocab_version", "flags", "roles",
-    "resolution", "org_status", "match_class", "from_lang", "method", "published_at", "title", "title_en"})
+    "resolution", "org_status", "match_class", "strength", "from_lang", "method", "published_at", "title", "title_en"})
 
 
 def public_value(v: Any, key: str | None = None) -> Any:
@@ -1702,7 +1721,7 @@ def public_value(v: Any, key: str | None = None) -> Any:
             return []
         return [public_value(x, key) for x in v]
     if isinstance(v, str):
-        return v if key in PUBLIC_VALUE_KEYS else ""
+        return (v.split(":", 1)[0] if key == "flags" else v) if key in PUBLIC_VALUE_KEYS else ""
     return v
 
 

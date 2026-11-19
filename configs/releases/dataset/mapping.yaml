@@ -86,6 +86,12 @@ surface_paths:
   - annotations.affiliation.payload.items[].affiliations[].surface
   - annotations.model_name_matches.payload.matches[].surfaces[]
   - annotations.model_name_matches.payload.ambiguous[].text
+  # flags may carry a document's wording after the colon (menu_gap:<surface>, variant:<name>): capped like a surface
+  # and counted against a withheld abstract (D808)
+  - annotations.safety_techniques.payload.flags[]
+  - annotations.safety_techniques.payload.techniques[].flags[]
+  - annotations.safety_techniques.payload.extra_techniques[].flags[]
+  - annotations.model_roles.payload.flags[]
 # Model-written free text (shipped uncapped in both variants; listed in FORMAT.md and release.json policy.prose_paths).
 prose_paths:
   - annotations.screen.payload.reasoning

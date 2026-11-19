@@ -204,6 +204,7 @@ def test_redact_emails_leaves_non_addresses(s: str) -> None:
     ("mailto:a@b.org", True), ("MAILTO:a@b.org", True), ("https://x.org/people/a@b.org", True),
     ("https://x.org/?u=a%40b.org", True), ("https://x.org/p#to=a@b.org", True), ("https://a%40b.org@x.org/", True),
     ("https://example.org/{alice,bob}@lab.org", True), ("https://x.org/%7Balice,bob%7D%40lab.org", True),
+    ("https://r.org/?u=https%3A%2F%2Fx.org%2Falice%2540lab.org", True),
     ("https://medium.com/@h/p", False), ("https://user:pw@x.org/", False), ("https://github.com/x/y@main", False),
     ("https://example.org/landing", False),
 ])
@@ -214,11 +215,16 @@ def test_url_has_email(url: str, want: bool) -> None:
 def test_email_hits_is_broader_and_allows_only_its_list() -> None:
     assert dz.email_hits("pkg@v1.x a@b.c", ours=False) == ["pkg@v1.x", "a@b.c"]  # more than the redaction takes
     assert dz.email_hits("{alice,bob}@lab.org", ours=False) == ["{alice,bob}@lab.org"]  # groups, independently
+    assert dz.email_hits("{alice, bob}@lab.org", ours=False) == ["{alice, bob}@lab.org"]
+    assert dz.email_hits("x@123-lab.org", ours=False) == ["x@123-lab.org"]  # an alphabetic last label: no pin
+    assert dz.email_hits("a%2540lab.org", ours=False) == ["a@lab.org"]  # decoded until stable
     assert dz.email_hits("x/alice@123lab.org", ours=False) == ["alice@123lab.org"]  # 123lab.org is no version
     assert dz.email_hits("tool@0.1.0+tierlatexml, tool@2 hf://d/x@r1.2/a", ours=False) == []  # whole version pins
     assert dz.email_hits("v@1.2.3x.org", ours=False) == ["v@1.2.3x.org"]
     pins = "model-roles-v3b@models-1.1.0 technique-staged-v5@techniques-1.0.0"  # our stage names
     assert dz.email_hits(pins, ours=True) == [] and len(dz.email_hits(pins, ours=False)) == 2
+    assert dz.email_hits("p@models-1-lab.org p@models-1.1.0x", ours=True) == ["p@models-1-lab.org",
+                                                                             "p@models-1.1.0x"]  # whole tokens only
     assert dz.email_hits(f"write to {dz.CONTACT_ADDRESS}.", ours=True) == []
     assert dz.email_hits(f"write to {dz.CONTACT_ADDRESS}", ours=False) == [dz.CONTACT_ADDRESS]
     assert dz.email_hits(f"{dz.CONTACT_ADDRESS}.evil x{dz.CONTACT_ADDRESS}", ours=True) == [
