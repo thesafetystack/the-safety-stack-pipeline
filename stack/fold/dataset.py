@@ -117,8 +117,8 @@ LICENCE = {"ours": "CC0-1.0, to the extent we hold copyright or database rights 
                    "the identity and provenance structure, the release metadata, the taxonomies and the documentation)",
            "not_covered": "third-party material wherever it occurs (titles and bibliographic records as their "
                           "providers publish them, abstracts, quoted excerpts, verbatim surfaces and other copied "
-                          "document text) is not licensed by us and remains its owners'; the quotes are short "
-                          "excerpts, limited per document (FORMAT.md, Quotes); see LICENSE",
+                          "document text) is not licensed by us and remains its owners'; in the public variant the "
+                          "quotes are short excerpts, limited per document (FORMAT.md, Quotes); see LICENSE",
            "checker": "tools/release-validator.py: MIT, as in the data repository",
            "hf_license_name": "cc0-1.0-annotations-third-party-content"}
 #: The internal workflow of a public kind whose payload is a record of another call: the producer's public kind.
@@ -1072,12 +1072,9 @@ class Projection:
     #: D808 (:meth:`redact`): addresses replaced, URL values dropped for an address in them
     emails_redacted: int = 0
     urls_dropped: int = 0
-    #: D808 (:meth:`allocate`): quote counts, annotations left without a quote by kind, and per row with a budget the
-    #: share of its text (and of its withheld abstract) the emitted quotes take
+    #: D808 (:meth:`allocate`): quote counts (and copied strings emptied), annotations left without a quote by kind
     quote_counts: Counter[str] = field(default_factory=Counter)
     quotes_lost: Counter[str] = field(default_factory=Counter)
-    text_shares: list[float] = field(default_factory=list)
-    abstract_shares: list[float] = field(default_factory=list)
     counts: dict[str, Counter[str]] = field(default_factory=dict)
     #: Shipped affiliations per ``org_status``, and ``with_org_ids`` (those naming at least one organisation).
     org_counts: Counter[str] = field(default_factory=Counter)
@@ -1228,7 +1225,7 @@ class Projection:
                     holder[key] = None
                     self.urls_dropped += 1
             elif path in (IDENTIFIER_FIELDS if ids is None else ids) or re.match(r"annotations\.\w+\.metadata\.", path):
-                if disclosure.EMAIL.search(s):
+                if disclosure.EMAIL.search(s) or disclosure.url_has_email(s):  # also percent-encoded
                     raise DatasetError(f"{path}: an identifier holds an email address; it cannot be redacted")
             else:
                 new, n = disclosure.redact_emails(s)
@@ -1387,9 +1384,9 @@ class Projection:
 
     def cap_and_scrub(self, ann: dict[str, Any], ctx: dict[str, Any]) -> None:
         """Cut the quotes and surfaces of ``ann`` and scrub its prose, listing cuts in ``ctx``; under a quote policy
-        the quotes are the budget's (:meth:`allocate`; an override's value, ``ctx`` without a row, keeps none)."""
+        the quotes are the budget's (:meth:`allocate`, for ``ctx["row"]``)."""
         cap = self.cap
-        budgeted = self.allocate(ann, ctx.get("row")) if self.variant in self.m.quote_policies else {}
+        budgeted = self.allocate(ann, ctx["row"]) if self.variant in self.m.quote_policies else {}
         for p in self.m.quote_paths + self.m.surface_paths:
             kind, rest = _ann_path(p)
             v = ann.get(kind)
@@ -1421,23 +1418,20 @@ class Projection:
                     holder[key] = new
                     self.prose_scrubbed += 1
 
-    def allocate(self, ann: dict[str, Any], r: Mapping[str, Any] | None) -> dict[tuple[int, str], int]:
+    def allocate(self, ann: dict[str, Any], r: Mapping[str, Any]) -> dict[tuple[int, str], int]:
         """The variant's quotation budget (D808, :func:`disclosure.allocate`) over ``ann`` in place, for corpus row
-        ``r`` (None: an override's value, which keeps no quote), with its invariants checked again on what it left:
-        the distinct emitted quotes within the ceiling (and the budget, once pass 2 added any) and the withheld
-        abstract's covered share within its limit; a breach is a row problem. Returns each emitted quote's original
-        length by ``(id(holder), key)``."""
+        ``r``, with its invariants checked again on what it left: the distinct emitted quotes within the ceiling (and
+        the budget, once pass 2 added any) and the withheld abstract's covered share within its limit; a breach is a
+        row problem. The surfaces and the model-written prose join that abstract's union in mapping order, and one
+        that would push it over the limit ships as ``""`` (counted). Returns each emitted quote's original length by
+        ``(id(holder), key)``."""
         pol = self.m.quote_policies[self.variant]
-        length = abstract = None
-        if r is not None:
-            length = ((_current_snapshot(r).get("quality") or {}).get("metrics") or {}).get("chars")
-            if self.m.variants[self.variant]["abstract"] != "keep":
-                abstract = (r.get("metadata") or {}).get("abstract") or None
+        length = ((_current_snapshot(r).get("quality") or {}).get("metrics") or {}).get("chars")
+        abstract = (r.get("metadata") or {}).get("abstract") if self.m.variants[self.variant]["abstract"] != "keep" \
+            else None
         assert self.cap is not None  # Mapping_: a quote policy needs a cap
-        al = disclosure.allocate(ann, self.m.quote_paths, self.m.scalar_quotes, pol, self.cap, length, abstract,
+        al = disclosure.allocate(ann, self.m.quote_paths, self.m.scalar_quotes, pol, self.cap, length, abstract or None,
                                  cut_string)
-        if r is None:
-            return al.original
         doc = r["doc_id"]
         shipped = {disclosure.norm(s) for p in self.m.quote_paths for _ip, _h, _k, s in
                    walk_strings((ann.get(_ann_path(p)[0]) or {}).get("payload"), _ann_path(p)[1]) if s}
@@ -1452,11 +1446,18 @@ class Projection:
                 cover.covered = cover.adding(q)
             if cover.share() > pol.abstract_share:
                 self.problems.append(f"{doc}: quotes cover {cover.share():.3f} of the withheld abstract")
-            if cover.total:
-                self.abstract_shares.append(cover.share())
-        if length:
-            self.text_shares.append(cost / length)
-        else:
+            for p in self.m.surface_paths + self.m.prose_paths:
+                if p in self.m.abstract_paths:
+                    continue  # withheld whole
+                kind, rest = _ann_path(p)
+                for _ip, holder, key, s in list(walk_strings((ann.get(kind) or {}).get("payload"), rest)):
+                    cov = cover.adding(s)
+                    if cover.share(cov) > pol.abstract_share:
+                        holder[key] = ""
+                        self.quote_counts["copied_emptied"] += 1
+                    else:
+                        cover.covered = cov
+        if not length:
             self.quote_counts["rows_without_length"] += 1
         self.quote_counts.update(quotes=al.quotes, kept=al.kept, cut=al.cut, chars_in=al.chars_in,
                                  chars_out=al.chars_out)
@@ -1680,37 +1681,53 @@ def _split_top(s: str, *, sentence: bool) -> list[str]:
     return [x for x in out if x.strip()]
 
 
+#: The keys of an override value whose strings the public variant ships (D808, :func:`public_value`): ids and slugs,
+#: labels, roles, statuses and titles. Every other string (quotes, abstracts, surfaces, names as written, authors,
+#: model prose) ships empty; the line's own note, author and method are not in its value.
+PUBLIC_VALUE_KEYS = frozenset({
+    "slug", "node_id", "matched_node_id", "base_node_id", "hint_technique", "candidates", "org_ids", "org_slugs",
+    "org_candidates", "orcid", "url", "verdict", "tier1_verdict", "basis_role", "buckets", "category", "agenda",
+    "doc_type", "primary_lang", "issues", "doc_kind", "taxonomy_version", "vocab_version", "flags", "roles",
+    "resolution", "org_status", "match_class", "from_lang", "method", "published_at", "title", "title_en"})
+
+
+def public_value(v: Any, key: str | None = None) -> Any:
+    """An override's value (or the part of it under ``key``) as the public variant ships it (D808): structure,
+    numbers, booleans and the strings under :data:`PUBLIC_VALUE_KEYS` kept; any other string ``""``, and a list of
+    such strings ``[]``."""
+    if isinstance(v, dict):
+        return {k: public_value(x, k) for k, x in v.items()}
+    if isinstance(v, list):
+        if key not in PUBLIC_VALUE_KEYS and v and all(isinstance(x, str) for x in v):
+            return []
+        return [public_value(x, key) for x in v]
+    if isinstance(v, str):
+        return v if key in PUBLIC_VALUE_KEYS else ""
+    return v
+
+
 def overrides_value(p: Projection, o: Override) -> tuple[Any, list[dict[str, Any]]]:
     """An override's value as shipped: an annotation row override's payload projected like the row's payload (cut and
     scrubbed per the variant, cuts listed); a manual source's bibliographic fields; else the value as is. A variant
-    with a quote policy ships no quote in it, and one that withholds abstracts no abstract (D808): a quote list is
-    emptied, a required quote is ``""``, an abstract NULL (the corpus row carries what ships of the document)."""
-    withheld = [*(p.m.quote_paths if p.variant in p.m.quote_policies else []),
-                *(p.m.abstract_paths if p.m.variants[p.variant]["abstract"] != "keep" else [])]
-    kind = next((k for k, s in p.m.kinds.items() if s.workflow == o.target), None)
+    with a quote policy (the public one) ships it through :func:`public_value` instead, uncut (D808): the corpus row
+    carries what ships of the document; an identity override's value (merge or separate) stays."""
+    public = p.variant in p.m.quote_policies
     if o.target in REGISTRY and o.kind == "row":
+        kind = next((k for k, s in p.m.kinds.items() if s.workflow == o.target), None)
         if kind is None:
             return None, []
         spec = p.m.kinds[kind]
         payload = project_payload(p.internal_payload(kind, o.value), spec.ptype, spec.names)  # org fields NULL
+        if public:
+            return public_value(payload), []
         ann = {kind: {"metadata": {}, "payload": payload}}
         ctx: dict[str, Any] = {"cuts": [], "quote_chars": 0}
-        p.redact(ann, "value")  # before the cut, as in a row
-        p.cap_and_scrub(ann, ctx)  # no row: a quote policy keeps no quote
-        if p.m.variants[p.variant]["abstract"] != "keep":
-            withhold_abstract_paths({"annotations": ann}, p.m.abstract_paths)
+        p.cap_and_scrub(ann, ctx)
         cuts = [{"path": c["path"].replace(f"annotations.{kind}.payload", "value", 1), "chars": c["chars"]}
                 for c in ctx["cuts"]]
         return ann[kind]["payload"], cuts
-    if o.target in REGISTRY and o.kind == "field" and kind is not None:
-        pre = f"annotations.{kind}.payload.{o.field}"
-        if any(w == pre or w.startswith((pre + ".", pre + "[]")) for w in withheld):
-            return [] if isinstance(o.value, list) else "" if isinstance(o.value, str) else None, []
-    if o.target == "fields" and o.field == "abstract" and p.m.variants[p.variant]["abstract"] != "keep":
-        return None, []
-    if o.target == "manual_sources":
-        return {k: v for k, v in o.payload.items() if k != "note"}, []
-    return o.value, []
+    value = {k: v for k, v in o.payload.items() if k != "note"} if o.target == "manual_sources" else o.value
+    return (public_value(value, o.field or None) if public and o.target != "identity" else value), []
 
 
 @dataclass(frozen=True)
@@ -1770,13 +1787,13 @@ def export_overrides(p: Projection, policy: OverridesPolicy, act: ActiveOverride
                "key": o.key, "item_key": o.item_key, "field": o.field, "value": value, "cuts": cuts, "note": note,
                "author": author, "method": method,
                "created_at": o.created_at.astimezone(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")}
-        p.redact(rec, ids=OVERRIDES_IDS)  # D808, before the line is written; its quotes are already out
+        p.redact(rec, ids=OVERRIDES_IDS)  # D808: the kept strings (notes, titles); an address in an id refuses
         recs.append(rec)
     return recs
 
 
 #: The identifiers of a line of ``config/overrides.jsonl`` (an email address in one refuses the export, D808).
-OVERRIDES_IDS = ("override_id", "run_id", "key", "item_key")
+OVERRIDES_IDS = ("override_id", "run_id", "key", "item_key", "value.url")
 
 
 #: The fields of a line of ``config/overrides.jsonl`` (FORMAT's table; every line has exactly these).
@@ -2137,12 +2154,6 @@ def run_dataset_export(store_root: str | Path, corpus_key: str, config: str | Pa
     return DatasetResult(dest, doc, [])
 
 
-def _shares(xs: Sequence[float]) -> dict[str, float | int]:
-    v = sorted(xs)
-    return {"rows": len(v), "p50": round(v[len(v) // 2], 4) if v else 0.0,
-            "p99": round(v[min(len(v) - 1, int(0.99 * len(v)))], 4) if v else 0.0, "max": round(v[-1], 4) if v else 0.0}
-
-
 def quote_policy_record(proj: Projection) -> dict[str, Any]:
     """``release.json`` ``policy.quote_policy`` and ``policy.emails`` of a variant that has them (D808): the
     parameters and what they did. The upload checks ``quote_policy.version`` of the public variant."""
@@ -2155,7 +2166,7 @@ def quote_policy_record(proj: Projection) -> dict[str, Any]:
             "quotes": {"in": c["quotes"], "kept": c["kept"], "cut": c["cut"], "omitted": c["quotes"] - c["kept"]},
             "chars": {"in": c["chars_in"], "out": c["chars_out"]}, "rows_without_length": c["rows_without_length"],
             "annotations_without_quotes": dict(sorted(proj.quotes_lost.items())),
-            "shares": {"text": _shares(proj.text_shares), "abstract": _shares(proj.abstract_shares)}}
+            "copied_text_emptied": c["copied_emptied"]}
     if proj.m.variants[proj.variant].get("emails") == "redact":
         out["emails"] = {"redacted": proj.emails_redacted, "urls_dropped": proj.urls_dropped,
                          "check": "no address in any shipped file but the contact address (D808)"}
@@ -3115,29 +3126,54 @@ def format_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Pat
 
 def quote_policy_sentence(pol: Mapping[str, Any]) -> str:
     """FORMAT's sentences on the per-document quotation limit and the email redaction (D808), from ``release.json``
-    ``policy``; empty for a variant without them."""
+    ``policy``: what is bounded and what is not; empty for a variant without them."""
     out = ""
     qp = pol.get("quote_policy")
     if qp:
         b, c = qp["budget"], qp["ceiling"]
-        out += (f" Quotes are also limited per document (`policy.quote_policy`, version {qp['version']}), so that each "
-                "document's quoted text stays a small share of it: each annotation keeps its shortest quote that "
-                f"fits, cut to {qp['floor_cut']} characters, while the document's distinct quoted text stays within "
+        out += (f" Quotes are also limited per document (`policy.quote_policy`, version {qp['version']}): each "
+                "annotation keeps its shortest quote that fits, cut to "
+                f"{qp['floor_cut']} characters, while the document's distinct quoted text stays within "
                 f"{_fmt(c['chars'])} characters and {c['share']:.0%} of its converted text; then, within "
                 f"{_fmt(b['chars'])} characters and {b['share']:.0%}, those quotes are restored to the cap and further "
-                "quotes added at the cap, one per annotation in turn. Where the abstract is withheld, the "
-                f"quotes cover at most {qp['abstract_share']:.0%} of it (runs of {qp['shingle_words']} words). The "
-                "screen and relevance records come first, then techniques and models by their strongest role. A "
-                "repeated quote ships as the same string. An omitted quote leaves its list, or is an empty string "
-                "where the field is required (" + ", ".join(f"`{p.split('payload.', 1)[1]}`" for p in
-                                                           qp["scalar_quotes"]) + "); a document whose converted "
-                "text has no recorded length ships no quotes. Overrides in `config/overrides.jsonl` carry no quotes "
-                "in this variant.")
+                "quotes added at the cap, one per annotation in turn. The relevance and screen records come first, "
+                "then techniques and models by their strongest role. A repeated quote ships as the same string. An "
+                "omitted quote leaves its list, or is an empty string where the field is required ("
+                + ", ".join(f"`{p.split('payload.', 1)[1]}`" for p in qp["scalar_quotes"]) + "); a document whose "
+                "converted text has no recorded length ships no quotes. Where the abstract is withheld, the quotes, "
+                "the surfaces and the model-written text together repeat at most "
+                f"{qp['abstract_share']:.0%} of it, counted in runs of {qp['shingle_words']} consecutive words (a "
+                "surface or text that would pass that ships empty, `copied_text_emptied`); shorter runs are not "
+                "counted. Not limited per document: titles, authors and affiliations as published, the surfaces "
+                "(each cut at the cap) and the model-written text (uncut), and what several releases ship together. "
+                "Overrides in `config/overrides.jsonl` carry only ids, labels and titles in their value in this "
+                "variant.")
     if pol.get("emails"):
         out += (" Every email address in a shipped string is replaced by `[email]` before anything is cut, and a URL "
                 "that carries one is NULL (`policy.emails`); `offset`, `anchored` and the organisation matches "
                 "(`org_ids`) were made on the unredacted text.")
     return out
+
+
+def card_disclosure(pol: Mapping[str, Any]) -> dict[str, str]:
+    """The card's sentences on the quotation limits and on email addresses, by variant (D808)."""
+    qp = pol.get("quote_policy")
+    if qp:
+        b, c = qp["budget"], qp["ceiling"]
+        limits = (f"Quotes are short excerpts, each in the row of the document it comes from, and limited per "
+                  f"document: its distinct quoted text stays within {_fmt(c['chars'])} characters and "
+                  f"{c['share']:.0%} of its converted text, and quotes beyond one short one per annotation within "
+                  f"{_fmt(b['chars'])} characters and {b['share']:.0%}; where the abstract is withheld, quotes, "
+                  f"surfaces and model-written text together repeat at most {qp['abstract_share']:.0%} of it (runs "
+                  f"of {qp['shingle_words']} words). Titles, authors, affiliations and surfaces are not counted in "
+                  "the per-document limit (FORMAT.md, \"Quotes\"). The limits are our own controls on how much of a "
+                  "work the release quotes, not a legal assessment.")
+    else:
+        limits = "This variant ships quotes whole; it is the maintainers' and is not distributed."
+    email = ("Email addresses are removed from everything this release ships (each becomes `[email]`; a link that "
+             "carries one is left out)." if pol.get("emails") else
+             "This variant keeps email addresses as the documents have them.")
+    return {"quote_limits": limits, "email_note": email}
 
 
 def render_vocab(v: Mapping[str, Any], marks: Mapping[str, str] | None = None) -> str:
@@ -3286,7 +3322,7 @@ def card_md(m: Mapping_, cfg: DatasetConfig, doc: Mapping[str, Any], tdir: Path,
             "rows_in": _fmt(doc["rows"]["in"]), "format_version": doc["format_version"],
             "screened_out": _fmt(doc["rows"]["filtered_out"]), "triage_not_relevant": _fmt(triage_not_relevant),
             "n_channels": _fmt(len(stats["channels"])), "n_orgs": _fmt(n_orgs),
-            "quality_section": jev.section.rstrip(), **org_vals,
+            "quality_section": jev.section.rstrip(), **org_vals, **card_disclosure(doc["policy"]),
             # the bundle: what is written so far, plus this card and release.json
             "n_files": sum(p.is_file() for p in stage.rglob("*")) + 2}
     body = re.sub(r"\n{3,}", "\n\n", _fill((tdir / "README.card.md").read_text("utf-8"), vals))
@@ -3390,6 +3426,7 @@ def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
     over = mismatch = cutbad = 0
     for r in rows:
         cuts = {c["path"]: c["chars"] for c in r["release"]["cuts"]}
+        matched: set[str] = set()
         total = 0
         for p in m.quote_paths + m.surface_paths:
             kind, rest = _ann_path(p)
@@ -3399,10 +3436,12 @@ def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
             for ip, _h, _k, s in walk_strings(v["payload"], rest, f"annotations.{kind}.payload"):
                 if cap is not None and len(s) > cap:
                     over += 1
-                if ip in cuts and (not s.endswith(ELLIPSIS) or cuts[ip] <= len(s)):
-                    cutbad += 1
+                if ip in cuts:
+                    matched.add(ip)
+                    cutbad += not s.endswith(ELLIPSIS) or cuts[ip] <= len(s)
                 if p in m.quote_paths:
                     total += len(s)
+        cutbad += len(set(cuts) - matched)  # a cut of no shipped string (D808)
         if total != r["release"]["quote_chars"]:
             mismatch += 1
         if cap is None and cuts:
@@ -3449,11 +3488,11 @@ def _policy_problems(stage: Path, m: Mapping_, cfg: DatasetConfig,
         for rg in range(pfc.num_row_groups):
             for row in pfc.read_row_group(rg).to_pylist():
                 for path, _h, _k, s in disclosure.string_leaves(row):
-                    where[f"data/corpus.parquet {path}"] += len(disclosure.email_hits(s, contact_allowed=False))
+                    where[f"data/corpus.parquet {path}"] += len(disclosure.email_hits(s, ours=False))
         for fp in sorted(stage.rglob("*")):
             if fp.is_file() and fp.suffix != ".parquet":
                 where[fp.relative_to(stage).as_posix()] += len(disclosure.email_hits(
-                    fp.read_text("utf-8", errors="replace"), contact_allowed=True))
+                    fp.read_text("utf-8", errors="replace"), ours=True))
         if +where:
             probs.append(f"{sum(where.values())} email address(es) in the shipped files (D808): "
                          + ", ".join(f"{w} ({n})" for w, n in (+where).most_common(5)))

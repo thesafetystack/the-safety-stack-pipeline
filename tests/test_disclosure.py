@@ -184,6 +184,8 @@ def test_abstract_cover_is_case_and_space_insensitive_and_ignores_short_quotes()
     ("{alice, bob.c}@lab.example.org wrote", "[email] wrote"),
     ("a@b.co.uk and c@d.com", "[email] and [email]"),
     ("(李@例子.中国)", "([email])"),
+    ("x/alice@123lab.org", "x/[email]"),
+    ("Dept. of X, {alice}@uni.example.edu", "Dept. of X, [email]"),  # a group of one (found in real surfaces)
 ])
 def test_redact_emails(s: str, want: str) -> None:
     assert dz.redact_emails(s)[0] == want
@@ -192,7 +194,7 @@ def test_redact_emails(s: str, want: str) -> None:
 @pytest.mark.parametrize("s", [
     "fetchpdf-md@0.1.0+tierlatexml", "hf://datasets/thesafetystack/the-safety-stack@release-2026-11-03/data/x.parquet",
     "https://medium.com/@handle/post", "doi:10.1002/(SICI)1097-4571(199806)49:8<693::AID-ASI4>3.0.CO;2-O",
-    "github.com/org/repo@main", "pkg@v1", "@user said", "a@b.c", "x/john@a.org",
+    "github.com/org/repo@main", "pkg@v1", "@user said", "a@b.c",
 ])
 def test_redact_emails_leaves_non_addresses(s: str) -> None:
     assert dz.redact_emails(s) == (s, 0)
@@ -201,6 +203,7 @@ def test_redact_emails_leaves_non_addresses(s: str) -> None:
 @pytest.mark.parametrize("url,want", [
     ("mailto:a@b.org", True), ("MAILTO:a@b.org", True), ("https://x.org/people/a@b.org", True),
     ("https://x.org/?u=a%40b.org", True), ("https://x.org/p#to=a@b.org", True), ("https://a%40b.org@x.org/", True),
+    ("https://example.org/{alice,bob}@lab.org", True), ("https://x.org/%7Balice,bob%7D%40lab.org", True),
     ("https://medium.com/@h/p", False), ("https://user:pw@x.org/", False), ("https://github.com/x/y@main", False),
     ("https://example.org/landing", False),
 ])
@@ -209,14 +212,28 @@ def test_url_has_email(url: str, want: bool) -> None:
 
 
 def test_email_hits_is_broader_and_allows_only_its_list() -> None:
-    assert dz.email_hits("x/john@a.org", contact_allowed=False) == ["john@a.org"]  # the redaction leaves this one
-    assert dz.email_hits("pkg@v1.x", contact_allowed=False) == ["pkg@v1.x"]
-    # version pins: a prompt pinned to a taxonomy version (config names in release.json, FORMAT.md), a tool stamp
-    pins = "model-roles-v3b@models-1.1.0 tool@0.1.0 pkg@v1.2 hf://d/x@r1.2/a"
-    assert dz.email_hits(pins, contact_allowed=False) == []
-    assert dz.email_hits(f"write to {dz.CONTACT_ADDRESS}", contact_allowed=True) == []
-    assert dz.email_hits(f"write to {dz.CONTACT_ADDRESS}", contact_allowed=False) == [dz.CONTACT_ADDRESS]
-    assert dz.email_hits("[email]", contact_allowed=False) == []
+    assert dz.email_hits("pkg@v1.x a@b.c", ours=False) == ["pkg@v1.x", "a@b.c"]  # more than the redaction takes
+    assert dz.email_hits("{alice,bob}@lab.org", ours=False) == ["{alice,bob}@lab.org"]  # groups, independently
+    assert dz.email_hits("x/alice@123lab.org", ours=False) == ["alice@123lab.org"]  # 123lab.org is no version
+    assert dz.email_hits("tool@0.1.0+tierlatexml, tool@2 hf://d/x@r1.2/a", ours=False) == []  # whole version pins
+    assert dz.email_hits("v@1.2.3x.org", ours=False) == ["v@1.2.3x.org"]
+    pins = "model-roles-v3b@models-1.1.0 technique-staged-v5@techniques-1.0.0"  # our stage names
+    assert dz.email_hits(pins, ours=True) == [] and len(dz.email_hits(pins, ours=False)) == 2
+    assert dz.email_hits(f"write to {dz.CONTACT_ADDRESS}.", ours=True) == []
+    assert dz.email_hits(f"write to {dz.CONTACT_ADDRESS}", ours=False) == [dz.CONTACT_ADDRESS]
+    assert dz.email_hits(f"{dz.CONTACT_ADDRESS}.evil x{dz.CONTACT_ADDRESS}", ours=True) == [
+        f"{dz.CONTACT_ADDRESS}.evil", f"x{dz.CONTACT_ADDRESS}"]  # the contact address only as a whole token
+    assert dz.email_hits("[email]", ours=False) == []
+
+
+def test_normalised_equal_emitted_strings_ship_one_canonical_string() -> None:
+    """Two different texts whose cuts are NFKC-equal ship the first one's string, so only one string is shipped."""
+    tail = words("t", 40)
+    a1, a2 = "A " + tail + " " + words("x", 10), "\uff21 " + tail + " " + words("y", 10)  # fullwidth A
+    assert dz.norm(cut_string(a1, 150)) == dz.norm(cut_string(a2, 150)) and cut_string(a1, 150) != cut_string(a2, 150)
+    a = ann(screen=[a1], techniques=[(2, [a2])])
+    alloc(a, length=1100)  # the budget binds: both stay at the floor
+    assert texts(a)[0] == [cut_string(a1, 150)] and texts(a)[1] == [[cut_string(a1, 150)]]
 
 
 def test_string_leaves_paths() -> None:

@@ -38,13 +38,17 @@ from typing import Any
 
 EMAIL_MARK = "[email]"
 _LOCAL = r"[\w.+'-]+"
-#: An address, or the grouped form ``{a,b}@domain``, not preceded by a word character, ``/`` or ``@``.
-EMAIL = re.compile(rf"(?<![\w/@])(?:\{{{_LOCAL}(?:\s*,\s*{_LOCAL})+\}}|{_LOCAL})@(?:[\w-]+\.)+[^\W\d_]{{2,}}(?![\w-])")
-#: The broader detector of :func:`email_hits` (any ``x@y.z``), and what it allows: our contact address (not in the
-#: corpus), a version pin (``@`` before a digit, or a numeric last label: ``prompt@models-1.1.0``) and an ``hf://``
-#: URI.
-EMAIL_DETECT = re.compile(r"[\w.+'-]+@[\w-]+(?:\.[\w-]+)+")
+#: An address, or the grouped form ``{a,b}@domain``, not preceded by a word character or ``@``.
+EMAIL = re.compile(rf"(?<![\w@])(?:\{{{_LOCAL}(?:\s*,\s*{_LOCAL})*\}}|{_LOCAL})@(?:[\w-]+\.)+[^\W\d_]{{2,}}(?![\w-])")
+#: The broader detector of :func:`email_hits` (any ``x@y.z``, grouped ``{...}@y.z`` too), and what it allows: a
+#: version pin (``@`` and a whole version, ``tool@0.1.0+tierlatexml``), an ``hf://`` URI and, in our own files only,
+#: the contact address as a whole token and a prompt pinned to a taxonomy version (``prompt@models-1.1.0``, the
+#: stage names release.json and FORMAT.md print).
+EMAIL_DETECT = re.compile(r"(?:\{[^{}@\s]+\}|[\w.+'-]+)@[\w-]+(?:\.[\w-]+)+")
 CONTACT_ADDRESS = "info@thesafetystack.ai"
+_CONTACT = re.compile(r"(?<![\w.+'-])info@thesafetystack\.ai(?![\w-]|\.\w)")
+_PIN = re.compile(r"@\d+(?:\.\d+)*(?:[+-][\w.]+)?(?!\w|\.\w)")
+_TAXONOMY_PIN = re.compile(r"@(?:techniques|models|orgs)-\d+(?:\.\d+)*(?!\w|\.\w)")
 _HF_URI = re.compile(r"hf://\S+")
 #: Priority of an annotation that is a kind's whole payload (screen and relevance records): above every role strength.
 RECORD_PRIORITY = 5
@@ -230,9 +234,11 @@ def allocate(ann: Mapping[str, Any], quote_paths: Sequence[str], scalar_paths: S
         by_unit[q.unit].append(q)
     retained: dict[str, str] = {}  # norm(original text) -> the string it ships as (final after an upgrade)
     users: dict[str, set[str]] = {}  # norm(emitted string) -> the norm(original)s that ship it
+    canon: dict[str, str] = {}  # norm(emitted string) -> the one string shipped for it
     kept: set[int] = set()  # id of each kept _Quote
 
     def ship(q: _Quote, out: str) -> None:
+        out = canon.setdefault(norm(out), out)
         retained[norm(q.text)] = out
         users.setdefault(norm(out), set()).add(norm(q.text))
         kept.add(id(q))
@@ -241,7 +247,7 @@ def allocate(ann: Mapping[str, Any], quote_paths: Sequence[str], scalar_paths: S
         if norm(q.text) in retained:  # the same text: it follows the retained string
             kept.add(id(q))
             return True
-        if norm(out) in users:
+        if norm(out) in users:  # another text emitted the same string: ship that one
             ship(q, out)
             return True
         return False
@@ -272,7 +278,7 @@ def allocate(ann: Mapping[str, Any], quote_paths: Sequence[str], scalar_paths: S
         if norm(new) == norm(old) or users[norm(old)] != {norm(q.text)}:
             return
         if fits((0 if norm(new) in users else len(norm(new))) - len(norm(old)), budget, new):
-            del users[norm(old)]
+            del users[norm(old)], canon[norm(old)]
             ship(q, new)
 
     floors: dict[int, _Quote] = {}
@@ -334,7 +340,8 @@ def redact_emails(s: str) -> tuple[str, int]:
 
 def url_has_email(url: str) -> bool:
     """A ``mailto:`` URL, or one with an address in its user info, path, query or fragment (percent-decoded; URL
-    punctuation read as spaces, so ``/people/a@b.org`` counts)."""
+    punctuation read as spaces, so ``/people/a@b.org`` counts; a grouped ``{a,b}@c.org`` keeps its syntax). Also
+    for an identifier that holds a URL (an address in one refuses the export)."""
     if url[:7].lower() == "mailto:":
         return True
     try:
@@ -343,21 +350,20 @@ def url_has_email(url: str) -> bool:
         return bool(EMAIL.search(urllib.parse.unquote(url)))
     user = sp.netloc.rpartition("@")[0]
     parts = " ".join(urllib.parse.unquote_plus(x) for x in (user, sp.path, sp.query, sp.fragment))
-    return bool(EMAIL.search(re.sub(r"[/?#&=:;,]", " ", parts)))
+    return bool(EMAIL.search(re.sub(r"[/?#&=:;]", " ", parts)))
 
 
-def email_hits(text: str, *, contact_allowed: bool) -> list[str]:
-    """The independent check (D808): what :data:`EMAIL_DETECT` finds in ``text``, less a version pin (no address
-    has a numeric top-level label), an ``hf://`` URI and, where ``contact_allowed`` (our own files),
-    :data:`CONTACT_ADDRESS`."""
+def email_hits(text: str, *, ours: bool) -> list[str]:
+    """The independent check (D808): what :data:`EMAIL_DETECT` finds in ``text``, less a version pin, an ``hf://``
+    URI and, in ``ours`` (our own files, not the corpus), :data:`CONTACT_ADDRESS` and a taxonomy pin."""
     text = _HF_URI.sub(" ", text)
-    if contact_allowed:
-        text = text.replace(CONTACT_ADDRESS, " ")
+    if ours:
+        text = _CONTACT.sub(" ", text)
     out = []
     for m in EMAIL_DETECT.finditer(text):
-        g = m.group(0)
-        if not (g[g.index("@") + 1:][:1].isdigit() or g.rsplit(".", 1)[1].isdigit()):
-            out.append(g)
+        at = m.start() + m.group(0).index("@")
+        if not (_PIN.match(text, at) or ours and _TAXONOMY_PIN.match(text, at)):
+            out.append(m.group(0))
     return out
 
 
