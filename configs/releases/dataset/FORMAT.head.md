@@ -97,8 +97,9 @@ with three language-model judges.
 
 ## Unverified quotes (`quote_unverified`)
 
-Every technique row (`safety_techniques.payload.techniques[]`, and `extra_techniques[]`) carries at least one quote the
-model copied from the document, and every quote carries `anchored`: whether the pipeline found it in the converted
+Every technique row (`safety_techniques.payload.techniques[]`, and `extra_techniques[]`) was made with at least one
+quote the model copied from the document; under the per-document quotation limit of the public variant (Quotes) a row
+may ship with none (`quotes = []`). Every quote carries `anchored`: whether the pipeline found it in the converted
 text (exactly, after whitespace and punctuation normalisation, or by a fuzzy match that keeps every digit; an elided
 quote segment by segment; failing those, once more with inline citations, LaTeX markup, table cells and case set
 aside). A row none of whose quotes was found carries the row flag `quote_unverified`. Its quotes are paraphrases, a

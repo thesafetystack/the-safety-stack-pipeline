@@ -87,7 +87,7 @@ surface_paths:
   - annotations.model_name_matches.payload.matches[].surfaces[]
   - annotations.model_name_matches.payload.ambiguous[].text
   # flags may carry a document's wording after the colon (menu_gap:<surface>, variant:<name>): capped like a surface
-  # and counted against a withheld abstract (D808)
+  # (D808; where the abstract guard empties one, its bare name ships)
   - annotations.safety_techniques.payload.flags[]
   - annotations.safety_techniques.payload.techniques[].flags[]
   - annotations.safety_techniques.payload.extra_techniques[].flags[]
@@ -106,6 +106,15 @@ prose_paths:
 # withholds abstracts; checked).
 abstract_paths:
   - annotations.translation.payload.abstract_en
+# Bibliographic text (public paths), shipped as the providers publish it. Where the abstract is withheld it counts first
+# in the abstract's cover and is never emptied; every other document-derived string of the row (annotation payloads,
+# identity text), our own vocabulary aside, joins the cover after the quotes and ships "" if it would pass the limit
+# (D808, stack/fold/dataset.py Projection.guard).
+bibliographic_paths:
+  - title
+  - authors[].name
+  - authors[].affiliation_raw
+  - identity.members[].title
 
 # Prose scrub (both variants): pipeline jargon in model notes replaced by the public term. The build checks that no
 # `forbid` pattern is left in any shipped string of the path.

@@ -138,13 +138,16 @@ triage verdict (decision or D724 signal): P / R / F1 and the confusion table by 
 - The title and doc_type fixes (D768) are `fields` overrides: the file is unit-tested (it loads through the add's
   reader, each value follows its rule against the stored value its note records, gather applies an entry); the
   operator adds it to the store before the first build of plan revision 11 (the plan's header).
-- The public disclosure rules (D808, `stack/fold/disclosure.py`): the quotation budget (floor, budget, ceiling,
-  order, duplicates, omission, the withheld abstract's covered share), the email redaction and its independent check,
-  the stripped override values and the upload's policy-version guard are unit-tested (`tests/test_disclosure.py`,
-  `tests/test_dataset_release.py`, `tests/test_scheduled_run.py`) and run end to end in the synthetic export
-  (`tests/test_release_format.py`). The budget's invariants are checked again on each row's output during the export,
-  where the internal abstract and the text length exist; the written bundle's check verifies structure only (cuts,
-  `quote_chars`) and scans every shipped file for addresses.
+- The public disclosure rules (D808, D809, `stack/fold/disclosure.py`): the quotation budget (floor, budget, ceiling,
+  order, duplicates, omission, the withheld abstract's covered share), the abstract guard over every document-derived
+  string of a row (bibliographic text first), the email redaction and its independent detector (a count and a warning,
+  never a failure), the stripped override values and the upload's policy-version guard are unit-tested
+  (`tests/test_disclosure.py`, `tests/test_dataset_release.py`, `tests/test_scheduled_run.py`) and run end to end in
+  the synthetic export (`tests/test_release_format.py`). The budget's invariants are checked again on each row's
+  output during the export, where the internal abstract and the text length exist; the written bundle's check
+  verifies structure only (cuts, `quote_chars`). Not covered (D809 residuals): unconventional address forms, quotes
+  under four words and unspaced CJK in the abstract measure, model-written prose length, maintainers' override notes
+  (refused above 400 characters, not measured), and what several releases quote together.
 - Not implemented: `annotations.other[]` payloads (refused while `json_kinds` is empty); a two-release stacking
   fixture; an end-to-end test on a synthetic store (the projection is unit-tested on synthetic rows; the whole export
   runs only on a real build); an upload by `stack export` (only the cycle's `upload` uploads); nothing uploads to

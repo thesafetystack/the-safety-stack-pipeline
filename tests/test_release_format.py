@@ -425,9 +425,13 @@ def test_the_checker_passes_on_the_synthetic_export(public: Path, m: ds.Mapping_
     # D808: the quotation budget (L on the even rows only) and the email redaction, end to end
     qp, em = doc["policy"]["quote_policy"], doc["policy"]["emails"]
     assert qp["version"] == 2 and qp["rows_without_length"] == 6 and qp["quotes"]["kept"] > 0
-    assert em["redacted"] == 1 and qp["abstract_share"] == 0.3 and qp["copied_text_emptied"] == 0
+    assert em["redacted"] == 1 and em["detector_hits"] == 0 and qp["abstract_share"] == 0.3
+    assert qp["copied_text_emptied"] == 0
     fmt = (public / "FORMAT.md").read_text()
-    assert "repeat at most 30% of it, counted in runs of 4 consecutive words" in fmt and "replaced by `[email]`" in fmt
+    assert "repeat at most 30% of it (more only where the bibliographic text alone does), counted in runs of 4 " \
+        "consecutive words" in fmt and "replaced by `[email]`" in fmt
+    assert "We remove the email addresses we detect" in card and "ORCID iDs" in card
+    assert (ds.DATA_REPO / "tools" / "LICENSE").read_text() in (public / "LICENSE").read_text()  # the MIT notice
     assert "Not limited per document: titles" in fmt
     rows = pq.read_table(public / "data" / "corpus.parquet", columns=["title", "annotations"]).to_pylist()
     assert rows[1]["title"] == "Paper 1, write to [email]"
@@ -512,7 +516,7 @@ def test_the_internal_export_passes_too(tmp_path: Path) -> None:
     # D808: the internal card and FORMAT say what this variant does; its rows keep addresses and whole quotes
     card, fmt = (out / "README.md").read_text(), (out / "FORMAT.md").read_text()
     assert "This variant keeps email addresses" in card and "ships quotes whole" in card
-    assert "Email addresses are removed" not in card and "limited per document" not in card.split("**Personal")[0]
+    assert "We remove the email addresses" not in card and "limited per document" not in card.split("**Personal")[0]
     assert "`[email]`" not in fmt and "policy.quote_policy" not in fmt
     rows = pq.read_table(out / "data" / "corpus.parquet", columns=["title"]).to_pylist()
     assert rows[1]["title"] == "Paper 1, write to alice@example.org"
@@ -546,10 +550,6 @@ def _dup(rows: list[dict[str, Any]]) -> None:
     rows[1]["doc_id"] = rows[0]["doc_id"]
 
 
-def _email(rows: list[dict[str, Any]]) -> None:
-    rows[2]["title"] = "Paper 2, write to bob@example.org"
-
-
 def _dangling_cut(rows: list[dict[str, Any]]) -> None:  # a cut of a quote the row does not ship
     rows[0]["release"]["cuts"].append({"path": "annotations.screen.payload.quotes[7].text", "chars": 400})
 
@@ -580,8 +580,6 @@ NEGATIVE: list[tuple[str, Callable[[Path], None], str]] = [
      f"{ds.VALIDATOR_FILE}: not the vendored data repository's file"),
     ("a dangling cut", lambda r: (_rewrite_corpus(r, _dangling_cut), _rehash(r)),
      "1 release.cuts entries that do not match their string"),
-    ("an email address", lambda r: (_rewrite_corpus(r, _email), _rehash(r)),
-     "1 email address(es) in the shipped files (D808): data/corpus.parquet title (1)"),
 ]
 
 

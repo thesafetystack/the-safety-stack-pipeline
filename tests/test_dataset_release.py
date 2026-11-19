@@ -1323,6 +1323,15 @@ def test_relevance_records_come_before_the_screen_whose_quotes_ride_free(m: Mapp
     assert p.quotes_lost == {"shallow_review_relevance": 1}
 
 
+def _shipped(m: Mapping_, row: dict[str, Any], projected: dict[str, Any] | None = None, variant: str = "public",
+             inp: Inputs | None = None) -> tuple[Projection, dict[str, Any]]:
+    """``row`` through :meth:`Projection.row`, the row-level fields replaced by ``projected``."""
+    p = _proj(m, inp or _inputs([]), variant)
+    base = projected if projected is not None else {}
+    p._project = lambda n, obj, ctx: {**copy.deepcopy(base), "release": {"cuts": ctx["cuts"]}}  # type: ignore
+    return p, p.row(row)
+
+
 def test_copied_text_counts_in_the_withheld_abstract_union(m: Mapping_) -> None:
     """Model-written prose and surfaces join the quotes' 4-gram union of a withheld abstract (D808); one that would
     push it over 30 % ships empty and is counted."""
@@ -1331,12 +1340,16 @@ def test_copied_text_counts_in_the_withheld_abstract_union(m: Mapping_) -> None:
     row = _quoted_row(["unrelated words here and there"], abstract=abstract)
     row["annotations"]["screen"]["payload"]["reasoning"] = f"The abstract says: {half}"
     row["annotations"]["model_roles"]["payload"]["models"][0]["note"] = "a0 a1 a2 a3 a4 a5"  # 6 % of it: stays
-    p, ann, _ctx = _budgeted(m, row)
-    assert ann["screen"]["payload"]["reasoning"] == "" and p.quote_counts["copied_emptied"] == 1
+    p, out = _shipped(m, row)
+    ann = out["annotations"]
+    assert ann["screen"]["payload"]["reasoning"] == ""
+    assert p.copied_emptied == {"annotations.screen.payload.reasoning": 1}
     assert ann["model_roles"]["payload"]["models"][0]["note"] == "a0 a1 a2 a3 a4 a5"
-    assert ds.quote_policy_record(p)["quote_policy"]["copied_text_emptied"] == 1
-    p, ann, _ctx = _budgeted(m, _quoted_row([], abstract=abstract), "internal")  # the internal variant: no rule
-    assert not p.quote_counts
+    rec = ds.quote_policy_record(p)["quote_policy"]
+    assert rec["copied_text_emptied"] == 1
+    assert rec["copied_text_emptied_by_path"] == {"annotations.screen.payload.reasoning": 1}
+    p, out = _shipped(m, _quoted_row([], abstract=abstract), variant="internal")  # the internal variant: no rule
+    assert not p.quote_counts and not p.copied_emptied
 
 
 def test_the_abstract_guard_reads_the_final_strings(m: Mapping_) -> None:
@@ -1348,19 +1361,21 @@ def test_the_abstract_guard_reads_the_final_strings(m: Mapping_) -> None:
     filler = " ".join(f"f{i:03d}" for i in range(70))  # 349 characters of other words
     row["annotations"]["model_regexp_matches"]["payload"]["ambiguous"] = [
         {"text": filler + " " + abstract, "candidates": [], "strength": "weak"}]
-    p, ann, ctx = _budgeted(m, row)
-    assert ann["model_roles"]["payload"]["models"][0]["note"] == "" and p.quote_counts["copied_emptied"] == 1
+    p, out = _shipped(m, row)
+    ann, cuts = out["annotations"], out["release"]["cuts"]
+    assert ann["model_roles"]["payload"]["models"][0]["note"] == ""
+    assert p.copied_emptied.total() == 1
     amb = ann["model_name_matches"]["payload"]["ambiguous"][0]["text"]
-    assert p.cuts_total == len(ctx["cuts"]) == 1
+    assert p.cuts_total == len(cuts) == 1
     # a cut surface the guard empties leaves no cut entry and no count
     row2 = _quoted_row([], abstract=filler)
     row2["annotations"]["model_regexp_matches"]["payload"]["ambiguous"] = [
         {"text": filler + " tail", "candidates": [], "strength": "weak"}]
-    p2, ann2, ctx2 = _budgeted(m, row2)
-    assert ann2["model_name_matches"]["payload"]["ambiguous"][0]["text"] == ""
-    assert ctx2["cuts"] == [] and p2.cuts_total == 0
+    p2, out2 = _shipped(m, row2)
+    assert out2["annotations"]["model_name_matches"]["payload"]["ambiguous"][0]["text"] == ""
+    assert out2["release"]["cuts"] == [] and p2.cuts_total == 0
     assert amb.endswith("…") and "Catalogue" not in amb
-    assert [c["path"] for c in ctx["cuts"]] == ["annotations.model_name_matches.payload.ambiguous[0].text"]
+    assert [c["path"] for c in cuts] == ["annotations.model_name_matches.payload.ambiguous[0].text"]
 
 
 def test_flags_are_surfaces_in_the_corpus(m: Mapping_) -> None:
@@ -1373,13 +1388,115 @@ def test_flags_are_surfaces_in_the_corpus(m: Mapping_) -> None:
     assert {"path": "annotations.safety_techniques.payload.flags[1]", "chars": 409} in ctx["cuts"]
 
 
+ABSTRACT7 = "We measure harm in open models."  # review7's withheld abstract
+
+
+def test_the_abstract_guard_reads_every_document_derived_string(m: Mapping_) -> None:
+    """review7 P1: names as written (models, techniques, variants), a member's withdrawal reason and a flag's suffix
+    are guarded like the surfaces; a flag keeps its bare name; our own vocabulary (slugs, ids) is not measured."""
+    row = _quoted_row([], abstract=ABSTRACT7)
+    a = row["annotations"]
+    a["model_roles"]["payload"]["extra_models"] = [
+        {"name_as_written": ABSTRACT7, "quote": ABSTRACT7, "roles": MODEL_ROLES, "node_id": None}]
+    a["model_roles"]["payload"]["variant_models"] = [
+        {"base_node_id": "gpt-4", "names_as_written": [ABSTRACT7, "GPT-4 tuned"], "quote": "q", "roles": MODEL_ROLES}]
+    a["technique_staged"]["payload"]["extra_techniques"] = [
+        {"name_as_written": ABSTRACT7, "gloss": "g", "hint_technique": "we-measure-harm-in-open-models",
+         "roles": ROLES, "quotes": [], "flags": []}]
+    a["technique_staged"]["payload"]["flags"] = ["menu_gap:" + ABSTRACT7, "no_techniques_found"]
+    projected = {"identity": {"members": [{"title": "Another title", "withdrawn_reason": ABSTRACT7}]}}
+    p, out = _shipped(m, row, projected)
+    mr, st = out["annotations"]["model_roles"]["payload"], out["annotations"]["safety_techniques"]["payload"]
+    assert mr["extra_models"][0]["quote"] == "" and mr["extra_models"][0]["name_as_written"] == ""
+    assert mr["variant_models"][0]["names_as_written"] == ["", "GPT-4 tuned"]
+    assert st["extra_techniques"][0]["name_as_written"] == ""
+    assert st["extra_techniques"][0]["hint_technique"] == "we-measure-harm-in-open-models"  # a slug: ours
+    assert st["flags"] == ["menu_gap", "no_techniques_found"]
+    assert out["identity"]["members"][0] == {"title": "Another title", "withdrawn_reason": ""}
+    assert p.copied_emptied == {"annotations.model_roles.payload.extra_models[].name_as_written": 1,
+                                "annotations.model_roles.payload.variant_models[].names_as_written[]": 1,
+                                "annotations.safety_techniques.payload.extra_techniques[].name_as_written": 1,
+                                "annotations.safety_techniques.payload.flags[]": 1,
+                                "identity.members[].withdrawn_reason": 1}
+    p, out = _shipped(m, row, projected, variant="internal")
+    assert out["annotations"]["model_roles"]["payload"]["extra_models"][0]["name_as_written"] == ABSTRACT7
+
+
+def test_bibliographic_text_counts_first_and_always_ships(m: Mapping_) -> None:
+    """The title ships whatever it repeats of a withheld abstract and counts first: quotes and other strings get what
+    is left of the 30 %; a string that repeats only what the title already shows is not refused for it."""
+    abstract = " ".join(f"a{i}" for i in range(100))
+    title = " ".join(f"a{i}" for i in range(25))  # 25 % of it
+    q1, q2 = " ".join(f"a{i}" for i in range(40, 50)), " ".join(f"a{i}" for i in range(60, 70))
+    row = _quoted_row([q1, q2], abstract=abstract)
+    row["metadata"]["title"] = title
+    row["annotations"]["screen"]["payload"]["reasoning"] = "The paper says " + " ".join(f"a{i}" for i in range(10))
+    p, out = _shipped(m, row, {"title": title})
+    assert out["title"] == title
+    assert [q["text"] for q in out["annotations"]["safety_techniques"]["payload"]["techniques"][0]["quotes"]] == []
+    assert out["annotations"]["screen"]["payload"]["reasoning"].startswith("The paper says a0")  # nothing new
+    assert not p.problems
+    row["metadata"]["title"] = None
+    p, out = _shipped(m, row, {"title": None})  # no title: the quotes fit (20 % < 30 %)
+    assert len(out["annotations"]["safety_techniques"]["payload"]["techniques"][0]["quotes"]) == 2
+    # a title over the limit on its own: what repeats only it ships, anything new does not
+    long_title = " ".join(f"a{i}" for i in range(45))
+    row = _quoted_row([" ".join(f"a{i}" for i in range(5, 15))], abstract=abstract)
+    row["metadata"]["title"] = long_title
+    row["annotations"]["screen"]["payload"]["reasoning"] = "The paper says " + " ".join(f"a{i}" for i in range(10))
+    row["annotations"]["text_usability"]["payload"]["note"] = " ".join(f"a{i}" for i in range(60, 66))
+    p, out = _shipped(m, row, {"title": long_title})
+    ann = out["annotations"]
+    assert out["title"] == long_title and not p.problems
+    assert [q["text"] for q in ann["safety_techniques"]["payload"]["techniques"][0]["quotes"]] == [
+        " ".join(f"a{i}" for i in range(5, 15))]
+    assert ann["screen"]["payload"]["reasoning"].startswith("The paper says a0")
+    assert ann["text_usability"]["payload"]["note"] == ""
+
+
+def test_an_address_only_in_a_withheld_abstract_is_not_counted(m: Mapping_) -> None:
+    """review7 P3: the abstracts are NULL before the redaction runs."""
+    row = _quoted_row(["a quote"], abstract="Write to alice@example.org.")
+    row["annotations"]["translation"] = _rec("translation", payload={
+        "from_lang": "zh", "title_en": "T", "abstract_en": "Write to bob@example.org.", "method": "llm"})
+    row["annotations"]["translation"]["basis_kind"] = "fields"
+    row["metadata"]["fields_digest"] = TEXT
+    p, out = _shipped(m, row, {"abstract": "Write to alice@example.org."})
+    assert out["abstract"] is None and out["annotations"]["translation"]["payload"]["abstract_en"] is None
+    assert p.emails_redacted == 0
+
+
+def test_an_address_in_an_identifier_is_redacted_not_refused(m: Mapping_) -> None:
+    """D809: identifiers follow the redaction like every other string (counted); a release never stops for one."""
+    projected = {"authors": [{"name": "A", "orcid": "ada@example.org"}],
+                 "identity": {"members": [{"key_kind": "url", "key_value": "https://x.org/people/eve@example.org"}]}}
+    p, out = _shipped(m, _quoted_row(["a quote"]), projected)
+    assert out["authors"][0]["orcid"] == "[email]"
+    assert out["identity"]["members"][0]["key_value"] == "https://x.org/people/[email]"
+    assert p.emails_redacted == 2
+
+
+def test_email_findings_are_counted_by_place(tmp_path: Path) -> None:
+    """D809: the broader detector reports where it still finds an address (for release.json and a warning)."""
+    (tmp_path / "data").mkdir()
+    titles = pa.table({"title": ["By { alice, bob }@example.org", "clean"]})  # the redaction leaves this group
+    pq.write_table(titles, tmp_path / "data" / "corpus.parquet")
+    (tmp_path / "README.md").write_text(f"Write to {ds.disclosure.CONTACT_ADDRESS} or x@example.org.")
+    assert ds.email_findings(tmp_path) == {"data/corpus.parquet title": 1, "README.md": 1}
+
+def test_the_bundle_licence_carries_the_checkers_mit_notice() -> None:
+    """review7 P2: the shipped LICENSE includes the checker's copyright and permission notice verbatim."""
+    notice = (REPO_ROOT / "data-repo" / "tools" / "LICENSE").read_text("utf-8")
+    assert "Copyright (c)" in notice and notice in (DATASET_DIR / "LICENSE").read_text("utf-8")
+
+
 def test_the_card_states_limits_and_emails_by_variant() -> None:
     pub = {"quote_policy": {"version": 2, "floor_cut": 150, "budget": {"chars": 2000, "share": 0.15},
                             "ceiling": {"chars": 6000, "share": 0.25}, "abstract_share": 0.3, "shingle_words": 4},
            "emails": {"redacted": 1}}
     got = ds.card_disclosure(pub)
     assert "6,000 characters and 25%" in got["quote_limits"] and "not a legal assessment" in got["quote_limits"]
-    assert got["email_note"].startswith("Email addresses are removed")
+    assert got["email_note"].startswith("We remove the email addresses we detect")
     got = ds.card_disclosure({"quote_cap_chars": None})
     assert got == {"quote_limits": "This variant ships quotes whole; it is the maintainers' and is not distributed.",
                    "email_note": "This variant keeps email addresses as the documents have them."}
@@ -1420,11 +1537,8 @@ def test_row_redacts_emails_before_cutting_and_drops_urls_with_one(m: Mapping_) 
     q = out["annotations"]["safety_techniques"]["payload"]["techniques"][0]["quotes"][0]["text"]
     assert "[email]" in q and "@" not in q
     assert p.emails_redacted == 2 and p.urls_dropped == 2
-    nested = "https://r.example.org/?u=https%3A%2F%2Fexample.org%2Feve%2540example.org"  # encoded twice
-    for key in ("eve@example.org", "https://example.org/people/eve%40example.org", nested):
-        projected["identity"]["members"][0]["key_value"] = key
-        with pytest.raises(DatasetError, match="identity.members\\[\\].key_value: an identifier holds an email"):
-            p.row(_quoted_row([long]))
+    projected["identity"]["members"][0]["key_value"] = "eve@example.org"  # an identifier: redacted too (D809)
+    assert p.row(_quoted_row([long]))["identity"]["members"][0]["key_value"] == "[email]"
     q_internal = _proj(m, _inputs([]), "internal")
     q_internal._project = lambda n, obj, ctx: copy.deepcopy(projected)  # type: ignore[method-assign]
     assert q_internal.row(_quoted_row([long]))["title"] == "Reply to alice@example.org"  # internal: as stored
@@ -1451,7 +1565,7 @@ def test_public_overrides_ship_no_quote_or_abstract(m: Mapping_, policy: ds.Over
                                           "published_at": "2019-01-01", "flags": ["accept"], "note": "n"})
     ovs = [tr, ab, qf, vf, rf, mm, tf, ff, gone, ms]
     pub, intern = _proj(m, _inputs(ovs)), _proj(m, _inputs(ovs), "internal")
-    assert ds.overrides_value(pub, tr)[0] == {"from_lang": "zh", "title_en": "T", "abstract_en": "", "method": "llm"}
+    assert ds.overrides_value(pub, tr)[0] == {"from_lang": "zh", "title_en": "", "abstract_en": "", "method": "llm"}
     assert ds.overrides_value(intern, tr)[0]["abstract_en"] == "The abstract."
     assert ds.overrides_value(pub, ab) == ("", []) and ds.overrides_value(intern, ab)[0] == "An abstract by hand."
     assert ds.overrides_value(pub, qf) == ([{"text": "", "offset": 0}], [])
@@ -1460,20 +1574,36 @@ def test_public_overrides_ship_no_quote_or_abstract(m: Mapping_, policy: ds.Over
     assert ds.overrides_value(pub, mm)[0] == [{"node_id": "gpt-4", "surfaces": [], "strength": "strong"}]
     assert ds.overrides_value(pub, tf)[0] == [
         {"slug": "rlhf", "roles": ROLES, "quotes": [{"text": "", "verified": True}], "note": "",
-         "flags": ["quote_unverified", "variant"]}]  # a flag ships its bare name
+         "flags": ["quote_unverified", "variant"]}]  # a flag ships its bare name, wording dropped
     assert ds.overrides_value(pub, ff)[0] == ["no_techniques_found", "menu_gap"]
     assert ds.overrides_value(intern, ff)[0] == ff.value
     assert ds.overrides_value(pub, gone)[0] == [{"text": ""}]  # a document not in the release: the same
-    assert ds.overrides_value(pub, ms)[0] == {"url": "https://example.org/p", "title": "A Title", "authors": [],
-                                              "published_at": "2019-01-01", "flags": ["accept"]}
+    assert ds.overrides_value(pub, ms)[0] == {"url": "https://example.org/p", "title": "", "authors": [],
+                                              "published_at": "2019-01-01", "flags": ["accept"]}  # title: the row's
     assert ds.overrides_value(intern, ms)[0]["authors"] == ["A. B"]
-    bad = dataclasses_replace(ms, override_id="ov-s2", key="url=https://example.org/people/alice%40lab.org")
-    with pytest.raises(DatasetError, match="key: an identifier holds an email"):
-        ds.export_overrides(pub, policy, ds.ActiveOverrides([(bad, "r1")], 1, 0, [], [], []))
+    bad = dataclasses_replace(ms, override_id="ov-s2", key="url=https://example.org/people/alice@lab.org")
+    line = ds.export_overrides(pub, policy, ds.ActiveOverrides([(bad, "r1")], 1, 0, [], [], []))[0]
+    assert line["key"] == "url=https://example.org/people/[email]"  # redacted, not refused (D809)
     act = ds.ActiveOverrides([(vf, "r1")], 1, 0, [], [], [])
     line = ds.export_overrides(pub, policy, act)[0]
-    assert line["note"] == "Kept after a request from [email]." and pub.emails_redacted == 1
+    assert line["note"] == "Kept after a request from [email]." and pub.emails_redacted == 2
     assert ds.export_overrides(intern, policy, act)[0]["note"] == "Kept after a request from x@example.org."
+
+
+def test_public_override_flags_and_titles(m: Mapping_) -> None:
+    """review7 P1/P2: a long flag without a colon ships ""; catalogue ids after a model flag stay, document wording
+    goes; a translation's title_en that copies the withheld abstract ships "" (titles are the corpus row's); a label
+    that is not one short token ships ""."""
+    pub = _proj(m, _inputs([]))
+    fl = _ov("ov-fl", "model_roles", "field", field="flags",
+             value=["x" * 7000, "subsumed:gpt-4:gpt-4o", "subsumed:claude:Claude 3", "bib_only:gpt-4", "Not A Slug"])
+    assert ds.overrides_value(pub, fl)[0] == ["", "subsumed:gpt-4:gpt-4o", "subsumed", "bib_only:gpt-4", ""]
+    tr = _ov("ov-tr7", "translation", "row", value={"from_lang": "zh", "title_en": ABSTRACT7, "abstract_en": ABSTRACT7,
+                                                    "method": "llm"})
+    assert ds.overrides_value(pub, tr)[0] == {"from_lang": "zh", "title_en": "", "abstract_en": "", "method": "llm"}
+    vd = _ov("ov-vd", "sr_relevance", "field", field="verdict", value="relevant because " + ABSTRACT7)
+    assert ds.overrides_value(pub, vd)[0] == ""
+    assert ds.flag_label("menu_gap:" + ABSTRACT7) == "menu_gap"
 
 
 def test_quote_unverified_sentence() -> None:

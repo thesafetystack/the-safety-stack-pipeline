@@ -142,6 +142,8 @@ def export(
         except FoldError as exc:
             fail(str(exc))
         doc = res.release_json
+        for w in res.warnings:
+            typer.echo(f"warning: {w}", err=True)
         typer.echo(f"dataset {doc['variant']} {doc['release_id']}: {doc['rows']['out']} rows, "
                    f"{len(doc['files'])} files -> {res.path}")
         return
