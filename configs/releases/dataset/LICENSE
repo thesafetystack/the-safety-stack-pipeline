@@ -8,8 +8,8 @@ Not covered by this dedication, and not licensed by us:
 - third-party material, wherever it occurs in the release: titles and bibliographic records as their providers
   publish them (OpenAlex, arXiv, Semantic Scholar, the forums, the publishers' pages), abstracts, the quoted excerpts
   and verbatim surfaces in the annotations, and any other copied document text. It remains its owners', under their
-  terms. The quotes are short excerpts, each in the row of the document it comes from, and limited per document
-  (FORMAT.md, "Quotes");
+  terms. The quotes are excerpts, each in the row of the document it comes from; in the public variant they are
+  short and limited per document (FORMAT.md, "Quotes");
 - the release checker, tools/release-validator.py, which is MIT-licensed, as in the data repository.
 
 --------------------------------------------------------------------------------

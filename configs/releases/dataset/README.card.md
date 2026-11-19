@@ -146,15 +146,13 @@ word in [VOCABULARY.md](VOCABULARY.md).
 What we made — the annotations, the identity and provenance structure, the release metadata, the taxonomies and the
 documentation — is released under CC0 1.0, to the extent we hold copyright or database rights in it. Third-party
 material, wherever it occurs in the release (titles and bibliographic records as their providers publish them, quoted
-excerpts, verbatim surfaces), is not licensed by us and remains its owners'. Quotes are short excerpts, each in the
-row of the document it comes from, and limited per document (FORMAT.md, "Quotes"); the limits are our own controls on
-how much of a work the release quotes. The release checker in `tools/` is MIT-licensed, as in the data repository.
+excerpts, verbatim surfaces), is not licensed by us and remains its owners'. {{quote_limits}} The release checker in
+`tools/` is MIT-licensed, as in the data repository.
 See `LICENSE`. Releases are dated and planned weekly; each is a revision of this repository tagged `release-<date>`.
 
 **Personal data.** The rows carry authors' names and affiliations as the works and their indexes publish them, for
 one purpose: a research index of technical AI-safety literature, in which each work is found and attributed by its
-authors. Email addresses are removed from everything the release ships (each becomes `[email]`; a link that carries
-one is left out). To have a record corrected, or to object to or ask for the removal of personal data about you,
+authors. {{email_note}} To have a record corrected, or to object to or ask for the removal of personal data about you,
 write to info@thesafetystack.ai or use the issue forms above.
 
 {{variant_note}}
