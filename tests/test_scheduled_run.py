@@ -238,10 +238,15 @@ class FakeHf:
         raise AssertionError("the job must never change a repo's visibility")
 
 
-def _staged(ops: Any, rid: str, ns: str = "") -> None:
+def _staged(ops: Any, rid: str, ns: str = "", public_policy: Any = 2) -> None:
+    """A staged release of one release.json per variant; the public one names quote policy ``public_policy``
+    (D808; ``...`` leaves the key out)."""
     files = {}
     for v in sr.VARIANTS:
-        data = f'{{"variant": "{v}"}}'.encode()
+        doc: dict[str, Any] = {"variant": v}
+        if v == "public" and public_policy is not ...:
+            doc["policy"] = {"quote_policy": {"version": public_policy}}
+        data = json.dumps(doc).encode()
         ops.b.put(f"{ns}releases/{rid}/cyc/{v}/release.json", data)
         files[v] = [{"path": "release.json", "bytes": len(data), "sha256": sr.hashlib.sha256(data).hexdigest()}]
     ops.put_json(f"{ns}releases/{rid}/manifest.json", {
@@ -336,6 +341,17 @@ def test_upload_refuses_a_release_its_checker_refuses(hf: Any, monkeypatch: pyte
     assert checked == ["internal", "public"] and hf.uploads == []  # both checked before anything goes up
     assert "ERROR: public: the release checker (data-repo/tools/release-validator.py --rows all) refuses it" in \
         capsys.readouterr().out
+
+
+@pytest.mark.parametrize("version", [..., None, 1, 3, "2", 2.0])
+def test_upload_refuses_a_public_release_without_a_supported_quote_policy(hf: Any, version: Any,
+                                                                         capsys: pytest.CaptureFixture[str]) -> None:
+    """D808: checked during validation, before either commit; the internal variant is not checked for it."""
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _staged(ops, "2026-11-01", public_policy=version)
+    assert sr.upload(sr.Settings.from_env(), ops, "2026-11-01", dry=False) == sr.EXIT_FAILED
+    assert hf.uploads == [] and hf.commits == []
+    assert "ERROR: public: release.json policy.quote_policy.version is" in capsys.readouterr().out
 
 
 def _stage_dir(ops: Any, rid: str, dirs: dict[str, Path]) -> None:
@@ -491,7 +507,9 @@ def _canned_cycle(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, builds: list[
                                 "coverage": {"screen": {"items": 100, "scored": 98, "dropped": {"missing": 2}}}},
                  "triage_vs_screen": {"overall": {"n": 10, "tp": 4, "precision": 0.5, "recall": 0.8, "f1": 0.6154},
                                       "by_kind": {"signal": {"n": 6, "precision": 0.4, "recall": 0.75, "f1": 0.52}}}}
-            (out / "release.json").write_text(_json.dumps({"hf_repo": f"org/{v}", "rows": {"out": 7}, "quality": q}))
+            pol = {"quote_policy": {"version": 2}} if v == "public" else {}  # D808: the upload checks it
+            (out / "release.json").write_text(_json.dumps({"hf_repo": f"org/{v}", "rows": {"out": 7}, "quality": q,
+                                                           "policy": pol}))
             (out / "data" / "corpus.parquet").write_bytes(b"rows")
             return sr.Result(0, "", [], 1.0)
         raise AssertionError(args)

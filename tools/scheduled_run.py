@@ -17,7 +17,7 @@ releasable) build it exports
 both dataset variants (``stack export --config dataset-public|dataset-internal``), checks them, stages them under the
 ops prefix and uploads them to their Hugging Face repos (every successful weekly run publishes). The summary's ``release.quality`` (:func:`release_quality_summary`) carries the release's judge-eval
 coverage and triage's agreement with the screen from its ``release.json`` (D728). The upload refuses, and the cycle fails and alerts, when a staged variant fails its own
-release checker (``data-repo/tools/release-validator.py --rows all``, the image's, to which the copy it ships must be identical; D804, D805) or the internal variant's repo is not private; it
+release checker (``data-repo/tools/release-validator.py --rows all``, the image's, to which the copy it ships must be identical; D804, D805), the public variant names no supported quotation policy (D808) or the internal variant's repo is not private; it
 never changes a repo's visibility (the public repo is uploaded to whatever its visibility). Every ``stack`` command
 is a child process of this one; nothing here writes the store itself.
 
@@ -1520,6 +1520,22 @@ CHECK_TIMEOUT_S = 1800
 OWN_CHECKER = REPO / "data-repo" / "tools" / "release-validator.py"
 #: The only environment the checker gets: no keys, no store settings.
 CHECK_ENV = ("PATH", "HOME", "TMPDIR")
+#: The quotation policies a public variant may be uploaded under (D808): its ``release.json``
+#: ``policy.quote_policy.version`` (stack/fold/disclosure.py); a public release without one, staged before D808 among
+#: them, uploads nothing. The internal variant is not checked for it.
+PUBLIC_QUOTE_POLICIES = frozenset({2})
+
+
+def quote_policy_problem(d: Path) -> str | None:
+    """Why the staged public variant ``d`` may not be uploaded under :data:`PUBLIC_QUOTE_POLICIES`, else None."""
+    try:
+        doc = json.loads((d / "release.json").read_text("utf-8"))
+        ver = ((doc.get("policy") or {}).get("quote_policy") or {}).get("version")
+    except (OSError, ValueError, AttributeError) as exc:
+        return f"release.json unreadable ({type(exc).__name__})"
+    if type(ver) is int and ver in PUBLIC_QUOTE_POLICIES:
+        return None
+    return f"release.json policy.quote_policy.version is {ver!r}, not one of {sorted(PUBLIC_QUOTE_POLICIES)}"
 
 
 def check_staged(d: Path) -> list[str]:
@@ -1559,7 +1575,8 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
     tagged), on the repo's head as read just before (``parent_commit``: a concurrent push fails the commit), and
     the commit is tagged :func:`release_tag` (an existing tag is a WARN, never moved). Before anything is uploaded,
     both variants are fetched from the staging prefix, checked against the manifest's sha256 and for the bucket name,
-    and each goes through the release checker (:func:`check_staged`, D804, D805); any failure uploads nothing."""
+    and each goes through the release checker (:func:`check_staged`, D804, D805), the public one also through
+    :func:`quote_policy_problem` (D808); any failure uploads nothing."""
     man = ops.get_json(f"{ns}releases/{rid}/manifest.json")
     if man is None:
         log(f"REFUSED: no staged release {rid} ({ns}releases/{rid}/manifest.json on the ops prefix)")
@@ -1616,6 +1633,11 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
         if problems:
             log(f"ERROR: {v}: the release checker (data-repo/tools/release-validator.py --rows all) refuses it; "
                 "nothing uploaded: " + " | ".join(problems[-8:]))
+            return EXIT_FAILED
+        why = quote_policy_problem(d) if v == "public" else None
+        if why:
+            log(f"ERROR: public: {why} (D808): nothing uploaded; export the release again under the current policy, "
+                "with a new release id")
             return EXIT_FAILED
         log(f"release {rid} {v}: data-repo/tools/release-validator.py --rows all: valid")
     for v in ("internal", "public"):
