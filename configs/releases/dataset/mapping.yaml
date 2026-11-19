@@ -44,9 +44,10 @@ variants:
     texts: not_distributed       # release.text = not_distributed; no texts table
     quote_cap_chars: 300         # every text class
     # D808 (stack/fold/disclosure.py): a per-document quotation budget over quote_paths. L = the converted text's
-    # length in characters (quality.metrics.chars; none: no quotes). Pass 1: one quote per annotation cut to
-    # floor_cut under min(ceiling.chars, ceiling.share*L); pass 2: the rest at the cap under min(budget.chars,
-    # budget.share*L). A withheld abstract may be covered at most abstract_share (word shingle_words-grams).
+    # length in characters (quality.metrics.chars; none: no quotes). Pass 1: per annotation its shortest quote cut
+    # to floor_cut under min(ceiling.chars, ceiling.share*L); pass 2, round-robin under min(budget.chars,
+    # budget.share*L): that quote again at the cap, then the others at the cap. A withheld abstract may be covered at
+    # most abstract_share (word shingle_words-grams).
     # release.json policy.quote_policy records it; the upload refuses a public release without a supported version.
     quote_policy:
       version: 2

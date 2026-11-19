@@ -337,8 +337,8 @@ def test_unknown_other_kind_is_refused(m: Mapping_) -> None:
 
 @pytest.mark.slow
 def test_cap_cuts_and_counts(m: Mapping_) -> None:
-    """The public variant's only quote is its annotation's floor quote (D808: cut to 150, not to the 300 cap);
-    the internal variant keeps it whole."""
+    """The public variant's only quote is its annotation's floor quote, upgraded to the 300 cap where the budget
+    allows (D808); the internal variant keeps it whole."""
     for variant, cut in (("public", True), ("internal", False)):
         p = _proj(m, _inputs([]), variant)
         row = _row()
@@ -349,7 +349,7 @@ def test_cap_cuts_and_counts(m: Mapping_) -> None:
         note = ann["model_roles"]["payload"]["models"][0]["note"]
         assert note == "graded on the catalogue entry gpt-4"  # scrubbed in both variants
         if cut:
-            assert len(q) <= 150 and q.endswith("…")
+            assert 150 < len(q) <= 300 and q.endswith("…")
             assert ctx["cuts"] == [{"path": "annotations.safety_techniques.payload.techniques[0].quotes[0].text",
                                     "chars": 400}]
             assert ctx["quote_chars"] == len(q) and p.quote_counts["kept"] == 1
@@ -1283,13 +1283,13 @@ def _budgeted(m: Mapping_, row: dict[str, Any], variant: str = "public") -> tupl
 
 
 def test_budget_cuts_index_the_shipped_list(m: Mapping_) -> None:
-    """A quote the withheld abstract's rule refuses leaves its list; the next one is the floor quote, cut to 150, and
-    its cut's path is its index in the shipped list."""
+    """A quote the withheld abstract's rule refuses leaves its list; the next one is the floor quote, upgraded to the
+    cap, and its cut's path is its index in the shipped list."""
     abstract = " ".join(f"a{i}" for i in range(80))
     kept = " ".join(f"k{i}" for i in range(80))
     p, ann, ctx = _budgeted(m, _quoted_row([abstract, kept], abstract=abstract))
     qs = ann["safety_techniques"]["payload"]["techniques"][0]["quotes"]
-    assert [q["text"] for q in qs] == [ds.cut_string(kept, 150)]
+    assert [q["text"] for q in qs] == [ds.cut_string(kept, 300)]
     assert ctx["cuts"] == [{"path": "annotations.safety_techniques.payload.techniques[0].quotes[0].text",
                             "chars": len(kept)}]
     assert ctx["quote_chars"] == len(qs[0]["text"]) and not p.problems
