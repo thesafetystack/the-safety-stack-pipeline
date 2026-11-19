@@ -19,6 +19,13 @@ VARIANT = "annotations.model_roles.payload.variant_models[].quote"
 PATHS = [SCREEN, TECH, VARIANT]
 
 
+def nested(s: str, n: int) -> str:
+    """``s`` percent-encoded ``n`` times over."""
+    for _ in range(n):
+        s = "".join(f"%{b:02X}" for b in s.encode())
+    return s
+
+
 def words(tag: str, n: int) -> str:
     """``n`` distinct words (no 4-gram shared with another tag's)."""
     return " ".join(f"{tag}{i}" for i in range(n))
@@ -205,6 +212,8 @@ def test_redact_emails_leaves_non_addresses(s: str) -> None:
     ("https://x.org/?u=a%40b.org", True), ("https://x.org/p#to=a@b.org", True), ("https://a%40b.org@x.org/", True),
     ("https://example.org/{alice,bob}@lab.org", True), ("https://x.org/%7Balice,bob%7D%40lab.org", True),
     ("https://r.org/?u=https%3A%2F%2Fx.org%2Falice%2540lab.org", True),
+    ("https://r.org/?u=x" + nested("A", 7), True),  # nested past the limit: unsafe, whatever it hides
+    ("https://r.org/?u=x" + nested("A", 5), False),
     ("https://medium.com/@h/p", False), ("https://user:pw@x.org/", False), ("https://github.com/x/y@main", False),
     ("https://example.org/landing", False),
 ])
@@ -216,6 +225,10 @@ def test_email_hits_is_broader_and_allows_only_its_list() -> None:
     assert dz.email_hits("pkg@v1.x a@b.c", ours=False) == ["pkg@v1.x", "a@b.c"]  # more than the redaction takes
     assert dz.email_hits("{alice,bob}@lab.org", ours=False) == ["{alice,bob}@lab.org"]  # groups, independently
     assert dz.email_hits("{alice, bob}@lab.org", ours=False) == ["{alice, bob}@lab.org"]
+    assert dz.email_hits("{ alice , bob }@lab.org", ours=False) == ["{ alice , bob }@lab.org"]
+    deep = "a" + nested("@", 7) + "lab.org"  # encoded seven times: past the decoder's 5 rounds
+    assert dz.email_hits(deep, ours=False) == ["<encoded deeper than the decoder follows>"]
+    assert dz.unquote_all("a%2540b") == "a@b" and dz.unquote_all(deep) is None
     assert dz.email_hits("x@123-lab.org", ours=False) == ["x@123-lab.org"]  # an alphabetic last label: no pin
     assert dz.email_hits("a%2540lab.org", ours=False) == ["a@lab.org"]  # decoded until stable
     assert dz.email_hits("x/alice@123lab.org", ours=False) == ["alice@123lab.org"]  # 123lab.org is no version

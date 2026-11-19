@@ -44,7 +44,7 @@ EMAIL = re.compile(rf"(?<![\w@])(?:\{{{_LOCAL}(?:\s*,\s*{_LOCAL})*\}}|{_LOCAL})@
 #: version pin (``@`` and a whole version, ``tool@0.1.0+tierlatexml``), an ``hf://`` URI and, in our own files only,
 #: the contact address as a whole token and a prompt pinned to a taxonomy version (``prompt@models-1.1.0``, the
 #: stage names release.json and FORMAT.md print).
-EMAIL_DETECT = re.compile(r"(?:\{[^{}@\s,]+(?:,\s*[^{}@\s,]+)*\}|[\w.+'-]+)@[\w-]+(?:\.[\w-]+)+")
+EMAIL_DETECT = re.compile(r"(?:\{\s*[^{}@\s,]+(?:\s*,\s*[^{}@\s,]+)*\s*\}|[\w.+'-]+)@[\w-]+(?:\.[\w-]+)+")
 CONTACT_ADDRESS = "info@thesafetystack.ai"
 _CONTACT = re.compile(r"(?<![\w.+'-])info@thesafetystack\.ai(?![\w-]|\.\w)")
 #: A version pin is the whole token after ``@`` (``0.1.0+tierlatexml``), never one whose last label is alphabetic.
@@ -350,28 +350,34 @@ def url_has_email(url: str) -> bool:
     try:
         sp = urllib.parse.urlsplit(url)
     except ValueError:
-        return bool(EMAIL.search(unquote_all(url)))
+        dec = unquote_all(url)
+        return dec is None or bool(EMAIL.search(dec))
     user = sp.netloc.rpartition("@")[0]
-    parts = " ".join(unquote_all(x, plus=True) for x in (user, sp.path, sp.query, sp.fragment))
-    return bool(EMAIL.search(re.sub(r"[/?#&=:;]", " ", parts)))
+    decoded = [unquote_all(x, plus=True) for x in (user, sp.path, sp.query, sp.fragment)]
+    if None in decoded:
+        return True  # nested deeper than the decoder follows: unsafe
+    return bool(EMAIL.search(re.sub(r"[/?#&=:;]", " ", " ".join(d for d in decoded if d is not None))))
 
 
-def unquote_all(s: str, *, plus: bool = False) -> str:
-    """``s`` percent-decoded until it stops changing (nested encodings: ``%2540``), at most :data:`_DECODE_ROUNDS`
-    rounds; ``plus``: ``+`` is a space (a query)."""
-    for _ in range(_DECODE_ROUNDS):
+def unquote_all(s: str, *, plus: bool = False) -> str | None:
+    """``s`` percent-decoded until it stops changing (nested encodings: ``%2540``); None when it still changes after
+    :data:`_DECODE_ROUNDS` rounds (the callers treat that as unsafe); ``plus``: ``+`` is a space (a query)."""
+    for _ in range(_DECODE_ROUNDS + 1):
         t = urllib.parse.unquote_plus(s) if plus else urllib.parse.unquote(s)
         if t == s:
-            break
+            return s
         s = t
-    return s
+    return None
 
 
 def email_hits(text: str, *, ours: bool) -> list[str]:
     """The independent check (D808): what :data:`EMAIL_DETECT` finds in ``text``, percent-decoded, less a version
     pin, an ``hf://`` URI and, in ``ours`` (our own files, not the corpus), :data:`CONTACT_ADDRESS` and a taxonomy
     pin (``prompt@models-1.1.0``); a pin is the whole token after ``@``."""
-    text = _HF_URI.sub(" ", unquote_all(text))
+    dec = unquote_all(text)
+    if dec is None:
+        return ["<encoded deeper than the decoder follows>"]
+    text = _HF_URI.sub(" ", dec)
     if ours:
         text = _CONTACT.sub(" ", text)
     out = []

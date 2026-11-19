@@ -1351,6 +1351,14 @@ def test_the_abstract_guard_reads_the_final_strings(m: Mapping_) -> None:
     p, ann, ctx = _budgeted(m, row)
     assert ann["model_roles"]["payload"]["models"][0]["note"] == "" and p.quote_counts["copied_emptied"] == 1
     amb = ann["model_name_matches"]["payload"]["ambiguous"][0]["text"]
+    assert p.cuts_total == len(ctx["cuts"]) == 1
+    # a cut surface the guard empties leaves no cut entry and no count
+    row2 = _quoted_row([], abstract=filler)
+    row2["annotations"]["model_regexp_matches"]["payload"]["ambiguous"] = [
+        {"text": filler + " tail", "candidates": [], "strength": "weak"}]
+    p2, ann2, ctx2 = _budgeted(m, row2)
+    assert ann2["model_name_matches"]["payload"]["ambiguous"][0]["text"] == ""
+    assert ctx2["cuts"] == [] and p2.cuts_total == 0
     assert amb.endswith("…") and "Catalogue" not in amb
     assert [c["path"] for c in ctx["cuts"]] == ["annotations.model_name_matches.payload.ambiguous[0].text"]
 

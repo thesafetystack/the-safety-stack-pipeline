@@ -1444,7 +1444,9 @@ class Projection:
                 if cover.share(cov) > pol.abstract_share:
                     holder[key] = ""
                     self.quote_counts["copied_emptied"] += 1
-                    ctx["cuts"][:] = [c for c in ctx["cuts"] if c["path"] != ip]
+                    kept = [c for c in ctx["cuts"] if c["path"] != ip]
+                    self.cuts_total -= len(ctx["cuts"]) - len(kept)
+                    ctx["cuts"][:] = kept
                 else:
                     cover.covered = cov
 
