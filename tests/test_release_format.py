@@ -340,6 +340,10 @@ def _corpus(n: int) -> tuple[pa.Table, dict[str, bytes]]:
         texts[sha] = body
         c = r["content"]
         c["current_text_sha256"] = c["snapshots"][0]["text"]["sha256"] = sha
+        if i % 2 == 0:  # the text's length as conversion measured it (D808's L); the odd rows have none: no quotes
+            c["snapshots"][0]["quality"] = {"metrics": {"chars": 40_000}}
+        if i == 1:
+            r["metadata"]["title"] = "Paper 1, write to alice@example.org"  # redacted in the public variant
         r["metadata"]["field_sources"].append({"field": "abstract", "source_id": r["doc_id"], "origin": "provider"})
         ann = (_affiliation_row() if i % 2 == 0 else _row())["annotations"]
         for rec in ann.values():
@@ -413,6 +417,17 @@ def test_the_checker_passes_on_the_synthetic_export(public: Path, m: ds.Mapping_
     vocab = (public / "VOCABULARY.md").read_text()
     assert "**`content.role`** (open list)" in vocab and "**`published_precision`** (closed list)" in vocab
     assert "**`doc_type`** (plain string)" in vocab
+    # D808: the quotation budget (L on the even rows only) and the email redaction, end to end
+    qp, em = doc["policy"]["quote_policy"], doc["policy"]["emails"]
+    assert qp["version"] == 2 and qp["rows_without_length"] == 6 and qp["quotes"]["kept"] > 0
+    assert qp["shares"]["text"]["rows"] == 6 and qp["shares"]["text"]["max"] <= 0.25 and em["redacted"] == 1
+    assert qp["abstract_share"] == 0.3 and qp["shares"]["abstract"]["max"] <= 0.3
+    fmt = (public / "FORMAT.md").read_text()
+    assert "cover at most 30% of it (runs of 4 words)" in fmt and "replaced by `[email]`" in fmt
+    rows = pq.read_table(public / "data" / "corpus.parquet", columns=["title", "annotations"]).to_pylist()
+    assert rows[1]["title"] == "Paper 1, write to [email]"
+    odd = [t for r in rows[1::2] for t in r["annotations"]["safety_techniques"]["payload"]["techniques"]]
+    assert odd and all(t["quotes"] == [] for t in odd)
 
 
 @pytest.mark.slow
@@ -519,6 +534,10 @@ def _dup(rows: list[dict[str, Any]]) -> None:
     rows[1]["doc_id"] = rows[0]["doc_id"]
 
 
+def _email(rows: list[dict[str, Any]]) -> None:
+    rows[2]["title"] = "Paper 2, write to bob@example.org"
+
+
 NEGATIVE: list[tuple[str, Callable[[Path], None], str]] = [
     ("a corrupt file", lambda r: (r / "config" / "configs.json").write_text("[{"),
      "release-validator: [manifest] config/configs.json: size or sha256 differs from release.json"),
@@ -543,6 +562,8 @@ NEGATIVE: list[tuple[str, Callable[[Path], None], str]] = [
      "content.role: values ['slides'] are not in its open list (x-values)"),
     ("an edited checker", lambda r: ((r / ds.VALIDATOR_FILE).write_text("# edited\n"), _rehash(r)),
      f"{ds.VALIDATOR_FILE}: not the vendored data repository's file"),
+    ("an email address", lambda r: (_rewrite_corpus(r, _email), _rehash(r)),
+     "1 email address(es) in the shipped files (D808): data/corpus.parquet title (1)"),
 ]
 
 
