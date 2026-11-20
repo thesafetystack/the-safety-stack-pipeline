@@ -222,6 +222,9 @@ UTC), restart Never, 1 vCPU / 1 GB; variables `STACK_STORE`, the S3 ones and the
 
 ## Running by hand
 
+- **The CLI**: `npm i -g @railway/cli`. Authenticate with `railway login`, or put a project token in `RAILWAY_TOKEN`.
+  Then `railway link -p the-stack -e production -s stack-cycle` in the checkout, so that the commands below reach the
+  service.
 - **On Railway, now**: `railway cron run --service stack-cycle --yes` (an off-schedule run of the service's start
   command; `railway cron list --service stack-cycle` shows it). A run while another is active is skipped.
 - **A dry run or a test on Railway**: set the start command to
