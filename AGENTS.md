@@ -92,6 +92,8 @@ spend is in its run record. Full list: `.env.example`; details: `docs/SETUP.md`.
 
 - No secrets or key values anywhere, error bodies and logs included; no bucket names (write `s3://<bucket>/<prefix>`);
   no local or private filesystem paths.
+- No chat or agent-session links or session trailers in commit messages: a message ends with the `Co-Authored-By`
+  line only.
 - No links to link-shared documents or chats (Google Docs and Drive, chat shares, Notion, Dropbox):
   `tests/test_public_tree.py` scans every tracked text file for them (`stack.fold.dataset.SHARED_LINKS`).
 - No third-party document text in the tree: eval texts and long excerpts live outside it, pinned by sha256 (D790,
