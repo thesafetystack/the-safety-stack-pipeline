@@ -14,7 +14,7 @@ the documents acquire covers.
 
 | Piece | Where |
 |---|---|
-| The cycle | `tools/scheduled_run.py` (`cycle [--dry-run\|--test]`, `watchdog`, `upload`, `pause`/`resume`, `report`, `unlock`; its docstring) |
+| The cycle | `tools/scheduled_run.py` (`cycle [--dry-run\|--test]`, `watchdog`, `upload`, `update-website`, `pause`/`resume`, `report`, `unlock`; its docstring) |
 | The image | `Dockerfile`, `.dockerignore` |
 | Railway config | the dashboard (below): Config as Code (`railway.json`/`railway.toml`) is deprecated, new services cannot opt in, and its files stop being read on 2026-12-01 (docs.railway.com/infrastructure-as-code); the IaC reference documents no cron schedule or restart policy |
 
@@ -86,7 +86,18 @@ the documents acquire covers.
    made on the head read just before it (a concurrent push fails it), and **tagged `release-<id>`** (e.g.
    `release-2026-11-01`); earlier releases stay in the history under their tags. A tag that exists already (the same
    release uploaded again) is a WARN and is not moved.
-7. Balance checks at the start and the end (below), then the summary (`cycles/<id>/summary.json`, `log.txt`,
+7. **Website summary update** (D810): after the Hugging Face upload succeeds, when `STACK_SCHED_WEBSITE_UPDATE` is `1`
+   or (`auto`, default) `WEBSITE_GITHUB_TOKEN` is set, the cycle runs the image's own reviewed builder
+   (`tools/build_website_summary.py`, D805 precedent — never executing unreviewed code from the website repo) on the
+   exact verified public release directory just uploaded to Hugging Face, in an isolated subprocess (`python -I`,
+   scrubbed env without keys/tokens), validates `summary.json` and `summary.js` (schema, release id, bucket scan),
+   shallow-clones `STACK_SCHED_WEBSITE_REPO` (`https://github.com/thesafetystack/website.git`, branch `main`;
+   plaintext `http://` refused), refuses rollback of a newer live release id, re-checks `lock.json`, and commits and
+   pushes only those two files when they changed (warning if the website repo's `tools/build_summary.py` drifted from
+   the image copy). A website failure after the Hugging Face upload succeeded is a WARN (the dataset release is
+   already live) and logs the manual retry command `python tools/scheduled_run.py update-website --release-id <date>`.
+   Test cycles never push to GitHub.
+8. Balance checks at the start and the end (below), then the summary (`cycles/<id>/summary.json`, `log.txt`,
    `cycles/latest.json`) on the ops prefix and on stdout, and **one email per cycle** (below).
 
 Exit 0 ok, 1 failed, halted or upload refused, 3 incomplete (resumed by the next cycle), 4 refused. Caps (the
@@ -192,6 +203,7 @@ Variables (sealed where marked: sealed values are hidden in the UI and the API, 
 | `TMPDIR`, `HF_HOME`, `XDG_CACHE_HOME`, `STACK_TMP` | not needed: the image's working directory `/app` is not writable by its user, so every write goes under `/work` (Dockerfile): `TMPDIR=/work/scratch` takes Python's temp files and duckdb's spill directories (`stack/duck.py`, D732: duckdb's default `.tmp` under the working directory failed the 2026-10-27 test cycle's export), `HF_HOME=/work/cache/huggingface`, `XDG_CACHE_HOME=/work/cache`; `STACK_TMP` overrides the spill base only |
 | `OPENROUTER_API_KEY` (sealed), `OPENAI_API_KEY` (sealed), `OPENALEX_API_KEY` (sealed), `SEMANTIC_SCHOLAR_API_KEY` (sealed) | keys; OpenAI's is for the roles llm.yaml routes to the OpenAI API directly (D714: technique_staged, model_roles); the preflight derives the LLM keys a plan needs from its pins and refuses a missing one |
 | `HF_TOKEN` (sealed) | write to `thesafetystack/the-safety-stack` and `-private` |
+| `WEBSITE_GITHUB_TOKEN` (sealed, optional in `auto` mode) | GitHub fine-grained personal access token scoped to `Contents: Read and write` on `thesafetystack/website` only; enables automatic weekly `summary.json` / `summary.js` updates after Hugging Face upload (D810) |
 | `STACK_MAILTO` (sealed: a personal identifier) | the contact address |
 | `STACK_SCHED_ALERT`, `RESEND_API_KEY` (sealed), `STACK_SCHED_ALERT_FROM`, `STACK_SCHED_ALERT_TO` | `resend`, the key, a sender on the verified domain, the recipients, e.g. `info@thesafetystack.ai` (comma-separated) |
 | `OPENROUTER_MANAGEMENT_KEY` (sealed, optional) | reads the account's credits; cannot make completion calls |
@@ -202,7 +214,7 @@ Variables (sealed where marked: sealed values are hidden in the UI and the API, 
 Optional (code defaults in parentheses): `STACK_SCHED_MAX_USD` (100; production currently 50),
 `STACK_SCHED_MAX_WALL_H` (20), `STACK_SCHED_MAX_BUILDS` (5) (production currently runs with neither in effect),
 `STACK_SCHED_ARXIV_MAX_MIN` (45), `STACK_SCHED_OPENALEX_FULL` (`auto`/`1`/`0`), `STACK_SCHED_OPENALEX_FULL_DAYS` (6),
-`STACK_SCHED_RELEASE` (`export`/`off`), `STACK_SCHED_UPLOAD` (`1`/`0`), `STACK_SCHED_RELEASE_ALLOW_INCOMPLETE` (`1`/`0`),
+`STACK_SCHED_RELEASE` (`export`/`off`), `STACK_SCHED_UPLOAD` (`1`/`0`), `STACK_SCHED_WEBSITE_UPDATE` (`auto`/`1`/`0`; D810), `STACK_SCHED_WEBSITE_REPO` (`https://github.com/thesafetystack/website.git`), `STACK_SCHED_WEBSITE_BRANCH` (`main`), `STACK_SCHED_WEBSITE_GIT_NAME` (`The Safety Stack Bot`), `STACK_SCHED_WEBSITE_GIT_EMAIL` (`info@thesafetystack.ai`), `STACK_SCHED_RELEASE_ALLOW_INCOMPLETE` (`1`/`0`),
 `STACK_SCHED_TAIL_MAX_PCT` (5, percent; step 4),
 `STACK_SCHED_MEMLOG_S` (180: a `[mem]` line in the logs and in the cycle's `log.txt` every 3 min while a cycle runs,
 the cgroup's memory and the three largest processes by RSS with their CPU, `tools/memlog.py`, D783, D784; not in the
@@ -242,7 +254,8 @@ UTC), restart Never, 1 vCPU / 1 GB; variables `STACK_STORE`, the S3 ones and the
   `STACK_ENV_FILE=.env STACK_STORE=s3://<bucket>/stack-store uv run --no-sync python tools/scheduled_run.py cycle
   --dry-run` (or `--test`). The keys are read from the file by name, as every `stack` command reads them.
 - A staged release can be uploaded again with `python tools/scheduled_run.py upload --release-id <date>` (same
-  private-repo check; never in test mode).
+  private-repo check; never in test mode), and its website summary rebuilt and pushed with
+  `python tools/scheduled_run.py update-website --release-id <date>` (`--dry-run` checks staging and token only).
 
 ## Operating
 

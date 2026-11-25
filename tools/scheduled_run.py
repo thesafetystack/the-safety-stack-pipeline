@@ -1,7 +1,8 @@
 """The scheduled production cycle against an S3 store, for a transient container (docs/DEPLOY-railway.md).
 
-    python tools/scheduled_run.py cycle [--dry-run | --test]        # collect -> ... -> fold.build -> release -> HF
+    python tools/scheduled_run.py cycle [--dry-run | --test]        # collect -> ... -> fold.build -> release -> HF -> website
     python tools/scheduled_run.py upload --release-id ID [--dry-run] [--check-hf]   # re-upload a staged release
+    python tools/scheduled_run.py update-website --release-id ID [--dry-run]        # rebuild and push website summary.json/summary.js
     python tools/scheduled_run.py unlock --holder ID                # remove a stale cycle lock (after checking)
     python tools/scheduled_run.py pause [--note TEXT] | resume       # hold.json: drain the running cycle, refuse new ones
     python tools/scheduled_run.py report [--cycle ID]               # print the last (or one) cycle summary
@@ -57,6 +58,7 @@ a preflight problem). Settings (env, names only; values are never printed): see 
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import hashlib
 import json
@@ -69,6 +71,8 @@ import sys
 import tempfile
 import threading
 import time
+import urllib.parse
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -160,6 +164,11 @@ class Settings:
     drain_grace_s: float = 3600     # STACK_SCHED_DRAIN_GRACE_S: after a drain, cancel; after as long again, exit
     #                                 (D781: covers a drained build's final verify, 29-38 min on Railway)
     memlog_s: float = 180           # STACK_SCHED_MEMLOG_S: the memory log's period (D783); 0 = no memory log
+    website_update: str = "auto"    # STACK_SCHED_WEBSITE_UPDATE: auto | 1 | 0 (D810)
+    website_repo: str = "https://github.com/thesafetystack/website.git"  # STACK_SCHED_WEBSITE_REPO
+    website_branch: str = "main"    # STACK_SCHED_WEBSITE_BRANCH
+    website_git_name: str = "The Safety Stack Bot"   # STACK_SCHED_WEBSITE_GIT_NAME
+    website_git_email: str = "info@thesafetystack.ai"  # STACK_SCHED_WEBSITE_GIT_EMAIL
     bucket: str = field(default="", repr=False)
     prefix: str = ""
 
@@ -191,11 +200,18 @@ class Settings:
             watch_s=env_bool_float("STACK_SCHED_WATCH_S", 600.0),
             drain_grace_s=env_bool_float("STACK_SCHED_DRAIN_GRACE_S", 3600.0),
             memlog_s=env_bool_float("STACK_SCHED_MEMLOG_S", 180.0),
+            website_update=os.environ.get("STACK_SCHED_WEBSITE_UPDATE", "").strip() or "auto",
+            website_repo=os.environ.get("STACK_SCHED_WEBSITE_REPO", "").strip() or "https://github.com/thesafetystack/website.git",
+            website_branch=os.environ.get("STACK_SCHED_WEBSITE_BRANCH", "").strip() or "main",
+            website_git_name=os.environ.get("STACK_SCHED_WEBSITE_GIT_NAME", "").strip() or "The Safety Stack Bot",
+            website_git_email=os.environ.get("STACK_SCHED_WEBSITE_GIT_EMAIL", "").strip() or "info@thesafetystack.ai",
             bucket=bucket, prefix=prefix)
         if s.openalex_full not in ("auto", "0", "1"):
             raise SystemExit("error: STACK_SCHED_OPENALEX_FULL must be auto, 0 or 1")
         if s.release not in ("export", "off"):
             raise SystemExit("error: STACK_SCHED_RELEASE must be export or off")
+        if s.website_update not in ("auto", "0", "1"):
+            raise SystemExit("error: STACK_SCHED_WEBSITE_UPDATE must be auto, 0 or 1")
         if not 0 <= s.tail_max_pct <= 100:
             raise SystemExit("error: STACK_SCHED_TAIL_MAX_PCT must be a percentage, 0 to 100")
         parse_store_uri(s.ops_uri)
@@ -731,6 +747,18 @@ def preflight(s: Settings, digest: str) -> tuple[list[str], list[str]]:
         refuse.append(f"free disk under the mirror {gb:.0f} GB < STACK_SCHED_MIN_FREE_GB {s.min_free_gb:.0f}")
     if s.release == "export" and s.upload and not s.test and not key_present("HF_TOKEN"):
         refuse.append("HF_TOKEN missing: the cycle uploads its release (STACK_SCHED_UPLOAD=0 stages it only)")
+    if s.release == "export" and s.upload and not s.test and s.website_update != "0":
+        if s.website_repo.lower().startswith("http://"):
+            refuse.append("STACK_SCHED_WEBSITE_REPO uses insecure http://; use https://")
+        elif s.website_update == "1":
+            if _needs_github_token(s.website_repo) and not key_present("WEBSITE_GITHUB_TOKEN"):
+                refuse.append("WEBSITE_GITHUB_TOKEN missing: STACK_SCHED_WEBSITE_UPDATE=1 updates the website repo "
+                              "(set STACK_SCHED_WEBSITE_UPDATE=0 to disable)")
+            if shutil.which("git") is None:
+                refuse.append("git not on PATH (needed by website summary update)")
+        elif _needs_github_token(s.website_repo) and not key_present("WEBSITE_GITHUB_TOKEN"):
+            warn.append("WEBSITE_GITHUB_TOKEN absent: website summary update will be skipped "
+                        "(set STACK_SCHED_WEBSITE_UPDATE=0 to silence)")
     if alert_channel() is None:
         warn.append("no alert channel (STACK_SCHED_ALERT, STACK_SCHED_ALERT_TO): no summary email is sent")
     return refuse, warn
@@ -1335,13 +1363,44 @@ class Cycle:
         if why := self.lock_gate():
             self.release["uploaded"] = False
             return self.halt(f"{why}: release {rid} staged, not uploaded (another cycle may hold the store)")
-        rc = upload(s, self.ops, rid, dry=False, findings=self)
-        self.release["uploaded"] = rc == EXIT_OK
-        if rc != EXIT_OK:
-            self.outcome = "upload_failed"
-            self.error(f"release {rid}: upload failed (see the log)")
-            return EXIT_FAILED
-        return EXIT_OK
+        want_web = (s.website_update == "1"
+                    or (s.website_update == "auto"
+                        and (not _needs_github_token(s.website_repo) or key_present("WEBSITE_GITHUB_TOKEN"))))
+        verified_pub: Path | None = None
+        if want_web:
+            (s.work / "website").mkdir(parents=True, exist_ok=True)
+            verified_pub = Path(tempfile.mkdtemp(prefix=f"verified-public-{rid}-", dir=s.work / "website"))
+        try:
+            rc = upload(s, self.ops, rid, dry=False, findings=self, keep_public_dir=verified_pub)
+            self.release["uploaded"] = rc == EXIT_OK
+            if rc != EXIT_OK:
+                self.outcome = "upload_failed"
+                self.error(f"release {rid}: upload failed (see the log)")
+                return EXIT_FAILED
+            # 8. rebuild and push the website visualisation's summary.json / summary.js from the exact verified
+            #    public artifact just uploaded to Hugging Face (D810)
+            if not want_web:
+                why_skip = "STACK_SCHED_WEBSITE_UPDATE=0" if s.website_update == "0" else "WEBSITE_GITHUB_TOKEN absent"
+                log(f"website summary update skipped ({why_skip})")
+                self.release["website"] = {"updated": False, "skipped": why_skip}
+                return EXIT_OK
+            if why := self.lock_gate():
+                self.release["website"] = {"updated": False, "error": why}
+                self.warn(f"{why}: release {rid} uploaded to Hugging Face, website summary not updated "
+                          f"(retry: python tools/scheduled_run.py update-website --release-id {rid})")
+                return EXIT_OK
+            t_web = time.monotonic()
+            wrc, wdoc = update_website(s, self.ops, rid, dry=False, findings=self,
+                                       release_dir=verified_pub, lock_check=self.lock_gate)
+            self.steps.append({"step": "website-update", "rc": wrc, "wall_min": round((time.monotonic() - t_web) / 60, 1)})
+            self.release["website"] = wdoc
+            if wrc != EXIT_OK:
+                self.warn(f"release {rid}: website summary update failed ({wdoc.get('error') or 'see the log'}); "
+                          f"retry: python tools/scheduled_run.py update-website --release-id {rid}")
+            return EXIT_OK
+        finally:
+            if verified_pub is not None:
+                shutil.rmtree(verified_pub, ignore_errors=True)
 
     def halt(self, why: str) -> int:
         self.error(f"halted: {why}")
@@ -1478,7 +1537,18 @@ class Cycle:
         print(f"  7. release export {'off' if s.release == 'off' else 'of the ok (or releasable) build: dataset-public, dataset-internal'}"
               f" -> {mask_s3_text(s.ops_uri)}/{self.ns}releases/<export date>/; Hugging Face upload "
               f"{'off (test)' if s.test else 'on' if s.upload else 'off (STACK_SCHED_UPLOAD=0)'}")
-        print(f"  8. summary email (OK/WARN/ERROR) via {alert_channel() or 'NONE configured'}; balance checks at start "
+        web_on = (s.release != "off" and s.upload and not s.test and s.website_update != "0"
+                  and not s.website_repo.lower().startswith("http://")
+                  and (s.website_update == "1" or not _needs_github_token(s.website_repo) or key_present("WEBSITE_GITHUB_TOKEN")))
+        web_state = ("off (test)" if s.test
+                     else "off (STACK_SCHED_RELEASE=off)" if s.release == "off"
+                     else "off (STACK_SCHED_UPLOAD=0)" if not s.upload
+                     else "off (STACK_SCHED_WEBSITE_UPDATE=0)" if s.website_update == "0"
+                     else "refused (insecure http:// repo URL)" if s.website_repo.lower().startswith("http://")
+                     else f"on -> {s.website_repo} ({s.website_branch})" if web_on
+                     else "off (WEBSITE_GITHUB_TOKEN absent)")
+        print(f"  8. website summary (summary.json, summary.js): {web_state}")
+        print(f"  9. summary email (OK/WARN/ERROR) via {alert_channel() or 'NONE configured'}; balance checks at start "
               "and end")
         if self.check_balances_in_dry_run:
             for svc, sev, msg in check_balances(self.s):
@@ -1564,8 +1634,39 @@ def check_staged(d: Path) -> list[str]:
     return [f"exit {r.returncode}", *lines[-12:]]
 
 
+def _safe_rel_path(dest: Path, rel: str) -> Path | None:
+    """Resolve ``rel`` strictly inside ``dest``; ``None`` on absolute paths, backslashes, drive prefixes or ``..``."""
+    if not rel or "\\" in rel or rel.startswith("/") or re.match(r"^[A-Za-z]:", rel):
+        return None
+    p = Path(rel)
+    if p.is_absolute() or ".." in p.parts:
+        return None
+    root = dest.resolve()
+    target = (root / p).resolve()
+    return target if target.is_relative_to(root) and target != root else None
+
+
+def _write_verified_variant(ops: Ops, man: dict[str, Any], variant: str, dest: Path) -> str | None:
+    """Fetch every manifest file of ``variant`` into ``dest`` after checking path containment and sha256 in memory
+    before writing to disk. Returns an error string on failure, else None."""
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    for f in man["variants"][variant]["files"]:
+        rel = str(f.get("path", ""))
+        fp = _safe_rel_path(dest, rel)
+        if fp is None:
+            return f"{variant}/{rel!r}: unsafe manifest path (must be relative inside release dir)"
+        data = ops.b.get(f"{man['prefix']}/{variant}/{rel}")
+        if hashlib.sha256(data).hexdigest() != f.get("sha256"):
+            return f"{variant}/{rel}: sha256 differs from the manifest"
+        fp.parent.mkdir(parents=True, exist_ok=True)
+        fp.write_bytes(data)
+    return None
+
+
 def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False, ns: str = "",
-           findings: Any = None) -> int:
+           findings: Any = None, keep_public_dir: Path | None = None) -> int:
     """Upload a staged release's two variants to their Hugging Face dataset repos (every successful weekly
     cycle publishes). The internal variant's repo must be private before anything is uploaded
     and is checked again afterwards; when it is not, nothing (more) is uploaded, the command fails and the cycle
@@ -1612,69 +1713,369 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
     if dry or check_hf:
         log("dry run: nothing uploaded")
         return EXIT_OK
-    work = s.work / "upload" / rid
-    for v in ("internal", "public"):  # both variants fetched and checked before anything is uploaded
-        d = work / v
-        if d.exists():
-            shutil.rmtree(d)  # an earlier attempt's files would be files the release does not list
-        d.mkdir(parents=True)
-        for f in man["variants"][v]["files"]:
-            fp = d / f["path"]
-            fp.parent.mkdir(parents=True, exist_ok=True)
-            fp.write_bytes(ops.b.get(f"{man['prefix']}/{v}/{f['path']}"))
-            if sha256_file(fp) != f["sha256"]:
-                log(f"HALT: {v}/{f['path']}: sha256 differs from the manifest; nothing uploaded")
+    (s.work / "upload").mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix=f"upload-{rid}-", dir=s.work / "upload"))
+    try:
+        for v in ("internal", "public"):  # both variants fetched and checked before anything is uploaded
+            d = work / v
+            err = _write_verified_variant(ops, man, v, d)
+            if err:
+                log(f"HALT: {err}; nothing uploaded")
                 return EXIT_FAILED
-        hits = scan_for(d, s.bucket.encode())
-        if hits:
-            log(f"HALT: {v}: the bucket name occurs in {', '.join(hits[:5])}; nothing uploaded")
-            return EXIT_FAILED
-        problems = check_staged(d)
-        if problems:
-            log(f"ERROR: {v}: the release checker (data-repo/tools/release-validator.py --rows all) refuses it; "
-                "nothing uploaded: " + " | ".join(problems[-8:]))
-            return EXIT_FAILED
-        why = quote_policy_problem(d) if v == "public" else None
-        if why:
-            log(f"ERROR: public: {why} (D808): nothing uploaded; export the release again under the current policy, "
-                "with a new release id")
-            return EXIT_FAILED
-        log(f"release {rid} {v}: data-repo/tools/release-validator.py --rows all: valid")
-    for v in ("internal", "public"):
-        repo = repos[v]
-        d = work / v
-        if v == "internal" and not private_ok("just before its upload"):
-            log(f"ERROR: {private_repo} turned public: nothing uploaded; its visibility is left as it is")
-            return EXIT_FAILED
-        from huggingface_hub import CommitOperationAdd, CommitOperationDelete  # type: ignore[import-not-found,unused-ignore]
+            hits = scan_for(d, s.bucket.encode())
+            if hits:
+                log(f"HALT: {v}: the bucket name occurs in {', '.join(hits[:5])}; nothing uploaded")
+                return EXIT_FAILED
+            problems = check_staged(d)
+            if problems:
+                log(f"ERROR: {v}: the release checker (data-repo/tools/release-validator.py --rows all) refuses it; "
+                    "nothing uploaded: " + " | ".join(problems[-8:]))
+                return EXIT_FAILED
+            why = quote_policy_problem(d) if v == "public" else None
+            if why:
+                log(f"ERROR: public: {why} (D808): nothing uploaded; export the release again under the current policy, "
+                    "with a new release id")
+                return EXIT_FAILED
+            log(f"release {rid} {v}: data-repo/tools/release-validator.py --rows all: valid")
+        for v in ("internal", "public"):
+            repo = repos[v]
+            d = work / v
+            if v == "internal" and not private_ok("just before its upload"):
+                log(f"ERROR: {private_repo} turned public: nothing uploaded; its visibility is left as it is")
+                return EXIT_FAILED
+            from huggingface_hub import CommitOperationAdd, CommitOperationDelete  # type: ignore[import-not-found,unused-ignore]
 
-        wanted = {f["path"] for f in man["variants"][v]["files"]}
-        head = api.repo_info(repo, repo_type="dataset").sha
-        stale = sorted(set(api.list_repo_files(repo, repo_type="dataset", revision=head)) - wanted - {".gitattributes"})
-        ops_: list[Any] = [CommitOperationAdd(path_in_repo=f, path_or_fileobj=str(d / f)) for f in sorted(wanted)]
-        ops_ += [CommitOperationDelete(path_in_repo=f, is_folder=False) for f in stale]
-        commit = api.create_commit(repo, ops_, commit_message=f"release {rid} ({v})", repo_type="dataset",
-                                   parent_commit=head,
-                                   commit_description=f"Release {rid}, {len(wanted)} files"
-                                   + (f"; removed {len(stale)} files of earlier releases" if stale else ""))
-        oid = getattr(commit, "oid", None)
-        tag, tag_note = release_tag(rid), "created"
+            wanted = {f["path"] for f in man["variants"][v]["files"]}
+            head = api.repo_info(repo, repo_type="dataset").sha
+            stale = sorted(set(api.list_repo_files(repo, repo_type="dataset", revision=head)) - wanted - {".gitattributes"})
+            ops_: list[Any] = [CommitOperationAdd(path_in_repo=f, path_or_fileobj=str(d / f)) for f in sorted(wanted)]
+            ops_ += [CommitOperationDelete(path_in_repo=f, is_folder=False) for f in stale]
+            commit = api.create_commit(repo, ops_, commit_message=f"release {rid} ({v})", repo_type="dataset",
+                                       parent_commit=head,
+                                       commit_description=f"Release {rid}, {len(wanted)} files"
+                                       + (f"; removed {len(stale)} files of earlier releases" if stale else ""))
+            oid = getattr(commit, "oid", None)
+            tag, tag_note = release_tag(rid), "created"
+            try:
+                api.create_tag(repo, tag=tag, revision=oid, repo_type="dataset", tag_message=f"release {rid}")
+            except Exception as exc:  # noqa: BLE001 - an existing tag (a re-upload of the same id) is never moved
+                tag_note = f"not created ({type(exc).__name__})"
+                msg = f"{repo}: tag {tag} {tag_note}; the release commit {oid} is untagged"
+                (findings.warn if findings is not None else log)(msg)
+            after = api.repo_info(repo, repo_type="dataset").private
+            doc = {"repo": repo, "commit": oid, "tag": tag, "tag_status": tag_note, "private_after": after,
+                   "at": utcnow().isoformat(), "removed_files": stale}
+            ops.put_json(f"{ns}releases/{rid}/uploaded-{v}.json", doc)
+            log(f"{repo}: commit {oid}, tag {tag} {tag_note}; {len(wanted)} files, {len(stale)} removed; private: {after}")
+            if v == "internal" and after is not True:
+                log(f"ERROR: {private_repo} is not private after the upload; its visibility is left as it is")
+                return EXIT_FAILED
+        if keep_public_dir is not None:
+            if keep_public_dir.exists():
+                shutil.rmtree(keep_public_dir)
+            shutil.move(str(work / "public"), str(keep_public_dir))
+        return EXIT_OK
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+# ---------------------------------------------------------------- the website summary bridge (D810)
+#: The image's reviewed summary builder (byte-identical to ``website/tools/build_summary.py``; D805 precedent:
+#: the Railway job never executes unreviewed code fetched from the website repo).
+OWN_WEBSITE_BUILDER = REPO / "tools" / "build_website_summary.py"
+#: Seconds the summary builder may take (~12 s on 42k rows).
+WEBSITE_BUILD_TIMEOUT_S = 600
+
+
+def _needs_github_token(repo_url: str) -> bool:
+    """Whether pushing to ``repo_url`` needs an HTTPS token (False for local/file:// repos used in tests)."""
+    return repo_url.lower().startswith("https://")
+
+
+def _redact_secret(text: str, secret: str, bucket: str = "") -> str:
+    """Mask S3 bucket names (URI form and literal) and any GitHub token (raw or basic-auth encoded) before logging."""
+    out = mask_s3_text(text)
+    if bucket:
+        out = out.replace(bucket, "<bucket>")
+    if secret:
+        out = out.replace(secret, "<redacted>")
+        b64 = base64.b64encode(f"x-access-token:{secret}".encode("utf-8")).decode("ascii")
+        out = out.replace(b64, "<redacted>")
+    return out
+
+
+def _git_auth_env(repo_url: str, token: str) -> dict[str, str]:
+    """Scrubbed environment for ``git`` subprocesses: no pipeline keys, no interactive prompts; HTTPS auth goes
+    only through ``GIT_CONFIG_*`` env vars so the token never appears in argv or ``.git/config``."""
+    env = {k: os.environ[k] for k in CHECK_ENV if k in os.environ}
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    if token and _needs_github_token(repo_url):
+        parts = urllib.parse.urlsplit(repo_url)
+        origin = f"{parts.scheme}://{parts.netloc}/"
+        basic = base64.b64encode(f"x-access-token:{token}".encode("utf-8")).decode("ascii")
+        env["GIT_CONFIG_COUNT"] = "1"
+        env["GIT_CONFIG_KEY_0"] = f"http.{origin}.extraheader"
+        env["GIT_CONFIG_VALUE_0"] = f"AUTHORIZATION: basic {basic}"
+    return env
+
+
+def _run_git(args: list[str], *, cwd: Path | None = None, repo_url: str = "", token: str = "",
+             timeout_s: int = 300) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(["git", *args], cwd=str(cwd) if cwd else None, env=_git_auth_env(repo_url, token),
+                          capture_output=True, text=True, timeout=timeout_s, check=False)
+
+
+def _fetch_staged_public(ops: Ops, man: dict[str, Any], dest: Path, *, bucket: str) -> str | None:
+    """Fetch the staged ``public`` variant into ``dest`` and verify path containment, manifest sha256s, bucket scan,
+    release checker (:func:`check_staged`, D805) and D808 quotation policy. Returns an error string on failure, else None."""
+    err = _write_verified_variant(ops, man, "public", dest)
+    if err:
+        return err
+    if bucket:
+        hits = scan_for(dest, bucket.encode())
+        if hits:
+            return f"public: the bucket name occurs in {', '.join(hits[:5])}"
+    problems = check_staged(dest)
+    if problems:
+        return ("public: the release checker (data-repo/tools/release-validator.py --rows all) refuses it: "
+                + " | ".join(problems[-8:]))
+    why = quote_policy_problem(dest)
+    if why:
+        return f"public: {why} (D808)"
+    return None
+
+
+def _validate_summary(out_dir: Path, rid: str, *, bucket: str) -> tuple[dict[str, Any] | None, str | None]:
+    """Check the generated ``summary.json`` and ``summary.js`` against what ``website/stack.html`` requires."""
+    json_path, js_path = out_dir / "summary.json", out_dir / "summary.js"
+    for p in (json_path, js_path):
+        if not p.is_file() or p.stat().st_size == 0:
+            return None, f"{p.name} missing or empty"
+    if bucket:
+        hits = scan_for(out_dir, bucket.encode())
+        if hits:
+            return None, f"the bucket name occurs in {', '.join(hits[:5])}"
+    try:
+        json_text = json_path.read_text("utf-8")
+        js_text = js_path.read_text("utf-8")
+        doc = json.loads(json_text)
+    except (OSError, ValueError) as exc:
+        return None, f"summary unreadable ({type(exc).__name__})"
+    if not isinstance(doc, dict) or doc.get("format") != 1:
+        return None, f"unexpected summary format: {doc.get('format') if isinstance(doc, dict) else type(doc).__name__!r}"
+    rel = doc.get("release")
+    if not isinstance(rel, dict) or rel.get("id") != rid:
+        got_rid = rel.get("id") if isinstance(rel, dict) else type(rel).__name__
+        return None, f"summary release.id {got_rid!r} != {rid!r}"
+    for key_name in ("layers", "labs", "techniques", "key"):
+        val = doc.get(key_name)
+        if not isinstance(val, list) or not val or not all(isinstance(item, dict) for item in val):
+            return None, f"summary.{key_name} must be a non-empty list of objects"
+    if not isinstance(doc.get("documents"), dict):
+        return None, "summary.documents must be an object"
+    if not isinstance(doc.get("notes"), list):
+        return None, "summary.notes must be a list"
+    expected_js = "window.STACK_SUMMARY = " + json_text.rstrip("\n") + ";\n"
+    if js_text != expected_js:
+        return None, "summary.js does not match summary.json"
+    return doc, None
+
+
+def _builder_fingerprint(p: Path) -> str:
+    """Hash a summary-builder script ignoring only the pipeline's ``stack.duck.connect()`` wrapper (D732)."""
+    text = p.read_text("utf-8")
+    text = text.replace("import yaml\nfrom stack import duck\n", "import duckdb\nimport yaml\n")
+    text = text.replace("con = duck.connect()", "con = duckdb.connect()")
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _current_summary_release_id(repo_dir: Path) -> str | None:
+    """The ``release.id`` of the existing ``summary.json`` in ``repo_dir``, else None."""
+    p = repo_dir / "summary.json"
+    if not p.is_file():
+        return None
+    try:
+        doc = json.loads(p.read_text("utf-8"))
+        rel = doc.get("release") if isinstance(doc, dict) else None
+        rid = rel.get("id") if isinstance(rel, dict) else None
+        return rid if isinstance(rid, str) and rid else None
+    except (OSError, ValueError):
+        return None
+
+
+def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", findings: Any = None,
+                   release_dir: Path | None = None,
+                   lock_check: Callable[[], str | None] | None = None) -> tuple[int, dict[str, Any]]:
+    """Rebuild ``summary.json`` and ``summary.js`` from the verified public release ``rid`` using the image's own
+    reviewed builder (:data:`OWN_WEBSITE_BUILDER`) and commit + push them to ``s.website_repo`` on
+    ``s.website_branch`` (D810). Runs the builder in an isolated subprocess (``python -I``, scrubbed env without keys
+    or tokens) BEFORE cloning the website repository so the builder never sees the git clone or auth context.
+    No-op (exit 0, ``changed=False``) when both files are already byte-identical on the target branch (reconciling a
+    missing ops receipt). Refuses to roll back a newer live release id."""
+    if s.test and not dry:
+        log("REFUSED: a test cycle does not update the website")
+        return EXIT_REFUSED, {"updated": False, "error": "refused in test mode"}
+    if s.website_repo.lower().startswith("http://"):
+        log("REFUSED: STACK_SCHED_WEBSITE_REPO uses insecure http://; use https://")
+        return EXIT_REFUSED, {"updated": False, "error": "insecure http:// website repo URL"}
+
+    token = key_value("WEBSITE_GITHUB_TOKEN") if (not dry and _needs_github_token(s.website_repo)) else ""
+
+    def fail(msg: str, code: int = EXIT_FAILED) -> tuple[int, dict[str, Any]]:
+        clean = _redact_secret(msg, token, s.bucket)
+        log(f"ERROR: website update ({rid}): {clean}")
+        return code, {"updated": False, "release_id": rid, "repo": s.website_repo,
+                      "branch": s.website_branch, "error": clean}
+
+    man: dict[str, Any] | None = None
+    if release_dir is None:
         try:
-            api.create_tag(repo, tag=tag, revision=oid, repo_type="dataset", tag_message=f"release {rid}")
-        except Exception as exc:  # noqa: BLE001 - an existing tag (a re-upload of the same id) is never moved
-            tag_note = f"not created ({type(exc).__name__})"
-            msg = f"{repo}: tag {tag} {tag_note}; the release commit {oid} is untagged"
-            (findings.warn if findings is not None else log)(msg)
-        after = api.repo_info(repo, repo_type="dataset").private
-        doc = {"repo": repo, "commit": oid, "tag": tag, "tag_status": tag_note, "private_after": after,
-               "at": utcnow().isoformat(), "removed_files": stale}
-        ops.put_json(f"{ns}releases/{rid}/uploaded-{v}.json", doc)
-        log(f"{repo}: commit {oid}, tag {tag} {tag_note}; {len(wanted)} files, {len(stale)} removed; private: {after}")
-        if v == "internal" and after is not True:
-            log(f"ERROR: {private_repo} is not private after the upload; its visibility is left as it is")
-            return EXIT_FAILED
-    shutil.rmtree(work, ignore_errors=True)
-    return EXIT_OK
+            man = ops.get_json(f"{ns}releases/{rid}/manifest.json")
+        except Exception as exc:  # noqa: BLE001 - operational errors must not crash a post-upload cycle
+            return fail(f"reading manifest.json failed ({type(exc).__name__}: {redact_error(exc)})")
+    if dry:
+        tok_state = "not needed" if not _needs_github_token(s.website_repo) else (
+            "set" if key_present("WEBSITE_GITHUB_TOKEN") else "absent")
+        print(f"update-website (dry run) of {rid}: staged {'yes' if (man or release_dir) else 'no'}; "
+              f"repo {s.website_repo} ({s.website_branch}); WEBSITE_GITHUB_TOKEN {tok_state}; no git or build call")
+        return EXIT_OK, {"dry_run": True, "release_id": rid, "repo": s.website_repo, "branch": s.website_branch}
+    if release_dir is None and man is None:
+        log(f"REFUSED: no staged release {rid} ({ns}releases/{rid}/manifest.json on the ops prefix)")
+        return EXIT_REFUSED, {"updated": False, "error": f"no staged release {rid}"}
+    if _needs_github_token(s.website_repo) and not token:
+        log("REFUSED: WEBSITE_GITHUB_TOKEN not set")
+        return EXIT_REFUSED, {"updated": False, "error": "WEBSITE_GITHUB_TOKEN not set"}
+    if shutil.which("git") is None:
+        return fail("git not on PATH")
+    if not OWN_WEBSITE_BUILDER.is_file():
+        return fail(f"image builder missing: {OWN_WEBSITE_BUILDER}")
+
+    base = s.work / "website"
+    base.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix=f"website-{rid}-", dir=base))
+    try:
+        rel_dir = release_dir
+        if rel_dir is None:
+            assert man is not None
+            rel_dir = work / "release"
+            err = _fetch_staged_public(ops, man, rel_dir, bucket=s.bucket)
+            if err:
+                return fail(err)
+        else:
+            why = quote_policy_problem(rel_dir)
+            if why:
+                return fail(f"public: {why} (D808)")
+
+        # 1. Build summary.json / summary.js with the image's own reviewed builder BEFORE cloning the website repo
+        out_dir = work / "out"
+        tmp_dir = work / "tmp"
+        out_dir.mkdir(parents=True)
+        tmp_dir.mkdir(parents=True)
+        build_env = {k: os.environ[k] for k in CHECK_ENV if k in os.environ}
+        build_env["TMPDIR"] = str(tmp_dir)
+        try:
+            br = subprocess.run([sys.executable, "-I", str(OWN_WEBSITE_BUILDER), str(rel_dir), str(out_dir)],
+                                env=build_env, cwd=str(work), capture_output=True, text=True,
+                                timeout=WEBSITE_BUILD_TIMEOUT_S, check=False)
+        except subprocess.TimeoutExpired:
+            return fail(f"tools/build_website_summary.py timed out after {WEBSITE_BUILD_TIMEOUT_S} s")
+        for line in br.stdout.splitlines():
+            if line.strip():
+                log(f"website build: {_redact_secret(line.strip(), token, s.bucket)}")
+        for line in br.stderr.splitlines():
+            if line.strip():
+                log(f"website build stderr: {_redact_secret(line.strip(), token, s.bucket)}")
+        if br.returncode != 0:
+            tail = " | ".join(x.strip() for x in (br.stderr + "\n" + br.stdout).splitlines() if x.strip())[-400:]
+            return fail(f"tools/build_website_summary.py failed (rc={br.returncode}): {tail}")
+
+        summary_doc, verr = _validate_summary(out_dir, rid, bucket=s.bucket)
+        if verr or summary_doc is None:
+            return fail(f"generated summary invalid: {verr}")
+
+        new_json = (out_dir / "summary.json").read_bytes()
+        new_js = (out_dir / "summary.js").read_bytes()
+
+        # 2. Shallow-clone the website repo and check for builder drift, rollback, and byte-identical no-op
+        repo_dir = work / "repo"
+        r = _run_git(["clone", "--depth", "1", "--single-branch", "--branch", s.website_branch, "--",
+                      s.website_repo, str(repo_dir)], repo_url=s.website_repo, token=token)
+        if r.returncode != 0:
+            return fail(f"git clone failed (rc={r.returncode}): {(r.stderr or r.stdout).strip()[:400]}")
+
+        repo_builder = (repo_dir / "tools" / "build_summary.py").resolve()
+        if repo_builder.is_file() and repo_dir.resolve() in repo_builder.parents:
+            if _builder_fingerprint(repo_builder) != _builder_fingerprint(OWN_WEBSITE_BUILDER):
+                msg = ("website repo's tools/build_summary.py differs from image copy tools/build_website_summary.py; "
+                       "used the image copy (sync tools/build_website_summary.py when website settings change)")
+                (findings.warn if findings is not None else log)(msg)
+
+        cur_rid = _current_summary_release_id(repo_dir)
+        if cur_rid is not None and cur_rid > rid:
+            return fail(f"website already holds newer release {cur_rid} > {rid}; refusing rollback",
+                        code=EXIT_REFUSED)
+
+        cur_json = (repo_dir / "summary.json").read_bytes() if (repo_dir / "summary.json").is_file() else b""
+        cur_js = (repo_dir / "summary.js").read_bytes() if (repo_dir / "summary.js").is_file() else b""
+        rel_meta = summary_doc["release"]
+        receipt_key = f"{ns}releases/{rid}/website-updated.json"
+        if new_json == cur_json and new_js == cur_js:
+            head = _run_git(["rev-parse", "HEAD"], cwd=repo_dir).stdout.strip()
+            doc: dict[str, Any] = {"updated": True, "changed": False, "release_id": rid, "repo": s.website_repo,
+                                   "branch": s.website_branch, "commit": head, "summary_bytes": len(new_json),
+                                   "techniques": len(summary_doc["techniques"]), "documents": rel_meta.get("documents"),
+                                   "at": utcnow().isoformat()}
+            try:
+                if ops.get_json(receipt_key) is None:
+                    ops.put_json(receipt_key, doc)
+            except Exception as exc:  # noqa: BLE001
+                warn_msg = f"website summary already up to date, but receipt write failed ({type(exc).__name__})"
+                (findings.warn if findings is not None else log)(warn_msg)
+                doc["receipt_error"] = type(exc).__name__
+            log(f"{s.website_repo} ({s.website_branch}): summary already up to date for release {rid} (commit {head[:12]})")
+            return EXIT_OK, doc
+
+        # 3. Commit only summary.json and summary.js, re-verify lock, and push non-forced
+        (repo_dir / "summary.json").write_bytes(new_json)
+        (repo_dir / "summary.js").write_bytes(new_js)
+        ar = _run_git(["add", "--", "summary.json", "summary.js"], cwd=repo_dir)
+        if ar.returncode != 0:
+            return fail(f"git add failed (rc={ar.returncode}): {ar.stderr.strip()[:300]}")
+        msg_body = (f"Generated from public dataset release {rid} "
+                    f"({rel_meta.get('documents')} documents, taxonomy {rel_meta.get('taxonomy_version')}) "
+                    "by tools/build_website_summary.py.")
+        cr = _run_git(["-c", f"user.name={s.website_git_name}", "-c", f"user.email={s.website_git_email}",
+                       "commit", "-m", f"Update stack summary for release {rid}", "-m", msg_body], cwd=repo_dir)
+        if cr.returncode != 0:
+            return fail(f"git commit failed (rc={cr.returncode}): {(cr.stderr or cr.stdout).strip()[:300]}")
+        if lock_check is not None:
+            if why_lock := lock_check():
+                return fail(f"{why_lock}; website commit not pushed")
+        pr = _run_git(["push", "origin", f"HEAD:refs/heads/{s.website_branch}"],
+                      cwd=repo_dir, repo_url=s.website_repo, token=token)
+        if pr.returncode != 0:
+            return fail(f"git push failed (rc={pr.returncode}): {(pr.stderr or pr.stdout).strip()[:400]}")
+
+        sha = _run_git(["rev-parse", "HEAD"], cwd=repo_dir).stdout.strip()
+        doc = {"updated": True, "changed": True, "release_id": rid, "repo": s.website_repo,
+               "branch": s.website_branch, "commit": sha, "summary_bytes": len(new_json),
+               "techniques": len(summary_doc["techniques"]), "documents": rel_meta.get("documents"),
+               "at": utcnow().isoformat()}
+        try:
+            ops.put_json(receipt_key, doc)
+        except Exception as exc:  # noqa: BLE001 - push already succeeded; warn and record receipt_error
+            warn_msg = f"website pushed (commit {sha[:12]}), but receipt write failed ({type(exc).__name__})"
+            (findings.warn if findings is not None else log)(warn_msg)
+            doc["receipt_error"] = type(exc).__name__
+        log(f"{s.website_repo} ({s.website_branch}): commit {sha[:12]}; updated summary.json and summary.js "
+            f"for release {rid} ({len(new_json) / 1e6:.2f} MB)")
+        return EXIT_OK, doc
+    except subprocess.TimeoutExpired as exc:
+        return fail(f"git subprocess timed out after {exc.timeout} s")
+    except Exception as exc:  # noqa: BLE001 - operational errors never crash a post-upload cycle
+        return fail(f"{type(exc).__name__}: {redact_error(exc)}")
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
 
 
 # ---------------------------------------------------------------- balances
@@ -1952,6 +2353,9 @@ def main(argv: list[str] | None = None) -> int:
     u.add_argument("--release-id", required=True)
     u.add_argument("--dry-run", action="store_true")
     u.add_argument("--check-hf", action="store_true", help="also read both repos' settings (no upload)")
+    w = sub.add_parser("update-website", help="rebuild summary.json/summary.js from a staged release and push to the website repo")
+    w.add_argument("--release-id", required=True)
+    w.add_argument("--dry-run", action="store_true")
     k = sub.add_parser("unlock", help="remove lock.json of a dead cycle")
     k.add_argument("--holder", required=True, help="the holder id the refusal printed")
     ps = sub.add_parser("pause", help="write hold.json: the running cycle drains, new cycles refuse")
@@ -1979,6 +2383,12 @@ def main(argv: list[str] | None = None) -> int:
         rc = upload(s, ops, a.release_id, dry=a.dry_run, check_hf=a.check_hf)
         if rc != EXIT_OK and not a.dry_run:
             send_email(f"ERROR: Stack release upload failed ({a.release_id})", "\n".join(log.tail(60)))
+        return rc
+    if a.cmd == "update-website":
+        ops = Ops(s.ops_uri, read_only=a.dry_run)
+        rc, _doc = update_website(s, ops, a.release_id, dry=a.dry_run)
+        if rc != EXIT_OK and not a.dry_run:
+            send_email(f"ERROR: Stack website summary update failed ({a.release_id})", "\n".join(log.tail(60)))
         return rc
     if a.cmd == "report":
         doc = Ops(s.ops_uri, read_only=True).get_json(f"cycles/{a.cycle}/summary.json" if a.cycle

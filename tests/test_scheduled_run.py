@@ -1429,7 +1429,8 @@ def test_the_image_installs_every_module_the_code_imports() -> None:
 
     root = Path(__file__).parents[1]
     files = [*root.joinpath("stack").rglob("*.py"), *root.joinpath("workflows").rglob("*.py"),
-             root / "tools" / "scheduled_run.py", root / "tools" / "memlog.py"]
+             root / "tools" / "scheduled_run.py", root / "tools" / "memlog.py",
+             root / "tools" / "build_website_summary.py"]
     mods: set[str] = set()
     for f in files:
         for n in ast.walk(ast.parse(f.read_text("utf-8"))):
@@ -1622,3 +1623,367 @@ def test_the_memory_log_setting(env: None, monkeypatch: pytest.MonkeyPatch) -> N
     assert sr.Settings.from_env().memlog_s == 180
     monkeypatch.setenv("STACK_SCHED_MEMLOG_S", "0")
     assert sr.Settings.from_env().memlog_s == 0
+
+
+# ---------------------------------------------------------------- website summary bridge (D810)
+def _make_bare_website_repo(tmp_path: Path, build_script: str | None = None, *, branch: str = "main",
+                            initial_files: dict[str, str] | None = None) -> Path:
+    """Create a local bare git repository on ``branch`` (no network)."""
+    import subprocess as _sp
+
+    bare = tmp_path / "website.git"
+    seed = tmp_path / "website-seed"
+    _sp.run(["git", "init", "--bare", "-b", branch, str(bare)], check=True, capture_output=True)
+    _sp.run(["git", "clone", str(bare), str(seed)], check=True, capture_output=True)
+    if build_script is not None:
+        (seed / "tools").mkdir(parents=True, exist_ok=True)
+        (seed / "tools" / "build_summary.py").write_text(build_script, encoding="utf-8")
+    (seed / "index.html").write_text("<!doctype html><title>test</title>\n", encoding="utf-8")
+    for rel, content in (initial_files or {}).items():
+        p = seed / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content, encoding="utf-8")
+    _sp.run(["git", "add", "."], cwd=seed, check=True, capture_output=True)
+    _sp.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.org",
+             "commit", "-m", "initial"], cwd=seed, check=True, capture_output=True)
+    _sp.run(["git", "push", "origin", f"HEAD:refs/heads/{branch}"], cwd=seed, check=True, capture_output=True)
+    return bare
+
+
+_STUB_BUILD_SUMMARY = """\
+import json, sys
+from pathlib import Path
+rel_dir, out_dir = Path(sys.argv[1]), Path(sys.argv[2])
+rel = json.loads((rel_dir / "release.json").read_text("utf-8"))
+rid = rel.get("release_id") or "2026-11-25"
+doc = {
+    "format": 1,
+    "release": {"id": rid, "documents": 42, "taxonomy_version": "1.1.0"},
+    "layers": [{"id": "intervention", "name": "Interventions", "definition": "d", "count": 1}],
+    "labs": [{"id": "anthropic", "name": "Anthropic", "card_docs": 1, "own_docs": 0, "counts": {}, "dark_matter": []}],
+    "key": [{"id": "cards", "text": "stated in the lab's cards"}],
+    "notes": ["Data: release " + rid],
+    "techniques": [{"id": "rlhf", "name": "RLHF", "kind": "intervention", "labs": {}}],
+    "documents": {},
+}
+text = json.dumps(doc, ensure_ascii=False, separators=(",", ":"))
+out_dir.mkdir(parents=True, exist_ok=True)
+(out_dir / "summary.json").write_text(text + "\\n", encoding="utf-8")
+(out_dir / "summary.js").write_text("window.STACK_SUMMARY = " + text + ";\\n", encoding="utf-8")
+print(f"release {rid}: 1 techniques, 1 labs, 42 documents referenced, 0.00 MB")
+"""
+
+
+def _write_builder(tmp_path: Path, code: str = _STUB_BUILD_SUMMARY, name: str = "builder.py") -> Path:
+    p = tmp_path / name
+    p.write_text(code, encoding="utf-8")
+    return p
+
+
+def _stage_public_with_id(ops: Any, rid: str, *, public_policy: Any = 2) -> None:
+    doc: dict[str, Any] = {"release_id": rid, "variant": "public"}
+    if public_policy is not ...:
+        doc["policy"] = {"quote_policy": {"version": public_policy}}
+    data = json.dumps(doc).encode()
+    ops.b.put(f"releases/{rid}/cyc/public/release.json", data)
+    files = [{"path": "release.json", "bytes": len(data), "sha256": sr.hashlib.sha256(data).hexdigest()}]
+    ops.put_json(f"releases/{rid}/manifest.json", {
+        "release_id": rid, "prefix": f"releases/{rid}/cyc",
+        "variants": {"public": {"hf_repo": "org/public", "rows": 42, "files": files},
+                     "internal": {"hf_repo": "org/internal", "rows": 42, "files": files}}})
+
+
+def test_update_website_builds_commits_pushes_and_is_idempotent(env: None, monkeypatch: pytest.MonkeyPatch,
+                                                                tmp_path: Path) -> None:
+    """D810: runs the image's own builder, validates summary.json and summary.js, commits only those two files,
+    pushes to main, records website-updated.json, is idempotent on rerun, and reconciles a missing receipt."""
+    import subprocess as _sp
+
+    builder = _write_builder(tmp_path)
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", builder)
+    monkeypatch.setattr(sr, "check_staged", lambda d: [])
+    bare = _make_bare_website_repo(tmp_path, _STUB_BUILD_SUMMARY)
+    monkeypatch.setenv("STACK_SCHED_WORK", str(tmp_path / "work"))
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _stage_public_with_id(ops, "2026-11-25")
+
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_OK and doc["updated"] is True and doc["changed"] is True
+    assert doc["techniques"] == 1 and doc["documents"] == 42
+    rec = ops.get_json("releases/2026-11-25/website-updated.json")
+    assert rec is not None and rec["commit"] == doc["commit"]
+
+    show = _sp.run(["git", "--git-dir", str(bare), "show", "--name-only", "--format=%s", "main"],
+                   check=True, capture_output=True, text=True).stdout.splitlines()
+    assert show[0] == "Update stack summary for release 2026-11-25"
+    assert sorted(ln for ln in show[1:] if ln) == ["summary.js", "summary.json"]
+    pushed_json = _sp.run(["git", "--git-dir", str(bare), "show", "main:summary.json"],
+                          check=True, capture_output=True, text=True).stdout
+    pushed_js = _sp.run(["git", "--git-dir", str(bare), "show", "main:summary.js"],
+                        check=True, capture_output=True, text=True).stdout
+    assert json.loads(pushed_json)["release"]["id"] == "2026-11-25"
+    assert pushed_js == "window.STACK_SUMMARY = " + pushed_json.rstrip("\n") + ";\n"
+
+    # Re-running on the same release is a no-op (no second commit) and reconciles a missing receipt
+    ops.b.delete("releases/2026-11-25/website-updated.json")
+    rc2, doc2 = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc2 == sr.EXIT_OK and doc2["updated"] is True and doc2["changed"] is False
+    assert doc2["commit"] == doc["commit"]
+    assert ops.get_json("releases/2026-11-25/website-updated.json") is not None
+    count = int(_sp.run(["git", "--git-dir", str(bare), "rev-list", "--count", "main"],
+                        check=True, capture_output=True, text=True).stdout.strip())
+    assert count == 2  # initial + 1 summary commit
+
+
+def test_update_website_never_runs_cloned_repo_script_and_isolates_secrets(
+        env: None, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """D810 / D805 precedent: never executes tools/build_summary.py from the cloned website repo; runs the image's
+    OWN_WEBSITE_BUILDER with python -I and scrubbed env BEFORE cloning, and warns if the website repo copy drifted."""
+    env_marker = tmp_path / "env_dump.json"
+    pwn_marker = tmp_path / "pwned"
+    spy_builder = _write_builder(
+        tmp_path,
+        "import json, os, sys\nfrom pathlib import Path\n"
+        f"Path({str(env_marker)!r}).write_text(json.dumps(sorted(os.environ.keys())))\n"
+        + _STUB_BUILD_SUMMARY,
+    )
+    evil_repo_script = f"import pathlib; pathlib.Path({str(pwn_marker)!r}).write_text('pwned')\n"
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", spy_builder)
+    monkeypatch.setattr(sr, "check_staged", lambda d: [])
+    bare = _make_bare_website_repo(tmp_path, evil_repo_script)
+    monkeypatch.setenv("STACK_SCHED_WORK", str(tmp_path / "work"))
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+    monkeypatch.setenv("HF_TOKEN", "hf-top-secret")
+    monkeypatch.setenv("WEBSITE_GITHUB_TOKEN", "ghp-top-secret")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or-top-secret")
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _stage_public_with_id(ops, "2026-11-25")
+
+    warns: list[str] = []
+    finds = type("F", (), {"warn": lambda self, m: warns.append(m)})()
+    rc, _doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False, findings=finds)
+    assert rc == sr.EXIT_OK
+    assert not pwn_marker.exists()  # cloned website script was NEVER executed
+    assert any("differs from image copy" in w for w in warns), warns
+    seen_keys = set(json.loads(env_marker.read_text("utf-8")))
+    assert (seen_keys - {"LC_CTYPE", "__CF_USER_TEXT_ENCODING"}) <= set(sr.CHECK_ENV)
+    for secret_key in ("HF_TOKEN", "WEBSITE_GITHUB_TOKEN", "OPENROUTER_API_KEY", "STACK_S3_SECRET_ACCESS_KEY", "STACK_STORE"):
+        assert secret_key not in seen_keys
+
+
+def test_git_auth_env_and_secret_redaction() -> None:
+    """HTTPS credentials go only in GIT_CONFIG_* env vars; http:// gets no auth; redaction masks token, b64 and bucket."""
+    tok = "github_pat_secret_12345"
+    e = sr._git_auth_env("https://github.com/thesafetystack/website.git", tok)
+    assert e["GIT_TERMINAL_PROMPT"] == "0"
+    assert e["GIT_CONFIG_COUNT"] == "1"
+    assert e["GIT_CONFIG_KEY_0"] == "http.https://github.com/.extraheader"
+    assert e["GIT_CONFIG_VALUE_0"].startswith("AUTHORIZATION: basic ")
+    b64 = e["GIT_CONFIG_VALUE_0"].removeprefix("AUTHORIZATION: basic ")
+    redacted = sr._redact_secret(f"err token={tok} hdr={b64} bucket=stack-data", tok, "stack-data")
+    assert tok not in redacted and b64 not in redacted and "stack-data" not in redacted
+    # Plaintext http:// never receives credentials
+    e_http = sr._git_auth_env("http://github.com/thesafetystack/website.git", tok)
+    assert "GIT_CONFIG_COUNT" not in e_http
+
+
+def test_manifest_path_traversal_refused_in_upload_and_website(hf: Any, monkeypatch: pytest.MonkeyPatch,
+                                                               tmp_path: Path) -> None:
+    """Manifest paths outside the release directory are rejected before any bytes are written."""
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    escape = tmp_path / "escaped.txt"
+    data = b"evil"
+    h = sr.hashlib.sha256(data).hexdigest()
+    for bad_path in ("../escaped.txt", "/tmp/escaped.txt", "sub/../../escaped.txt", "a\\b.txt"):
+        files = [{"path": bad_path, "bytes": len(data), "sha256": h}]
+        ops.put_json("releases/2026-11-25/manifest.json", {
+            "release_id": "2026-11-25", "prefix": "releases/2026-11-25/cyc",
+            "variants": {"public": {"hf_repo": "org/public", "rows": 1, "files": files},
+                         "internal": {"hf_repo": "org/internal", "rows": 1, "files": files}}})
+        assert sr.upload(sr.Settings.from_env(), ops, "2026-11-25", dry=False) == sr.EXIT_FAILED
+        assert not escape.exists()
+        err = sr._fetch_staged_public(ops, ops.get_json("releases/2026-11-25/manifest.json"),
+                                      tmp_path / "dest", bucket="stack-data")
+        assert err is not None and "unsafe manifest path" in err
+        assert not escape.exists()
+
+
+def test_update_website_guardrails_rollback_lock_and_timeouts(env: None, monkeypatch: pytest.MonkeyPatch,
+                                                              tmp_path: Path) -> None:
+    """Refuses test mode, insecure http://, missing token, bad schema, bucket leak, rollback, lost lock, and catches
+    git timeouts cleanly without raising."""
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _stage_public_with_id(ops, "2026-11-25")
+    monkeypatch.setenv("STACK_SCHED_WORK", str(tmp_path / "work"))
+    monkeypatch.setattr(sr, "check_staged", lambda d: [])
+
+    # Refused in test mode
+    rc, _ = sr.update_website(sr.Settings.from_env(test=True), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_REFUSED
+
+    # Refused for insecure http:// URL
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", "http://github.com/thesafetystack/website.git")
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_REFUSED and "http://" in doc["error"]
+
+    # Refused for HTTPS repo when WEBSITE_GITHUB_TOKEN absent
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", "https://github.com/thesafetystack/website.git")
+    monkeypatch.delenv("WEBSITE_GITHUB_TOKEN", raising=False)
+    rc, _ = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_REFUSED
+
+    bare = _make_bare_website_repo(tmp_path / "bare", _STUB_BUILD_SUMMARY)
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+
+    # Refused when summary.json leaks the S3 bucket name
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER",
+                        _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('"RLHF"', '"stack-data-leak"'), "leak.py"))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "bucket name" in doc["error"]
+
+    # Refused when summary.json omits layers (unrenderable by stack.html)
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER",
+                        _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('"layers":', '"x_layers":'), "nolayers.py"))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "summary.layers" in doc["error"]
+
+    # Refused when website already holds a newer release id (no rollback)
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", _write_builder(tmp_path, _STUB_BUILD_SUMMARY, "ok.py"))
+    bare_newer = _make_bare_website_repo(
+        tmp_path / "newer", _STUB_BUILD_SUMMARY,
+        initial_files={"summary.json": json.dumps({"format": 1, "release": {"id": "2026-12-01"}}) + "\n"})
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare_newer))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_REFUSED and "newer release 2026-12-01" in doc["error"]
+
+    # Refused to push when lock_check fails just before push
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False,
+                                lock_check=lambda: "lock lost before push")
+    assert rc == sr.EXIT_FAILED and "lock lost before push" in doc["error"]
+
+    # Git timeout is caught cleanly at the bridge boundary (never raises)
+    def boom_git(*_a: Any, **_k: Any) -> Any:
+        raise sr.subprocess.TimeoutExpired(["git"], 300)
+
+    monkeypatch.setattr(sr, "_run_git", boom_git)
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "timed out" in doc["error"]
+
+
+def test_preflight_website_update_modes(env: None, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """D810: auto warns when WEBSITE_GITHUB_TOKEN is absent; 1 refuses; 0 neither warns nor refuses; http:// refuses."""
+    for k in ("OPENROUTER_API_KEY", "OPENAI_API_KEY", "STACK_MAILTO", "HF_TOKEN"):
+        monkeypatch.setenv(k, "set")
+    monkeypatch.setenv("STACK_MIRROR", str(tmp_path))
+    monkeypatch.setenv("STACK_SCHED_MIN_FREE_GB", "0")
+    monkeypatch.delenv("WEBSITE_GITHUB_TOKEN", raising=False)
+
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_UPDATE", "auto")
+    refuse, warn = sr.preflight(sr.Settings.from_env(), "d" * 64)
+    assert not any("WEBSITE_GITHUB_TOKEN" in r for r in refuse)
+    assert any("WEBSITE_GITHUB_TOKEN" in w for w in warn)
+
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_UPDATE", "1")
+    refuse, warn = sr.preflight(sr.Settings.from_env(), "d" * 64)
+    assert any("WEBSITE_GITHUB_TOKEN" in r for r in refuse)
+
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_UPDATE", "0")
+    refuse, warn = sr.preflight(sr.Settings.from_env(), "d" * 64)
+    assert not any("WEBSITE_GITHUB_TOKEN" in r for r in refuse)
+    assert not any("WEBSITE_GITHUB_TOKEN" in w for w in warn)
+
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_UPDATE", "auto")
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", "http://github.com/thesafetystack/website.git")
+    refuse, _warn = sr.preflight(sr.Settings.from_env(), "d" * 64)
+    assert any("insecure http://" in r for r in refuse)
+
+
+def test_cycle_updates_website_after_upload_and_warns_on_failure(hf: Any, monkeypatch: pytest.MonkeyPatch,
+                                                                 tmp_path: Path) -> None:
+    """D810: after a successful HF upload, the cycle hands the exact verified public dir to update_website;
+    a website failure after upload is a WARN (HF release succeeded) with the manual retry command."""
+    builder = _write_builder(tmp_path)
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", builder)
+    bare = _make_bare_website_repo(tmp_path / "ok", _STUB_BUILD_SUMMARY)
+    _fake, _calls = _canned_cycle(monkeypatch, tmp_path / "w1", [("ok", []), ("ok", [])])
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+    rid = f"{sr.utcnow():%Y-%m-%d}"
+    orig_stack = sr.run_stack
+
+    def stack_with_rid(args: list[str], **kw: Any) -> Any:
+        r = orig_stack(args, **kw)
+        if args[0] == "export":
+            out = Path(args[args.index("--out") + 1])
+            p = out / "release.json"
+            d = json.loads(p.read_text("utf-8"))
+            d["release_id"] = args[args.index("--release-id") + 1]
+            p.write_text(json.dumps(d))
+        return r
+
+    monkeypatch.setattr(sr, "run_stack", stack_with_rid)
+    cyc = sr.Cycle(sr.Settings.from_env(), dry=False)
+    assert cyc.run() == sr.EXIT_OK and cyc.outcome == "ok", (cyc.errors, cyc.warnings)
+    assert cyc.release["uploaded"] is True
+    assert cyc.release["website"]["updated"] is True and cyc.release["website"]["changed"] is True
+    assert cyc.warnings == []
+
+    # Failure case: broken image builder -> cycle still exits 0 (HF published), but WARNs with retry command
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", _write_builder(tmp_path, "import sys; sys.exit(2)\n", "bad.py"))
+    bare_bad = _make_bare_website_repo(tmp_path / "bad")
+    _fake2, _calls2 = _canned_cycle(monkeypatch, tmp_path / "w2", [("ok", []), ("ok", [])])
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare_bad))
+    orig_stack2 = sr.run_stack
+
+    def stack_with_rid2(args: list[str], **kw: Any) -> Any:
+        r = orig_stack2(args, **kw)
+        if args[0] == "export":
+            out = Path(args[args.index("--out") + 1])
+            p = out / "release.json"
+            d = json.loads(p.read_text("utf-8"))
+            d["release_id"] = args[args.index("--release-id") + 1]
+            p.write_text(json.dumps(d))
+        return r
+
+    monkeypatch.setattr(sr, "run_stack", stack_with_rid2)
+    cyc2 = sr.Cycle(sr.Settings.from_env(), dry=False)
+    assert cyc2.run() == sr.EXIT_OK and cyc2.outcome == "ok"
+    assert cyc2.release["uploaded"] is True and cyc2.release["website"]["updated"] is False
+    assert any(f"update-website --release-id {rid}" in w for w in cyc2.warnings), cyc2.warnings
+
+
+@pytest.mark.slow
+def test_update_website_real_builder_on_synthetic_export(env: None, monkeypatch: pytest.MonkeyPatch,
+                                                         tmp_path: Path) -> None:
+    """D810: runs the REAL image builder tools/build_website_summary.py on DuckDB against a real format-1.0.0
+    synthetic export and pushes valid stack.html-renderable summary.json and summary.js to a local bare repo."""
+    import subprocess as _sp
+
+    from tests.test_release_format import export
+
+    pub, _s = export(tmp_path / "pub")
+    rid = json.loads((pub / "release.json").read_text("utf-8"))["release_id"]
+    bare = _make_bare_website_repo(tmp_path / "web", sr.OWN_WEBSITE_BUILDER.read_text("utf-8"))
+    monkeypatch.setenv("STACK_SCHED_WORK", str(tmp_path / "work"))
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+    ops = sr.Ops(OPS, read_only=False, client=FakeS3())
+    _stage_dir(ops, rid, {"public": pub})
+
+    monkeypatch.setattr(sr, "check_staged", REAL_CHECK_STAGED)
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, rid, dry=False)
+    assert rc == sr.EXIT_OK and doc["updated"] is True and doc["changed"] is True, doc
+    pushed = json.loads(_sp.run(["git", "--git-dir", str(bare), "show", "main:summary.json"],
+                                check=True, capture_output=True, text=True).stdout)
+    assert pushed["format"] == 1 and pushed["release"]["id"] == rid
+    assert len(pushed["layers"]) == 3 and len(pushed["labs"]) == 7 and len(pushed["techniques"]) == 234
+
+
+def test_update_website_cli_dry_run(env: None, monkeypatch: pytest.MonkeyPatch,
+                                    capsys: pytest.CaptureFixture[str]) -> None:
+    fake = FakeS3()
+    real_ops = sr.Ops
+    monkeypatch.setattr(sr, "Ops", lambda uri, *, read_only, client=None: real_ops(uri, read_only=read_only, client=fake))
+    assert sr.main(["update-website", "--release-id", "2026-11-25", "--dry-run"]) == sr.EXIT_OK
+    out = capsys.readouterr().out
+    assert "update-website (dry run) of 2026-11-25: staged no" in out
