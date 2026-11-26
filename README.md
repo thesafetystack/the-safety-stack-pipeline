@@ -11,6 +11,7 @@ for relevance, annotates them and releases the dataset.
 | use the dataset | the dataset card on Hugging Face, https://huggingface.co/datasets/thesafetystack/the-safety-stack; every release ships its own `FORMAT.md` and `VOCABULARY.md` |
 | report a wrong annotation, a missing work, a takedown, or suggest a taxonomy change | the issue forms of the data repository, https://github.com/thesafetystack/the-safety-stack, or info@thesafetystack.ai |
 | run or change the pipeline | Setup below, then `docs/README.md`; `CONTRIBUTING.md` |
+| report a security vulnerability in the pipeline | `SECURITY.md` (privately, not as an issue) |
 | work in this repository as a coding agent | `AGENTS.md` |
 
 ## Status
