@@ -19,6 +19,13 @@ the sets' pins; readers look in the set, then in the cache. Without the cache th
 technique_staged 2026-10-28a, the judge sets) never had texts here: they include restricted texts, kept in a private
 directory outside the repository.
 
+## Redacted for redistribution
+
+Email addresses in the eval files are replaced by `[email]`, the public dataset's marker (D808). Digests recorded at
+freezing name the files as frozen: the judge set's `guides/affiliation.md` no longer matches its `guides_sha256`
+(manifests), `task_files` (items) and `guide_sha256` (labels); `affiliation/manifest.json` `production_sha256` is
+renewed.
+
 ## Sets
 
 Status: **current** (in use as a measure or reference), **current (non-production stage)** (the set of an annotator
