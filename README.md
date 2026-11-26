@@ -132,6 +132,12 @@ the archive (`docs/SETUP.md` §7).
 The code is under the MIT licence (`LICENSE`). The released dataset and the taxonomies carry their own licences:
 `configs/releases/dataset/LICENSE` (shipped with each release) and `data-repo/LICENSE`.
 
+Third-party material: the MIT licence covers the code and the project's own files. Short quotations of documents in
+`evals/` (the label files' quote fields) remain their authors'. `docs/scope/sr-2025-repo-criteria.md` reproduces
+prompts of the Shallow Review 2025 pipeline (`arb-consulting/shallow-review-2025`) with the permission of their author
+and copyright holder, Tomáš Gavenčiak. `evals/recall/concordia-2025-07.jsonl` is derived from Concordia AI's
+*Chinese Technical AI Safety Database* (`evals/recall/README.md`).
+
 PyMuPDF (`pymupdf`) is licensed under AGPL-3.0 (or Artifex's commercial licence) and is in the base install:
 `fetchpdf[text]`, a base dependency, requires it, so every environment and container image of this project, the
 `Dockerfile`'s image among them, is subject to the AGPL's terms. The optional `convert-pdf` dependency group adds
