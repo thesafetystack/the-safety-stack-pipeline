@@ -33,8 +33,11 @@ from typing import Any, Protocol
 from stack.http import DEFAULT_MAX_BYTES, decode_content
 from stack.lookup.card_dates import evidence, listing_dates, resolve
 
-# Cloudflare / bot-gated listings (x.ai, anthropic.com) serve non-browser clients a block page;
-# the browser UA is v1's stages/lib/corpus.DEFAULT_HEADERS (ported verbatim).
+# The headers of collect's listing reads (the index pages, sitemaps and feeds that collect.cards and
+# collect.blogs read): the same desktop Chrome User-Agent string as stack/http.py DEFAULT_HEADERS.
+# These reads do not consult robots.txt (the two stages' docstrings say so); robots.txt is checked
+# for item fetches, by stack/http.py PoliteFetcher.fetch (RobotsCache.allowed), when the channel sets
+# politeness.respect_robots.
 BROWSER_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "

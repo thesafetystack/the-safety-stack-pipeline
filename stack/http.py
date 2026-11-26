@@ -46,8 +46,10 @@ from typing import Any, Protocol
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants
 # ─────────────────────────────────────────────────────────────────────────────
-# Realistic browser UA so Cloudflare-fronted sites serve real HTML instead of a bot challenge
-# (the v1 corpus.py "Cloudflare lesson" — alignment.anthropic.com / transformer-circuits.pub etc.).
+# Sent with every request this module makes (and reused by acquire's oa lane and the headless rung,
+# stack/browser.py): a desktop Chrome User-Agent string. robots.txt is read and matched against this
+# same string by RobotsCache.allowed (below), which PoliteFetcher.fetch consults before the request
+# when the channel sets politeness.respect_robots (configs/channels.yaml); a Disallow is terminal.
 DEFAULT_HEADERS: dict[str, str] = {
     "User-Agent": (
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
