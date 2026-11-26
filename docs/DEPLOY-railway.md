@@ -81,7 +81,7 @@ the documents acquire covers.
    byte-identical to it, else it is refused unrun; D804, D805): a variant it refuses (an unsupported format version
    included) uploads nothing and the cycle fails (ERROR). The internal variant's repo must be private, before and after: if it is not, nothing (more) is uploaded, the cycle
    fails (ERROR). The job never changes any repo's visibility; the public variant's repo is uploaded to whatever its
-   visibility (it is private now; the maintainers make it public by hand). Each variant is **one commit** that makes the repo
+   visibility (it is public). Each variant is **one commit** that makes the repo
    tree exactly the release (files a release no longer has are deleted in the same commit; `.gitattributes` stays),
    made on the head read just before it (a concurrent push fails it), and **tagged `release-<id>`** (e.g.
    `release-2026-11-01`); earlier releases stay in the history under their tags. A tag that exists already (the same

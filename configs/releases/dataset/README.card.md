@@ -69,15 +69,13 @@ Documents whose annotation came from a Claude model because the main model refus
 of the Annotation quality section.
 
 **Quick start.** The dataset is one parquet file, `data/corpus.parquet`: one row per document, with every annotation
-nested in it. DuckDB and polars read it straight from the hub. Reading a private repository needs a Hugging Face
-access token with read access to it in the environment variable `HF_TOKEN` (and, in DuckDB, the commented line below).
+nested in it. DuckDB and polars read it straight from the hub.
 
 DuckDB (SQL; `unnest` turns a document's list of techniques into one row per technique):
 
 ```python
 import duckdb
 con = duckdb.connect()
-# con.execute("CREATE SECRET hf (TYPE huggingface, PROVIDER credential_chain)")  # private repositories: reads HF_TOKEN
 con.execute("CREATE VIEW d AS SELECT * FROM 'hf://datasets/{{hf_repo}}/data/corpus.parquet'")
 # documents whose own work uses RLHF (role strength 2 or more of 4: at least "minor but real")
 con.sql("""

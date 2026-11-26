@@ -188,7 +188,7 @@ org_table = pl.DataFrame([{"org_id": o["id"], "name": o["name"], "type": o["type
 
 The recipes read a local copy and are run from the release directory (the card's download command puts it in
 `stack/`, so `cd stack` first); to query the hub directly, put the card's `hf://` URL in place of
-`data/corpus.parquet` (a private repository needs a token; see the card).
+`data/corpus.parquet`.
 
 DuckDB (the file is the view `d`; the macros below need it):
 

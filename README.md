@@ -131,10 +131,11 @@ the archive (`docs/SETUP.md` §7).
 The code is under the MIT licence (`LICENSE`). The released dataset and the taxonomies carry their own licences:
 `configs/releases/dataset/LICENSE` (shipped with each release) and `data-repo/LICENSE`.
 
-The optional `convert-pdf` dependency group installs PyMuPDF (`pymupdf`, `pymupdf4llm`), which is licensed under
-AGPL-3.0 (or Artifex's commercial licence); an environment or container image built with that group, the
-`Dockerfile`'s image among them, is subject to the AGPL's terms. `pymupdf4llm` also pulls in `pymupdf-layout`,
-whose package metadata gives PolyForm Noncommercial (or Artifex's commercial licence).
+PyMuPDF (`pymupdf`) is licensed under AGPL-3.0 (or Artifex's commercial licence) and is in the base install:
+`fetchpdf[text]`, a base dependency, requires it, so every environment and container image of this project, the
+`Dockerfile`'s image among them, is subject to the AGPL's terms. The optional `convert-pdf` dependency group adds
+`pymupdf4llm` (AGPL-3.0 as well), which pulls in `pymupdf-layout`, whose package metadata gives PolyForm
+Noncommercial (or Artifex's commercial licence).
 
 ## Citation and contact
 
