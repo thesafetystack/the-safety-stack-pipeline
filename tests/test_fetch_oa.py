@@ -73,9 +73,9 @@ class TestItRefusesToRunUnlessOpenAccessIsProven:
 
     def test_a_build_with_no_accessor_and_an_unprovable_pack_is_refused(self,
                                                                        monkeypatch: Any) -> None:
-        """An OLD PRIVATE build looks exactly like the published one from the outside — no
-        accessor — and it ships the pack with an entry enabled. So absence has to be established,
-        never inferred from the missing accessor."""
+        """A build without the accessor can still ship the pack with an entry enabled, and from
+        the outside it looks like one that ships no pack. So absence has to be established, never
+        inferred from the missing accessor."""
         monkeypatch.setattr(oa, "_pack_is_provably_absent", lambda _m: False)
         with pytest.raises(RuntimeError, match="cannot establish"):
             oa._require_open_access_only(SimpleNamespace())
@@ -93,9 +93,9 @@ class TestItRefusesToRunUnlessOpenAccessIsProven:
     def test_the_real_installed_fetchpdf_satisfies_the_guard(self) -> None:
         """Against whatever build is actually installed here.
 
-        This is the test that would have caught this stack resolving `import fetchpdf` to a tree
-        whose last-resort source is enabled by default — which is what an editable install of the
-        development repository does, and what was in fact on this machine's path.
+        It fails when `import fetchpdf` resolves to a build that can reach a last-resort source
+        (an editable install of a source tree with that source enabled, for example), whatever
+        `pyproject.toml` pins.
         """
         fetchpdf = pytest.importorskip("fetchpdf.fetchpdf")
         oa._require_open_access_only(fetchpdf)   # the assertion is that this does not raise

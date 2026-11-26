@@ -546,13 +546,14 @@ channels:
   # anthropic_alignment_blog / anthropic_cards idiom already established above (NOT `open`,
   # despite the intent-shorthand "open-equivalent" — public_web is the closer registered
   # value for "publicly reachable, no explicit license"). openalex / europepmc /
-  # semantic_scholar fulltexts were historically acquired by v1's fetchpdf waterfall, which
-  # can include shadow-library sources on a PER-ITEM basis; that distinction cannot be
-  # expressed at channel granularity (one license_class per channel, not per snapshot), and
-  # blanket-applying `shadow` would misclassify the legitimate-OA fraction too — so these
-  # three channels are classed conservatively as `restricted` (never `open`) rather than
-  # `shadow`, per D8's explicit recommendation. A future per-fetch reclassification (once
-  # fetch records real acquisition provenance) could sharpen this later.
+  # semantic_scholar full texts are classed conservatively as `restricted` (never `open`): the
+  # licence of one acquired copy cannot be expressed at channel granularity (one license_class
+  # per channel, not per snapshot). acquire's oa lane fetches them only through a fetchpdf build
+  # that can reach no non-open-access source (stack/oa_adapter.py `_require_open_access_only`).
+  # No channel carries `shadow`; the class is kept so that a record of such origin, if one is
+  # ever imported, is dropped from every release (configs/releases/*.yaml `licence_rules.shadow`,
+  # the dataset mapping's `shadow_anchor` drop). A per-copy classification, from where each copy
+  # was acquired, could sharpen `restricted` later.
   # Egress (llm.yaml egress.by_license_class, applied per LLM call by stack/llm/__init__.py `_egress_rule`;
   # a basis row without a license_class is sent as `restricted`, stack/annotate/stage.py): `restricted` and
   # `api_tos` allow providers [anthropic, openai], `shadow` [openai] only, `open` and `public_web` also
@@ -623,7 +624,7 @@ channels:
   - id: europepmc               # kind: search
     kind: search
     location: "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
-    license_class: restricted   # D8: DOI-discovered fulltext waterfall, classed conservatively (see note above)
+    license_class: restricted   # D8: DOI-discovered full text, classed conservatively (see note above)
     channel_group: paper
     concept_groups: all
     breadth: standard
@@ -640,7 +641,7 @@ channels:
   - id: semantic_scholar        # kind: search
     kind: search
     location: "https://api.semanticscholar.org/graph/v1/paper/search/bulk"
-    license_class: restricted   # D8: DOI-discovered fulltext waterfall, classed conservatively (see note above)
+    license_class: restricted   # D8: DOI-discovered full text, classed conservatively (see note above)
     channel_group: paper
     concept_groups: all
     breadth: standard

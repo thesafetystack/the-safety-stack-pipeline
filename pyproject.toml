@@ -24,9 +24,9 @@ dependencies = [
     # is unlike the `convert` group below, which is optional because docling drags torch and a
     # CUDA stack; fetchpdf's own dependencies are in the same weight class as the four above.)
     #
-    # THE PUBLIC PACKAGE, DELIBERATELY: it has no last-resort (non-open-access) sources, which makes
-    # the D4 licence posture a property of the dependency rather than of remembering to disable
-    # something at runtime. The oa lane refuses any fetchpdf build that can reach a non-open-access
+    # The pinned build has no last-resort (non-open-access) sources, which makes the D4 licence
+    # posture a property of the dependency rather than of remembering to disable something at
+    # runtime. The oa lane refuses any fetchpdf build that can reach a non-open-access
     # source: it starts only when the installed build can PROVE no such source is reachable — see
     # stack/oa_adapter.py::_require_open_access_only — so the pin must be at or after the
     # commit that adds `last_resorts_enabled()`. Pinned to a commit sha, never a moving ref, because

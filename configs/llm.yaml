@@ -191,8 +191,8 @@ egress:
       providers: [anthropic, openai]
       data_collection: deny
       allow_fallbacks: true    # same reasoning as `restricted`
-    shadow:
-      providers: [openai]      # explicit owner authorization; other providers remain excluded
+    shadow:                    # no channel carries this class (configs/channels.yaml); kept for an imported record
+      providers: [openai]      # OpenAI only, per the owner policy above; other providers are excluded
       data_collection: deny
       allow_fallbacks: false
 

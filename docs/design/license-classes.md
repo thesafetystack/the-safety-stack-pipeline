@@ -26,10 +26,12 @@ default. Classes are therefore assigned conservatively.
 - **`public_web`**: self-published, publicly reachable content without an explicit open license: lab blogs, model
   and system cards, policy documents, newsletters. Not `open`, even where the content is meant to be read freely.
 - **`restricted`**: paper full texts found through DOI-based discovery (OpenAlex, Europe PMC, Semantic Scholar and
-  the other paper-search channels). Their acquired copy may come from any source the fetch waterfall reaches; the
-  licence of a particular copy is not known at channel level. They are classed `restricted`, never `open`.
-- **`shadow`** is not applied per channel: a channel holds both legitimately open-access and other copies, and
-  `shadow` on the whole channel would misclass the open-access part. It remains a value for per-copy use.
+  the other paper-search channels). acquire's oa lane fetches them only through a fetchpdf build that can reach no
+  non-open-access source: it refuses to run otherwise (`stack/oa_adapter.py` `_require_open_access_only`). The
+  licence of a particular copy is still not known at channel level, so they are classed `restricted`, never `open`.
+- **`shadow`**: no channel carries this class. It is kept so that a record of such origin, if one is ever imported,
+  is dropped from every release (`licence_rules.shadow` in `configs/releases/*.yaml`; the dataset mapping drops
+  `shadow_anchor` rows).
 - **`api_tos`**: content obtained through an API whose terms constrain redistribution.
 
 ## Open

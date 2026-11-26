@@ -23,6 +23,8 @@ enums:
       open: Open license (arXiv, OA papers, CC).
       public_web: Publicly reachable web content, no explicit open license.
       restricted: Access-restricted or rights-reserved.
+      # No channel carries `shadow`; it is kept so that a record of such origin, if one is ever imported,
+      # is dropped from every release (configs/releases/*.yaml licence_rules.shadow).
       shadow: Shadow-sourced; not for publication; LLM access follows configured provider permissions.
       api_tos: Obtained via an API whose ToS constrains redistribution.
 
