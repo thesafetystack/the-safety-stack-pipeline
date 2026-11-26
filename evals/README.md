@@ -24,7 +24,13 @@ directory outside the repository.
 Email addresses in the eval files are replaced by `[email]`, the public dataset's marker (D808). Digests recorded at
 freezing name the files as frozen: the judge set's `guides/affiliation.md` no longer matches its `guides_sha256`
 (manifests), `task_files` (items) and `guide_sha256` (labels); `affiliation/manifest.json` `production_sha256` is
-renewed.
+renewed. Quotations (`quote`, `gold_quote`, `quotes`) are shortened to the public dataset's quotation policy (D808):
+at most 300 characters each and, per document over every file and labeller that quotes it, one quote per annotation
+at 150 under min(6,000, 0.25 L) and the rest under min(2,000, 0.15 L) (L the text length where a set records it, else
+the character limits alone), cut at a word boundary with "…"; a quote beyond the budget is `""`. No stored score
+changes; the gold and production digests in the manifests are renewed. A shortened quote is no longer found whole in
+its text, so the freeze and derive scripts that look quotes up in the texts (and their byte-for-byte tests, which skip
+without the eval-text cache) no longer reproduce these files.
 
 ## Sets
 

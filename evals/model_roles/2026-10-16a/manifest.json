@@ -17,7 +17,7 @@
   "gold": {
     "file": "gold.jsonl",
     "from": "evals/model_roles/2026-10-13a/gold-vocab-v0.5.jsonl",
-    "sha256": "53bced2a259c2f1fb9859b909cceb930dbc25958200504d15777004c24316d9f",
+    "sha256": "f36035f6751b42fe0ca3d80d4aa3f1c37a3fbf4fa105d285d9eb15553a4fbf81",
     "gap_items": [
       "an-0003",
       "an-0005",

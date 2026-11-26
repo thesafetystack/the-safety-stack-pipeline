@@ -25,7 +25,7 @@ release time" below), so the numbers on a dataset card are that release's.
 **Not in the repository:** the document texts (third-party content) and the judges' task directories. They are kept
 in a private directory outside the repository, so the labels here can be read and re-scored but the judging cannot be
 re-run from a clone. Verbatim fields in the released labels (quotes, surfaces, names as written) are capped at 300
-characters.
+characters; quotes are further shortened to the dataset's per-document budget (`evals/README.md`).
 
 Full run 2026-10-25/26: 1,800 judge outputs (100 items x 6 call types x 3 judges), validated and scored; Sonnet was
 added as the third judge on 2026-10-26 on the same, unchanged task directories.

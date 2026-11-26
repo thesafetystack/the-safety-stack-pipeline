@@ -10,7 +10,7 @@
   },
   "gold": {
     "file": "gold.jsonl",
-    "sha256": "0211d5ff7a9ebec6c84569f4083e6e81b6e812a2c1f01139b1c0723b42edf2ef",
+    "sha256": "311f94e07aec657ce2c34e744afdd1579dd9e050b85cef03978dd5e16e7f4599",
     "from": "2026-10-17a gold.jsonl + adjudication/audit/",
     "rows": 431,
     "candidate_rows": 8,
@@ -24,7 +24,7 @@
   },
   "derivation": {
     "from_set": "2026-10-17a",
-    "from_gold_sha256": "60524d0428c01618f618fbce6996edae580a8a535b04d6fe5ffb298c39817115",
+    "from_gold_sha256": "c98d0b8d1005af3ea23fcd61da9fc886f679e6631091255c830159ba1e6b8d5d",
     "audit": "blind-audit-2026-10-17",
     "audit_items": 90,
     "verdicts": {

@@ -16,7 +16,7 @@
   },
   "gold": {
     "file": "gold.jsonl",
-    "sha256": "5bbae11c689105fe1aef4c6a74340af6a4f36b6eb88d5d81f2898f2c73bf2b1c",
+    "sha256": "3d65219ea87b0d0ae4d511013b2adb7de7a2efd4548d1a92de669cdbb6bf37d8",
     "from": "evals/model_roles/2026-10-16a/gold.jsonl + gold-remap.jsonl + gold-new.jsonl",
     "remapped_items": [
       "an-0001",

@@ -30,7 +30,7 @@
   },
   "gold": {
     "file": "gold.jsonl",
-    "sha256": "2a5edce50f12d226475a4f87e8536a303cc62ec28fd0cd0372ade905b13b4e35",
+    "sha256": "e283033782823d1880d61cac81e0ed1d93005ebe44314bdba742805a7b97af73",
     "from": "adjudication/final.jsonl (labels of record: final)",
     "items": 120,
     "rows": 1189,

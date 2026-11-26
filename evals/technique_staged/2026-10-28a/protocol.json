@@ -5,7 +5,7 @@
  "items_sha256": "2fb98ac7240c12f0e85611fa4b54eb9805c74ad92fe7b7bc072f6c271c9c8a1b",
  "judge_set": "evals/judge-2026-10-25j/technique_staged",
  "judge_items_sha256": "be22d905f7d8cf835c0f9ce41e279b93f91da69ff31abaa28a551dd36ace6cec",
- "production_sha256": "d23ad45cc741c8b01a9b32c3b08072a1fca5374a53f85b642e510d83a3f95aac",
+ "production_sha256": "f29c6ed6399014d6ff3ef8cb06445da99f73e7931c244573db1cae39f36d325f",
  "arms": {
   "PROD": {
    "role": "primary baseline",

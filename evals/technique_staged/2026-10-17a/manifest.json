@@ -10,7 +10,7 @@
   },
   "gold": {
     "file": "gold.jsonl",
-    "sha256": "60524d0428c01618f618fbce6996edae580a8a535b04d6fe5ffb298c39817115",
+    "sha256": "c98d0b8d1005af3ea23fcd61da9fc886f679e6631091255c830159ba1e6b8d5d",
     "from": "adjudication/reconciled.jsonl",
     "rows": 406,
     "candidate_rows": 8,

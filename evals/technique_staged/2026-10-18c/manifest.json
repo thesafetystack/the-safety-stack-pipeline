@@ -30,7 +30,7 @@
   },
   "gold": {
     "file": "gold.jsonl",
-    "sha256": "57e7173f73851746a95c16feb1c12eb79631517eeda8be433db7bed30519a272",
+    "sha256": "f05583db228c1bbf8709d54c8fe0172f45e676c69b83c894eebaa8f759e28a00",
     "from": "adjudication/final.jsonl",
     "items": 120,
     "rows": 1130,
@@ -65,7 +65,7 @@
   },
   "derivation": {
     "from_set": "2026-10-18b",
-    "from_gold_sha256": "2a5edce50f12d226475a4f87e8536a303cc62ec28fd0cd0372ade905b13b4e35",
+    "from_gold_sha256": "e283033782823d1880d61cac81e0ed1d93005ebe44314bdba742805a7b97af73",
     "reconciliation_rounds": {
       "1": {
         "batches": "R01-R08",

@@ -10,7 +10,7 @@
   },
   "gold": {
     "file": "gold.jsonl",
-    "sha256": "3894635ba3204f1022afb55d09da15fec12f6f0b9ca79e43b2a8f8b2fd8a252f",
+    "sha256": "215cb32bd2538ef44f4fab677a23cbac61fa36cd740922b6c3d9fe7ad8180b34",
     "from": "2026-10-17b gold.jsonl",
     "rows": 431,
     "candidate_rows": 0,
@@ -25,7 +25,7 @@
   },
   "derivation": {
     "from_set": "2026-10-17b",
-    "from_gold_sha256": "0211d5ff7a9ebec6c84569f4083e6e81b6e812a2c1f01139b1c0723b42edf2ef",
+    "from_gold_sha256": "311f94e07aec657ce2c34e744afdd1579dd9e050b85cef03978dd5e16e7f4599",
     "rule": "candidate:<slug> rows -> <slug> (remapped_from), candidate flag dropped",
     "remapped_rows": 8,
     "remapped": [
