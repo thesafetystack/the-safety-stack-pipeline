@@ -1776,7 +1776,8 @@ def upload(s: Settings, ops: Ops, rid: str, *, dry: bool, check_hf: bool = False
             shutil.move(str(work / "public"), str(keep_public_dir))
         return EXIT_OK
     finally:
-        shutil.rmtree(work, ignore_errors=True)
+        if work is not None:
+            shutil.rmtree(work, ignore_errors=True)
 
 
 # ---------------------------------------------------------------- the website summary bridge (D810)
@@ -1868,6 +1869,12 @@ def _validate_summary(out_dir: Path, rid: str, *, bucket: str) -> tuple[dict[str
     if not isinstance(rel, dict) or rel.get("id") != rid:
         got_rid = rel.get("id") if isinstance(rel, dict) else type(rel).__name__
         return None, f"summary release.id {got_rid!r} != {rid!r}"
+    created_at = rel.get("created_at")
+    if not isinstance(created_at, str) or not created_at.strip():
+        return None, "summary release.created_at must be a non-empty string"
+    doc_count = rel.get("documents")
+    if isinstance(doc_count, bool) or not isinstance(doc_count, int) or doc_count < 0:
+        return None, "summary release.documents must be a non-negative integer"
     for key_name in ("layers", "labs", "techniques", "key"):
         val = doc.get(key_name)
         if not isinstance(val, list) or not val or not all(isinstance(item, dict) for item in val):
@@ -1879,7 +1886,7 @@ def _validate_summary(out_dir: Path, rid: str, *, bucket: str) -> tuple[dict[str
     expected_js = "window.STACK_SUMMARY = " + json_text.rstrip("\n") + ";\n"
     if js_text != expected_js:
         return None, "summary.js does not match summary.json"
-    rel_payload = json.dumps({"id": rel["id"], "created_at": rel.get("created_at"), "documents": rel.get("documents")},
+    rel_payload = json.dumps({"id": rel["id"], "created_at": created_at, "documents": doc_count},
                              ensure_ascii=False, separators=(",", ":"))
     expected_rel_js = "window.__TSS_RELEASE = " + rel_payload + ";\n"
     if rel_js_text != expected_rel_js:
@@ -1895,18 +1902,35 @@ def _builder_fingerprint(p: Path) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def _current_summary_release_id(repo_dir: Path) -> str | None:
-    """The ``release.id`` of the existing ``summary.json`` in ``repo_dir``, else None."""
-    p = repo_dir / "summary.json"
-    if not p.is_file():
-        return None
+def _safe_repo_target(repo_dir: Path, name: str) -> tuple[Path | None, str | None]:
+    """Return a validated regular-file target directly inside ``repo_dir``, rejecting symlinks and non-files (D811)."""
+    p = repo_dir / name
+    if p.is_symlink():
+        return None, f"website repo target {name} is a symlink; refusing write"
+    if p.exists() and not p.is_file():
+        return None, f"website repo target {name} is not a regular file; refusing write"
+    if p.parent.resolve() != repo_dir.resolve():
+        return None, f"website repo target {name} resolves outside checkout; refusing write"
+    return p, None
+
+
+def _current_summary_release_id(repo_dir: Path) -> tuple[str | None, str | None]:
+    """``(release_id, error)`` from existing ``summary.json`` in ``repo_dir``.
+    Returns ``(None, None)`` when absent; fails closed with an error if present but unreadable or malformed (D811)."""
+    p, err = _safe_repo_target(repo_dir, "summary.json")
+    if err or p is None:
+        return None, err
+    if not p.exists():
+        return None, None
     try:
         doc = json.loads(p.read_text("utf-8"))
-        rel = doc.get("release") if isinstance(doc, dict) else None
-        rid = rel.get("id") if isinstance(rel, dict) else None
-        return rid if isinstance(rid, str) and rid else None
-    except (OSError, ValueError):
-        return None
+    except (OSError, ValueError) as exc:
+        return None, f"existing website summary.json unreadable ({type(exc).__name__}); refusing overwrite"
+    rel = doc.get("release") if isinstance(doc, dict) else None
+    rid = rel.get("id") if isinstance(rel, dict) else None
+    if not isinstance(rid, str) or not rid:
+        return None, "existing website summary.json missing release.id; refusing overwrite"
+    return rid, None
 
 
 def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", findings: Any = None,
@@ -1956,10 +1980,11 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
     if not OWN_WEBSITE_BUILDER.is_file():
         return fail(f"image builder missing: {OWN_WEBSITE_BUILDER}")
 
-    base = s.work / "website"
-    base.mkdir(parents=True, exist_ok=True)
-    work = Path(tempfile.mkdtemp(prefix=f"website-{rid}-", dir=base))
+    work: Path | None = None
     try:
+        base = s.work / "website"
+        base.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix=f"website-{rid}-", dir=base))
         rel_dir = release_dir
         if rel_dir is None:
             assert man is not None
@@ -2018,14 +2043,23 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
                        "used the image copy (sync tools/build_website_summary.py when website settings change)")
                 (findings.warn if findings is not None else log)(msg)
 
-        cur_rid = _current_summary_release_id(repo_dir)
+        cur_rid, rid_err = _current_summary_release_id(repo_dir)
+        if rid_err:
+            return fail(rid_err, code=EXIT_REFUSED)
         if cur_rid is not None and cur_rid > rid:
             return fail(f"website already holds newer release {cur_rid} > {rid}; refusing rollback",
                         code=EXIT_REFUSED)
 
-        cur_json = (repo_dir / "summary.json").read_bytes() if (repo_dir / "summary.json").is_file() else b""
-        cur_js = (repo_dir / "summary.js").read_bytes() if (repo_dir / "summary.js").is_file() else b""
-        cur_rel_js = (repo_dir / "release.js").read_bytes() if (repo_dir / "release.js").is_file() else b""
+        targets: dict[str, Path] = {}
+        for name in ("summary.json", "summary.js", "release.js"):
+            tp, terr = _safe_repo_target(repo_dir, name)
+            if terr or tp is None:
+                return fail(terr or f"unsafe website target: {name}", code=EXIT_REFUSED)
+            targets[name] = tp
+
+        cur_json = targets["summary.json"].read_bytes() if targets["summary.json"].exists() else b""
+        cur_js = targets["summary.js"].read_bytes() if targets["summary.js"].exists() else b""
+        cur_rel_js = targets["release.js"].read_bytes() if targets["release.js"].exists() else b""
         rel_meta = summary_doc["release"]
         receipt_key = f"{ns}releases/{rid}/website-updated.json"
         if new_json == cur_json and new_js == cur_js and new_rel_js == cur_rel_js:
@@ -2045,9 +2079,9 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
             return EXIT_OK, doc
 
         # 3. Commit only summary.json, summary.js and release.js, re-verify lock, and push non-forced
-        (repo_dir / "summary.json").write_bytes(new_json)
-        (repo_dir / "summary.js").write_bytes(new_js)
-        (repo_dir / "release.js").write_bytes(new_rel_js)
+        targets["summary.json"].write_bytes(new_json)
+        targets["summary.js"].write_bytes(new_js)
+        targets["release.js"].write_bytes(new_rel_js)
         ar = _run_git(["add", "--", "summary.json", "summary.js", "release.js"], cwd=repo_dir)
         if ar.returncode != 0:
             return fail(f"git add failed (rc={ar.returncode}): {ar.stderr.strip()[:300]}")
@@ -2085,7 +2119,8 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
     except Exception as exc:  # noqa: BLE001 - operational errors never crash a post-upload cycle
         return fail(f"{type(exc).__name__}: {redact_error(exc)}")
     finally:
-        shutil.rmtree(work, ignore_errors=True)
+        if work is not None:
+            shutil.rmtree(work, ignore_errors=True)
 
 
 # ---------------------------------------------------------------- balances

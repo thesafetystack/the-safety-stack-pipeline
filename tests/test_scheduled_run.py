@@ -1860,6 +1860,24 @@ def test_update_website_guardrails_rollback_lock_and_timeouts(env: None, monkeyp
     rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
     assert rc == sr.EXIT_FAILED and "release.js" in doc["error"]
 
+    # Refused when builder omits release.js
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER",
+                        _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('(out_dir / "release.js").write_text', '# '), "norel.py"))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "release.js missing or empty" in doc["error"]
+
+    # Refused when release.js leaks the S3 bucket name
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER",
+                        _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('2026-11-25T10:00:00Z', 'stack-data-leak'), "relleak.py"))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "bucket name" in doc["error"]
+
+    # Refused when release.created_at is missing/empty
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER",
+                        _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('"2026-11-25T10:00:00Z"', '""'), "nodate.py"))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "created_at" in doc["error"]
+
     # Refused when website already holds a newer release id (no rollback)
     monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", _write_builder(tmp_path, _STUB_BUILD_SUMMARY, "ok.py"))
     bare_newer = _make_bare_website_repo(
@@ -1868,6 +1886,58 @@ def test_update_website_guardrails_rollback_lock_and_timeouts(env: None, monkeyp
     monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare_newer))
     rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
     assert rc == sr.EXIT_REFUSED and "newer release 2026-12-01" in doc["error"]
+
+    # Refused when existing website summary.json is corrupt (fail closed, never overwrite)
+    bare_corrupt = _make_bare_website_repo(
+        tmp_path / "corrupt", _STUB_BUILD_SUMMARY,
+        initial_files={"summary.json": "{not valid json\n"})
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare_corrupt))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_REFUSED and "unreadable" in doc["error"]
+
+    # Refused when a target file in the website checkout is a symlink (no write outside checkout; D811)
+    import subprocess as _sp
+    outside = tmp_path / "outside-victim.txt"
+    outside.write_text("do-not-touch", encoding="utf-8")
+    bare_sym = tmp_path / "sym.git"
+    seed_sym = tmp_path / "sym-seed"
+    _sp.run(["git", "init", "--bare", "-b", "main", str(bare_sym)], check=True, capture_output=True)
+    _sp.run(["git", "clone", str(bare_sym), str(seed_sym)], check=True, capture_output=True)
+    (seed_sym / "release.js").symlink_to(outside)
+    _sp.run(["git", "add", "release.js"], cwd=seed_sym, check=True, capture_output=True)
+    _sp.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.org",
+             "commit", "-m", "symlink"], cwd=seed_sym, check=True, capture_output=True)
+    _sp.run(["git", "push", "origin", "HEAD:refs/heads/main"], cwd=seed_sym, check=True, capture_output=True)
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare_sym))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_REFUSED and "symlink" in doc["error"]
+    assert outside.read_text("utf-8") == "do-not-touch"
+
+    # When summary.json and summary.js already match the same release but release.js is missing, commits only release.js
+    bare_relonly = _make_bare_website_repo(tmp_path / "relonly", _STUB_BUILD_SUMMARY)
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare_relonly))
+    rc_init, _ = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc_init == sr.EXIT_OK
+    seed_rm = tmp_path / "relonly-rm"
+    _sp.run(["git", "clone", str(bare_relonly), str(seed_rm)], check=True, capture_output=True)
+    _sp.run(["git", "rm", "release.js"], cwd=seed_rm, check=True, capture_output=True)
+    _sp.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.org",
+             "commit", "-m", "drop release.js"], cwd=seed_rm, check=True, capture_output=True)
+    _sp.run(["git", "push", "origin", "HEAD:refs/heads/main"], cwd=seed_rm, check=True, capture_output=True)
+    rc_rel, doc_rel = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc_rel == sr.EXIT_OK and doc_rel["changed"] is True
+    show_rel = _sp.run(["git", "--git-dir", str(bare_relonly), "show", "--name-only", "--format=%s", "main"],
+                       check=True, capture_output=True, text=True).stdout.splitlines()
+    assert [ln for ln in show_rel[1:] if ln] == ["release.js"]
+
+    # Scratch-directory failure is caught inside the bridge boundary (returns fail, never raises; D811)
+    bad_work = tmp_path / "not-a-dir"
+    bad_work.write_text("file", encoding="utf-8")
+    monkeypatch.setenv("STACK_SCHED_WORK", str(bad_work))
+    monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
+    rc_disk, doc_disk = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc_disk == sr.EXIT_FAILED and doc_disk["updated"] is False
+    monkeypatch.setenv("STACK_SCHED_WORK", str(tmp_path / "work"))
 
     # Refused to push when lock_check fails just before push
     monkeypatch.setenv("STACK_SCHED_WEBSITE_REPO", str(bare))
