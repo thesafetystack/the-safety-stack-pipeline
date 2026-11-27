@@ -90,12 +90,12 @@ the documents acquire covers.
    or (`auto`, default) `WEBSITE_GITHUB_TOKEN` is set, the cycle runs the image's own reviewed builder
    (`tools/build_website_summary.py`, D805 precedent — never executing unreviewed code from the website repo) on the
    exact verified public release directory just uploaded to Hugging Face, in an isolated subprocess (`python -I`,
-   scrubbed env without keys/tokens), validates `summary.json` and `summary.js` (schema, release id, bucket scan),
-   shallow-clones `STACK_SCHED_WEBSITE_REPO` (`https://github.com/thesafetystack/website.git`, branch `main`;
-   plaintext `http://` refused), refuses rollback of a newer live release id, re-checks `lock.json`, and commits and
-   pushes only those two files when they changed (warning if the website repo's `tools/build_summary.py` drifted from
-   the image copy). A website failure after the Hugging Face upload succeeded is a WARN (the dataset release is
-   already live) and logs the manual retry command `python tools/scheduled_run.py update-website --release-id <date>`.
+   scrubbed env without keys/tokens), validates `summary.json`, `summary.js` and `release.js` (schema, release id,
+   bucket scan), shallow-clones `STACK_SCHED_WEBSITE_REPO` (`https://github.com/thesafetystack/website.git`, branch
+   `main`; plaintext `http://` refused), refuses rollback of a newer live release id, re-checks `lock.json`, and
+   commits and pushes only those three files when they changed (warning if the website repo's `tools/build_summary.py`
+   drifted from the image copy). A website failure after the Hugging Face upload succeeded is a WARN (the dataset
+   release is already live) and logs the manual retry command `python tools/scheduled_run.py update-website --release-id <date>`.
    Test cycles never push to GitHub.
 8. Balance checks at the start and the end (below), then the summary (`cycles/<id>/summary.json`, `log.txt`,
    `cycles/latest.json`) on the ops prefix and on stdout, and **one email per cycle** (below).
@@ -203,7 +203,7 @@ Variables (sealed where marked: sealed values are hidden in the UI and the API, 
 | `TMPDIR`, `HF_HOME`, `XDG_CACHE_HOME`, `STACK_TMP` | not needed: the image's working directory `/app` is not writable by its user, so every write goes under `/work` (Dockerfile): `TMPDIR=/work/scratch` takes Python's temp files and duckdb's spill directories (`stack/duck.py`, D732: duckdb's default `.tmp` under the working directory failed the 2026-10-27 test cycle's export), `HF_HOME=/work/cache/huggingface`, `XDG_CACHE_HOME=/work/cache`; `STACK_TMP` overrides the spill base only |
 | `OPENROUTER_API_KEY` (sealed), `OPENAI_API_KEY` (sealed), `OPENALEX_API_KEY` (sealed), `SEMANTIC_SCHOLAR_API_KEY` (sealed) | keys; OpenAI's is for the roles llm.yaml routes to the OpenAI API directly (D714: technique_staged, model_roles); the preflight derives the LLM keys a plan needs from its pins and refuses a missing one |
 | `HF_TOKEN` (sealed) | write to `thesafetystack/the-safety-stack` and `-private` |
-| `WEBSITE_GITHUB_TOKEN` (sealed, optional in `auto` mode) | GitHub fine-grained personal access token scoped to `Contents: Read and write` on `thesafetystack/website` only; enables automatic weekly `summary.json` / `summary.js` updates after Hugging Face upload (D810) |
+| `WEBSITE_GITHUB_TOKEN` (sealed, optional in `auto` mode) | GitHub fine-grained personal access token scoped to `Contents: Read and write` on `thesafetystack/website` only; enables automatic weekly `summary.json` / `summary.js` / `release.js` updates after Hugging Face upload (D810) |
 | `STACK_MAILTO` (sealed: a personal identifier) | the contact address |
 | `STACK_SCHED_ALERT`, `RESEND_API_KEY` (sealed), `STACK_SCHED_ALERT_FROM`, `STACK_SCHED_ALERT_TO` | `resend`, the key, a sender on the verified domain, the recipients, e.g. `info@thesafetystack.ai` (comma-separated) |
 | `OPENROUTER_MANAGEMENT_KEY` (sealed, optional) | reads the account's credits; cannot make completion calls |

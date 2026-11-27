@@ -1658,18 +1658,21 @@ rel = json.loads((rel_dir / "release.json").read_text("utf-8"))
 rid = rel.get("release_id") or "2026-11-25"
 doc = {
     "format": 1,
-    "release": {"id": rid, "documents": 42, "taxonomy_version": "1.1.0"},
+    "release": {"id": rid, "created_at": "2026-11-25T10:00:00Z", "documents": 42, "taxonomy_version": "1.1.0"},
     "layers": [{"id": "intervention", "name": "Interventions", "definition": "d", "count": 1}],
     "labs": [{"id": "anthropic", "name": "Anthropic", "card_docs": 1, "own_docs": 0, "counts": {}, "dark_matter": []}],
-    "key": [{"id": "cards", "text": "stated in the lab's cards"}],
+    "key": [{"id": "cards", "text": "stated in lab's cards"}],
     "notes": ["Data: release " + rid],
     "techniques": [{"id": "rlhf", "name": "RLHF", "kind": "intervention", "labs": {}}],
     "documents": {},
 }
 text = json.dumps(doc, ensure_ascii=False, separators=(",", ":"))
+rel_text = json.dumps({"id": rid, "created_at": "2026-11-25T10:00:00Z", "documents": 42},
+                      ensure_ascii=False, separators=(",", ":"))
 out_dir.mkdir(parents=True, exist_ok=True)
 (out_dir / "summary.json").write_text(text + "\\n", encoding="utf-8")
 (out_dir / "summary.js").write_text("window.STACK_SUMMARY = " + text + ";\\n", encoding="utf-8")
+(out_dir / "release.js").write_text("window.__TSS_RELEASE = " + rel_text + ";\\n", encoding="utf-8")
 print(f"release {rid}: 1 techniques, 1 labs, 42 documents referenced, 0.00 MB")
 """
 
@@ -1717,13 +1720,16 @@ def test_update_website_builds_commits_pushes_and_is_idempotent(env: None, monke
     show = _sp.run(["git", "--git-dir", str(bare), "show", "--name-only", "--format=%s", "main"],
                    check=True, capture_output=True, text=True).stdout.splitlines()
     assert show[0] == "Update stack summary for release 2026-11-25"
-    assert sorted(ln for ln in show[1:] if ln) == ["summary.js", "summary.json"]
+    assert sorted(ln for ln in show[1:] if ln) == ["release.js", "summary.js", "summary.json"]
     pushed_json = _sp.run(["git", "--git-dir", str(bare), "show", "main:summary.json"],
                           check=True, capture_output=True, text=True).stdout
     pushed_js = _sp.run(["git", "--git-dir", str(bare), "show", "main:summary.js"],
                         check=True, capture_output=True, text=True).stdout
+    pushed_rel_js = _sp.run(["git", "--git-dir", str(bare), "show", "main:release.js"],
+                            check=True, capture_output=True, text=True).stdout
     assert json.loads(pushed_json)["release"]["id"] == "2026-11-25"
     assert pushed_js == "window.STACK_SUMMARY = " + pushed_json.rstrip("\n") + ";\n"
+    assert pushed_rel_js == 'window.__TSS_RELEASE = {"id":"2026-11-25","created_at":"2026-11-25T10:00:00Z","documents":42};\n'
 
     # Re-running on the same release is a no-op (no second commit) and reconciles a missing receipt
     ops.b.delete("releases/2026-11-25/website-updated.json")
@@ -1847,6 +1853,12 @@ def test_update_website_guardrails_rollback_lock_and_timeouts(env: None, monkeyp
                         _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('"layers":', '"x_layers":'), "nolayers.py"))
     rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
     assert rc == sr.EXIT_FAILED and "summary.layers" in doc["error"]
+
+    # Refused when release.js does not match summary.json
+    monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER",
+                        _write_builder(tmp_path, _STUB_BUILD_SUMMARY.replace('"documents": 42},', '"documents": 999},'), "badrel.py"))
+    rc, doc = sr.update_website(sr.Settings.from_env(), ops, "2026-11-25", dry=False)
+    assert rc == sr.EXIT_FAILED and "release.js" in doc["error"]
 
     # Refused when website already holds a newer release id (no rollback)
     monkeypatch.setattr(sr, "OWN_WEBSITE_BUILDER", _write_builder(tmp_path, _STUB_BUILD_SUMMARY, "ok.py"))
@@ -1975,8 +1987,12 @@ def test_update_website_real_builder_on_synthetic_export(env: None, monkeypatch:
     assert rc == sr.EXIT_OK and doc["updated"] is True and doc["changed"] is True, doc
     pushed = json.loads(_sp.run(["git", "--git-dir", str(bare), "show", "main:summary.json"],
                                 check=True, capture_output=True, text=True).stdout)
+    pushed_rel = _sp.run(["git", "--git-dir", str(bare), "show", "main:release.js"],
+                         check=True, capture_output=True, text=True).stdout
     assert pushed["format"] == 1 and pushed["release"]["id"] == rid
     assert len(pushed["layers"]) == 3 and len(pushed["labs"]) == 7 and len(pushed["techniques"]) == 234
+    assert pushed_rel.startswith("window.__TSS_RELEASE = ") and json.loads(
+        pushed_rel.removeprefix("window.__TSS_RELEASE = ").removesuffix(";\n"))["id"] == rid
 
 
 def test_update_website_cli_dry_run(env: None, monkeypatch: pytest.MonkeyPatch,

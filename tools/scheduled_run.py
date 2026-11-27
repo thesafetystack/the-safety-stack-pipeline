@@ -2,7 +2,7 @@
 
     python tools/scheduled_run.py cycle [--dry-run | --test]        # collect -> ... -> fold.build -> release -> HF -> website
     python tools/scheduled_run.py upload --release-id ID [--dry-run] [--check-hf]   # re-upload a staged release
-    python tools/scheduled_run.py update-website --release-id ID [--dry-run]        # rebuild and push website summary.json/summary.js
+    python tools/scheduled_run.py update-website --release-id ID [--dry-run]        # rebuild and push website summary.json/summary.js/release.js
     python tools/scheduled_run.py unlock --holder ID                # remove a stale cycle lock (after checking)
     python tools/scheduled_run.py pause [--note TEXT] | resume       # hold.json: drain the running cycle, refuse new ones
     python tools/scheduled_run.py report [--cycle ID]               # print the last (or one) cycle summary
@@ -1377,8 +1377,8 @@ class Cycle:
                 self.outcome = "upload_failed"
                 self.error(f"release {rid}: upload failed (see the log)")
                 return EXIT_FAILED
-            # 8. rebuild and push the website visualisation's summary.json / summary.js from the exact verified
-            #    public artifact just uploaded to Hugging Face (D810)
+            # 8. rebuild and push the website visualisation's summary.json / summary.js / release.js from the exact
+            #    verified public artifact just uploaded to Hugging Face (D810)
             if not want_web:
                 why_skip = "STACK_SCHED_WEBSITE_UPDATE=0" if s.website_update == "0" else "WEBSITE_GITHUB_TOKEN absent"
                 log(f"website summary update skipped ({why_skip})")
@@ -1547,7 +1547,7 @@ class Cycle:
                      else "refused (insecure http:// repo URL)" if s.website_repo.lower().startswith("http://")
                      else f"on -> {s.website_repo} ({s.website_branch})" if web_on
                      else "off (WEBSITE_GITHUB_TOKEN absent)")
-        print(f"  8. website summary (summary.json, summary.js): {web_state}")
+        print(f"  8. website summary (summary.json, summary.js, release.js): {web_state}")
         print(f"  9. summary email (OK/WARN/ERROR) via {alert_channel() or 'NONE configured'}; balance checks at start "
               "and end")
         if self.check_balances_in_dry_run:
@@ -1846,9 +1846,9 @@ def _fetch_staged_public(ops: Ops, man: dict[str, Any], dest: Path, *, bucket: s
 
 
 def _validate_summary(out_dir: Path, rid: str, *, bucket: str) -> tuple[dict[str, Any] | None, str | None]:
-    """Check the generated ``summary.json`` and ``summary.js`` against what ``website/stack.html`` requires."""
-    json_path, js_path = out_dir / "summary.json", out_dir / "summary.js"
-    for p in (json_path, js_path):
+    """Check the generated ``summary.json``, ``summary.js`` and ``release.js`` against what the website requires."""
+    json_path, js_path, rel_js_path = out_dir / "summary.json", out_dir / "summary.js", out_dir / "release.js"
+    for p in (json_path, js_path, rel_js_path):
         if not p.is_file() or p.stat().st_size == 0:
             return None, f"{p.name} missing or empty"
     if bucket:
@@ -1858,6 +1858,7 @@ def _validate_summary(out_dir: Path, rid: str, *, bucket: str) -> tuple[dict[str
     try:
         json_text = json_path.read_text("utf-8")
         js_text = js_path.read_text("utf-8")
+        rel_js_text = rel_js_path.read_text("utf-8")
         doc = json.loads(json_text)
     except (OSError, ValueError) as exc:
         return None, f"summary unreadable ({type(exc).__name__})"
@@ -1878,6 +1879,11 @@ def _validate_summary(out_dir: Path, rid: str, *, bucket: str) -> tuple[dict[str
     expected_js = "window.STACK_SUMMARY = " + json_text.rstrip("\n") + ";\n"
     if js_text != expected_js:
         return None, "summary.js does not match summary.json"
+    rel_payload = json.dumps({"id": rel["id"], "created_at": rel.get("created_at"), "documents": rel.get("documents")},
+                             ensure_ascii=False, separators=(",", ":"))
+    expected_rel_js = "window.__TSS_RELEASE = " + rel_payload + ";\n"
+    if rel_js_text != expected_rel_js:
+        return None, "release.js does not match summary.json"
     return doc, None
 
 
@@ -1906,12 +1912,12 @@ def _current_summary_release_id(repo_dir: Path) -> str | None:
 def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", findings: Any = None,
                    release_dir: Path | None = None,
                    lock_check: Callable[[], str | None] | None = None) -> tuple[int, dict[str, Any]]:
-    """Rebuild ``summary.json`` and ``summary.js`` from the verified public release ``rid`` using the image's own
-    reviewed builder (:data:`OWN_WEBSITE_BUILDER`) and commit + push them to ``s.website_repo`` on
+    """Rebuild ``summary.json``, ``summary.js`` and ``release.js`` from the verified public release ``rid`` using the
+    image's own reviewed builder (:data:`OWN_WEBSITE_BUILDER`) and commit + push them to ``s.website_repo`` on
     ``s.website_branch`` (D810). Runs the builder in an isolated subprocess (``python -I``, scrubbed env without keys
     or tokens) BEFORE cloning the website repository so the builder never sees the git clone or auth context.
-    No-op (exit 0, ``changed=False``) when both files are already byte-identical on the target branch (reconciling a
-    missing ops receipt). Refuses to roll back a newer live release id."""
+    No-op (exit 0, ``changed=False``) when all three files are already byte-identical on the target branch
+    (reconciling a missing ops receipt). Refuses to roll back a newer live release id."""
     if s.test and not dry:
         log("REFUSED: a test cycle does not update the website")
         return EXIT_REFUSED, {"updated": False, "error": "refused in test mode"}
@@ -1966,7 +1972,8 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
             if why:
                 return fail(f"public: {why} (D808)")
 
-        # 1. Build summary.json / summary.js with the image's own reviewed builder BEFORE cloning the website repo
+        # 1. Build summary.json / summary.js / release.js with the image's own reviewed builder BEFORE cloning the
+        #    website repo
         out_dir = work / "out"
         tmp_dir = work / "tmp"
         out_dir.mkdir(parents=True)
@@ -1995,6 +2002,7 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
 
         new_json = (out_dir / "summary.json").read_bytes()
         new_js = (out_dir / "summary.js").read_bytes()
+        new_rel_js = (out_dir / "release.js").read_bytes()
 
         # 2. Shallow-clone the website repo and check for builder drift, rollback, and byte-identical no-op
         repo_dir = work / "repo"
@@ -2017,9 +2025,10 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
 
         cur_json = (repo_dir / "summary.json").read_bytes() if (repo_dir / "summary.json").is_file() else b""
         cur_js = (repo_dir / "summary.js").read_bytes() if (repo_dir / "summary.js").is_file() else b""
+        cur_rel_js = (repo_dir / "release.js").read_bytes() if (repo_dir / "release.js").is_file() else b""
         rel_meta = summary_doc["release"]
         receipt_key = f"{ns}releases/{rid}/website-updated.json"
-        if new_json == cur_json and new_js == cur_js:
+        if new_json == cur_json and new_js == cur_js and new_rel_js == cur_rel_js:
             head = _run_git(["rev-parse", "HEAD"], cwd=repo_dir).stdout.strip()
             doc: dict[str, Any] = {"updated": True, "changed": False, "release_id": rid, "repo": s.website_repo,
                                    "branch": s.website_branch, "commit": head, "summary_bytes": len(new_json),
@@ -2035,10 +2044,11 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
             log(f"{s.website_repo} ({s.website_branch}): summary already up to date for release {rid} (commit {head[:12]})")
             return EXIT_OK, doc
 
-        # 3. Commit only summary.json and summary.js, re-verify lock, and push non-forced
+        # 3. Commit only summary.json, summary.js and release.js, re-verify lock, and push non-forced
         (repo_dir / "summary.json").write_bytes(new_json)
         (repo_dir / "summary.js").write_bytes(new_js)
-        ar = _run_git(["add", "--", "summary.json", "summary.js"], cwd=repo_dir)
+        (repo_dir / "release.js").write_bytes(new_rel_js)
+        ar = _run_git(["add", "--", "summary.json", "summary.js", "release.js"], cwd=repo_dir)
         if ar.returncode != 0:
             return fail(f"git add failed (rc={ar.returncode}): {ar.stderr.strip()[:300]}")
         msg_body = (f"Generated from public dataset release {rid} "
@@ -2067,7 +2077,7 @@ def update_website(s: Settings, ops: Ops, rid: str, *, dry: bool, ns: str = "", 
             warn_msg = f"website pushed (commit {sha[:12]}), but receipt write failed ({type(exc).__name__})"
             (findings.warn if findings is not None else log)(warn_msg)
             doc["receipt_error"] = type(exc).__name__
-        log(f"{s.website_repo} ({s.website_branch}): commit {sha[:12]}; updated summary.json and summary.js "
+        log(f"{s.website_repo} ({s.website_branch}): commit {sha[:12]}; updated summary.json, summary.js and release.js "
             f"for release {rid} ({len(new_json) / 1e6:.2f} MB)")
         return EXIT_OK, doc
     except subprocess.TimeoutExpired as exc:
