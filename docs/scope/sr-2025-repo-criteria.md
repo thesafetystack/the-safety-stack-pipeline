@@ -249,8 +249,10 @@ final DB, 1,181 of 3,138 classified rows have SRI at or above 0.4 [data].
 
 Paths are relative to the repository root. "Final" means present in `papers.csv` (825 URLs, 764 distinct after
 normalisation). URL join key: lowercase scheme/host, https, no `www.`, arXiv `abs/ID` without version or `.pdf`,
-no fragment, trailing slash or tracking parameters (what `shallow_review/utils.py:normalize_url` does). The README
-gives the licence as "to be determined", so redistribution terms are unclear; the data is public.
+no fragment, trailing slash or tracking parameters (what `shallow_review/utils.py:normalize_url` does). The SR
+repository's README gives its licence as "to be determined"; the data is public. The prompts quoted in Appendix A are
+reproduced with the permission of their author and copyright holder, who maintains this repository (`README.md`,
+"Licence").
 
 | Path | Rows | Columns | Included / excluded | Reason recorded? | Use |
 |---|---|---|---|---|---|
@@ -388,7 +390,8 @@ primary evidence, so a single label cannot serve both without a scope flag.
 
 ## Appendix A. Prompt passages, verbatim
 
-Extracted programmatically from the clone so that wording and line numbers are exact. Total prompt volume of the
+Reproduced with the permission of their author and copyright holder, the maintainer of this repository (`README.md`,
+"Licence"). Extracted programmatically from the clone so that wording and line numbers are exact. Total prompt volume of the
 relevance and inclusion stages exceeds 600 lines, so only the decisive parts are quoted; `prompts/draft.yaml` (383
 lines, attribute extraction from the edited document) and the duplicate-check prompt are not inclusion criteria and
 are omitted.
