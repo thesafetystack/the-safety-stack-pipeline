@@ -16,11 +16,11 @@ repeatable. No network: the benchmark is a file in the repository, and the check
         --misses misses.jsonl
 
 **Build.** The sheet "Chinese Frontier AI Safety Papers" (the first sheet whose name starts with "Chinese Frontier"):
-column A the title (hyperlinked to the paper), B the research direction, C the date (an Excel serial), D-F
-institutions, G-K authors (two anchor-author columns, then other authors). The xlsx is read with the standard
-library (shared strings, the sheet's hyperlink relations or ``HYPERLINK`` formulas for the URL). One JSON line per
-paper: ``{title, url, arxiv, direction, date, institutions, authors}``, ``arxiv`` the id when the URL is an arXiv URL
-(:func:`stack.urls.arxiv_of_url`, without the version).
+column A the title (hyperlinked to the paper), B the research direction, C the date (an Excel serial); the
+institutions and authors (D-K) are not read. The xlsx is read with the standard library (shared strings, the sheet's
+hyperlink relations or ``HYPERLINK`` formulas for the URL). One JSON line per paper with the fields :data:`FIELDS`,
+``{title, url, arxiv, direction, date}``: what ``check`` reads plus the paper's identity. ``arxiv`` is the id when the
+URL is an arXiv URL (:func:`stack.urls.arxiv_of_url`, without the version).
 
 **Check.** A benchmark paper is *found* in a parquet file of documents (a ``documents`` family file: unmerged rows,
 ``metadata.title``) or of a release corpus (``title``) when a row carries its arXiv key (``arxiv``, or the arXiv
@@ -55,6 +55,8 @@ PKG = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 SHEET_PREFIX = "Chinese Frontier"
 #: Titles shorter than this many normalised tokens are not matched by title (generic or fragmentary).
 MIN_TITLE_TOKENS = 4
+#: The fields of a benchmark line, in order (``evals/recall/README.md``): nothing descriptive from the sheet.
+FIELDS = ("title", "url", "arxiv", "direction", "date")
 
 
 # ---------------------------------------------------------------- build
@@ -125,15 +127,13 @@ def papers(rows: list[list[str]], links: Mapping[int, str]) -> list[dict[str, An
     """The benchmark items of the sheet's rows (the first row is the header; rows without a title skipped)."""
     out = []
     for i, r in enumerate(rows[1:], start=2):
-        r = r + [""] * (11 - len(r))
+        r = r + [""] * (3 - len(r))
         if not r[0].strip():
             continue
         url = links.get(i, "")
         ax = arxiv_of_url(url) if url else None
         out.append({"title": " ".join(r[0].split()), "url": url, "arxiv": ax[0] if ax else "",
-                    "direction": r[1].strip(), "date": _date(r[2]),
-                    "institutions": [x.strip() for x in r[3:6] if x.strip()],
-                    "authors": [x.strip() for x in r[6:11] if x.strip()]})
+                    "direction": r[1].strip(), "date": _date(r[2])})
     return out
 
 

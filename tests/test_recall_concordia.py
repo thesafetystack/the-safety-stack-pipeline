@@ -74,7 +74,17 @@ def test_build_reads_the_sheet_layout(tmp_path: pathlib.Path) -> None:
     items = rc.papers(rows, links)
     assert [p["arxiv"] for p in items] == ["2309.07045", "2407.01599", ""]
     assert items[0]["direction"] == "Monitoring (evaluations)" and items[0]["date"] == "2023-10-03"  # serial 45202
-    assert items[0]["authors"] == ["Minlie Huang", "Zhexin Zhang"] and items[0]["institutions"] == ["Tsinghua University"]
+
+
+def test_build_writes_only_the_kept_fields(tmp_path: pathlib.Path) -> None:
+    """The benchmark keeps what ``check`` reads plus each paper's identity; the sheet's institutions and authors
+    (columns D-K) are not written, so a rebuild from a fresh export matches the repository's file."""
+    _xlsx(tmp_path / "db.xlsx")
+    assert rc.main(["build", "--xlsx", str(tmp_path / "db.xlsx"), "--out", str(tmp_path / "b.jsonl")]) == 0
+    text = (tmp_path / "b.jsonl").read_text()
+    items = [json.loads(x) for x in text.splitlines()]
+    assert len(items) == 3 and all(list(p) == list(rc.FIELDS) for p in items)
+    assert "Tsinghua" not in text and "Minlie Huang" not in text and "Zhexin Zhang" not in text
 
 
 def test_check_finds_by_arxiv_key_doi_and_title(tmp_path: pathlib.Path) -> None:
@@ -112,3 +122,4 @@ def test_repo_benchmark_is_the_2025_07_export() -> None:
     items = [json.loads(x) for x in (REPO / "evals" / "recall" / "concordia-2025-07.jsonl").read_text().splitlines()]
     assert len(items) == 464 and sum(bool(p["arxiv"]) for p in items) == 462
     assert len({p["arxiv"] for p in items if p["arxiv"]}) == 461  # one paper is listed twice in the sheet
+    assert all(list(p) == list(rc.FIELDS) for p in items)  # what `build` writes, in its order
